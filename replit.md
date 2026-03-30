@@ -94,3 +94,34 @@ Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHea
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
+
+---
+
+## INSPIRE Framework
+
+INSPIRE is a behavioral profiling web app with Arabic RTL interface. Build order follows CLAUDE.md.
+
+### Phase 1 — Foundation (COMPLETE)
+
+**Database schema** (`lib/db/src/schema/`):
+- `users.ts` — user accounts (email, password hash, consent, email verification)
+- `refresh-tokens.ts` — JWT refresh tokens (cascade delete on user remove)
+- `assessments.ts` — full assessment sessions + all 8 AI result sections
+- `admin-sessions.ts` — admin panel sessions
+
+All 4 tables pushed to PostgreSQL via `pnpm --filter @workspace/db run push`.
+
+**Assessment data** (`artifacts/api-server/src/`):
+- `data/questions.ts` — 24 behavioral questions across 7 INSPIRE axes (I/N/S/P/I/R/E), bilingual AR+EN
+- `data/scenarios.ts` — 8 binary A/B scenario questions + 5 mini-scenarios, bilingual AR+EN
+- `inspire-types/index.ts` — TypeScript types for the entire INSPIRE domain
+
+### INSPIRE Acronym
+**I**ntention, **N**arrative, **S**tyle, **P**references, **I**nteraction, **R**eflection, **E**valuation
+
+### Key Rules
+- Arabic RTL is default (`<html lang="ar" dir="rtl">`)
+- AI calls are server-side ONLY (never in components)
+- 8 output sections stored separately in DB (never merged)
+- User account required before assessment (no anonymous)
+- Consent page required before registration
