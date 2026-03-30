@@ -115,11 +115,24 @@ export default function MyAssessments() {
           </div>
         )}
 
-        {/* Loading */}
+        {/* Loading Skeletons */}
         {loading ? (
-          <div className="text-center py-20">
-            <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-muted-foreground">جارٍ تحميل التقارير...</p>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse bg-card border border-border rounded-2xl p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="space-y-2">
+                    <div className="h-4 w-48 bg-secondary rounded-lg" />
+                    <div className="h-3 w-64 bg-secondary/60 rounded-lg" />
+                  </div>
+                  <div className="h-6 w-20 bg-secondary rounded-full" />
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <div className="h-9 w-24 bg-secondary rounded-xl" />
+                  <div className="h-9 w-24 bg-secondary rounded-xl" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : assessments.length === 0 ? (
           <div className="text-center py-24 bg-card rounded-3xl border border-border">

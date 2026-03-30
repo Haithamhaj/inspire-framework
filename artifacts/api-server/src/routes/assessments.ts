@@ -5,6 +5,7 @@ import { eq, and } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import { AssessmentStartSchema, AssessmentSubmitSchema } from "../lib/validators";
 import { generateReport, processRetryQueue } from "../lib/ai-engine";
+import { rateLimit, getClientIp } from "../lib/rate-limit";
 import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
@@ -25,6 +26,12 @@ async function requireUser(req: Request, res: Response) {
 router.post(
   "/assessments/start",
   async (req: Request, res: Response): Promise<void> => {
+    const ip = getClientIp(req as any);
+    if (!rateLimit(ip, "assess-start", 10, 60 * 60 * 1000)) {
+      res.status(429).json({ success: false, error: "تجاوزت الحد المسموح. حاول لاحقاً." });
+      return;
+    }
+
     const user = await requireUser(req, res);
     if (!user) {
       res.status(401).json({ success: false, error: "Unauthorized" });
@@ -134,6 +141,7 @@ router.post(
           behavioralAnswers: behavioral_answers,
           scenarioAnswers: scenario_answers,
           openAnswer: open_answer,
+          assessmentType: (existing.assessmentType ?? "full") as "full" | "mini",
         });
       } catch (err) {
         logger.error({ assessmentId: id, err }, "generateReport threw unexpectedly");

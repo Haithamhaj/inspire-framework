@@ -10,9 +10,62 @@ export interface PromptData {
   behavioralAnswers: Array<{ question_index: number; answer_index: number }>;
   scenarioAnswers: Array<{ scenario_index: number; choice: "a" | "b" }>;
   openAnswer: string;
+  assessmentType?: "full" | "mini";
+}
+
+export function buildMiniPrompt(data: PromptData): string {
+  const lang =
+    data.reportLanguage === "en"
+      ? "English"
+      : data.reportLanguage === "both"
+        ? "Arabic and English"
+        : "Arabic";
+
+  const scenarioSection = data.scenarioAnswers
+    .map((a) => {
+      const s = SCENARIOS[a.scenario_index];
+      if (!s) return "";
+      const chosen = a.choice === "a" ? s.option_a : s.option_b;
+      return `[${s.dimension_en}] ${s.question}\nChosen: ${chosen} (${a.choice.toUpperCase()})`;
+    })
+    .filter(Boolean)
+    .join("\n\n");
+
+  return `You are an expert AI interaction coach specializing in the INSPIRE Framework.
+
+## Subject
+- Name: ${data.name}
+- Project: ${data.projectName}
+- Goal: ${data.projectGoal}
+- Report Language: ${lang}
+
+## AI Interaction Scenarios (5 dimensions)
+${scenarioSection}
+
+## Personal Reflection
+${data.openAnswer}
+
+---
+
+## Your Task
+
+Based ONLY on the 5 AI interaction dimensions and the personal reflection above, generate 5 highly personalized, ready-to-use AI prompt starters for this person's specific project.
+
+Output ONLY this one section:
+
+===QS_START===
+Write 5 ready-to-use prompt starters tailored to their AI interaction style and project goal. Make each starter immediately usable — as if they typed it into ChatGPT right now.
+1. "[starter 1]"
+2. "[starter 2]"
+3. "[starter 3]"
+4. "[starter 4]"
+5. "[starter 5]"
+===QS_END===`;
 }
 
 export function buildPrompt(data: PromptData): string {
+  if (data.assessmentType === "mini") return buildMiniPrompt(data);
+
   const lang =
     data.reportLanguage === "en"
       ? "English"

@@ -101,6 +101,24 @@ Utility scripts package. Each script is a `.ts` file in `src/` with a correspond
 
 INSPIRE is a behavioral profiling web app with Arabic RTL interface. Build order follows CLAUDE.md.
 
+### Phase 5 — Admin + Mini + Polish (COMPLETE)
+
+**Backend**:
+- `routes/admin.ts` — GET /api/admin/stats (9 KPIs), GET /api/admin/assessments (filters + pagination), GET /api/admin/export (CSV with BOM). Auth: `x-admin-password` header vs `ADMIN_PASSWORD` env var.
+- `lib/rate-limit.ts` — In-memory IP-based rate limiter. Applied: `/auth/register` (5/h), `/assessments/start` (10/h).
+- `lib/prompt-builder.ts` — Added `buildMiniPrompt()` for mini assessments (QS section only); `buildPrompt()` dispatches by `assessmentType`.
+- `routes/assessments.ts` — Passes `assessmentType` to `generateReport()`.
+
+**Frontend pages**:
+- `pages/assess-mini.tsx` — Mini assessment at `/assess/mini`; 5 scenarios (indices 0,1,2,5,6) + open question; auth-protected; produces `quickStarters` only; "5 دقائق فقط" label.
+- `pages/admin.tsx` — Admin dashboard at `/admin`; password gate modal; 4 stat cards; search + status filter; paginated assessment table; CSV export button.
+- `pages/landing.tsx` — Complete landing with: Hero (2 CTAs), How It Works (3 steps), What You Get (6 items + sample system prompt preview), FAQ (7 Q&A accordion), CTA strip, Footer.
+
+**Polish**:
+- `pages/results.tsx` — Skeleton loader + animated "processing" waiting screen with polling every 4s (replaces spinner); supports mini assessments (shows only quickStarters if no system instruction).
+- `pages/my-assessments.tsx` — Skeleton card loaders (3 cards pulsing while loading).
+- App.tsx — New routes: `/assess/mini`, `/admin`.
+
 ### Phase 1 — Foundation (COMPLETE)
 
 **Database schema** (`lib/db/src/schema/`):

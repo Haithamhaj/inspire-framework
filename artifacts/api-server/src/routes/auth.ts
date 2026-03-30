@@ -17,6 +17,7 @@ import {
   getAuthUser,
 } from "../lib/auth";
 import { RegisterSchema, LoginSchema } from "../lib/validators";
+import { rateLimit, getClientIp } from "../lib/rate-limit";
 
 const router: IRouter = Router();
 
@@ -25,6 +26,12 @@ const router: IRouter = Router();
 router.post(
   "/auth/register",
   async (req: Request, res: Response): Promise<void> => {
+    const ip = getClientIp(req as any);
+    if (!rateLimit(ip, "register", 5, 60 * 60 * 1000)) {
+      res.status(429).json({ success: false, error: "تجاوزت الحد المسموح. حاول لاحقاً." });
+      return;
+    }
+
     const parsed = RegisterSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({

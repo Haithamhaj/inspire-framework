@@ -21,28 +21,76 @@ function apiUrl(path: string) {
   return `/api${path}`;
 }
 
+function Skeleton({ className }: { className?: string }) {
+  return <div className={`animate-pulse bg-secondary/70 rounded-xl ${className ?? ""}`} />;
+}
+
+function ResultsSkeleton() {
+  return (
+    <div className="w-full max-w-4xl space-y-6 mx-auto">
+      <Skeleton className="h-44 rounded-3xl" />
+      <Skeleton className="h-32 rounded-2xl" />
+      <Skeleton className="h-48 rounded-2xl" />
+      <div className="grid md:grid-cols-2 gap-4">
+        <Skeleton className="h-40 rounded-2xl" />
+        <Skeleton className="h-40 rounded-2xl" />
+      </div>
+      <Skeleton className="h-64 rounded-2xl" />
+    </div>
+  );
+}
+
 export default function Results() {
   const { id } = useParams<{ id: string }>();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, token, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
 
   const [assessment, setAssessment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
 
   useEffect(() => {
     if (!id || authLoading || !user) return;
-    fetch(apiUrl(`/results/${id}`))
-      .then((r) => r.json())
-      .then((d) => {
+
+    let cancelled = false;
+    let pollTimer: ReturnType<typeof setTimeout> | null = null;
+
+    async function fetchResult() {
+      try {
+        const res = await fetch(apiUrl(`/results/${id}`), {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const d = await res.json();
+        if (cancelled) return;
         if (!d.success) throw new Error(d.error || "Not found");
-        setAssessment(d.assessment);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [id, user, authLoading]);
+
+        if (d.assessment.status === "processing" || d.assessment.status === "draft") {
+          setProcessing(true);
+          setLoading(false);
+          // Poll every 4 seconds
+          pollTimer = setTimeout(fetchResult, 4000);
+        } else {
+          setProcessing(false);
+          setAssessment(d.assessment);
+          setLoading(false);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err.message);
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchResult();
+    return () => {
+      cancelled = true;
+      if (pollTimer) clearTimeout(pollTimer);
+    };
+  }, [id, user, token, authLoading]);
 
   async function copyText(text: string, key: string) {
     await navigator.clipboard.writeText(text);
@@ -72,11 +120,38 @@ export default function Results() {
 
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">جارٍ تحميل تقريرك...</p>
-        </div>
+      <div className="min-h-[calc(100vh-5rem)] py-12 px-4">
+        <ResultsSkeleton />
+      </div>
+    );
+  }
+
+  if (processing) {
+    return (
+      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-card border border-border rounded-3xl p-12 shadow-xl text-center max-w-md w-full"
+        >
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-4 border-accent/20" />
+            <div className="absolute inset-0 rounded-full border-4 border-accent border-t-transparent animate-spin" />
+            <Brain className="absolute inset-0 m-auto h-8 w-8 text-accent" />
+          </div>
+          <h2 className="text-xl font-bold text-primary mb-2">يجري تحليل ملفك السلوكي</h2>
+          <p className="text-muted-foreground text-sm mb-1">يعمل الذكاء الاصطناعي على توليد تعليماتك المخصصة</p>
+          <p className="text-muted-foreground/60 text-xs">هذا يستغرق عادةً 30–60 ثانية</p>
+          <div className="mt-6 flex justify-center gap-1">
+            {[0, 0.2, 0.4].map((delay, i) => (
+              <span
+                key={i}
+                className="h-2 w-2 rounded-full bg-accent animate-bounce"
+                style={{ animationDelay: `${delay}s` }}
+              />
+            ))}
+          </div>
+        </motion.div>
       </div>
     );
   }
