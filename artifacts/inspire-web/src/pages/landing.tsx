@@ -102,6 +102,15 @@ export default function Landing() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative z-10 container max-w-4xl mx-auto text-center"
         >
+          <div className="flex justify-center mb-6">
+            <img
+              src={`${import.meta.env.BASE_URL}images/imperfect-success-logo.jpg`}
+              alt="Imperfect Success"
+              width={100}
+              style={{ opacity: 0.85, borderRadius: "12px" }}
+            />
+          </div>
+
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/80 border border-border text-sm font-medium text-primary mb-8 shadow-sm">
             <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse" />
             نظام التحليل السلوكي للذكاء الاصطناعي
@@ -340,22 +349,58 @@ export default function Landing() {
       </section>
 
       {/* ─── FOOTER ───────────────────────────────────────── */}
-      <footer className="border-t border-border py-10 px-6">
+      <footer style={{ backgroundColor: "#1a1a2e" }} className="py-12 px-6">
         <div className="container max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-right">
-              <div className="font-display font-black text-xl text-primary tracking-tight" dir="ltr">
-                INSPIRE
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex flex-col items-center md:items-start gap-3">
+              <img
+                src={`${import.meta.env.BASE_URL}images/imperfect-success-logo.jpg`}
+                alt="Imperfect Success"
+                width={140}
+                style={{ borderRadius: "10px" }}
+              />
+              <p style={{ color: "#f5ebe0", fontSize: "13px" }} className="text-center md:text-right">
+                النجاح رحلة غير مثالية
+              </p>
+              <div className="flex items-center gap-4 text-xs" style={{ color: "rgba(245,235,224,0.5)" }}>
+                <a
+                  href="https://next-stepai.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-100 transition-opacity"
+                  style={{ color: "rgba(245,235,224,0.6)" }}
+                >
+                  next-stepai.com
+                </a>
+                <span>|</span>
+                <a
+                  href="https://linkedin.com/in/haithamh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-100 transition-opacity"
+                  style={{ color: "rgba(245,235,224,0.6)" }}
+                >
+                  linkedin.com/in/haithamh
+                </a>
               </div>
-              <div className="text-xs text-muted-foreground mt-1">نظام التحليل السلوكي للذكاء الاصطناعي</div>
             </div>
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <Link href="/privacy-consent" className="hover:text-primary transition-colors">سياسة الخصوصية</Link>
-              <Link href="/login" className="hover:text-primary transition-colors">تسجيل الدخول</Link>
-              <Link href="/register" className="hover:text-primary transition-colors">إنشاء حساب</Link>
-            </div>
-            <div className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} INSPIRE Framework. جميع الحقوق محفوظة.
+
+            <div className="flex flex-col items-center gap-4">
+              <span
+                className="font-display font-black tracking-tight"
+                dir="ltr"
+                style={{ fontSize: "28px", color: "#e94560" }}
+              >
+                INSPIRE
+              </span>
+              <div className="flex items-center gap-5 text-sm" style={{ color: "rgba(245,235,224,0.5)" }}>
+                <Link href="/privacy-consent" className="hover:opacity-100 transition-opacity" style={{ color: "rgba(245,235,224,0.6)" }}>سياسة الخصوصية</Link>
+                <Link href="/login" className="hover:opacity-100 transition-opacity" style={{ color: "rgba(245,235,224,0.6)" }}>تسجيل الدخول</Link>
+                <Link href="/register" className="hover:opacity-100 transition-opacity" style={{ color: "rgba(245,235,224,0.6)" }}>إنشاء حساب</Link>
+              </div>
+              <div className="text-xs" style={{ color: "rgba(245,235,224,0.3)" }}>
+                © {new Date().getFullYear()} Imperfect Success. جميع الحقوق محفوظة.
+              </div>
             </div>
           </div>
         </div>

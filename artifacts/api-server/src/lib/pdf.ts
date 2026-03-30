@@ -23,11 +23,12 @@ function buildPDFDocument(data: {
   quickStarters: string[];
   createdAt: string;
 }) {
-  const { Document, Page, Text, View, StyleSheet } = ReactPDF;
+  const { Document, Page, Text, View, StyleSheet, Image } = ReactPDF;
 
   const styles = StyleSheet.create({
     page: { padding: 50, fontFamily: "Helvetica", fontSize: 10, direction: "rtl" as any },
-    header: { marginBottom: 30 },
+    header: { marginBottom: 30, alignItems: "center" as any },
+    logoImage: { width: 150, marginBottom: 12 },
     brand: { fontSize: 24, fontFamily: "Helvetica-Bold", color: "#1a1a2e", marginBottom: 4 },
     subtitle: { fontSize: 10, color: "#6b7280" },
     title: { fontSize: 18, fontFamily: "Helvetica-Bold", color: "#1a1a2e", marginBottom: 4, marginTop: 24 },
@@ -62,6 +63,7 @@ function buildPDFDocument(data: {
       { size: "A4", style: styles.page },
       // Header
       React.createElement(View, { style: styles.header },
+        React.createElement(Image, { style: styles.logoImage, src: path.join(process.cwd(), "public/images/imperfect-success-logo.jpg") }),
         React.createElement(Text, { style: styles.brand }, "INSPIRE"),
         React.createElement(Text, { style: styles.subtitle }, "Personal Behavioral Profile & AI System Instruction"),
       ),

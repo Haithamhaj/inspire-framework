@@ -100,8 +100,9 @@ function buildResultsEmailHtml({
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <!-- Header -->
         <tr><td style="background:#1a1a2e;padding:40px 40px 32px;text-align:center;">
-          <h1 style="color:#ffffff;margin:0;font-size:28px;font-weight:700;letter-spacing:2px;">INSPIRE</h1>
-          <p style="color:rgba(255,255,255,0.6);margin:8px 0 0;font-size:14px;">إطار التقييم السلوكي للذكاء الاصطناعي</p>
+          <img src="${APP_URL}/images/imperfect-success-logo.jpg" width="120" style="display:block;margin:0 auto 16px;border-radius:8px;" alt="Imperfect Success" />
+          <h1 style="color:#e94560;margin:0;font-size:26px;font-weight:700;letter-spacing:2px;" dir="ltr">INSPIRE</h1>
+          <p style="color:rgba(255,255,255,0.5);margin:8px 0 0;font-size:13px;">إطار التقييم السلوكي للذكاء الاصطناعي</p>
         </td></tr>
         <!-- Body -->
         <tr><td style="padding:40px;">

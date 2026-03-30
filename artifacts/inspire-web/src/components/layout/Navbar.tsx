@@ -9,13 +9,12 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl flex h-20 items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
-          <img
-            src={`${import.meta.env.BASE_URL}images/logo.png`}
-            alt="INSPIRE Logo"
-            className="h-10 w-10 object-contain"
-          />
-          <span className="font-display text-2xl font-bold tracking-tight text-primary" dir="ltr">
+        <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
+          <span
+            className="font-display font-bold tracking-tight"
+            dir="ltr"
+            style={{ fontSize: "20px", color: "#e94560" }}
+          >
             INSPIRE
           </span>
         </Link>
