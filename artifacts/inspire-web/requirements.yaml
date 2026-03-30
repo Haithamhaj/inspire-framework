@@ -1,0 +1,17 @@
+packages:
+  "framer-motion": "For elegant page transitions and interactive micro-animations"
+  "@hookform/resolvers": "For Zod form validation in our forms"
+  "react-hook-form": "For robust form state management"
+
+images:
+  - path: "artifacts/inspire-web/public/images/logo.png"
+    description: "Minimalist geometric logo mark. Dark navy blue (#1a1a2e) with a subtle vibrant red (#e94560) accent dot. Professional, corporate, AI-driven assessment theme. Transparent background."
+    aspect_ratio: "1:1"
+  - path: "artifacts/inspire-web/public/images/hero-bg.png"
+    description: "Abstract, elegant background pattern. Very subtle light gray and white geometric waves with soft depth. A hint of dark navy and red light bleed in the corners. Clean and professional."
+    aspect_ratio: "16:9"
+
+notes:
+  - Global fetch is monkey-patched in use-auth.tsx to inject the Bearer token for all requests to /api, allowing seamless use of the generated orval hooks.
+  - The App uses RTL direction for Arabic support by default.
+  - Forms validate data via local Zod schemas that mirror the backend specifications.

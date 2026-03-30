@@ -116,6 +116,24 @@ All 4 tables pushed to PostgreSQL via `pnpm --filter @workspace/db run push`.
 - `data/scenarios.ts` — 8 binary A/B scenario questions + 5 mini-scenarios, bilingual AR+EN
 - `inspire-types/index.ts` — TypeScript types for the entire INSPIRE domain
 
+### Phase 2 — Auth (COMPLETE)
+
+**Backend auth** (`artifacts/api-server/src/`):
+- `lib/auth.ts` — bcrypt password hashing, jose JWT (access token 7d, refresh token 30d), cookie management, email verify token generation
+- `lib/validators.ts` — Zod schemas for Register, Login, AssessmentStart, AssessmentSubmit
+- `routes/auth.ts` — All auth API endpoints: POST /auth/register, POST /auth/login, POST /auth/logout, POST /auth/refresh, GET /auth/verify-email, GET /auth/me, POST /admin/login
+
+**Frontend pages** (`artifacts/inspire-web/`):
+- `src/hooks/use-auth.tsx` — Auth React context with access token in memory
+- `src/pages/privacy-consent.tsx` — Consent page (checkbox required, button disabled until checked)
+- `src/pages/register.tsx` — Registration form with react-hook-form + zod validation
+- `src/pages/login.tsx` — Login form with Arabic error messages
+- `src/pages/landing.tsx` — Hero landing page (Arabic RTL)
+- `src/components/layout/Navbar.tsx` — RTL navigation
+
+**OpenAPI spec** updated with all auth endpoints, codegen re-run.
+RTL layout with Tajawal font, primary #1a1a2e, accent #e94560.
+
 ### INSPIRE Acronym
 **I**ntention, **N**arrative, **S**tyle, **P**references, **I**nteraction, **R**eflection, **E**valuation
 
