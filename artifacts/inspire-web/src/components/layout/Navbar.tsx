@@ -10,13 +10,13 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
-          <img 
-            src={`${import.meta.env.BASE_URL}images/logo.png`} 
-            alt="INSPIRE Logo" 
+          <img
+            src={`${import.meta.env.BASE_URL}images/logo.png`}
+            alt="INSPIRE Logo"
             className="h-10 w-10 object-contain"
           />
-          <span className="font-display text-2xl font-bold tracking-tight text-primary">
-            إلهام <span className="text-accent font-sans text-lg font-semibold ml-1">INSPIRE</span>
+          <span className="font-display text-2xl font-bold tracking-tight text-primary" dir="ltr">
+            INSPIRE
           </span>
         </Link>
 
@@ -38,14 +38,14 @@ export function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors px-4 py-2"
                 >
                   تسجيل الدخول
                 </Link>
-                <Link 
-                  href="/privacy-consent" 
+                <Link
+                  href="/privacy-consent"
                   className="text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2.5 rounded-xl shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 active:translate-y-0"
                 >
                   ابدأ التقييم

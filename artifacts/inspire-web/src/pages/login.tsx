@@ -58,7 +58,7 @@ export default function Login() {
           
           <div className="text-center mb-10">
             <h1 className="text-3xl font-display font-bold text-foreground mb-3">تسجيل الدخول</h1>
-            <p className="text-muted-foreground">أهلاً بك في منصة إلهام للتقييم</p>
+            <p className="text-muted-foreground">أهلاً بك في منصة INSPIRE للتقييم</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

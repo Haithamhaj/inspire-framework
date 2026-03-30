@@ -37,7 +37,7 @@ export default function PrivacyConsent() {
         <div className="p-8 flex-1 flex flex-col">
           <div className="prose prose-slate prose-lg max-w-none text-muted-foreground leading-relaxed mb-8 flex-1">
             <p>
-              نحن في إلهام (INSPIRE) نقدر خصوصيتك ونلتزم بحماية بياناتك الشخصية والمهنية. تم تصميم هذا التقييم لمساعدتك في فهم نمطك السلوكي والتفاعلي.
+              نحن في INSPIRE نقدر خصوصيتك ونلتزم بحماية بياناتك الشخصية والمهنية. تم تصميم هذا التقييم لمساعدتك في فهم نمطك السلوكي والتفاعلي.
             </p>
             <h3 className="text-foreground font-bold flex items-center gap-2 mt-6 mb-4">
               <FileText className="h-5 w-5 text-accent" />

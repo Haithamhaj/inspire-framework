@@ -116,6 +116,27 @@ All 4 tables pushed to PostgreSQL via `pnpm --filter @workspace/db run push`.
 - `data/scenarios.ts` — 8 binary A/B scenario questions + 5 mini-scenarios, bilingual AR+EN
 - `inspire-types/index.ts` — TypeScript types for the entire INSPIRE domain
 
+### Phase 3 — AI Engine & Assessment Core (COMPLETE)
+
+**Backend libs** (`artifacts/api-server/src/lib/`):
+- `report-parser.ts` — Parses 8-section AI output using `===SECTION_START/END===` markers into typed fields
+- `prompt-builder.ts` — Builds bilingual INSPIRE prompt with all 7 axes + 8 AI interaction dimensions; instructs AI to emit all 8 sections
+- `ai-engine.ts` — Lazy-initialized OpenAI (gpt-4o) + Anthropic (claude-sonnet-4-5) clients; 3 OpenAI retries → Claude fallback → `pending_retry` queue; cron retry schedule 30s→1h over 10 attempts
+
+**Backend routes** (`artifacts/api-server/src/routes/assessments.ts`):
+- `POST /api/assessments/start` — Creates draft assessment; returns `assessmentId`
+- `POST /api/assessments/:id/submit` — Saves answers, sets status=processing, fires `generateReport` async via `setImmediate`
+- `GET /api/assessments/:id/status` — Polls assessment including all 8 parsed sections
+- `GET /api/cron/retry` — Protected cron endpoint (x-cron-secret header) for background retry queue
+
+**Frontend** (`artifacts/inspire-web/src/pages/assess.tsx`):
+- 10-step wizard: Step 0 (project setup) → Steps 1-7 (behavioral Qs per INSPIRE axis) → Step 8 (8 AI scenarios) → Step 9 (open answer) → Processing → Results
+- Auth-protected; redirects to /login if not authenticated
+- Polls `/api/assessments/:id/status` every 3s after submit
+- Results page shows: role analysis, INSPIRE table with progress bars, strengths, red lines, recommendations, system instruction (copyable), quick starters
+
+**Brand fix**: All "إلهام" replaced with "INSPIRE" across all pages (navbar, login, register, consent, assess)
+
 ### Phase 2 — Auth (COMPLETE)
 
 **Backend auth** (`artifacts/api-server/src/`):

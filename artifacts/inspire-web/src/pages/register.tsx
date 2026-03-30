@@ -90,7 +90,7 @@ export default function Register() {
           
           <div className="text-center mb-10">
             <h1 className="text-3xl font-display font-bold text-foreground mb-3">إنشاء حساب جديد</h1>
-            <p className="text-muted-foreground">أدخل بياناتك للبدء في تقييم إلهام</p>
+            <p className="text-muted-foreground">أدخل بياناتك للبدء في تقييم INSPIRE</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
