@@ -14,7 +14,7 @@ function getResend(): Resend {
 }
 
 const FROM = `${process.env["FROM_NAME"] ?? "INSPIRE Framework"} <${process.env["FROM_EMAIL"] ?? "noreply@inspire-framework.com"}>`;
-const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "http://localhost:3000";
+const APP_URL = process.env["APP_URL"] ?? "http://localhost:3000";
 
 export async function sendResultsEmail(assessmentId: string): Promise<void> {
   if (!process.env["RESEND_API_KEY"]) {
