@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, ClipboardList } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function Navbar() {
@@ -24,6 +24,13 @@ export function Navbar() {
           {!isLoading && (
             user ? (
               <div className="flex items-center gap-4">
+                <Link
+                  href="/my-assessments"
+                  className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  <span>تقاريري</span>
+                </Link>
                 <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-secondary/50 rounded-full border border-border/50">
                   <User className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-foreground">{user.name}</span>

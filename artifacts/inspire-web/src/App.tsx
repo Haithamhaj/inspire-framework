@@ -12,6 +12,8 @@ import PrivacyConsent from "@/pages/privacy-consent";
 import Register from "@/pages/register";
 import Login from "@/pages/login";
 import Assess from "@/pages/assess";
+import Results from "@/pages/results";
+import MyAssessments from "@/pages/my-assessments";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,8 @@ function Router() {
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
           <Route path="/assess" component={Assess} />
+          <Route path="/results/:id" component={Results} />
+          <Route path="/my-assessments" component={MyAssessments} />
           <Route component={NotFound} />
         </Switch>
       </main>

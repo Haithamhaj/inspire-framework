@@ -116,6 +116,29 @@ All 4 tables pushed to PostgreSQL via `pnpm --filter @workspace/db run push`.
 - `data/scenarios.ts` — 8 binary A/B scenario questions + 5 mini-scenarios, bilingual AR+EN
 - `inspire-types/index.ts` — TypeScript types for the entire INSPIRE domain
 
+### Phase 4 — Results, Email, PDF, History (COMPLETE)
+
+**Backend libs** (`artifacts/api-server/src/lib/`):
+- `email.ts` — Lazy Resend client; `sendResultsEmail()` + `sendFailureEmail()`; HTML email with results link + PDF download link; called automatically from `ai-engine.ts` after completion
+- `pdf.ts` — `generateAndSavePDF()` using `@react-pdf/renderer`; 2-page A4 PDF (profile + system instruction); saves to `/public/pdfs/inspire-report-{id}.pdf`
+
+**Backend routes** (`artifacts/api-server/src/routes/results.ts`):
+- `GET /api/results/:id` — Full assessment data for a specific completed assessment
+- `GET /api/my-assessments` — Paginated list of user's assessments (ordered newest-first)
+- `GET /api/my-assessments/compare?a=id&b=id` — Compare 2 assessments; returns delta per INSPIRE axis
+- `POST /api/results/:id/generate-pdf` — Generate PDF on demand, cache and return URL
+- `GET /api/pdfs/:filename` — Stream PDF files from disk
+
+**Frontend pages**:
+- `pages/results.tsx` — Full results page at `/results/:id`; INSPIRE bars with animation, copy system instruction, click-to-copy quick starters, PDF download/generate button
+- `pages/my-assessments.tsx` — Assessment history at `/my-assessments`; select 2 assessments to compare with delta visualization; INSPIRE mini-bar on each card
+
+**assess.tsx** — Redirects to `/results/:id` after completion (no more inline results display)
+**Navbar** — Added "تقاريري" link for authenticated users
+**Routes** — Added `/results/:id` and `/my-assessments` to App.tsx router
+
+**Build** — Added `@swc/helpers` to esbuild external list (needed by `@react-pdf/renderer`)
+
 ### Phase 3 — AI Engine & Assessment Core (COMPLETE)
 
 **Backend libs** (`artifacts/api-server/src/lib/`):
