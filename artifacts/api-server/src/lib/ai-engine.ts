@@ -175,9 +175,9 @@ async function tryOpenAI(
       const res = await getOpenAI().chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 3500,
+        max_completion_tokens: 3500,
         temperature: 0.7,
-      });
+      } as any);
       const text = res.choices[0]?.message?.content ?? "";
       if (!text) throw new Error("Empty response");
       return { success: true, text };
