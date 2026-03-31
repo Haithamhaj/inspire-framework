@@ -58,6 +58,8 @@ router.post(
     const { token: emailVerifyToken, expires: emailVerifyExpires } =
       generateVerifyToken();
 
+    const noEmailService = !process.env["RESEND_API_KEY"];
+
     const [user] = await db
       .insert(usersTable)
       .values({
@@ -65,8 +67,9 @@ router.post(
         email: email.toLowerCase(),
         passwordHash,
         jobTitle: job_title ?? null,
-        emailVerifyToken,
-        emailVerifyExpires,
+        emailVerifyToken: noEmailService ? null : emailVerifyToken,
+        emailVerifyExpires: noEmailService ? null : emailVerifyExpires,
+        emailVerified: noEmailService,
         consentGiven: true,
         consentAt: new Date(),
       })
@@ -76,12 +79,14 @@ router.post(
         name: usersTable.name,
       });
 
-    req.log.info({ userId: user!.id }, "User registered");
+    req.log.info({ userId: user!.id, autoVerified: noEmailService }, "User registered");
 
     res.status(201).json({
       success: true,
-      message: "Registration successful. Please verify your email.",
-      verifyToken: emailVerifyToken,
+      message: noEmailService
+        ? "Registration successful."
+        : "Registration successful. Please verify your email.",
+      verifyToken: noEmailService ? undefined : emailVerifyToken,
     });
   }
 );
