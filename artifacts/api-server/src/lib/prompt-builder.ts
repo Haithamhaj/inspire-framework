@@ -13,6 +13,39 @@ export interface PromptData {
   assessmentType?: "full" | "mini";
 }
 
+// ─── Score Calculator ──────────────────────────────────────
+// Maps each axis to the question indices that measure it and
+// computes a score out of 6 using semantic weighting per option.
+// Option 0 = lowest alignment to axis, 3 = highest alignment.
+// Score = (sum_of_indices / (n_questions * 3)) * 6  →  rounded to 1dp
+
+export function calcAxisScores(
+  answers: Array<{ question_index: number; answer_index: number }>
+): Record<string, { score: number; max: number; percentage: number }> {
+  const axisBuckets: Record<string, number[]> = {};
+
+  for (const a of answers) {
+    const q = BEHAVIORAL_QUESTIONS[a.question_index];
+    if (!q) continue;
+    if (!axisBuckets[q.axis]) axisBuckets[q.axis] = [];
+    axisBuckets[q.axis].push(a.answer_index); // 0–3
+  }
+
+  const result: Record<string, { score: number; max: number; percentage: number }> = {};
+
+  for (const [axis, indices] of Object.entries(axisBuckets)) {
+    const n = indices.length;
+    const maxRaw = n * 3;
+    const sumRaw = indices.reduce((s, v) => s + v, 0);
+    // Normalise to 0–6
+    const score = Math.round((sumRaw / maxRaw) * 6 * 10) / 10;
+    const percentage = Math.round((sumRaw / maxRaw) * 100);
+    result[axis] = { score, max: 6, percentage };
+  }
+
+  return result;
+}
+
 export function buildMiniPrompt(data: PromptData): string {
   const lang =
     data.reportLanguage === "en"
@@ -49,17 +82,15 @@ ${data.openAnswer}
 
 ## Your Task
 
-Based ONLY on the 5 AI interaction dimensions and the personal reflection above, generate 5 highly personalized, ready-to-use AI prompt starters for this person's specific project.
+Based ONLY on the 5 AI interaction dimensions and the personal reflection above, generate 3 highly personalized, ready-to-use AI prompt starters for this person's specific project.
 
 Output ONLY this one section:
 
 ===QS_START===
-Write 5 ready-to-use prompt starters tailored to their AI interaction style and project goal. Make each starter immediately usable — as if they typed it into ChatGPT right now.
+Write EXACTLY 3 ready-to-use prompt starters tailored to their AI interaction style and project goal. Make each starter immediately usable — as if they typed it into ChatGPT right now.
 1. "[starter 1]"
 2. "[starter 2]"
 3. "[starter 3]"
-4. "[starter 4]"
-5. "[starter 5]"
 ===QS_END===`;
 }
 
@@ -72,6 +103,8 @@ export function buildPrompt(data: PromptData): string {
       : data.reportLanguage === "both"
         ? "Arabic and English"
         : "Arabic";
+
+  const axisScores = calcAxisScores(data.behavioralAnswers);
 
   const behavioralSection = data.behavioralAnswers
     .map((a) => {
@@ -103,6 +136,23 @@ export function buildPrompt(data: PromptData): string {
     "E – Evaluation (Decision-making & quality standards)",
   ];
 
+  // Pre-calculated scores to anchor the AI
+  const scoreLines = [
+    { key: "Intention",   label: "I-Intention" },
+    { key: "Narrative",   label: "N-Narrative" },
+    { key: "Style",       label: "S-Style" },
+    { key: "Preferences", label: "P-Preferences" },
+    { key: "Interaction", label: "I-Interaction" },
+    { key: "Reflection",  label: "R-Reflection" },
+    { key: "Evaluation",  label: "E-Evaluation" },
+  ]
+    .map(({ key, label }) => {
+      const s = axisScores[key];
+      if (!s) return `${label}: score unknown`;
+      return `${label}: ${s.score}/6 (${s.percentage}%)`;
+    })
+    .join("\n");
+
   return `You are an expert behavioral analyst specializing in the INSPIRE Framework — a 7-axis professional profiling system for AI interaction optimization.
 
 ## INSPIRE Framework Axes
@@ -114,6 +164,11 @@ ${INSPIRE_AXES.map((a, i) => `${i + 1}. ${a}`).join("\n")}
 - Project: ${data.projectName}
 - Project Goal: ${data.projectGoal}
 - Report Language: ${lang}
+
+## Pre-Calculated INSPIRE Axis Scores (MANDATORY — use these EXACT values)
+These scores are computed deterministically from the 24 behavioral answers.
+You MUST use these exact scores in the TABLE section. Do NOT round or alter them.
+${scoreLines}
 
 ## Behavioral Assessment Answers (24 questions across 7 INSPIRE axes)
 ${behavioralSection}
@@ -132,16 +187,18 @@ Analyze this professional's behavioral profile across all 7 INSPIRE axes and all
 
 Output EXACTLY these 8 sections with the markers shown. Write the entire report in ${lang}.
 
+IMPORTANT SCORING RULE: The TABLE section MUST use the pre-calculated scores above verbatim. Scores naturally vary per axis — do not make all axes the same value.
+
 ===TABLE_START===
-Score each INSPIRE axis using this format (one axis per line, pipe-delimited):
-Axis | Score | Max | Percentage | Confidence(1-5) | Brief Note
-I-Intention | X | 4 | XX% | X | [note]
-N-Narrative | X | 4 | XX% | X | [note]
-S-Style | X | 4 | XX% | X | [note]
-P-Preferences | X | 4 | XX% | X | [note]
-I-Interaction | X | 4 | XX% | X | [note]
-R-Reflection | X | 4 | XX% | X | [note]
-E-Evaluation | X | 4 | XX% | X | [note]
+Use EXACTLY the pre-calculated scores. Format: one axis per line, pipe-delimited.
+Axis | Score | Max | Percentage | Confidence(1-5) | Brief Note in ${lang}
+I-Intention | ${axisScores["Intention"]?.score ?? "?"} | 6 | ${axisScores["Intention"]?.percentage ?? "?"}% | 5 | [brief behavioral note]
+N-Narrative | ${axisScores["Narrative"]?.score ?? "?"} | 6 | ${axisScores["Narrative"]?.percentage ?? "?"}% | 5 | [brief behavioral note]
+S-Style | ${axisScores["Style"]?.score ?? "?"} | 6 | ${axisScores["Style"]?.percentage ?? "?"}% | 5 | [brief behavioral note]
+P-Preferences | ${axisScores["Preferences"]?.score ?? "?"} | 6 | ${axisScores["Preferences"]?.percentage ?? "?"}% | 5 | [brief behavioral note]
+I-Interaction | ${axisScores["Interaction"]?.score ?? "?"} | 6 | ${axisScores["Interaction"]?.percentage ?? "?"}% | 5 | [brief behavioral note]
+R-Reflection | ${axisScores["Reflection"]?.score ?? "?"} | 6 | ${axisScores["Reflection"]?.percentage ?? "?"}% | 5 | [brief behavioral note]
+E-Evaluation | ${axisScores["Evaluation"]?.score ?? "?"} | 6 | ${axisScores["Evaluation"]?.percentage ?? "?"}% | 5 | [brief behavioral note]
 ===TABLE_END===
 
 ===ROLE_START===
@@ -149,31 +206,38 @@ Write 3-4 sentences describing this professional's behavioral archetype, their l
 ===ROLE_END===
 
 ===REDLINES_START===
-List 5-7 things this person absolutely cannot tolerate in AI interactions (based on their profile). Each on its own line starting with •
+List EXACTLY 4 things this person absolutely cannot tolerate in AI interactions (based on their profile). Return EXACTLY 4 items, no more, no fewer. Each on its own line starting with •
 • [red line 1]
 • [red line 2]
+• [red line 3]
+• [red line 4]
 ===REDLINES_END===
 
 ===STRENGTHS_START===
-List 5-7 behavioral and cognitive strengths revealed by this profile. Each on its own line starting with •
+List EXACTLY 4 behavioral and cognitive strengths revealed by this profile. Return EXACTLY 4 items, no more, no fewer. Each on its own line starting with •
 • [strength 1]
 • [strength 2]
+• [strength 3]
+• [strength 4]
 ===STRENGTHS_END===
 
 ===DEVELOPMENT_START===
-List 4-6 growth areas or blind spots this profile reveals. Each on its own line starting with •
+List EXACTLY 3 growth areas or blind spots this profile reveals. Return EXACTLY 3 items, no more, no fewer. Each on its own line starting with •
 • [area 1]
 • [area 2]
+• [area 3]
 ===DEVELOPMENT_END===
 
 ===RECOMMENDATIONS_START===
-List 5 specific, actionable recommendations for how this person should use AI tools. Numbered list.
+List EXACTLY 4 specific, actionable recommendations for how this person should use AI tools. Return EXACTLY 4 items, no more, no fewer. Numbered list.
 1. [recommendation]
 2. [recommendation]
+3. [recommendation]
+4. [recommendation]
 ===RECOMMENDATIONS_END===
 
 ===SYS_START===
-Write a complete, standalone AI system instruction (500-800 words) that this person can paste into any AI tool (ChatGPT, Claude, etc.) as their permanent system prompt. 
+Write a complete, standalone AI system instruction (500-800 words) that this person can paste into any AI tool (ChatGPT, Claude, etc.) as their permanent system prompt.
 
 This instruction must:
 - Open with: "أنت مساعد ذكاء اصطناعي شخصي لـ [Name]" (or English equivalent)
@@ -187,11 +251,9 @@ This is the MOST IMPORTANT section. Make it exceptional.
 ===SYS_END===
 
 ===QS_START===
-Write 5 ready-to-use prompt starters this person can immediately use with AI, tailored to their profile and project goal.
+Write EXACTLY 3 ready-to-use prompt starters this person can immediately use with AI, tailored to their profile and project goal. Return EXACTLY 3 items, no more, no fewer.
 1. "[prompt starter 1]"
 2. "[prompt starter 2]"
 3. "[prompt starter 3]"
-4. "[prompt starter 4]"
-5. "[prompt starter 5]"
 ===QS_END===`;
 }

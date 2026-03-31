@@ -4,29 +4,32 @@ export function parseFullReport(text: string) {
     return m ? m[1].trim() : "";
   };
 
-  const parseJsonSection = (raw: string): string[] => {
+  const parseBulletSection = (raw: string, maxItems: number): string[] => {
     return raw
       .split("\n")
       .filter((l) => l.trim().startsWith("•"))
       .map((l) => l.replace(/^•\s*/, "").trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      .slice(0, maxItems);
   };
 
   const parseTable = (raw: string) => {
     return raw
       .split("\n")
-      .filter((l) => l.includes("|") && !l.startsWith("Axis"))
+      .filter((l) => l.includes("|") && !l.startsWith("Axis") && !l.startsWith("Use EXACTLY"))
       .map((l) => {
         const parts = l
           .split("|")
           .map((p) => p.trim())
           .filter(Boolean);
         if (parts.length < 6) return null;
+        const pctRaw = parts[3] ?? "";
+        const pct = parseFloat(pctRaw.replace("%", "")) || 0;
         return {
           axis: parts[0],
-          score: parseInt(parts[1]) || 0,
+          score: parseFloat(parts[1]) || 0,
           max: parseInt(parts[2]) || 6,
-          percentage: parseFloat(parts[3]) || 0,
+          percentage: pct,
           confidence: parseInt(parts[4]) || 0,
           note: parts[5] || "",
         };
@@ -44,31 +47,25 @@ export function parseFullReport(text: string) {
         .replace(/[""]?\s*$/, "")
         .trim()
     )
-    .filter(Boolean);
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const rawRecs = extract("===RECOMMENDATIONS_START===", "===RECOMMENDATIONS_END===");
+  const recommendations = rawRecs
+    .split("\n")
+    .filter((l) => /^\d\./.test(l.trim()))
+    .map((l) => l.replace(/^\d\.\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, 4);
 
   return {
-    inspireTable: parseTable(
-      extract("===TABLE_START===", "===TABLE_END===")
-    ),
+    inspireTable: parseTable(extract("===TABLE_START===", "===TABLE_END===")),
     roleAnalysis: extract("===ROLE_START===", "===ROLE_END==="),
-    redLines: parseJsonSection(
-      extract("===REDLINES_START===", "===REDLINES_END===")
-    ),
-    strengths: parseJsonSection(
-      extract("===STRENGTHS_START===", "===STRENGTHS_END===")
-    ),
-    developmentAreas: parseJsonSection(
-      extract("===DEVELOPMENT_START===", "===DEVELOPMENT_END===")
-    ),
-    recommendations: extract(
-      "===RECOMMENDATIONS_START===",
-      "===RECOMMENDATIONS_END==="
-    )
-      .split("\n")
-      .filter((l) => /^\d\./.test(l.trim()))
-      .map((l) => l.replace(/^\d\.\s*/, "").trim())
-      .filter(Boolean),
+    redLines: parseBulletSection(extract("===REDLINES_START===", "===REDLINES_END==="), 4),
+    strengths: parseBulletSection(extract("===STRENGTHS_START===", "===STRENGTHS_END==="), 4),
+    developmentAreas: parseBulletSection(extract("===DEVELOPMENT_START===", "===DEVELOPMENT_END==="), 3),
+    recommendations,
     systemInstruction: extract("===SYS_START===", "===SYS_END==="),
-    quickStarters: quickStarters.length > 0 ? quickStarters : [rawQS],
+    quickStarters: quickStarters.length > 0 ? quickStarters : [rawQS].filter(Boolean).slice(0, 3),
   };
 }
