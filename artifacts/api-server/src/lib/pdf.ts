@@ -1,4 +1,4 @@
-import ReactPDF from "@react-pdf/renderer";
+import ReactPDF, { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
 import path from "path";
 import fs from "fs";
@@ -164,7 +164,7 @@ export async function generateAndSavePDF(
         : "",
     });
 
-    const pdfBuffer = await ReactPDF.renderToBuffer(doc);
+    const pdfBuffer = await renderToBuffer(doc);
 
     const pdfDir = path.join(process.cwd(), "public", "pdfs");
     if (!fs.existsSync(pdfDir)) fs.mkdirSync(pdfDir, { recursive: true });
