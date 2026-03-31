@@ -1,3 +1,5 @@
+import { UNIVERSAL_RULES } from "./prompt-builder";
+
 export function parseFullReport(text: string) {
   const extract = (start: string, end: string) => {
     const m = text.match(new RegExp(`${start}([\\s\\S]*?)${end}`));
@@ -65,7 +67,7 @@ export function parseFullReport(text: string) {
     strengths: parseBulletSection(extract("===STRENGTHS_START===", "===STRENGTHS_END==="), 4),
     developmentAreas: parseBulletSection(extract("===DEVELOPMENT_START===", "===DEVELOPMENT_END==="), 3),
     recommendations,
-    systemInstruction: extract("===SYS_START===", "===SYS_END==="),
+    systemInstruction: extract("===SYS_START===", "===SYS_END===") + "\n\n" + UNIVERSAL_RULES,
     quickStarters: quickStarters.length > 0 ? quickStarters : [rawQS].filter(Boolean).slice(0, 3),
   };
 }
