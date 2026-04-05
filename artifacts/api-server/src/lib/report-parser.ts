@@ -67,7 +67,7 @@ export function parseFullReport(text: string) {
     strengths: parseBulletSection(extract("===STRENGTHS_START===", "===STRENGTHS_END==="), 4),
     developmentAreas: parseBulletSection(extract("===DEVELOPMENT_START===", "===DEVELOPMENT_END==="), 3),
     recommendations,
-    systemInstruction: extract("===SYS_START===", "===SYS_END===") + "\n\n" + UNIVERSAL_RULES,
+    systemInstruction: UNIVERSAL_RULES + "\n\n" + extract("===SYS_START===", "===SYS_END==="),
     quickStarters: quickStarters.length > 0 ? quickStarters : [rawQS].filter(Boolean).slice(0, 3),
   };
 }

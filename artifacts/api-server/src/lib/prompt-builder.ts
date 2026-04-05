@@ -185,7 +185,14 @@ export function buildPrompt(data: PromptData): string {
     "E – Evaluation (Decision-making & quality standards)",
   ];
 
-  // Pre-calculated scores to anchor the AI
+  // Map score to strength qualifier for directive language
+  const scoreToQualifier = (score: number): string => {
+    if (score > 4.5) return "Always";
+    if (score >= 3)  return "Usually";
+    return "When needed,";
+  };
+
+  // Pre-calculated scores to anchor the AI, with strength qualifiers
   const scoreLines = [
     { key: "Intention",   label: "I-Intention" },
     { key: "Narrative",   label: "N-Narrative" },
@@ -198,7 +205,8 @@ export function buildPrompt(data: PromptData): string {
     .map(({ key, label }) => {
       const s = axisScores[key];
       if (!s) return `${label}: score unknown`;
-      return `${label}: ${s.score}/6 (${s.percentage}%)`;
+      const qualifier = scoreToQualifier(s.score);
+      return `${label}: ${s.score}/6 (${s.percentage}%) → directive strength: "${qualifier}"`;
     })
     .join("\n");
 
@@ -217,6 +225,7 @@ ${INSPIRE_AXES.map((a, i) => `${i + 1}. ${a}`).join("\n")}
 ## Pre-Calculated INSPIRE Axis Scores (MANDATORY — use these EXACT values)
 These scores are computed deterministically from the 24 behavioral answers.
 You MUST use these exact scores in the TABLE section. Do NOT round or alter them.
+The "directive strength" qualifier shown for each axis MUST be used verbatim as the opening word of that axis's directive in the SYS section.
 ${scoreLines}
 
 ## Behavioral Assessment Answers (24 questions across 7 INSPIRE axes)
@@ -288,16 +297,23 @@ List EXACTLY 4 specific, actionable recommendations for how this person should u
 ===SYS_START===
 Write a complete, standalone AI system instruction (500-800 words) that this person can paste into any AI tool (ChatGPT, Claude, etc.) as their permanent system prompt.
 
-This instruction must:
-- Open with: "أنت مساعد ذكاء اصطناعي شخصي لـ [Name]" (or English equivalent)
-- Embed all 7 INSPIRE axis scores as behavioral parameters
-- Encode all 8 AI interaction protocol preferences as explicit behavioral rules
-- Be written in the second person addressing the AI
-- Cover: communication style, depth vs speed preference, challenge vs affirm mode, context expectations, output format, and red lines
-- End your content with "=== Operational Protocols ===" as the final section header before closing
-- Sound natural and authoritative, not mechanical
+This instruction MUST follow this exact structure and order:
+1. Identity line: "أنت مساعد ذكاء اصطناعي شخصي لـ [Name]" (or English equivalent) + project context
+2. INSPIRE Axes Directives: For EACH of the 7 axes, write ONE executable directive using the strength qualifier from the pre-calculated scores:
+   - directive strength "Always" → write: "Always [behavioral action]" (dominant pattern)
+   - directive strength "Usually" → write: "Usually [behavioral action]" (moderate pattern)
+   - directive strength "When needed," → write: "When needed, [behavioral action]" (weak pattern)
+   The action text must come from your behavioral analysis of this person — the qualifier is fixed by the score.
+3. AI Interaction Protocol: Encode all 8 binary scenario preferences as explicit behavioral rules
+4. Operational Protocols: This MUST be the final section header. Under it, include output format rules with this EXACT condition:
+   "قدّم المخرجات بهذا الترتيب للمهام المعقدة والقرارات المهمة فقط. للأسئلة المباشرة والطلبات البسيطة، أجب مباشرة بدون هذا الهيكل."
+   (or English equivalent if report language is English)
 
-NOTE: After your content, a fixed "UNIVERSAL AI PERFORMANCE RULES" section (6 rules) will be appended automatically — do NOT write it yourself.
+Additional requirements:
+- Be written in the second person addressing the AI
+- Cover: communication style, depth vs speed preference, challenge vs affirm mode, context expectations, and red lines
+- Sound natural and authoritative, not mechanical
+- Do NOT include any "Universal Rules" or "Performance Rules" — those are prepended separately before your content.
 
 This is the MOST IMPORTANT section. Make it exceptional.
 ===SYS_END===
