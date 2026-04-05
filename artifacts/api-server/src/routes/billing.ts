@@ -469,7 +469,7 @@ router.get(
     res.json({
       success: true,
       completedAssessments: completedCount,
-      freeUsed: completedCount >= 1,
+      freeUsed: true,
       price,
     });
   }

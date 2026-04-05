@@ -266,7 +266,8 @@ export default function Assess() {
 
     return (
       <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-2xl space-y-6">
+          <div className="max-w-md mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -392,6 +393,57 @@ export default function Assess() {
             {paymentError && (
               <p className="text-sm text-red-500 text-center mt-3">{paymentError}</p>
             )}
+          </motion.div>
+          </div>
+
+          {/* ── Static Example Preview ──────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="bg-card rounded-3xl border border-border overflow-hidden shadow-sm"
+          >
+            <div className="px-6 py-4 border-b border-border bg-secondary/30 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Brain className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">مثال على مخرجات التقييم الكامل</p>
+                <p className="text-xs text-muted-foreground">ستحصل على تعليمات مخصصة لك بهذا الشكل</p>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="p-6 space-y-4 select-none pointer-events-none" style={{ filter: "blur(3px)", opacity: 0.55 }}>
+                <div>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">نمطك السلوكي</p>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    أنت شخص يميل إلى التخطيط المنهجي قبل التنفيذ، وتُفضّل أن يقدم لك الذكاء الاصطناعي تفسيراً كاملاً للمنطق قبل الحل. تعمل بشكل أفضل في بيئات هادئة ومنظمة مع حدود واضحة.
+                  </p>
+                </div>
+                <div className="bg-primary rounded-2xl p-4">
+                  <p className="text-xs font-bold text-primary-foreground/70 uppercase tracking-widest mb-2">تعليمات النظام — جاهزة للنسخ</p>
+                  <p className="text-xs text-primary-foreground/90 leading-relaxed font-mono">
+                    {"## Universal Rules\nAlways respond in Arabic.\n\n## Behavioral Profile\nI: Focused — Always prioritize a single clear goal...\nN: Analyst — Usually provide full reasoning...\nS: Structured — When needed, present step-by-step...\nP: Deep — Always explain logic before conclusions...\n\n## For [اسم مشروعك]\n• Goal: [هدفك المحدد]\n• Style: منهجي تحليلي\n• Depth: شرح كامل مع أمثلة"}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-secondary/50 rounded-xl p-3">
+                    <p className="text-xs font-bold text-foreground mb-1">نقاط القوة</p>
+                    <p className="text-xs text-muted-foreground">• التحليل المعمّق<br/>• التخطيط الاستراتيجي</p>
+                  </div>
+                  <div className="bg-secondary/50 rounded-xl p-3">
+                    <p className="text-xs font-bold text-foreground mb-1">مناطق التطوير</p>
+                    <p className="text-xs text-muted-foreground">• الاستجابة السريعة<br/>• المرونة في التغيير</p>
+                  </div>
+                </div>
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-background/80 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border shadow-lg text-center">
+                  <p className="text-sm font-bold text-foreground mb-1">ادفع للحصول على تعليماتك الشخصية</p>
+                  <p className="text-xs text-muted-foreground">مُولَّدة خصيصاً لك ولمشروعك</p>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

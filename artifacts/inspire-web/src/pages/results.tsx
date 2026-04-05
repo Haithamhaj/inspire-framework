@@ -251,6 +251,88 @@ export default function Results() {
     );
   }
 
+  // ── Mini assessment: show only Quick Starters + upgrade CTA ───
+  if (assessment.assessmentType === "mini") {
+    return (
+      <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-2xl space-y-6"
+        >
+          {/* Mini Header */}
+          <div className="bg-gradient-to-br from-accent/80 to-accent rounded-3xl p-8 text-accent-foreground">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="h-5 w-5 text-white/80" />
+              <span className="text-white/80 text-sm">تقرير البداية السريعة</span>
+            </div>
+            <h1 className="text-2xl font-display font-bold mb-1">{assessment.projectName}</h1>
+            <p className="text-white/70 text-sm">{assessment.projectGoal}</p>
+            <div className="mt-4">
+              <button
+                onClick={() => navigate("/my-assessments")}
+                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              >
+                <ChevronRight className="h-4 w-4" /> تقاريري
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Starters */}
+          {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 ? (
+            <div className="bg-card rounded-2xl border border-border p-6">
+              <h2 className="font-display font-bold text-xl text-foreground mb-2 flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-accent" /> نقاط انطلاقك مع الذكاء الاصطناعي
+              </h2>
+              <p className="text-muted-foreground text-sm mb-5">
+                انسخ أي بادئة وأرسلها مباشرةً إلى ChatGPT أو أي نموذج ذكاء اصطناعي
+              </p>
+              <div className="space-y-3">
+                {assessment.quickStarters.map((qs: string, i: number) => (
+                  <div
+                    key={i}
+                    onClick={() => copyText(qs, `qs-${i}`)}
+                    className="flex items-start gap-3 p-4 bg-secondary/50 rounded-xl group cursor-pointer hover:bg-secondary transition-colors"
+                  >
+                    <span className="font-bold text-accent shrink-0 text-lg">{i + 1}.</span>
+                    <p className="text-sm text-foreground leading-relaxed flex-1">{qs}</p>
+                    {copied === `qs-${i}` ? (
+                      <Check className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                    ) : (
+                      <Copy className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {/* Upgrade CTA */}
+          <div className="bg-gradient-to-l from-primary/10 to-primary/5 rounded-2xl border border-primary/20 p-6 text-right">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Brain className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-lg text-foreground mb-1">احصل على تعليمات النظام الكاملة</h3>
+                <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+                  التقييم الكامل يُحلّل 7 محاور سلوكية بعمق ويولّد تعليمات نظام شخصية جاهزة للنسخ مباشرةً إلى أي نموذج ذكاء اصطناعي — مع تقرير PDF قابل للمشاركة.
+                </p>
+                <button
+                  onClick={() => navigate("/assess")}
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+                >
+                  ابدأ التقييم الكامل — $10
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
       <motion.div

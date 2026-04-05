@@ -69,9 +69,9 @@ router.post(
       );
     const completedCount = Number(completedRow?.total ?? 0);
 
-    // Mini assessments are always free; full assessments require payment after the first
+    // Mini assessments are always free; all full assessments require payment
     let validatedPaymentId: string | null = null;
-    if (completedCount >= 1 && assessment_type !== "mini") {
+    if (assessment_type !== "mini") {
       if (!payment_id) {
         res.status(403).json({
           success: false,
