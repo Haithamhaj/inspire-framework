@@ -51,6 +51,26 @@ router.post(
     const { project_name, project_goal, report_language, assessment_type, previous_assessment_id } =
       parsed.data;
 
+    // Validate ownership of previous assessment (must be completed and belong to this user)
+    if (previous_assessment_id) {
+      const [prev] = await db
+        .select({ id: assessmentsTable.id, status: assessmentsTable.status })
+        .from(assessmentsTable)
+        .where(
+          and(
+            eq(assessmentsTable.id, previous_assessment_id),
+            eq(assessmentsTable.userId, user.id)
+          )
+        );
+      if (!prev || prev.status !== "completed") {
+        res.status(400).json({
+          success: false,
+          error: "previous_assessment_id must be a completed assessment that belongs to you",
+        });
+        return;
+      }
+    }
+
     const [assessment] = await db
       .insert(assessmentsTable)
       .values({

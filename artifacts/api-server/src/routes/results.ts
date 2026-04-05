@@ -51,12 +51,18 @@ router.get(
     }
 
     // Fetch previous assessment's inspire table for delta display
+    // Scoped to the same user to prevent cross-user IDOR data leakage
     let previousInspireTable: unknown = null;
     if (assessment.previousAssessmentId) {
       const [prev] = await db
         .select({ inspireTable: assessmentsTable.inspireTable })
         .from(assessmentsTable)
-        .where(eq(assessmentsTable.id, assessment.previousAssessmentId));
+        .where(
+          and(
+            eq(assessmentsTable.id, assessment.previousAssessmentId),
+            eq(assessmentsTable.userId, user.id)
+          )
+        );
       previousInspireTable = prev?.inspireTable ?? null;
     }
 
