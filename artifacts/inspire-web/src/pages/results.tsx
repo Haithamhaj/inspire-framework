@@ -24,6 +24,37 @@ function apiUrl(path: string) {
   return `/api${path}`;
 }
 
+interface InspireRow {
+  axis: string;
+  score: number;
+  percentage: number;
+  note?: string;
+}
+
+interface AssessmentDto {
+  id: string;
+  status: string;
+  projectName: string;
+  projectGoal: string;
+  reportLanguage: string;
+  assessmentType: string;
+  aiProvider: string | null;
+  aiModel: string | null;
+  createdAt: string;
+  completionTimeSeconds: number | null;
+  pdfUrl: string | null;
+  inspireTable: InspireRow[] | null;
+  roleAnalysis: string | null;
+  redLines: string[] | null;
+  strengths: string[] | null;
+  developmentAreas: string[] | null;
+  recommendations: string[] | null;
+  systemInstruction: string | null;
+  quickStarters: string[] | null;
+  shareToken: string | null;
+  shareEnabled: boolean;
+}
+
 function Skeleton({ className }: { className?: string }) {
   return <div className={`animate-pulse bg-secondary/70 rounded-xl ${className ?? ""}`} />;
 }
@@ -48,7 +79,7 @@ export default function Results() {
   const { user, token, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
 
-  const [assessment, setAssessment] = useState<any>(null);
+  const [assessment, setAssessment] = useState<AssessmentDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
@@ -116,7 +147,7 @@ export default function Results() {
       const d = await res.json();
       if (!d.success) throw new Error(d.error || "فشل إنشاء رابط المشاركة");
       const url = buildShareUrl(d.shareToken);
-      setAssessment((prev: any) => ({ ...prev, shareToken: d.shareToken, shareEnabled: true }));
+      setAssessment((prev) => prev ? { ...prev, shareToken: d.shareToken as string, shareEnabled: true } : prev);
       await navigator.clipboard.writeText(url);
       setShareMsg(`تم نسخ الرابط: ${url}`);
     } catch (err: unknown) {
@@ -135,7 +166,7 @@ export default function Results() {
       const res = await fetch(apiUrl(`/results/${id}/share`), { method: "DELETE" });
       const d = await res.json();
       if (!d.success) throw new Error(d.error || "فشل إلغاء المشاركة");
-      setAssessment((prev: any) => ({ ...prev, shareToken: null, shareEnabled: false }));
+      setAssessment((prev) => prev ? { ...prev, shareToken: null, shareEnabled: false } : prev);
       setShareMsg("تم إلغاء رابط المشاركة");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "حدث خطأ";
@@ -152,7 +183,7 @@ export default function Results() {
       const res = await fetch(apiUrl(`/results/${id}/generate-pdf`), { method: "POST" });
       const d = await res.json();
       if (d.success && d.pdfUrl) {
-        setAssessment((prev: any) => ({ ...prev, pdfUrl: d.pdfUrl }));
+        setAssessment((prev) => prev ? { ...prev, pdfUrl: d.pdfUrl as string } : prev);
         window.open(apiUrl(d.pdfUrl.replace("/api", "")), "_blank");
       }
     } finally {

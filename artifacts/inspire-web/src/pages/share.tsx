@@ -18,6 +18,31 @@ function apiUrl(path: string) {
   return `/api${path}`;
 }
 
+interface InspireRow {
+  axis: string;
+  score: number;
+  percentage: number;
+  note?: string;
+}
+
+interface PublicAssessmentDto {
+  id: string;
+  projectName: string;
+  projectGoal: string;
+  reportLanguage: string;
+  assessmentType: string;
+  aiProvider: string | null;
+  aiModel: string | null;
+  createdAt: string;
+  inspireTable: InspireRow[] | null;
+  roleAnalysis: string | null;
+  redLines: string[] | null;
+  strengths: string[] | null;
+  developmentAreas: string[] | null;
+  recommendations: string[] | null;
+  quickStarters: string[] | null;
+}
+
 function Skeleton({ className }: { className?: string }) {
   return <div className={`animate-pulse bg-secondary/70 rounded-xl ${className ?? ""}`} />;
 }
@@ -38,7 +63,7 @@ function ResultsSkeleton() {
 
 export default function Share() {
   const { token } = useParams<{ token: string }>();
-  const [assessment, setAssessment] = useState<any>(null);
+  const [assessment, setAssessment] = useState<PublicAssessmentDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
@@ -47,9 +72,9 @@ export default function Share() {
     if (!token) return;
     fetch(apiUrl(`/share/${token}`))
       .then((r) => r.json())
-      .then((d) => {
+      .then((d: { success: boolean; assessment?: PublicAssessmentDto; error?: string }) => {
         if (!d.success) throw new Error(d.error || "الرابط غير صالح");
-        setAssessment(d.assessment);
+        setAssessment(d.assessment ?? null);
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "حدث خطأ");
@@ -137,7 +162,7 @@ export default function Share() {
               <ClipboardList className="h-5 w-5 text-accent" /> مؤشرات INSPIRE السبعة
             </h2>
             <div className="space-y-4">
-              {assessment.inspireTable.map((row: any, i: number) => (
+              {assessment.inspireTable.map((row, i) => (
                 <div key={i}>
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-semibold text-foreground">{row.axis}</span>
@@ -166,7 +191,7 @@ export default function Share() {
                 <TrendingUp className="h-4 w-4" /> نقاط القوة
               </h2>
               <ul className="space-y-2">
-                {assessment.strengths.map((s: string, i: number) => (
+                {assessment.strengths.map((s, i) => (
                   <li key={i} className="flex items-start gap-2 text-green-800 dark:text-green-400 text-sm">
                     <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-green-600" />{s}
                   </li>
@@ -180,7 +205,7 @@ export default function Share() {
                 <AlertTriangle className="h-4 w-4" /> الخطوط الحمراء
               </h2>
               <ul className="space-y-2">
-                {assessment.redLines.map((s: string, i: number) => (
+                {assessment.redLines.map((s, i) => (
                   <li key={i} className="flex items-start gap-2 text-red-800 dark:text-red-400 text-sm">
                     <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />{s}
                   </li>
@@ -195,16 +220,16 @@ export default function Share() {
           <div className="bg-card rounded-2xl border border-border p-6">
             <h2 className="font-display font-bold text-xl text-foreground mb-4">مجالات التطوير</h2>
             <ul className="space-y-2">
-              {assessment.developmentAreas.map((d: string, i: number) => (
+              {assessment.developmentAreas.map((area, i) => (
                 <li key={i} className="flex items-start gap-2 text-foreground text-sm">
-                  <span className="text-amber-500 mt-0.5 shrink-0">◆</span>{d}
+                  <span className="text-amber-500 mt-0.5 shrink-0">◆</span>{area}
                 </li>
               ))}
             </ul>
           </div>
         )}
 
-        {/* Quick Starters — included in public view */}
+        {/* Quick Starters */}
         {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 && (
           <div className="bg-card rounded-2xl border border-border p-6">
             <h2 className="font-display font-bold text-xl text-foreground mb-4 flex items-center gap-2">
@@ -212,7 +237,7 @@ export default function Share() {
             </h2>
             <p className="text-muted-foreground text-sm mb-4">انقر على أي بادئة لنسخها مباشرةً</p>
             <div className="space-y-3">
-              {assessment.quickStarters.map((qs: string, i: number) => (
+              {assessment.quickStarters.map((qs, i) => (
                 <div
                   key={i}
                   onClick={() => copyText(qs, `qs-${i}`)}
@@ -236,7 +261,7 @@ export default function Share() {
           <div className="bg-card rounded-2xl border border-border p-6">
             <h2 className="font-display font-bold text-xl text-foreground mb-4">التوصيات</h2>
             <ol className="space-y-3">
-              {assessment.recommendations.map((r: string, i: number) => (
+              {assessment.recommendations.map((r, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="shrink-0 w-7 h-7 rounded-full bg-accent/10 text-accent font-bold text-sm flex items-center justify-center">
                     {i + 1}
