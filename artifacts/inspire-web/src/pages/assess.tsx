@@ -15,7 +15,9 @@ import {
   RotateCcw,
   Copy,
   Check,
+  CreditCard,
 } from "lucide-react";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 // ─── DATA ────────────────────────────────────────────────
 
@@ -127,6 +129,19 @@ function StepCard({ children, stepKey }: { children: React.ReactNode; stepKey: s
   );
 }
 
+interface PayPalConfig {
+  clientId: string;
+  env: string;
+  price: number;
+}
+
+interface DiscountInfo {
+  valid: boolean;
+  discountPercent: number;
+  finalPrice: number;
+  originalPrice: number;
+}
+
 export default function Assess() {
   const { user, isLoading } = useAuth();
 
@@ -149,12 +164,70 @@ export default function Assess() {
   const [setupError, setSetupError] = useState("");
   const [, navigate] = useLocation();
 
+  // ── Payment gate state ─────────────────────────────────
+  const [paymentStatus, setPaymentStatus] = useState<"loading" | "free" | "required" | "paid">("loading");
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [paypalConfig, setPaypalConfig] = useState<PayPalConfig | null>(null);
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountInfo, setDiscountInfo] = useState<DiscountInfo | null>(null);
+  const [checkingDiscount, setCheckingDiscount] = useState(false);
+  const [paymentError, setPaymentError] = useState("");
+
   const startTime = useRef(Date.now());
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!user) return;
+    fetch(apiUrl("/billing/status"))
+      .then((r) => r.json() as Promise<{ success: boolean; freeUsed: boolean; price: number }>)
+      .then((d) => {
+        if (d.freeUsed) {
+          setPaymentStatus("required");
+          fetch(apiUrl("/billing/paypal-config"))
+            .then((r) => r.json() as Promise<{ success: boolean; clientId: string; env: string; price: number }>)
+            .then((config) => {
+              if (config.success) setPaypalConfig(config);
+            })
+            .catch(() => undefined);
+        } else {
+          setPaymentStatus("free");
+        }
+      })
+      .catch(() => setPaymentStatus("free"));
+  }, [user]);
+
+  async function checkDiscount() {
+    const code = discountCode.trim();
+    if (!code) return;
+    setCheckingDiscount(true);
+    setDiscountInfo(null);
+    try {
+      const res = await fetch(apiUrl(`/billing/discount/${encodeURIComponent(code)}`));
+      const d = await res.json() as {
+        success: boolean;
+        valid: boolean;
+        discountPercent?: number;
+        finalPrice?: number;
+        originalPrice?: number;
+      };
+      if (d.success) {
+        setDiscountInfo({
+          valid: d.valid,
+          discountPercent: d.discountPercent ?? 0,
+          finalPrice: d.finalPrice ?? paypalConfig?.price ?? 10,
+          originalPrice: d.originalPrice ?? paypalConfig?.price ?? 10,
+        });
+      }
+    } catch {
+      // ignore
+    } finally {
+      setCheckingDiscount(false);
+    }
+  }
+
+  if (isLoading || (!!user && paymentStatus === "loading")) {
     return (
       <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -162,6 +235,131 @@ export default function Assess() {
     );
   }
   if (!user) return <Redirect to="/login" />;
+
+  // ── Payment gate screen ────────────────────────────────
+  if (paymentStatus === "required") {
+    const displayPrice = discountInfo?.valid ? discountInfo.finalPrice : (paypalConfig?.price ?? 10);
+    const originalPrice = paypalConfig?.price ?? 10;
+
+    return (
+      <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
+        <div className="w-full max-w-md">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-card rounded-3xl border border-border p-8 md:p-10 shadow-xl text-right"
+          >
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <CreditCard className="h-8 w-8 text-primary" />
+              </div>
+            </div>
+            <h1 className="text-2xl font-display font-bold text-foreground mb-2 text-center">
+              تقييم جديد
+            </h1>
+            <p className="text-muted-foreground text-center mb-8 text-sm">
+              لقد استخدمت تقييمك المجاني. ادفع لإنشاء تقييم جديد — PDF والمشاركة مشمولة.
+            </p>
+
+            {/* Price display */}
+            <div className="bg-secondary/50 rounded-2xl p-5 mb-6 text-center">
+              {discountInfo?.valid ? (
+                <div>
+                  <div className="text-sm text-muted-foreground line-through mb-1">${originalPrice.toFixed(2)}</div>
+                  <div className="text-4xl font-display font-black text-primary">${displayPrice.toFixed(2)}</div>
+                  <div className="text-sm text-green-600 font-semibold mt-1">خصم {discountInfo.discountPercent}% مطبق ✓</div>
+                </div>
+              ) : (
+                <div>
+                  <div className="text-4xl font-display font-black text-primary">${originalPrice.toFixed(2)}</div>
+                  <div className="text-sm text-muted-foreground mt-1">دفعة واحدة · بدون اشتراك</div>
+                </div>
+              )}
+            </div>
+
+            {/* Discount code */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-foreground mb-2">كود خصم (اختياري)</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={discountCode}
+                  onChange={(e) => {
+                    setDiscountCode(e.target.value.toUpperCase());
+                    setDiscountInfo(null);
+                  }}
+                  onKeyDown={(e) => { if (e.key === "Enter") checkDiscount(); }}
+                  placeholder="INSPIRE10"
+                  className="flex-1 bg-secondary border border-border rounded-xl px-4 py-2.5 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  dir="ltr"
+                />
+                <button
+                  onClick={checkDiscount}
+                  disabled={checkingDiscount || !discountCode.trim()}
+                  className="px-4 py-2.5 bg-secondary border border-border rounded-xl text-sm font-semibold hover:bg-secondary/80 disabled:opacity-50 transition-colors"
+                >
+                  {checkingDiscount ? <Loader2 className="h-4 w-4 animate-spin" /> : "تطبيق"}
+                </button>
+              </div>
+              {discountInfo !== null && (
+                <p className={`text-xs mt-2 ${discountInfo.valid ? "text-green-600" : "text-red-500"}`}>
+                  {discountInfo.valid
+                    ? `✓ كود صالح — خصم ${discountInfo.discountPercent}%`
+                    : "✗ الكود غير صالح أو منتهي الصلاحية"}
+                </p>
+              )}
+            </div>
+
+            {/* PayPal button */}
+            {paypalConfig ? (
+              <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
+                <PayPalButtons
+                  style={{ layout: "vertical", color: "blue", shape: "rect", label: "pay" }}
+                  createOrder={async () => {
+                    setPaymentError("");
+                    const res = await fetch(apiUrl("/billing/create-order"), {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        discountCode: (discountInfo?.valid && discountCode.trim()) ? discountCode.trim() : undefined,
+                      }),
+                    });
+                    const d = await res.json() as { success: boolean; orderId?: string; error?: string };
+                    if (!d.success || !d.orderId) throw new Error(d.error ?? "فشل إنشاء الطلب");
+                    return d.orderId;
+                  }}
+                  onApprove={async (data) => {
+                    const res = await fetch(apiUrl("/billing/capture-order"), {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ orderId: data.orderID }),
+                    });
+                    const d = await res.json() as { success: boolean; paymentId?: string; error?: string };
+                    if (!d.success || !d.paymentId) throw new Error(d.error ?? "فشل تأكيد الدفع");
+                    setPaymentId(d.paymentId);
+                    setPaymentStatus("paid");
+                  }}
+                  onError={(err) => {
+                    setPaymentError("حدث خطأ في الدفع. يُرجى المحاولة مجدداً.");
+                    console.error("PayPal error:", err);
+                  }}
+                />
+              </PayPalScriptProvider>
+            ) : (
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-4">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                جارٍ تحميل بوابة الدفع...
+              </div>
+            )}
+
+            {paymentError && (
+              <p className="text-sm text-red-500 text-center mt-3">{paymentError}</p>
+            )}
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
   // ── Behavioral helpers ─────────────────────────────────
 
@@ -212,6 +410,7 @@ export default function Assess() {
           report_language: reportLanguage,
           assessment_type: assessmentType,
           ...(previousAssessmentId ? { previous_assessment_id: previousAssessmentId } : {}),
+          ...(paymentId ? { payment_id: paymentId } : {}),
         }),
       });
       const data = await res.json();
@@ -219,8 +418,8 @@ export default function Assess() {
       setAssessmentId(data.assessmentId);
       startTime.current = Date.now();
       setStep(1);
-    } catch (err: any) {
-      setSetupError(err.message);
+    } catch (err: unknown) {
+      setSetupError(err instanceof Error ? err.message : "فشل بدء التقييم");
     }
   }
 
@@ -258,8 +457,8 @@ export default function Assess() {
           }
         } catch { /* keep polling */ }
       }, 3000);
-    } catch (err: any) {
-      setSetupError(err.message);
+    } catch (err: unknown) {
+      setSetupError(err instanceof Error ? err.message : "فشل الإرسال");
       setSubmitting(false);
     }
   }

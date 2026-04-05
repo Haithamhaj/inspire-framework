@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -11,6 +11,11 @@ import {
   Shield,
   Loader2,
   AlertCircle,
+  Tag,
+  Plus,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -49,6 +54,17 @@ interface AssessmentsResponse {
   totalPages: number;
 }
 
+interface DiscountCode {
+  id: string;
+  code: string;
+  discountPercent: number;
+  maxUses: number | null;
+  usedCount: number;
+  isActive: boolean;
+  expiresAt: string | null;
+  createdAt: string;
+}
+
 export default function Admin() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -67,6 +83,15 @@ export default function Admin() {
   const [exporting, setExporting] = useState(false);
 
   const PAGE_SIZE = 20;
+
+  // Discount codes state
+  const [discountCodes, setDiscountCodes] = useState<DiscountCode[]>([]);
+  const [codesLoading, setCodesLoading] = useState(false);
+  const [newCode, setNewCode] = useState("");
+  const [newPct, setNewPct] = useState("10");
+  const [newMaxUses, setNewMaxUses] = useState("");
+  const [creatingCode, setCreatingCode] = useState(false);
+  const [codeError, setCodeError] = useState("");
 
   async function handleLogin() {
     setAuthLoading(true);
@@ -107,8 +132,8 @@ export default function Admin() {
         setTotal(data.total);
         setTotalPages(data.totalPages);
         setPage(p);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : "خطأ غير متوقع");
       } finally {
         setLoading(false);
       }
@@ -122,6 +147,71 @@ export default function Admin() {
     });
     const data = await res.json();
     if (data.success) setStats(data.stats);
+  }
+
+  const loadDiscountCodes = useCallback(async (pw: string) => {
+    setCodesLoading(true);
+    try {
+      const res = await fetch(apiUrl("/admin/discount-codes"), {
+        headers: { "x-admin-password": pw },
+      });
+      const d = await res.json() as { success: boolean; codes?: DiscountCode[] };
+      if (d.success) setDiscountCodes(d.codes ?? []);
+    } finally {
+      setCodesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (authed && password) loadDiscountCodes(password);
+  }, [authed, password, loadDiscountCodes]);
+
+  async function handleCreateCode() {
+    const code = newCode.trim().toUpperCase();
+    const pct = parseInt(newPct);
+    if (!code || isNaN(pct) || pct < 1 || pct > 100) {
+      setCodeError("أدخل كوداً صالحاً ونسبة خصم من 1 إلى 100");
+      return;
+    }
+    setCreatingCode(true);
+    setCodeError("");
+    try {
+      const res = await fetch(apiUrl("/admin/discount-codes"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ code, discountPercent: pct, maxUses: newMaxUses ? parseInt(newMaxUses) : null }),
+      });
+      const d = await res.json() as { success: boolean; code?: DiscountCode; error?: string };
+      if (!d.success) { setCodeError(d.error ?? "فشل الإنشاء"); return; }
+      setDiscountCodes(prev => [d.code!, ...prev]);
+      setNewCode(""); setNewPct("10"); setNewMaxUses("");
+    } catch {
+      setCodeError("فشل الاتصال");
+    } finally {
+      setCreatingCode(false);
+    }
+  }
+
+  async function handleToggleCode(id: string, isActive: boolean) {
+    const res = await fetch(apiUrl(`/admin/discount-codes/${id}`), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "x-admin-password": password },
+      body: JSON.stringify({ isActive: !isActive }),
+    });
+    const d = await res.json() as { success: boolean; code?: DiscountCode };
+    if (d.success && d.code) {
+      setDiscountCodes(prev => prev.map(c => c.id === id ? d.code! : c));
+    }
+  }
+
+  async function handleDeleteCode(id: string) {
+    if (!confirm("حذف كود الخصم؟")) return;
+    const res = await fetch(apiUrl(`/admin/discount-codes/${id}`), {
+      method: "DELETE",
+      headers: { "x-admin-password": password },
+    });
+    const d = await res.json() as { success: boolean };
+    if (d.success) setDiscountCodes(prev => prev.filter(c => c.id !== id));
   }
 
   async function handleExport() {
@@ -374,6 +464,122 @@ export default function Admin() {
             </div>
           </div>
         )}
+
+        {/* ─── Discount Codes Section ─── */}
+        <div className="mt-10">
+          <div className="flex items-center gap-2 mb-5">
+            <Tag className="h-5 w-5 text-accent" />
+            <h2 className="text-lg font-display font-bold text-foreground">أكواد الخصم</h2>
+          </div>
+
+          {/* Create code form */}
+          <div className="bg-card border border-border rounded-2xl p-6 mb-5">
+            <h3 className="font-semibold text-sm mb-4 text-foreground">إنشاء كود جديد</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">الكود</label>
+                <input
+                  type="text"
+                  value={newCode}
+                  onChange={(e) => setNewCode(e.target.value.toUpperCase())}
+                  placeholder="INSPIRE10"
+                  className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  dir="ltr"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">نسبة الخصم %</label>
+                <input
+                  type="number"
+                  value={newPct}
+                  onChange={(e) => setNewPct(e.target.value)}
+                  min="1" max="100"
+                  className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  dir="ltr"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">حد الاستخدام (اختياري)</label>
+                <input
+                  type="number"
+                  value={newMaxUses}
+                  onChange={(e) => setNewMaxUses(e.target.value)}
+                  placeholder="غير محدود"
+                  className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+            {codeError && <p className="text-sm text-red-500 mb-3">{codeError}</p>}
+            <button
+              onClick={handleCreateCode}
+              disabled={creatingCode}
+              className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-70 hover:bg-primary/90 transition-colors"
+            >
+              {creatingCode ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              إنشاء كود
+            </button>
+          </div>
+
+          {/* Codes table */}
+          {codesLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : discountCodes.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8 text-sm">لا توجد أكواد خصم بعد</p>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl border border-border">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-secondary/50 border-b border-border text-right">
+                    <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الكود</th>
+                    <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الخصم</th>
+                    <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الاستخدام</th>
+                    <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الحالة</th>
+                    <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {discountCodes.map((code) => (
+                    <tr key={code.id} className="border-b border-border last:border-0 hover:bg-secondary/20">
+                      <td className="px-4 py-3 font-mono font-bold text-primary" dir="ltr">{code.code}</td>
+                      <td className="px-4 py-3 text-green-600 font-semibold">{code.discountPercent}%</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">
+                        {code.usedCount} / {code.maxUses ?? "∞"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${code.isActive ? "bg-green-100 text-green-700" : "bg-secondary text-muted-foreground"}`}>
+                          {code.isActive ? "مفعّل" : "معطّل"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleToggleCode(code.id, code.isActive)}
+                            title={code.isActive ? "تعطيل" : "تفعيل"}
+                            className="text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            {code.isActive
+                              ? <ToggleRight className="h-5 w-5 text-green-600" />
+                              : <ToggleLeft className="h-5 w-5" />}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCode(code.id)}
+                            title="حذف"
+                            className="text-muted-foreground hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

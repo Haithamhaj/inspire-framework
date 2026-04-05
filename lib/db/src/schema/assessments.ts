@@ -56,6 +56,8 @@ export const assessmentsTable = pgTable("assessments", {
 
   shareToken: text("share_token").unique(),
   shareEnabled: boolean("share_enabled").default(false).notNull(),
+
+  paymentId: uuid("payment_id"),
 });
 
 export const insertAssessmentSchema = createInsertSchema(

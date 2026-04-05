@@ -25,6 +25,7 @@ export const AssessmentStartSchema = z.object({
   report_language: z.enum(["ar", "en", "both"]),
   assessment_type: z.enum(["full", "mini"]),
   previous_assessment_id: z.string().uuid().optional(),
+  payment_id: z.string().uuid().optional(),
 });
 
 export const AssessmentSubmitSchema = z.object({

@@ -1,16 +1,50 @@
 import { Router, type IRouter, type Request, type Response } from "express";
-import Stripe from "stripe";
 import { db } from "@workspace/db";
-import { usersTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import {
+  usersTable,
+  paymentsTable,
+  discountCodesTable,
+} from "@workspace/db/schema";
+import { eq, and, isNull } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 
 const router: IRouter = Router();
 
-function getStripe(): Stripe | null {
-  const key = process.env["STRIPE_SECRET_KEY"];
-  if (!key) return null;
-  return new Stripe(key, { apiVersion: "2025-03-31.basil" });
+// ─── PayPal helpers ────────────────────────────────────────
+
+function getPayPalBase(): string {
+  const env = process.env["PAYPAL_ENV"] ?? "sandbox";
+  return env === "live"
+    ? "https://api-m.paypal.com"
+    : "https://api-m.sandbox.paypal.com";
+}
+
+async function getPayPalAccessToken(): Promise<string> {
+  const clientId = process.env["PAYPAL_CLIENT_ID"];
+  const secret = process.env["PAYPAL_SECRET"];
+  if (!clientId || !secret) {
+    throw new Error("PayPal credentials not configured");
+  }
+
+  const base = getPayPalBase();
+  const credentials = Buffer.from(`${clientId}:${secret}`).toString("base64");
+
+  const res = await fetch(`${base}/v1/oauth2/token`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials",
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`PayPal auth failed: ${text}`);
+  }
+
+  const data = (await res.json()) as { access_token: string };
+  return data.access_token;
 }
 
 async function requireUser(req: Request, res: Response) {
@@ -24,120 +58,346 @@ async function requireUser(req: Request, res: Response) {
   return user ?? null;
 }
 
-// ─── POST /api/billing/checkout ───────────────────────────
-// Creates a Stripe Checkout session for the Pro plan upgrade
+function getAssessmentPrice(): number {
+  const raw = process.env["ASSESSMENT_PRICE"];
+  const parsed = parseFloat(raw ?? "");
+  return isNaN(parsed) || parsed <= 0 ? 10.0 : parsed;
+}
 
-router.post(
-  "/billing/checkout",
+// ─── GET /api/billing/paypal-config ───────────────────────
+
+router.get(
+  "/billing/paypal-config",
   async (req: Request, res: Response): Promise<void> => {
-    const stripe = getStripe();
-    if (!stripe) {
-      res.status(503).json({
-        success: false,
-        error: "Payment system is not configured yet.",
-      });
-      return;
-    }
-
     const user = await requireUser(req, res);
     if (!user) {
       res.status(401).json({ success: false, error: "Unauthorized" });
       return;
     }
 
-    if (user.plan === "pro") {
-      res.status(400).json({ success: false, error: "Already on Pro plan" });
-      return;
-    }
-
-    const priceId = process.env["STRIPE_PRICE_ID"];
-    if (!priceId) {
+    const clientId = process.env["PAYPAL_CLIENT_ID"];
+    if (!clientId) {
       res.status(503).json({
         success: false,
-        error: "Billing price is not configured.",
+        error: "PayPal not configured",
       });
       return;
     }
 
-    const appUrl =
-      process.env["APP_URL"] ||
-      "https://65b87698-2306-4a02-a0fa-7e418a57ad9f-00-3vu82xw7xi73i.kirk.replit.dev";
-    const basePath = "/inspire-web";
-
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      payment_method_types: ["card"],
-      line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${appUrl}${basePath}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}${basePath}/my-assessments`,
-      customer_email: user.email,
-      metadata: { userId: user.id },
-      locale: "ar",
+    res.json({
+      success: true,
+      clientId,
+      env: process.env["PAYPAL_ENV"] ?? "sandbox",
+      price: getAssessmentPrice(),
     });
-
-    req.log.info({ userId: user.id, sessionId: session.id }, "Stripe checkout session created");
-
-    res.json({ success: true, url: session.url });
   }
 );
 
-// ─── POST /api/billing/webhook ────────────────────────────
-// Stripe sends events here — raw body required for sig verification
+// ─── GET /api/billing/discount/:code ─────────────────────
+
+router.get(
+  "/billing/discount/:code",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const { code } = req.params;
+
+    const [discount] = await db
+      .select()
+      .from(discountCodesTable)
+      .where(eq(discountCodesTable.code, (code as string).toUpperCase().trim()));
+
+    if (!discount) {
+      res.json({ success: true, valid: false, reason: "الكود غير موجود" });
+      return;
+    }
+
+    if (!discount.isActive) {
+      res.json({ success: true, valid: false, reason: "الكود غير مفعّل" });
+      return;
+    }
+
+    if (discount.expiresAt && new Date() > discount.expiresAt) {
+      res.json({ success: true, valid: false, reason: "الكود منتهي الصلاحية" });
+      return;
+    }
+
+    if (
+      discount.maxUses !== null &&
+      discount.usedCount >= discount.maxUses
+    ) {
+      res.json({ success: true, valid: false, reason: "الكود استُنفد" });
+      return;
+    }
+
+    const originalPrice = getAssessmentPrice();
+    const discountAmount = (originalPrice * discount.discountPercent) / 100;
+    const finalPrice = parseFloat(
+      (originalPrice - discountAmount).toFixed(2)
+    );
+
+    res.json({
+      success: true,
+      valid: true,
+      discountPercent: discount.discountPercent,
+      originalPrice,
+      finalPrice,
+    });
+  }
+);
+
+// ─── POST /api/billing/create-order ───────────────────────
 
 router.post(
-  "/billing/webhook",
+  "/billing/create-order",
   async (req: Request, res: Response): Promise<void> => {
-    const stripe = getStripe();
-    if (!stripe) {
-      res.status(503).send("Payment system not configured");
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
       return;
     }
 
-    const webhookSecret = process.env["STRIPE_WEBHOOK_SECRET"];
-    if (!webhookSecret) {
-      res.status(503).send("Webhook secret not configured");
-      return;
-    }
+    const { discountCode } = req.body as { discountCode?: string };
 
-    const sig = req.headers["stripe-signature"];
-    if (!sig) {
-      res.status(400).send("Missing stripe-signature header");
-      return;
-    }
+    const originalPrice = getAssessmentPrice();
+    let finalPrice = originalPrice;
+    let discountPercent = 0;
+    let codeRecord: typeof discountCodesTable.$inferSelect | null = null;
 
-    let event: Stripe.Event;
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.body as Buffer,
-        sig,
-        webhookSecret
-      );
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      req.log.warn({ message }, "Stripe webhook signature verification failed");
-      res.status(400).send(`Webhook Error: ${message}`);
-      return;
-    }
+    if (discountCode) {
+      const [found] = await db
+        .select()
+        .from(discountCodesTable)
+        .where(
+          eq(
+            discountCodesTable.code,
+            discountCode.toUpperCase().trim()
+          )
+        );
 
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const userId = session.metadata?.["userId"];
+      if (found && found.isActive) {
+        const notExpired =
+          !found.expiresAt || new Date() <= found.expiresAt;
+        const hasUses =
+          found.maxUses === null || found.usedCount < found.maxUses;
 
-      if (!userId) {
-        req.log.warn({ sessionId: session.id }, "No userId in session metadata");
-        res.json({ received: true });
-        return;
+        if (notExpired && hasUses) {
+          codeRecord = found;
+          discountPercent = found.discountPercent;
+          const discountAmount = (originalPrice * discountPercent) / 100;
+          finalPrice = parseFloat(
+            (originalPrice - discountAmount).toFixed(2)
+          );
+        }
       }
-
-      await db
-        .update(usersTable)
-        .set({ plan: "pro" })
-        .where(eq(usersTable.id, userId));
-
-      req.log.info({ userId, sessionId: session.id }, "User upgraded to Pro");
     }
 
-    res.json({ received: true });
+    let accessToken: string;
+    try {
+      accessToken = await getPayPalAccessToken();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      req.log.error({ message }, "PayPal auth failed");
+      res.status(503).json({ success: false, error: "PayPal not available" });
+      return;
+    }
+
+    const base = getPayPalBase();
+    const orderRes = await fetch(`${base}/v2/checkout/orders`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        intent: "CAPTURE",
+        purchase_units: [
+          {
+            amount: {
+              currency_code: "USD",
+              value: finalPrice.toFixed(2),
+            },
+            description: `INSPIRE Framework — تقييم شخصي`,
+          },
+        ],
+      }),
+    });
+
+    if (!orderRes.ok) {
+      const text = await orderRes.text();
+      req.log.error({ text }, "PayPal create-order failed");
+      res.status(502).json({ success: false, error: "Failed to create PayPal order" });
+      return;
+    }
+
+    const orderData = (await orderRes.json()) as { id: string };
+    const orderId = orderData.id;
+
+    const [payment] = await db
+      .insert(paymentsTable)
+      .values({
+        userId: user.id,
+        paypalOrderId: orderId,
+        amount: finalPrice.toFixed(2),
+        originalAmount: originalPrice.toFixed(2),
+        discountCode: codeRecord?.code ?? null,
+        discountPercent,
+        status: "pending",
+      })
+      .returning();
+
+    req.log.info(
+      { userId: user.id, orderId, finalPrice },
+      "PayPal order created"
+    );
+
+    res.json({
+      success: true,
+      orderId,
+      paymentId: payment.id,
+      amount: finalPrice,
+      originalPrice,
+      discountPercent,
+    });
+  }
+);
+
+// ─── POST /api/billing/capture-order ─────────────────────
+
+router.post(
+  "/billing/capture-order",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const { orderId } = req.body as { orderId: string };
+    if (!orderId) {
+      res.status(400).json({ success: false, error: "orderId required" });
+      return;
+    }
+
+    const [payment] = await db
+      .select()
+      .from(paymentsTable)
+      .where(
+        and(
+          eq(paymentsTable.paypalOrderId, orderId),
+          eq(paymentsTable.userId, user.id)
+        )
+      );
+
+    if (!payment) {
+      res.status(404).json({ success: false, error: "Payment not found" });
+      return;
+    }
+
+    if (payment.status === "completed") {
+      res.json({ success: true, paymentId: payment.id });
+      return;
+    }
+
+    let accessToken: string;
+    try {
+      accessToken = await getPayPalAccessToken();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      req.log.error({ message }, "PayPal auth failed on capture");
+      res.status(503).json({ success: false, error: "PayPal not available" });
+      return;
+    }
+
+    const base = getPayPalBase();
+    const captureRes = await fetch(
+      `${base}/v2/checkout/orders/${orderId}/capture`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!captureRes.ok) {
+      const text = await captureRes.text();
+      req.log.error({ text, orderId }, "PayPal capture failed");
+      await db
+        .update(paymentsTable)
+        .set({ status: "failed" })
+        .where(eq(paymentsTable.id, payment.id));
+      res.status(502).json({ success: false, error: "Payment capture failed" });
+      return;
+    }
+
+    const captureData = (await captureRes.json()) as { status: string };
+    if (captureData.status !== "COMPLETED") {
+      req.log.warn({ captureData }, "PayPal capture returned non-COMPLETED status");
+      res.status(402).json({ success: false, error: "Payment not completed" });
+      return;
+    }
+
+    await db
+      .update(paymentsTable)
+      .set({ status: "completed" })
+      .where(eq(paymentsTable.id, payment.id));
+
+    if (payment.discountCode) {
+      await db
+        .update(discountCodesTable)
+        .set({
+          usedCount: (
+            await db
+              .select({ c: discountCodesTable.usedCount })
+              .from(discountCodesTable)
+              .where(eq(discountCodesTable.code, payment.discountCode))
+              .then(([r]) => (r?.c ?? 0) + 1)
+          ),
+        })
+        .where(eq(discountCodesTable.code, payment.discountCode));
+    }
+
+    req.log.info({ userId: user.id, orderId, paymentId: payment.id }, "Payment captured");
+
+    res.json({ success: true, paymentId: payment.id });
+  }
+);
+
+// ─── GET /api/billing/status ──────────────────────────────
+// Returns number of completed assessments so frontend knows if payment is needed
+
+router.get(
+  "/billing/status",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const { assessmentsTable: at } = await import("@workspace/db/schema");
+    const { count } = await import("drizzle-orm");
+
+    const [row] = await db
+      .select({ total: count() })
+      .from(at)
+      .where(and(eq(at.userId, user.id), eq(at.status, "completed")));
+
+    const completedCount = Number(row?.total ?? 0);
+    const price = getAssessmentPrice();
+
+    res.json({
+      success: true,
+      completedAssessments: completedCount,
+      freeUsed: completedCount >= 1,
+      price,
+    });
   }
 );
 

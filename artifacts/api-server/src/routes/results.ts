@@ -236,16 +236,6 @@ router.post(
       return;
     }
 
-    // Pro plan required for sharing
-    if (user.plan !== "pro") {
-      res.status(403).json({
-        success: false,
-        error: "plan_limit",
-        message: "مشاركة التقرير متاحة لمشتركي خطة Pro فقط.",
-      });
-      return;
-    }
-
     // Re-use existing token if already enabled, otherwise generate new one
     const token = assessment.shareToken ?? randomBytes(24).toString("hex");
 
@@ -368,16 +358,6 @@ router.post(
 
     if (!assessment || assessment.status !== "completed") {
       res.status(404).json({ success: false, error: "Completed assessment not found" });
-      return;
-    }
-
-    // Pro plan required for PDF generation
-    if (user.plan !== "pro") {
-      res.status(403).json({
-        success: false,
-        error: "plan_limit",
-        message: "تنزيل PDF متاح لمشتركي خطة Pro فقط.",
-      });
       return;
     }
 

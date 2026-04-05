@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { assessmentsTable, usersTable } from "@workspace/db/schema";
+import { assessmentsTable, usersTable, discountCodesTable, paymentsTable } from "@workspace/db/schema";
 import { eq, and, gte, lte, like, or, sql, desc, count, avg } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendResultsEmail } from "../lib/email";
@@ -276,4 +276,169 @@ router.post(
   }
 );
 
+// ─── GET /api/admin/discount-codes ───────────────────────
+
+router.get(
+  "/admin/discount-codes",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const codes = await db
+      .select()
+      .from(discountCodesTable)
+      .orderBy(desc(discountCodesTable.createdAt));
+
+    res.json({ success: true, codes });
+  }
+);
+
+// ─── POST /api/admin/discount-codes ──────────────────────
+
+router.post(
+  "/admin/discount-codes",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { code, discountPercent, maxUses, expiresAt } = req.body as {
+      code: string;
+      discountPercent: number;
+      maxUses?: number | null;
+      expiresAt?: string | null;
+    };
+
+    if (!code || typeof code !== "string" || code.trim().length === 0) {
+      res.status(400).json({ success: false, error: "code is required" });
+      return;
+    }
+
+    const pct = Number(discountPercent);
+    if (isNaN(pct) || pct < 1 || pct > 100) {
+      res.status(400).json({ success: false, error: "discountPercent must be 1–100" });
+      return;
+    }
+
+    const normalizedCode = code.trim().toUpperCase();
+
+    try {
+      const [created] = await db
+        .insert(discountCodesTable)
+        .values({
+          code: normalizedCode,
+          discountPercent: pct,
+          maxUses: maxUses ?? null,
+          expiresAt: expiresAt ? new Date(expiresAt) : null,
+        })
+        .returning();
+
+      res.status(201).json({ success: true, code: created });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      if (msg.includes("unique") || msg.includes("duplicate")) {
+        res.status(409).json({ success: false, error: "الكود موجود مسبقاً" });
+      } else {
+        res.status(500).json({ success: false, error: msg });
+      }
+    }
+  }
+);
+
+// ─── PATCH /api/admin/discount-codes/:id ─────────────────
+
+router.patch(
+  "/admin/discount-codes/:id",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const { isActive } = req.body as { isActive: boolean };
+
+    if (typeof isActive !== "boolean") {
+      res.status(400).json({ success: false, error: "isActive (boolean) required" });
+      return;
+    }
+
+    const [updated] = await db
+      .update(discountCodesTable)
+      .set({ isActive })
+      .where(eq(discountCodesTable.id, id as string))
+      .returning();
+
+    if (!updated) {
+      res.status(404).json({ success: false, error: "Code not found" });
+      return;
+    }
+
+    res.json({ success: true, code: updated });
+  }
+);
+
+// ─── DELETE /api/admin/discount-codes/:id ────────────────
+
+router.delete(
+  "/admin/discount-codes/:id",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+
+    const [deleted] = await db
+      .delete(discountCodesTable)
+      .where(eq(discountCodesTable.id, id as string))
+      .returning({ id: discountCodesTable.id });
+
+    if (!deleted) {
+      res.status(404).json({ success: false, error: "Code not found" });
+      return;
+    }
+
+    res.json({ success: true });
+  }
+);
+
+// ─── GET /api/admin/payments ──────────────────────────────
+
+router.get(
+  "/admin/payments",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const payments = await db
+      .select({
+        id: paymentsTable.id,
+        userId: paymentsTable.userId,
+        assessmentId: paymentsTable.assessmentId,
+        paypalOrderId: paymentsTable.paypalOrderId,
+        amount: paymentsTable.amount,
+        originalAmount: paymentsTable.originalAmount,
+        discountCode: paymentsTable.discountCode,
+        discountPercent: paymentsTable.discountPercent,
+        status: paymentsTable.status,
+        createdAt: paymentsTable.createdAt,
+      })
+      .from(paymentsTable)
+      .orderBy(desc(paymentsTable.createdAt))
+      .limit(100);
+
+    const userIds = [...new Set(payments.map((p) => p.userId))];
+    const users =
+      userIds.length > 0
+        ? await db
+            .select({ id: usersTable.id, name: usersTable.name, email: usersTable.email })
+            .from(usersTable)
+            .where(or(...userIds.map((id) => eq(usersTable.id, id))))
+        : [];
+
+    const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
+
+    const enriched = payments.map((p) => ({
+      ...p,
+      userName: userMap[p.userId]?.name ?? "",
+      userEmail: userMap[p.userId]?.email ?? "",
+    }));
+
+    res.json({ success: true, payments: enriched });
+  }
+);
+
 export default router;
+

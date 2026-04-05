@@ -1,5 +1,5 @@
-import { Link, useLocation } from "wouter";
-import { ArrowLeft, ArrowDown, Brain, FileText, Zap, CheckCircle2, ChevronDown, ChevronUp, Crown, Sparkles, Loader2 } from "lucide-react";
+import { Link } from "wouter";
+import { ArrowLeft, ArrowDown, Brain, FileText, Zap, CheckCircle2, ChevronDown, ChevronUp, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
@@ -80,43 +80,24 @@ function ClipboardList({ className }: { className?: string }) {
   );
 }
 
-const PRO_FEATURES = [
-  "تقييمات غير محدودة لجميع مشاريعك",
-  "تنزيل تقرير PDF احترافي لكل تقييم",
-  "مشاركة نتائجك مع فريقك عبر رابط عام",
-  "مقارنة التقييمات وتتبع تطورك",
-  "دعم أولوي عبر البريد الإلكتروني",
+const PAID_FEATURES = [
+  "تقييم شخصي كامل لأي مشروع",
+  "جدول نتائج 7 محاور INSPIRE",
+  "تعليمات نظام جاهزة للنسخ",
+  "تنزيل تقرير PDF احترافي",
+  "مشاركة النتائج مع فريقك",
+  "نقاط انطلاق فورية مخصصة",
 ];
 
 const FREE_FEATURES = [
-  "تقييم واحد كامل (مجاناً)",
+  "تقييم واحد كامل مجاناً",
   "جدول نتائج 7 محاور INSPIRE",
   "تعليمات نظام جاهزة للنسخ",
-  "نقاط انطلاق فورية",
+  "تنزيل PDF ومشاركة التقرير",
 ];
 
 export default function Landing() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [upgrading, setUpgrading] = useState(false);
-  const [, navigate] = useLocation();
-
-  async function handleUpgrade() {
-    setUpgrading(true);
-    try {
-      const res = await fetch("/api/billing/checkout", { method: "POST" });
-      const d = await res.json() as { success: boolean; url?: string; error?: string };
-      if (res.status === 401) {
-        navigate("/register");
-        return;
-      }
-      if (!d.success || !d.url) {
-        throw new Error(d.error || "حدث خطأ");
-      }
-      window.location.href = d.url;
-    } catch {
-      setUpgrading(false);
-    }
-  }
 
   return (
     <div className="overflow-x-hidden">
@@ -344,7 +325,7 @@ export default function Landing() {
               </Link>
             </motion.div>
 
-            {/* Pro Plan */}
+            {/* Pay-per-Assessment */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -354,39 +335,34 @@ export default function Landing() {
             >
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                 <span className="bg-accent text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
-                  <Crown className="h-3.5 w-3.5" /> الأكثر شعبية
+                  <CreditCard className="h-3.5 w-3.5" /> ادفع مرة واحدة فقط
                 </span>
               </div>
               <div className="mb-6">
-                <div className="text-sm font-semibold text-primary-foreground/70 mb-2">Pro</div>
+                <div className="text-sm font-semibold text-primary-foreground/70 mb-2">تقييم إضافي</div>
                 <div className="flex items-end gap-2 mb-1">
                   <div className="text-4xl font-display font-black text-primary-foreground">
-                    $9
+                    $10
                   </div>
-                  <div className="text-primary-foreground/60 text-sm mb-1">/شهر</div>
+                  <div className="text-primary-foreground/60 text-sm mb-1">/ تقييم</div>
                 </div>
-                <div className="text-sm text-primary-foreground/60">فاتورة شهرية</div>
+                <div className="text-sm text-primary-foreground/60">دفعة واحدة · بدون اشتراك</div>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
-                {PRO_FEATURES.map((f, i) => (
+                {PAID_FEATURES.map((f, i) => (
                   <li key={i} className="flex items-center gap-3 text-sm text-primary-foreground/90">
                     <CheckCircle2 className="h-4 w-4 text-green-300 shrink-0" />
                     {f}
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={handleUpgrade}
-                disabled={upgrading}
-                className="flex items-center justify-center gap-2 bg-white text-primary font-bold px-6 py-3.5 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-70"
+              <Link
+                href="/assess"
+                className="flex items-center justify-center gap-2 bg-white text-primary font-bold px-6 py-3.5 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-xl"
               >
-                {upgrading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                ابدأ مع Pro
-              </button>
+                <CreditCard className="h-4 w-4" />
+                ابدأ تقييماً جديداً
+              </Link>
             </motion.div>
           </div>
         </div>

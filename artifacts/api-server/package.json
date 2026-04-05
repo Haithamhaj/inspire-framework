@@ -26,7 +26,6 @@
     "pino-http": "^10",
     "react": "catalog:",
     "resend": "^6.9.4",
-    "stripe": "^22.0.0",
     "zod": "catalog:"
   },
   "devDependencies": {

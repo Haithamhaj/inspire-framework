@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { assessmentsTable, usersTable } from "@workspace/db/schema";
-import { eq, and, count } from "drizzle-orm";
+import { assessmentsTable, usersTable, paymentsTable } from "@workspace/db/schema";
+import { eq, and, count, isNull } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import { AssessmentStartSchema, AssessmentSubmitSchema } from "../lib/validators";
 import { generateReport, processRetryQueue } from "../lib/ai-engine";
@@ -48,28 +48,61 @@ router.post(
       return;
     }
 
-    const { project_name, project_goal, report_language, assessment_type, previous_assessment_id } =
-      parsed.data;
+    const {
+      project_name,
+      project_goal,
+      report_language,
+      assessment_type,
+      previous_assessment_id,
+      payment_id,
+    } = parsed.data;
 
-    // Free plan: max 1 completed assessment
-    if (user.plan === "free") {
-      const [completedRow] = await db
-        .select({ total: count() })
-        .from(assessmentsTable)
-        .where(
-          and(
-            eq(assessmentsTable.userId, user.id),
-            eq(assessmentsTable.status, "completed")
-          )
-        );
-      if ((completedRow?.total ?? 0) >= 1) {
+    // Count completed assessments for this user
+    const [completedRow] = await db
+      .select({ total: count() })
+      .from(assessmentsTable)
+      .where(
+        and(
+          eq(assessmentsTable.userId, user.id),
+          eq(assessmentsTable.status, "completed")
+        )
+      );
+    const completedCount = Number(completedRow?.total ?? 0);
+
+    // First assessment is free; all subsequent require a valid payment
+    let validatedPaymentId: string | null = null;
+    if (completedCount >= 1) {
+      if (!payment_id) {
         res.status(403).json({
           success: false,
-          error: "plan_limit",
-          message: "لقد استخدمت تقييمك المجاني الوحيد. قم بالترقية إلى Pro للحصول على تقييمات غير محدودة.",
+          error: "payment_required",
+          message: "التقييم الأول مجاني. كل تقييم إضافي يتطلب دفع $10.",
         });
         return;
       }
+
+      const [payment] = await db
+        .select()
+        .from(paymentsTable)
+        .where(
+          and(
+            eq(paymentsTable.id, payment_id),
+            eq(paymentsTable.userId, user.id),
+            eq(paymentsTable.status, "completed"),
+            isNull(paymentsTable.assessmentId)
+          )
+        );
+
+      if (!payment) {
+        res.status(403).json({
+          success: false,
+          error: "invalid_payment",
+          message: "الدفع غير صالح أو تم استخدامه مسبقاً.",
+        });
+        return;
+      }
+
+      validatedPaymentId = payment.id;
     }
 
     // Validate ownership of previous assessment (must be completed and belong to this user)
@@ -102,8 +135,17 @@ router.post(
         assessmentType: assessment_type,
         status: "draft",
         ...(previous_assessment_id ? { previousAssessmentId: previous_assessment_id } : {}),
+        ...(validatedPaymentId ? { paymentId: validatedPaymentId } : {}),
       })
       .returning({ id: assessmentsTable.id });
+
+    // Link payment to the newly created assessment
+    if (validatedPaymentId) {
+      await db
+        .update(paymentsTable)
+        .set({ assessmentId: assessment!.id })
+        .where(eq(paymentsTable.id, validatedPaymentId));
+    }
 
     res.status(201).json({ success: true, assessmentId: assessment!.id });
   }
