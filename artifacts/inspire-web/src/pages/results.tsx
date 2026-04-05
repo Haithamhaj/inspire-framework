@@ -81,7 +81,7 @@ function ResultsSkeleton() {
 
 export default function Results() {
   const { id } = useParams<{ id: string }>();
-  const { user, token, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
 
   const [assessment, setAssessment] = useState<AssessmentDto | null>(null);
@@ -101,9 +101,7 @@ export default function Results() {
 
     async function fetchResult() {
       try {
-        const res = await fetch(apiUrl(`/results/${id}`), {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
+        const res = await fetch(apiUrl(`/results/${id}`));
         const d = await res.json();
         if (cancelled) return;
         if (!d.success) throw new Error(d.error || "Not found");
@@ -131,7 +129,7 @@ export default function Results() {
       cancelled = true;
       if (pollTimer) clearTimeout(pollTimer);
     };
-  }, [id, user, token, authLoading]);
+  }, [id, user, authLoading]);
 
   async function copyText(text: string, key: string) {
     await navigator.clipboard.writeText(text);

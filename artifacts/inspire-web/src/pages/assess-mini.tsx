@@ -28,7 +28,7 @@ function apiUrl(path: string) {
 }
 
 export default function AssessMini() {
-  const { user, token, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [, navigate] = useLocation();
 
   const [step, setStep] = useState(0);
@@ -65,7 +65,7 @@ export default function AssessMini() {
     try {
       const res = await fetch(apiUrl("/assessments/start"), {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ project_name: projectName, project_goal: projectGoal, report_language: reportLanguage, assessment_type: "mini" }),
       });
       const data = await res.json();
@@ -95,7 +95,7 @@ export default function AssessMini() {
       }));
       const res = await fetch(apiUrl(`/assessments/${assessmentId}/submit`), {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           behavioral_answers: [],
           scenario_answers: scenarioArr,
