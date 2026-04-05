@@ -16,7 +16,7 @@ import {
   generateVerifyToken,
   getAuthUser,
 } from "../lib/auth";
-import { RegisterSchema, LoginSchema } from "../lib/validators";
+import { RegisterSchema, LoginSchema, ProfileUpdateSchema } from "../lib/validators";
 import { rateLimit, getClientIp } from "../lib/rate-limit";
 
 const router: IRouter = Router();
@@ -292,6 +292,80 @@ router.get(
     }
 
     res.json({ success: true, user });
+  }
+);
+
+// ─── PATCH /api/auth/profile ──────────────────────────
+
+router.patch(
+  "/auth/profile",
+  async (req: Request, res: Response): Promise<void> => {
+    const auth = await getAuthUser(req.headers.authorization);
+    if (!auth) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const parsed = ProfileUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        success: false,
+        error: "Validation failed",
+        details: parsed.error.flatten(),
+      });
+      return;
+    }
+
+    const { name, job_title, current_password, new_password } = parsed.data;
+
+    // Fetch current user (needed for password verification)
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, auth.userId));
+
+    if (!user) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    // Build update payload
+    const updates: Record<string, unknown> = {};
+
+    if (name !== undefined) updates["name"] = name;
+    if (job_title !== undefined) updates["jobTitle"] = job_title;
+
+    if (current_password && new_password) {
+      const valid = await verifyPassword(current_password, user.passwordHash);
+      if (!valid) {
+        res
+          .status(400)
+          .json({ success: false, error: "كلمة المرور الحالية غير صحيحة" });
+        return;
+      }
+      updates["passwordHash"] = await hashPassword(new_password);
+    }
+
+    if (Object.keys(updates).length === 0) {
+      res.status(400).json({ success: false, error: "No fields to update" });
+      return;
+    }
+
+    const [updated] = await db
+      .update(usersTable)
+      .set(updates as any)
+      .where(eq(usersTable.id, auth.userId))
+      .returning({
+        id: usersTable.id,
+        email: usersTable.email,
+        name: usersTable.name,
+        jobTitle: usersTable.jobTitle,
+        plan: usersTable.plan,
+      });
+
+    req.log.info({ userId: auth.userId }, "Profile updated");
+
+    res.json({ success: true, user: updated });
   }
 );
 

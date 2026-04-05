@@ -15,6 +15,7 @@ import Assess from "@/pages/assess";
 import AssessMini from "@/pages/assess-mini";
 import Results from "@/pages/results";
 import MyAssessments from "@/pages/my-assessments";
+import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 
@@ -34,6 +35,7 @@ function Router() {
           <Route path="/assess/mini" component={AssessMini} />
           <Route path="/results/:id" component={Results} />
           <Route path="/my-assessments" component={MyAssessments} />
+          <Route path="/profile" component={Profile} />
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>

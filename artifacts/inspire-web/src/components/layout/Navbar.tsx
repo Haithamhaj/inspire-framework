@@ -30,10 +30,13 @@ export function Navbar() {
                   <ClipboardList className="h-4 w-4" />
                   <span>تقاريري</span>
                 </Link>
-                <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-secondary/50 rounded-full border border-border/50">
+                <Link
+                  href="/profile"
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-secondary/50 rounded-full border border-border/50 hover:border-primary/40 hover:bg-secondary transition-colors"
+                >
                   <User className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium text-foreground">{user.name}</span>
-                </div>
+                </Link>
                 <button
                   onClick={logout}
                   className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
