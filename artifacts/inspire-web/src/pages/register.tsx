@@ -68,7 +68,7 @@ export default function Register() {
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
           </div>
           <h2 className="text-3xl font-display font-bold text-foreground mb-4">تم التسجيل!</h2>
-          <p className="text-muted-foreground text-lg">تحقق من بريدك الإلكتروني. سيتم تحويلك الآن...</p>
+          <p className="text-muted-foreground text-lg">حسابك جاهز. سيتم تحويلك لصفحة الدخول الآن...</p>
         </motion.div>
       </div>
     );
