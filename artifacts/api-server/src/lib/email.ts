@@ -13,8 +13,13 @@ function getResend(): Resend {
   return _resend;
 }
 
-const FROM = `${process.env["FROM_NAME"] ?? "INSPIRE Framework"} <${process.env["FROM_EMAIL"] ?? "noreply@inspire-framework.com"}>`;
-const APP_URL = process.env["APP_URL"] ?? "http://localhost:3000";
+function getFrom(): string {
+  return `${process.env["FROM_NAME"] ?? "INSPIRE Framework"} <${process.env["FROM_EMAIL"] ?? "noreply@imperfect-success.com"}>`;
+}
+
+function getAppUrl(): string {
+  return (process.env["APP_URL"] ?? "https://inspire.imperfect-success.com").replace(/\/$/, "");
+}
 
 export async function sendResultsEmail(assessmentId: string): Promise<void> {
   if (!process.env["RESEND_API_KEY"]) {
@@ -36,12 +41,13 @@ export async function sendResultsEmail(assessmentId: string): Promise<void> {
 
   if (!user) return;
 
-  const resultsUrl = `${APP_URL}/results/${assessmentId}`;
-  const pdfUrl = assessment.pdfUrl ? `${APP_URL}${assessment.pdfUrl}` : null;
+  const appUrl = getAppUrl();
+  const resultsUrl = `${appUrl}/results/${assessmentId}`;
+  const pdfUrl = assessment.pdfUrl ? `${appUrl}${assessment.pdfUrl}` : null;
 
   try {
     await getResend().emails.send({
-      from: FROM,
+      from: getFrom(),
       to: user.email,
       subject: `تقرير INSPIRE الخاص بك — ${assessment.projectName}`,
       html: buildResultsEmailHtml({
@@ -50,6 +56,7 @@ export async function sendResultsEmail(assessmentId: string): Promise<void> {
         resultsUrl,
         pdfUrl,
         aiProvider: assessment.aiProvider ?? "AI",
+        appUrl,
       }),
     });
 
@@ -68,7 +75,7 @@ export async function sendFailureEmail(email: string, name: string): Promise<voi
   if (!process.env["RESEND_API_KEY"]) return;
   try {
     await getResend().emails.send({
-      from: FROM,
+      from: getFrom(),
       to: email,
       subject: "INSPIRE — نعتذر عن تأخر تقريرك",
       html: buildFailureEmailHtml(name),
@@ -84,12 +91,14 @@ function buildResultsEmailHtml({
   resultsUrl,
   pdfUrl,
   aiProvider,
+  appUrl,
 }: {
   name: string;
   projectName: string;
   resultsUrl: string;
   pdfUrl: string | null;
   aiProvider: string;
+  appUrl: string;
 }) {
   return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -100,7 +109,7 @@ function buildResultsEmailHtml({
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
         <!-- Header -->
         <tr><td style="background:#1a1a2e;padding:40px 40px 32px;text-align:center;">
-          <img src="${APP_URL}/images/imperfect-success-logo.jpg" width="120" style="display:block;margin:0 auto 16px;border-radius:8px;" alt="Imperfect Success" />
+          <img src="${appUrl}/images/imperfect-success-logo.jpg" width="120" style="display:block;margin:0 auto 16px;border-radius:8px;" alt="Imperfect Success" />
           <h1 style="color:#e94560;margin:0;font-size:26px;font-weight:700;letter-spacing:2px;" dir="ltr">INSPIRE</h1>
           <p style="color:rgba(255,255,255,0.5);margin:8px 0 0;font-size:13px;">إطار التقييم السلوكي للذكاء الاصطناعي</p>
         </td></tr>
