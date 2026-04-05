@@ -15,6 +15,9 @@ import {
   ChevronRight,
   TrendingUp,
   AlertTriangle,
+  Share2,
+  LinkIcon,
+  Trash2,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -51,6 +54,8 @@ export default function Results() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [sharingLoading, setSharingLoading] = useState(false);
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id || authLoading || !user) return;
@@ -96,6 +101,48 @@ export default function Results() {
     await navigator.clipboard.writeText(text);
     setCopied(key);
     setTimeout(() => setCopied(null), 2000);
+  }
+
+  function buildShareUrl(shareToken: string) {
+    return `${window.location.origin}${import.meta.env.BASE_URL}share/${shareToken}`.replace(/\/+/g, "/").replace(":/", "://");
+  }
+
+  async function handleShare() {
+    if (!id || sharingLoading) return;
+    setSharingLoading(true);
+    setShareMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/results/${id}/share`), { method: "POST" });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error || "فشل إنشاء رابط المشاركة");
+      const url = buildShareUrl(d.shareToken);
+      setAssessment((prev: any) => ({ ...prev, shareToken: d.shareToken, shareEnabled: true }));
+      await navigator.clipboard.writeText(url);
+      setShareMsg(`تم نسخ الرابط: ${url}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "حدث خطأ";
+      setShareMsg(msg);
+    } finally {
+      setSharingLoading(false);
+    }
+  }
+
+  async function handleRevokeShare() {
+    if (!id || sharingLoading) return;
+    setSharingLoading(true);
+    setShareMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/results/${id}/share`), { method: "DELETE" });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error || "فشل إلغاء المشاركة");
+      setAssessment((prev: any) => ({ ...prev, shareToken: null, shareEnabled: false }));
+      setShareMsg("تم إلغاء رابط المشاركة");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "حدث خطأ";
+      setShareMsg(msg);
+    } finally {
+      setSharingLoading(false);
+    }
   }
 
   async function handleGeneratePdf() {
@@ -214,6 +261,26 @@ export default function Results() {
                   {generatingPdf ? "جارٍ التوليد..." : "توليد PDF"}
                 </button>
               )}
+              {/* Share button */}
+              {assessment.shareEnabled ? (
+                <button
+                  onClick={handleRevokeShare}
+                  disabled={sharingLoading}
+                  className="flex items-center gap-2 bg-white/10 hover:bg-red-400/30 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
+                >
+                  {sharingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                  إلغاء المشاركة
+                </button>
+              ) : (
+                <button
+                  onClick={handleShare}
+                  disabled={sharingLoading}
+                  className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
+                >
+                  {sharingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
+                  مشاركة النتائج
+                </button>
+              )}
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-3 text-xs text-primary-foreground/60">
@@ -227,6 +294,18 @@ export default function Results() {
             )}
           </div>
         </div>
+
+        {/* Share message */}
+        {shareMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-3 bg-card border border-border rounded-2xl p-4 text-sm text-foreground"
+          >
+            <LinkIcon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+            <span className="break-all">{shareMsg}</span>
+          </motion.div>
+        )}
 
         {/* Role Analysis */}
         {assessment.roleAnalysis && (

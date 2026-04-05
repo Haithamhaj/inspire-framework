@@ -7,6 +7,7 @@ import { generateAndSavePDF } from "../lib/pdf";
 import { logger } from "../lib/logger";
 import path from "path";
 import fs from "fs";
+import { randomBytes } from "crypto";
 
 const router: IRouter = Router();
 
@@ -71,6 +72,8 @@ router.get(
         recommendations: assessment.recommendations,
         systemInstruction: assessment.systemInstruction,
         quickStarters: assessment.quickStarters,
+        shareToken: assessment.shareToken,
+        shareEnabled: assessment.shareEnabled,
       },
     });
   }
@@ -99,6 +102,8 @@ router.get(
         createdAt: assessmentsTable.createdAt,
         completionTimeSeconds: assessmentsTable.completionTimeSeconds,
         inspireTable: assessmentsTable.inspireTable,
+        shareToken: assessmentsTable.shareToken,
+        shareEnabled: assessmentsTable.shareEnabled,
       })
       .from(assessmentsTable)
       .where(eq(assessmentsTable.userId, user.id))
@@ -175,6 +180,137 @@ router.get(
         (assessA.inspireTable as any[]) ?? [],
         (assessB.inspireTable as any[]) ?? []
       ),
+    });
+  }
+);
+
+// ─── POST /api/results/:id/share ─────────────────────────
+
+router.post(
+  "/results/:id/share",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const { id } = req.params;
+
+    const [assessment] = await db
+      .select({
+        id: assessmentsTable.id,
+        status: assessmentsTable.status,
+        userId: assessmentsTable.userId,
+        shareToken: assessmentsTable.shareToken,
+        shareEnabled: assessmentsTable.shareEnabled,
+      })
+      .from(assessmentsTable)
+      .where(
+        and(
+          eq(assessmentsTable.id, id as string),
+          eq(assessmentsTable.userId, user.id)
+        )
+      );
+
+    if (!assessment || assessment.status !== "completed") {
+      res.status(404).json({ success: false, error: "Completed assessment not found" });
+      return;
+    }
+
+    // Re-use existing token if already enabled, otherwise generate new one
+    const token = assessment.shareToken ?? randomBytes(24).toString("hex");
+
+    await db
+      .update(assessmentsTable)
+      .set({ shareToken: token, shareEnabled: true })
+      .where(eq(assessmentsTable.id, id as string));
+
+    req.log.info({ assessmentId: id, userId: user.id }, "Share link created");
+    res.json({ success: true, shareToken: token });
+  }
+);
+
+// ─── DELETE /api/results/:id/share ───────────────────────
+
+router.delete(
+  "/results/:id/share",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const { id } = req.params;
+
+    const [assessment] = await db
+      .select({ id: assessmentsTable.id, userId: assessmentsTable.userId })
+      .from(assessmentsTable)
+      .where(
+        and(
+          eq(assessmentsTable.id, id as string),
+          eq(assessmentsTable.userId, user.id)
+        )
+      );
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    await db
+      .update(assessmentsTable)
+      .set({ shareToken: null, shareEnabled: false })
+      .where(eq(assessmentsTable.id, id as string));
+
+    req.log.info({ assessmentId: id, userId: user.id }, "Share link revoked");
+    res.json({ success: true });
+  }
+);
+
+// ─── GET /api/share/:token ────────────────────────────────
+
+router.get(
+  "/share/:token",
+  async (req: Request, res: Response): Promise<void> => {
+    const { token } = req.params;
+
+    const [assessment] = await db
+      .select()
+      .from(assessmentsTable)
+      .where(
+        and(
+          eq(assessmentsTable.shareToken, token as string),
+          eq(assessmentsTable.shareEnabled, true)
+        )
+      );
+
+    if (!assessment || assessment.status !== "completed") {
+      res.status(404).json({ success: false, error: "Share link not found or expired" });
+      return;
+    }
+
+    // Return safe public subset — system instruction is excluded
+    res.json({
+      success: true,
+      assessment: {
+        id: assessment.id,
+        projectName: assessment.projectName,
+        projectGoal: assessment.projectGoal,
+        reportLanguage: assessment.reportLanguage,
+        assessmentType: assessment.assessmentType,
+        aiProvider: assessment.aiProvider,
+        aiModel: assessment.aiModel,
+        createdAt: assessment.createdAt,
+        inspireTable: assessment.inspireTable,
+        roleAnalysis: assessment.roleAnalysis,
+        redLines: assessment.redLines,
+        strengths: assessment.strengths,
+        developmentAreas: assessment.developmentAreas,
+        recommendations: assessment.recommendations,
+        quickStarters: assessment.quickStarters,
+      },
     });
   }
 );

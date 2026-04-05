@@ -13,6 +13,8 @@ import {
   Download,
   ChevronLeft,
   RotateCcw,
+  Share2,
+  Link2Off,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -71,10 +73,25 @@ export default function MyAssessments() {
       const d = await res.json();
       if (!d.success) throw new Error(d.error);
       setCompareResult(d);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "حدث خطأ");
     } finally {
       setComparing(false);
+    }
+  }
+
+  async function handleRevokeShare(assessmentId: string) {
+    try {
+      const res = await fetch(apiUrl(`/results/${assessmentId}/share`), { method: "DELETE" });
+      const d = await res.json();
+      if (!d.success) throw new Error(d.error);
+      setAssessments((prev) =>
+        prev.map((a) =>
+          a.id === assessmentId ? { ...a, shareToken: null, shareEnabled: false } : a
+        )
+      );
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "فشل إلغاء المشاركة");
     }
   }
 
@@ -249,6 +266,14 @@ export default function MyAssessments() {
                               >
                                 <Download className="h-3.5 w-3.5" /> PDF
                               </a>
+                            )}
+                            {a.shareEnabled && (
+                              <button
+                                onClick={() => handleRevokeShare(a.id)}
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border-2 border-red-200 text-red-600 hover:border-red-400 hover:bg-red-50 transition-colors"
+                              >
+                                <Link2Off className="h-3.5 w-3.5" /> إلغاء الرابط
+                              </button>
                             )}
                           </>
                         )}

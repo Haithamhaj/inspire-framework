@@ -53,6 +53,9 @@ export const assessmentsTable = pgTable("assessments", {
 
   completionTimeSeconds: integer("completion_time_seconds"),
   previousAssessmentId: uuid("previous_assessment_id"),
+
+  shareToken: text("share_token").unique(),
+  shareEnabled: boolean("share_enabled").default(false).notNull(),
 });
 
 export const insertAssessmentSchema = createInsertSchema(
