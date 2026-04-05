@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { assessmentsTable, usersTable } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, count } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import { AssessmentStartSchema, AssessmentSubmitSchema } from "../lib/validators";
 import { generateReport, processRetryQueue } from "../lib/ai-engine";
@@ -50,6 +50,27 @@ router.post(
 
     const { project_name, project_goal, report_language, assessment_type, previous_assessment_id } =
       parsed.data;
+
+    // Free plan: max 1 completed assessment
+    if (user.plan === "free") {
+      const [completedRow] = await db
+        .select({ total: count() })
+        .from(assessmentsTable)
+        .where(
+          and(
+            eq(assessmentsTable.userId, user.id),
+            eq(assessmentsTable.status, "completed")
+          )
+        );
+      if ((completedRow?.total ?? 0) >= 1) {
+        res.status(403).json({
+          success: false,
+          error: "plan_limit",
+          message: "لقد استخدمت تقييمك المجاني الوحيد. قم بالترقية إلى Pro للحصول على تقييمات غير محدودة.",
+        });
+        return;
+      }
+    }
 
     // Validate ownership of previous assessment (must be completed and belong to this user)
     if (previous_assessment_id) {

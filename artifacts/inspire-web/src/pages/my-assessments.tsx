@@ -16,6 +16,8 @@ import {
   Share2,
   Link2Off,
   RefreshCw,
+  Sparkles,
+  Crown,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -71,6 +73,7 @@ export default function MyAssessments() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [comparing, setComparing] = useState(false);
   const [compareResult, setCompareResult] = useState<CompareResult | null>(null);
+  const [upgrading, setUpgrading] = useState(false);
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -110,6 +113,21 @@ export default function MyAssessments() {
     }
   }
 
+  async function handleUpgrade() {
+    setUpgrading(true);
+    try {
+      const res = await fetch(apiUrl("/billing/checkout"), { method: "POST" });
+      const d = await res.json() as { success: boolean; url?: string; error?: string };
+      if (!d.success || !d.url) {
+        throw new Error(d.error || "فشل إنشاء جلسة الدفع");
+      }
+      window.location.href = d.url;
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "حدث خطأ. حاول مرة أخرى.");
+      setUpgrading(false);
+    }
+  }
+
   async function handleRevokeShare(assessmentId: string) {
     try {
       const res = await fetch(apiUrl(`/results/${assessmentId}/share`), { method: "DELETE" });
@@ -134,25 +152,55 @@ export default function MyAssessments() {
   }
   if (!user) return <Redirect to="/login" />;
 
+  const isPro = user?.plan === "pro";
+  const completedCount = assessments.filter((a) => a.status === "completed").length;
+  const freeUserAtLimit = !isPro && completedCount >= 1;
+
   return (
     <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
       <div className="w-full max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
-              تقاريري
-            </h1>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+                تقاريري
+              </h1>
+              {isPro ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 border border-amber-300 text-amber-700">
+                  <Crown className="h-3.5 w-3.5" /> Pro
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-secondary border border-border text-muted-foreground">
+                  مجاني
+                </span>
+              )}
+            </div>
             <p className="text-muted-foreground text-sm">
               {assessments.length === 0 ? "لا توجد تقارير بعد" : `${assessments.length} تقرير`}
             </p>
           </div>
-          <button
-            onClick={() => navigate("/assess")}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-semibold hover:bg-primary/90 transition-colors"
-          >
-            <Plus className="h-4 w-4" /> تقييم جديد
-          </button>
+          {freeUserAtLimit ? (
+            <button
+              onClick={handleUpgrade}
+              disabled={upgrading}
+              className="flex items-center gap-2 bg-gradient-to-l from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-white px-5 py-2.5 rounded-xl font-bold shadow-md shadow-amber-200 transition-all hover:-translate-y-0.5 disabled:opacity-70"
+            >
+              {upgrading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              ترقية إلى Pro
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/assess")}
+              className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-semibold hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="h-4 w-4" /> تقييم جديد
+            </button>
+          )}
         </div>
 
         {/* Error */}
@@ -199,6 +247,33 @@ export default function MyAssessments() {
           </div>
         ) : (
           <>
+            {/* Free plan upgrade prompt */}
+            {freeUserAtLimit && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 bg-gradient-to-l from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl p-5 flex items-center justify-between gap-4"
+              >
+                <div>
+                  <p className="font-bold text-amber-800 text-sm mb-1 flex items-center gap-2">
+                    <Crown className="h-4 w-4" />
+                    لقد استخدمت تقييمك المجاني
+                  </p>
+                  <p className="text-xs text-amber-700">
+                    قم بالترقية إلى Pro للحصول على تقييمات غير محدودة + PDF + مشاركة التقارير
+                  </p>
+                </div>
+                <button
+                  onClick={handleUpgrade}
+                  disabled={upgrading}
+                  className="flex items-center gap-2 shrink-0 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors disabled:opacity-70"
+                >
+                  {upgrading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                  ترقية الآن
+                </button>
+              </motion.div>
+            )}
+
             {/* Compare bar */}
             {selectedIds.length > 0 && (
               <motion.div

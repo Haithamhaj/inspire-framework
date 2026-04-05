@@ -28,6 +28,12 @@ app.use(
 );
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
+
+// Raw body parsing for Stripe webhook signature verification.
+// MUST be registered before express.json() so the raw Buffer is preserved.
+// express.json() respects req._body flag set by express.raw() and skips re-parsing.
+app.use("/api/billing/webhook", express.raw({ type: "application/json" }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
