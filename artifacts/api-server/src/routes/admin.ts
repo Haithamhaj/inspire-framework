@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { assessmentsTable, usersTable } from "@workspace/db/schema";
 import { eq, and, gte, lte, like, or, sql, desc, count, avg } from "drizzle-orm";
 import { logger } from "../lib/logger";
+import { sendResultsEmail } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -235,6 +236,43 @@ router.get(
     res.setHeader("Content-Type", "text/csv; charset=utf-8");
     res.setHeader("Content-Disposition", `attachment; filename="inspire-assessments-${Date.now()}.csv"`);
     res.send("\uFEFF" + csv); // BOM for Arabic Excel compatibility
+  }
+);
+
+// ─── POST /api/admin/resend-email/:id ────────────────────
+
+router.post(
+  "/admin/resend-email/:id",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+    const { id } = req.params;
+    const [assessment] = await db
+      .select({ id: assessmentsTable.id, status: assessmentsTable.status })
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+    if (assessment.status !== "completed") {
+      res.status(400).json({ success: false, error: "Assessment not completed yet" });
+      return;
+    }
+
+    // Reset email_sent so sendResultsEmail will send again
+    await db
+      .update(assessmentsTable)
+      .set({ emailSent: false, emailSentAt: null })
+      .where(eq(assessmentsTable.id, id as string));
+
+    try {
+      await sendResultsEmail(id as string);
+      res.json({ success: true, message: "Email sent" });
+    } catch (err) {
+      logger.error({ id, err }, "Admin resend-email failed");
+      res.status(500).json({ success: false, error: String(err) });
+    }
   }
 );
 
