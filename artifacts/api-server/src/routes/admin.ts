@@ -440,6 +440,37 @@ router.get(
   }
 );
 
+// ─── POST /api/admin/reset-password ───────────────────────
+
+router.post(
+  "/admin/reset-password",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { email, newPassword } = req.body as { email?: string; newPassword?: string };
+    if (!email || !newPassword || newPassword.length < 6) {
+      res.status(400).json({ success: false, error: "Email and password (min 6 chars) required" });
+      return;
+    }
+
+    const { hashPassword } = await import("../lib/auth");
+    const passwordHash = await hashPassword(newPassword);
+
+    const [updated] = await db
+      .update(usersTable)
+      .set({ passwordHash, emailVerified: true })
+      .where(eq(usersTable.email, email.toLowerCase().trim()))
+      .returning({ id: usersTable.id, email: usersTable.email });
+
+    if (!updated) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    res.json({ success: true, user: updated });
+  }
+);
+
 // ─── GET /api/admin/users ─────────────────────────────────
 
 router.get(

@@ -89,6 +89,12 @@ export default function Admin() {
   const [verifying, setVerifying] = useState(false);
   const [verifyMsg, setVerifyMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  // Password reset state
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetPass, setResetPass] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [resetMsg, setResetMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
   // Discount codes state
   const [discountCodes, setDiscountCodes] = useState<DiscountCode[]>([]);
   const [codesLoading, setCodesLoading] = useState(false);
@@ -217,6 +223,31 @@ export default function Admin() {
     });
     const d = await res.json() as { success: boolean };
     if (d.success) setDiscountCodes(prev => prev.filter(c => c.id !== id));
+  }
+
+  async function handleResetPassword() {
+    const email = resetEmail.trim();
+    if (!email || resetPass.length < 6) return;
+    setResetting(true);
+    setResetMsg(null);
+    try {
+      const res = await fetch(apiUrl("/admin/reset-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ email, newPassword: resetPass }),
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (d.success) {
+        setResetMsg({ ok: true, text: `✅ تم تغيير كلمة مرور ${email} بنجاح` });
+        setResetEmail(""); setResetPass("");
+      } else {
+        setResetMsg({ ok: false, text: d.error ?? "فشل التغيير" });
+      }
+    } catch {
+      setResetMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setResetting(false);
+    }
   }
 
   async function handleVerifyUser() {
@@ -525,6 +556,48 @@ export default function Admin() {
             {verifyMsg && (
               <p className={`mt-3 text-sm font-medium ${verifyMsg.ok ? "text-green-600" : "text-red-500"}`}>
                 {verifyMsg.text}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* ─── Reset Password Section ─── */}
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-5">
+            <Shield className="h-5 w-5 text-orange-500" />
+            <h2 className="text-lg font-display font-bold text-foreground">تغيير كلمة مرور مستخدم</h2>
+          </div>
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <p className="text-sm text-muted-foreground mb-4">استخدم هذا لإعادة تعيين كلمة مرور أي مستخدم يدوياً.</p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="البريد الإلكتروني"
+                className="flex-1 bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                dir="ltr"
+              />
+              <input
+                type="text"
+                value={resetPass}
+                onChange={(e) => setResetPass(e.target.value)}
+                placeholder="كلمة المرور الجديدة (6 أحرف على الأقل)"
+                className="flex-1 bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                dir="ltr"
+              />
+              <button
+                onClick={handleResetPassword}
+                disabled={resetting || !resetEmail.trim() || resetPass.length < 6}
+                className="flex items-center gap-2 bg-orange-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-60 hover:bg-orange-600 transition-colors whitespace-nowrap"
+              >
+                {resetting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}
+                تغيير
+              </button>
+            </div>
+            {resetMsg && (
+              <p className={`mt-3 text-sm font-medium ${resetMsg.ok ? "text-green-600" : "text-red-500"}`}>
+                {resetMsg.text}
               </p>
             )}
           </div>
