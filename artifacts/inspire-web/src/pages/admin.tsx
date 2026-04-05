@@ -84,6 +84,11 @@ export default function Admin() {
 
   const PAGE_SIZE = 20;
 
+  // User verification state
+  const [verifyEmail, setVerifyEmail] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [verifyMsg, setVerifyMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
   // Discount codes state
   const [discountCodes, setDiscountCodes] = useState<DiscountCode[]>([]);
   const [codesLoading, setCodesLoading] = useState(false);
@@ -212,6 +217,31 @@ export default function Admin() {
     });
     const d = await res.json() as { success: boolean };
     if (d.success) setDiscountCodes(prev => prev.filter(c => c.id !== id));
+  }
+
+  async function handleVerifyUser() {
+    const email = verifyEmail.trim();
+    if (!email) return;
+    setVerifying(true);
+    setVerifyMsg(null);
+    try {
+      const res = await fetch(apiUrl("/admin/verify-user"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ email }),
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (d.success) {
+        setVerifyMsg({ ok: true, text: `✅ تم تفعيل ${email} بنجاح` });
+        setVerifyEmail("");
+      } else {
+        setVerifyMsg({ ok: false, text: d.error ?? "فشل التفعيل" });
+      }
+    } catch {
+      setVerifyMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setVerifying(false);
+    }
   }
 
   async function handleExport() {
@@ -464,6 +494,41 @@ export default function Admin() {
             </div>
           </div>
         )}
+
+        {/* ─── Verify User Section ─── */}
+        <div className="mt-10">
+          <div className="flex items-center gap-2 mb-5">
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+            <h2 className="text-lg font-display font-bold text-foreground">تفعيل حسابات المستخدمين</h2>
+          </div>
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <p className="text-sm text-muted-foreground mb-4">إذا لم يصل إيميل التفعيل للمستخدم، يمكنك تفعيل حسابه يدوياً من هنا.</p>
+            <div className="flex gap-3">
+              <input
+                type="email"
+                value={verifyEmail}
+                onChange={(e) => setVerifyEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleVerifyUser()}
+                placeholder="البريد الإلكتروني للمستخدم"
+                className="flex-1 bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                dir="ltr"
+              />
+              <button
+                onClick={handleVerifyUser}
+                disabled={verifying || !verifyEmail.trim()}
+                className="flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-60 hover:bg-green-700 transition-colors"
+              >
+                {verifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                تفعيل
+              </button>
+            </div>
+            {verifyMsg && (
+              <p className={`mt-3 text-sm font-medium ${verifyMsg.ok ? "text-green-600" : "text-red-500"}`}>
+                {verifyMsg.text}
+              </p>
+            )}
+          </div>
+        </div>
 
         {/* ─── Discount Codes Section ─── */}
         <div className="mt-10">

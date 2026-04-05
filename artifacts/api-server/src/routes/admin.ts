@@ -440,5 +440,56 @@ router.get(
   }
 );
 
+// ─── GET /api/admin/users ─────────────────────────────────
+
+router.get(
+  "/admin/users",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const users = await db
+      .select({
+        id: usersTable.id,
+        name: usersTable.name,
+        email: usersTable.email,
+        emailVerified: usersTable.emailVerified,
+        createdAt: usersTable.createdAt,
+      })
+      .from(usersTable)
+      .orderBy(desc(usersTable.createdAt))
+      .limit(100);
+
+    res.json({ success: true, users });
+  }
+);
+
+// ─── POST /api/admin/verify-user ──────────────────────────
+
+router.post(
+  "/admin/verify-user",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { email } = req.body as { email?: string };
+    if (!email) {
+      res.status(400).json({ success: false, error: "Email required" });
+      return;
+    }
+
+    const [updated] = await db
+      .update(usersTable)
+      .set({ emailVerified: true })
+      .where(eq(usersTable.email, email.toLowerCase().trim()))
+      .returning({ id: usersTable.id, email: usersTable.email });
+
+    if (!updated) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    res.json({ success: true, user: updated });
+  }
+);
+
 export default router;
 
