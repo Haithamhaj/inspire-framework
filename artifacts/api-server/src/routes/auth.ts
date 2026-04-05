@@ -295,6 +295,39 @@ router.get(
   }
 );
 
+// ─── GET /api/auth/profile ────────────────────────────
+
+router.get(
+  "/auth/profile",
+  async (req: Request, res: Response): Promise<void> => {
+    const auth = await getAuthUser(req.headers.authorization);
+    if (!auth) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const [user] = await db
+      .select({
+        id: usersTable.id,
+        email: usersTable.email,
+        name: usersTable.name,
+        jobTitle: usersTable.jobTitle,
+        plan: usersTable.plan,
+        emailVerified: usersTable.emailVerified,
+        createdAt: usersTable.createdAt,
+      })
+      .from(usersTable)
+      .where(eq(usersTable.id, auth.userId));
+
+    if (!user) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    res.json({ success: true, user });
+  }
+);
+
 // ─── PATCH /api/auth/profile ──────────────────────────
 
 router.patch(
@@ -329,11 +362,16 @@ router.patch(
       return;
     }
 
-    // Build update payload
-    const updates: Record<string, unknown> = {};
+    // Build update payload with proper types
+    type ProfileUpdates = {
+      name?: string;
+      jobTitle?: string | null;
+      passwordHash?: string;
+    };
+    const updates: ProfileUpdates = {};
 
-    if (name !== undefined) updates["name"] = name;
-    if (job_title !== undefined) updates["jobTitle"] = job_title;
+    if (name !== undefined) updates.name = name;
+    if (job_title !== undefined) updates.jobTitle = job_title;
 
     if (current_password && new_password) {
       const valid = await verifyPassword(current_password, user.passwordHash);
@@ -343,7 +381,7 @@ router.patch(
           .json({ success: false, error: "كلمة المرور الحالية غير صحيحة" });
         return;
       }
-      updates["passwordHash"] = await hashPassword(new_password);
+      updates.passwordHash = await hashPassword(new_password);
     }
 
     if (Object.keys(updates).length === 0) {
@@ -353,7 +391,7 @@ router.patch(
 
     const [updated] = await db
       .update(usersTable)
-      .set(updates as any)
+      .set(updates)
       .where(eq(usersTable.id, auth.userId))
       .returning({
         id: usersTable.id,
