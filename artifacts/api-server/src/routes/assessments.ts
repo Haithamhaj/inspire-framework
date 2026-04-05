@@ -48,7 +48,7 @@ router.post(
       return;
     }
 
-    const { project_name, project_goal, report_language, assessment_type } =
+    const { project_name, project_goal, report_language, assessment_type, previous_assessment_id } =
       parsed.data;
 
     const [assessment] = await db
@@ -60,6 +60,7 @@ router.post(
         reportLanguage: report_language,
         assessmentType: assessment_type,
         status: "draft",
+        ...(previous_assessment_id ? { previousAssessmentId: previous_assessment_id } : {}),
       })
       .returning({ id: assessmentsTable.id });
 
@@ -199,13 +200,14 @@ router.get(
   }
 );
 
-// ─── GET /api/cron/retry ─────────────────────────────────
+// ─── POST /api/cron/retry (admin-only, kept for manual triggers) ─────────
 
-router.get(
+router.post(
   "/cron/retry",
   async (req: Request, res: Response): Promise<void> => {
-    const secret = req.headers["x-cron-secret"];
-    if (!process.env["CRON_SECRET"] || secret !== process.env["CRON_SECRET"]) {
+    const adminPassword = process.env["ADMIN_PASSWORD"];
+    const provided = req.headers["x-admin-password"];
+    if (!adminPassword || provided !== adminPassword) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }

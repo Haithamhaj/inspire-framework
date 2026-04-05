@@ -50,6 +50,16 @@ router.get(
       return;
     }
 
+    // Fetch previous assessment's inspire table for delta display
+    let previousInspireTable: unknown = null;
+    if (assessment.previousAssessmentId) {
+      const [prev] = await db
+        .select({ inspireTable: assessmentsTable.inspireTable })
+        .from(assessmentsTable)
+        .where(eq(assessmentsTable.id, assessment.previousAssessmentId));
+      previousInspireTable = prev?.inspireTable ?? null;
+    }
+
     res.json({
       success: true,
       assessment: {
@@ -74,6 +84,8 @@ router.get(
         quickStarters: assessment.quickStarters,
         shareToken: assessment.shareToken,
         shareEnabled: assessment.shareEnabled,
+        previousAssessmentId: assessment.previousAssessmentId ?? null,
+        previousInspireTable,
       },
     });
   }

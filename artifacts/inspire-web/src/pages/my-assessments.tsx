@@ -15,6 +15,7 @@ import {
   RotateCcw,
   Share2,
   Link2Off,
+  RefreshCw,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -31,26 +32,55 @@ function statusLabel(status: string) {
   }
 }
 
+interface AssessmentSummary {
+  id: string;
+  projectName: string;
+  projectGoal: string;
+  status: string;
+  aiProvider: string | null;
+  aiModel: string | null;
+  pdfUrl: string | null;
+  createdAt: string;
+  completionTimeSeconds: number | null;
+  inspireTable: { axis: string; score: number; percentage: number; note?: string }[] | null;
+  shareToken: string | null;
+  shareEnabled: boolean;
+}
+
+interface CompareRow {
+  axis: string;
+  a: { score: number; percentage: number; note?: string } | null;
+  b: { score: number; percentage: number; note?: string } | null;
+  delta: number;
+}
+
+interface CompareResult {
+  success: boolean;
+  a: { id: string; projectName: string };
+  b: { id: string; projectName: string };
+  comparison: CompareRow[];
+}
+
 export default function MyAssessments() {
   const { user, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
 
-  const [assessments, setAssessments] = useState<any[]>([]);
+  const [assessments, setAssessments] = useState<AssessmentSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [comparing, setComparing] = useState(false);
-  const [compareResult, setCompareResult] = useState<any>(null);
+  const [compareResult, setCompareResult] = useState<CompareResult | null>(null);
 
   useEffect(() => {
     if (authLoading || !user) return;
     fetch(apiUrl("/my-assessments"))
       .then((r) => r.json())
-      .then((d) => {
+      .then((d: { success: boolean; assessments?: AssessmentSummary[]; error?: string }) => {
         if (!d.success) throw new Error(d.error || "فشل جلب التقارير");
-        setAssessments(d.assessments);
+        setAssessments(d.assessments ?? []);
       })
-      .catch((e) => setError(e.message))
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : "حدث خطأ"))
       .finally(() => setLoading(false));
   }, [user, authLoading]);
 
@@ -247,6 +277,12 @@ export default function MyAssessments() {
                               عرض <ChevronLeft className="h-3.5 w-3.5" />
                             </button>
                             <button
+                              onClick={() => navigate(`/assess?prev=${a.id}`)}
+                              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border-2 border-accent/40 text-accent hover:border-accent hover:bg-accent/5 transition-colors"
+                            >
+                              <RefreshCw className="h-3.5 w-3.5" /> إعادة تقييم
+                            </button>
+                            <button
                               onClick={() => toggleSelect(a.id)}
                               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border-2 transition-colors ${
                                 isSelected
@@ -298,7 +334,7 @@ export default function MyAssessments() {
                     {/* INSPIRE mini-bar */}
                     {Array.isArray(a.inspireTable) && a.inspireTable.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-border grid grid-cols-7 gap-1">
-                        {a.inspireTable.slice(0, 7).map((row: any, j: number) => (
+                        {a.inspireTable.slice(0, 7).map((row, j) => (
                           <div key={j} className="flex flex-col items-center gap-1">
                             <div className="w-full bg-secondary rounded-full overflow-hidden" style={{ height: "4px" }}>
                               <div
@@ -337,7 +373,7 @@ export default function MyAssessments() {
                   </div>
                 </div>
                 <div className="space-y-3">
-                  {compareResult.comparison.map((row: any, i: number) => (
+                  {compareResult.comparison.map((row, i) => (
                     <div key={i} className="flex items-center gap-3">
                       <span className="text-sm font-medium text-foreground w-28 shrink-0">{row.axis}</span>
                       <span className="text-sm font-bold text-primary w-12 text-center">{row.a?.percentage ?? 0}%</span>

@@ -130,6 +130,9 @@ function StepCard({ children, stepKey }: { children: React.ReactNode; stepKey: s
 export default function Assess() {
   const { user, isLoading } = useAuth();
 
+  // Read optional previousAssessmentId from ?prev= query param
+  const previousAssessmentId = new URLSearchParams(window.location.search).get("prev");
+
   const [step, setStep] = useState(0);
   const [projectName, setProjectName] = useState("");
   const [projectGoal, setProjectGoal] = useState("");
@@ -208,6 +211,7 @@ export default function Assess() {
           project_goal: projectGoal.trim(),
           report_language: reportLanguage,
           assessment_type: assessmentType,
+          ...(previousAssessmentId ? { previous_assessment_id: previousAssessmentId } : {}),
         }),
       });
       const data = await res.json();

@@ -18,6 +18,9 @@ import {
   Share2,
   LinkIcon,
   Trash2,
+  TrendingDown,
+  Minus,
+  RefreshCw,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -53,6 +56,8 @@ interface AssessmentDto {
   quickStarters: string[] | null;
   shareToken: string | null;
   shareEnabled: boolean;
+  previousAssessmentId: string | null;
+  previousInspireTable: InspireRow[] | null;
 }
 
 function Skeleton({ className }: { className?: string }) {
@@ -113,9 +118,9 @@ export default function Results() {
           setAssessment(d.assessment);
           setLoading(false);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!cancelled) {
-          setError(err.message);
+          setError(err instanceof Error ? err.message : "حدث خطأ");
           setLoading(false);
         }
       }
@@ -351,27 +356,68 @@ export default function Results() {
         {/* INSPIRE Table */}
         {Array.isArray(assessment.inspireTable) && assessment.inspireTable.length > 0 && (
           <div className="bg-card rounded-2xl border border-border p-6">
-            <h2 className="font-display font-bold text-xl text-foreground mb-5 flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-accent" /> مؤشرات INSPIRE السبعة
-            </h2>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="font-display font-bold text-xl text-foreground flex items-center gap-2">
+                <ClipboardList className="h-5 w-5 text-accent" /> مؤشرات INSPIRE السبعة
+              </h2>
+              {assessment.previousInspireTable && (
+                <span className="text-xs text-muted-foreground bg-secondary/60 px-2.5 py-1 rounded-full">
+                  مقارنة بالتقييم السابق
+                </span>
+              )}
+            </div>
             <div className="space-y-4">
-              {assessment.inspireTable.map((row: any, i: number) => (
-                <div key={i}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-semibold text-foreground">{row.axis}</span>
-                    <span className="text-sm font-bold text-accent">{row.percentage}%</span>
+              {assessment.inspireTable.map((row, i) => {
+                const prevRow = assessment.previousInspireTable?.find(
+                  (p) => p.axis === row.axis
+                ) ?? null;
+                const delta = prevRow !== null ? row.percentage - prevRow.percentage : null;
+                return (
+                  <div key={i}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm font-semibold text-foreground">{row.axis}</span>
+                      <div className="flex items-center gap-2">
+                        {delta !== null && (
+                          <span
+                            className={`flex items-center gap-0.5 text-xs font-bold ${
+                              delta > 0
+                                ? "text-green-600"
+                                : delta < 0
+                                ? "text-red-500"
+                                : "text-muted-foreground"
+                            }`}
+                          >
+                            {delta > 0 ? (
+                              <TrendingUp className="h-3 w-3" />
+                            ) : delta < 0 ? (
+                              <TrendingDown className="h-3 w-3" />
+                            ) : (
+                              <Minus className="h-3 w-3" />
+                            )}
+                            {delta > 0 ? `+${delta}` : delta}%
+                          </span>
+                        )}
+                        <span className="text-sm font-bold text-accent">{row.percentage}%</span>
+                      </div>
+                    </div>
+                    <div className="w-full h-2.5 bg-secondary rounded-full overflow-hidden mb-1 relative">
+                      {prevRow !== null && (
+                        <div
+                          className="absolute inset-y-0 right-0 bg-muted-foreground/25 rounded-full"
+                          style={{ width: `${prevRow.percentage}%` }}
+                        />
+                      )}
+                      <motion.div
+                        className="absolute inset-y-0 right-0 bg-gradient-to-l from-accent to-primary rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${row.percentage}%` }}
+                        transition={{ duration: 0.8, delay: i * 0.1 }}
+                      />
+                    </div>
+                    {row.note && <p className="text-xs text-muted-foreground">{row.note}</p>}
                   </div>
-                  <div className="w-full h-2.5 bg-secondary rounded-full overflow-hidden mb-1">
-                    <motion.div
-                      className="h-full bg-gradient-to-l from-accent to-primary rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${row.percentage}%` }}
-                      transition={{ duration: 0.8, delay: i * 0.1 }}
-                    />
-                  </div>
-                  {row.note && <p className="text-xs text-muted-foreground">{row.note}</p>}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
