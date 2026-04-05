@@ -172,6 +172,7 @@ export default function Assess() {
   const [discountInfo, setDiscountInfo] = useState<DiscountInfo | null>(null);
   const [checkingDiscount, setCheckingDiscount] = useState(false);
   const [paymentError, setPaymentError] = useState("");
+  const [processingFree, setProcessingFree] = useState(false);
 
   const startTime = useRef(Date.now());
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -197,6 +198,28 @@ export default function Assess() {
       })
       .catch(() => setPaymentStatus("free"));
   }, [user]);
+
+  async function handleFreeOrder() {
+    const code = discountCode.trim();
+    if (!code) return;
+    setProcessingFree(true);
+    setPaymentError("");
+    try {
+      const res = await fetch(apiUrl("/billing/free-order"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ discountCode: code }),
+      });
+      const d = await res.json() as { success: boolean; paymentId?: string; error?: string };
+      if (!d.success || !d.paymentId) throw new Error(d.error ?? "فشل تفعيل الطلب المجاني");
+      setPaymentId(d.paymentId);
+      setPaymentStatus("paid");
+    } catch (err: unknown) {
+      setPaymentError(err instanceof Error ? err.message : "حدث خطأ، حاول مجدداً");
+    } finally {
+      setProcessingFree(false);
+    }
+  }
 
   async function checkDiscount() {
     const code = discountCode.trim();
@@ -310,8 +333,20 @@ export default function Assess() {
               )}
             </div>
 
-            {/* PayPal button */}
-            {paypalConfig ? (
+            {/* Free button (100% discount) or PayPal */}
+            {discountInfo?.valid && displayPrice === 0 ? (
+              <button
+                onClick={handleFreeOrder}
+                disabled={processingFree}
+                className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition-all disabled:opacity-70"
+              >
+                {processingFree ? (
+                  <><Loader2 className="h-5 w-5 animate-spin" /> جارٍ التفعيل...</>
+                ) : (
+                  "ابدأ التقييم مجاناً ←"
+                )}
+              </button>
+            ) : paypalConfig ? (
               <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
                 <PayPalButtons
                   style={{ layout: "vertical", color: "blue", shape: "rect", label: "pay" }}

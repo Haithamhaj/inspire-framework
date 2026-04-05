@@ -369,6 +369,80 @@ router.post(
   }
 );
 
+// ─── POST /api/billing/free-order ────────────────────────
+// Used when a 100% discount code brings the price to $0 — no PayPal needed.
+
+router.post(
+  "/billing/free-order",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const { discountCode } = req.body as { discountCode?: string };
+    if (!discountCode) {
+      res.status(400).json({ success: false, error: "discountCode required" });
+      return;
+    }
+
+    const [found] = await db
+      .select()
+      .from(discountCodesTable)
+      .where(eq(discountCodesTable.code, discountCode.toUpperCase().trim()));
+
+    if (!found || !found.isActive) {
+      res.status(400).json({ success: false, error: "كود غير صالح" });
+      return;
+    }
+
+    const notExpired = !found.expiresAt || new Date() <= found.expiresAt;
+    const hasUses = found.maxUses === null || found.usedCount < found.maxUses;
+    if (!notExpired || !hasUses) {
+      res.status(400).json({ success: false, error: "كود منتهي الصلاحية أو استُنفد" });
+      return;
+    }
+
+    const originalPrice = getAssessmentPrice();
+    const finalPrice = parseFloat(
+      (originalPrice - (originalPrice * found.discountPercent) / 100).toFixed(2)
+    );
+
+    if (finalPrice > 0) {
+      res.status(400).json({ success: false, error: "هذا الكود لا يصفّر السعر" });
+      return;
+    }
+
+    // Create a completed payment record for $0
+    const [payment] = await db
+      .insert(paymentsTable)
+      .values({
+        userId: user.id,
+        paypalOrderId: null,
+        amount: "0.00",
+        originalAmount: originalPrice.toFixed(2),
+        discountCode: found.code,
+        discountPercent: found.discountPercent,
+        status: "completed",
+      })
+      .returning();
+
+    // Increment discount code usage
+    await db
+      .update(discountCodesTable)
+      .set({ usedCount: found.usedCount + 1 })
+      .where(eq(discountCodesTable.code, found.code));
+
+    req.log.info(
+      { userId: user.id, code: found.code, paymentId: payment?.id },
+      "Free order created via 100% discount"
+    );
+
+    res.json({ success: true, paymentId: payment?.id });
+  }
+);
+
 // ─── GET /api/billing/status ──────────────────────────────
 // Returns number of completed assessments so frontend knows if payment is needed
 
