@@ -137,7 +137,7 @@ All 4 tables pushed to PostgreSQL via `pnpm --filter @workspace/db run push`.
 ### Phase 4 — Results, Email, PDF, History (COMPLETE)
 
 **Backend libs** (`artifacts/api-server/src/lib/`):
-- `email.ts` — Lazy Resend client; `sendResultsEmail()` + `sendFailureEmail()`; HTML email with results link + PDF download link; called automatically from `ai-engine.ts` after completion
+- `email.ts` — Lazy Resend client; `sendResultsEmail()` called after `finish()` in ai-engine; `sendFailureEmail()` called when retries hit 10 and assessment transitions to `failed`; HTML email with results link + PDF download link; reads `RESEND_API_KEY`, `FROM_NAME`, `FROM_EMAIL`, `APP_URL` from env at send time (not module load); silently skips if `RESEND_API_KEY` absent
 - `pdf.ts` — `generateAndSavePDF()` using `@react-pdf/renderer`; 2-page A4 PDF (profile + system instruction); saves to `/public/pdfs/inspire-report-{id}.pdf`
 
 **Backend routes** (`artifacts/api-server/src/routes/results.ts`):
@@ -195,6 +195,19 @@ All 4 tables pushed to PostgreSQL via `pnpm --filter @workspace/db run push`.
 
 **OpenAPI spec** updated with all auth endpoints, codegen re-run.
 RTL layout with Tajawal font, primary #1a1a2e, accent #e94560.
+
+### Environment Variables (Email)
+
+| Variable | Scope | Value | Notes |
+|---|---|---|---|
+| `RESEND_API_KEY` | Secret | from Resend dashboard | Required for email sending; absent = silent skip |
+| `FROM_NAME` | shared env | `INSPIRE Framework` | Sender display name |
+| `FROM_EMAIL` | shared env | `onboarding@resend.dev` | Use `onboarding@resend.dev` until domain verified; then `noreply@imperfect-success.com` |
+| `APP_URL` | development env | Replit dev domain | Set production value after deployment; used in email links |
+
+To activate production emails: verify `imperfect-success.com` at resend.com/domains, then update `FROM_EMAIL` to `noreply@imperfect-success.com` and set `APP_URL` to the production domain.
+
+Admin route for manual resend: `POST /api/admin/resend-email/:id` (requires `x-admin-password` header).
 
 ### INSPIRE Acronym
 **I**ntention, **N**arrative, **S**tyle, **P**references, **I**nteraction, **R**eflection, **E**valuation
