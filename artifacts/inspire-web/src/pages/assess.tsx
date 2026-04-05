@@ -278,10 +278,12 @@ export default function Assess() {
               </div>
             </div>
             <h1 className="text-2xl font-display font-bold text-foreground mb-2 text-center">
-              تقييم جديد
+              {previousAssessmentId ? "إعادة التقييم" : "تقييم جديد"}
             </h1>
             <p className="text-muted-foreground text-center mb-8 text-sm">
-              لقد استخدمت تقييمك المجاني. ادفع لإنشاء تقييم جديد — PDF والمشاركة مشمولة.
+              {previousAssessmentId
+                ? "ستُجري تقييماً محدّثاً مرتبطاً بتقييمك السابق — يمكنك مقارنة النتائج لاحقاً."
+                : "لقد استخدمت تقييمك المجاني. ادفع لإنشاء تقييم جديد — PDF والمشاركة مشمولة."}
             </p>
 
             {/* Price display */}
@@ -343,7 +345,7 @@ export default function Assess() {
                 {processingFree ? (
                   <><Loader2 className="h-5 w-5 animate-spin" /> جارٍ التفعيل...</>
                 ) : (
-                  "ابدأ التقييم مجاناً ←"
+                  previousAssessmentId ? "ابدأ إعادة التقييم مجاناً ←" : "ابدأ التقييم مجاناً ←"
                 )}
               </button>
             ) : paypalConfig ? (
