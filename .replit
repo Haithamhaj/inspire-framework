@@ -34,7 +34,7 @@ channel = "stable-25_05"
 JWT_SECRET = "262597ada41f6746ec128738711bd9208f298bad90419a7fd4174a15d493a1711d9bb9add742dd8375688a900e6730fe1805d9eecf5845ad209974336c795b41"
 FROM_NAME = "INSPIRE Framework"
 FROM_EMAIL = "onboarding@resend.dev"
-PAYPAL_ENV = "sandbox"
+PAYPAL_ENV = "live"
 ASSESSMENT_PRICE = "10.00"
 
 [userenv.development]
