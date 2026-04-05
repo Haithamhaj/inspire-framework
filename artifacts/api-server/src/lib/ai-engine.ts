@@ -149,6 +149,10 @@ export async function processRetryQueue(): Promise<void> {
         { assessmentId: assessment.id },
         "Assessment failed after 10 retries"
       );
+      // Notify the user that their report failed
+      sendFailureEmail(user.email, user.name).catch((err) =>
+        logger.error({ assessmentId: assessment.id, err }, "sendFailureEmail threw")
+      );
     } else {
       await db
         .update(assessmentsTable)
