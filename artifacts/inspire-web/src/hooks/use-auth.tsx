@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
   }, [performRefresh]);
 
-  const { data: meData, isLoading: isMeLoading } = useGetMe({
+  const { data: meData, isLoading: isMeLoading, isFetching: isMeFetching } = useGetMe({
     query: {
       enabled: !isInitializing && !!memoryToken,
       retry: false,
@@ -63,7 +63,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (token: string) => {
     setMemoryToken(token);
-    queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    // Reset (clear cache) so pages see isLoading=true while fetching the
+    // fresh user, preventing a stale null from causing premature redirects.
+    queryClient.resetQueries({ queryKey: ["/api/auth/me"] });
   };
 
   const logout = async () => {
@@ -76,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const isLoading = isInitializing || (!!memoryToken && isMeLoading);
+  const isLoading = isInitializing || (!!memoryToken && (isMeLoading || isMeFetching));
   const user = meData?.success ? meData.user : null;
 
   return (
