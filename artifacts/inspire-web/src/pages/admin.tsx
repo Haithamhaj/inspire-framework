@@ -95,6 +95,11 @@ export default function Admin() {
   const [resetting, setResetting] = useState(false);
   const [resetMsg, setResetMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  // Delete user state
+  const [deleteEmail, setDeleteEmail] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
   // Discount codes state
   const [discountCodes, setDiscountCodes] = useState<DiscountCode[]>([]);
   const [codesLoading, setCodesLoading] = useState(false);
@@ -223,6 +228,32 @@ export default function Admin() {
     });
     const d = await res.json() as { success: boolean };
     if (d.success) setDiscountCodes(prev => prev.filter(c => c.id !== id));
+  }
+
+  async function handleDeleteUser() {
+    const email = deleteEmail.trim();
+    if (!email) return;
+    if (!confirm(`⚠️ حذف حساب ${email} نهائياً؟ لا يمكن التراجع.`)) return;
+    setDeleting(true);
+    setDeleteMsg(null);
+    try {
+      const res = await fetch(apiUrl("/admin/users"), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ email }),
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (d.success) {
+        setDeleteMsg({ ok: true, text: `✅ تم حذف حساب ${email} بنجاح` });
+        setDeleteEmail("");
+      } else {
+        setDeleteMsg({ ok: false, text: d.error ?? "فشل الحذف" });
+      }
+    } catch {
+      setDeleteMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setDeleting(false);
+    }
   }
 
   async function handleResetPassword() {
@@ -598,6 +629,41 @@ export default function Admin() {
             {resetMsg && (
               <p className={`mt-3 text-sm font-medium ${resetMsg.ok ? "text-green-600" : "text-red-500"}`}>
                 {resetMsg.text}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* ─── Delete User Section ─── */}
+        <div className="mt-8">
+          <div className="flex items-center gap-2 mb-5">
+            <Trash2 className="h-5 w-5 text-red-500" />
+            <h2 className="text-lg font-display font-bold text-foreground">حذف حساب مستخدم</h2>
+          </div>
+          <div className="bg-card border border-red-200 rounded-2xl p-6">
+            <p className="text-sm text-muted-foreground mb-4">تحذير: هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>
+            <div className="flex gap-3">
+              <input
+                type="email"
+                value={deleteEmail}
+                onChange={(e) => setDeleteEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleDeleteUser()}
+                placeholder="البريد الإلكتروني للمستخدم"
+                className="flex-1 bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-red-300"
+                dir="ltr"
+              />
+              <button
+                onClick={handleDeleteUser}
+                disabled={deleting || !deleteEmail.trim()}
+                className="flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-60 hover:bg-red-700 transition-colors whitespace-nowrap"
+              >
+                {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                حذف
+              </button>
+            </div>
+            {deleteMsg && (
+              <p className={`mt-3 text-sm font-medium ${deleteMsg.ok ? "text-green-600" : "text-red-500"}`}>
+                {deleteMsg.text}
               </p>
             )}
           </div>

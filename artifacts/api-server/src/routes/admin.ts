@@ -471,6 +471,33 @@ router.post(
   }
 );
 
+// ─── DELETE /api/admin/users/:email ───────────────────────
+
+router.delete(
+  "/admin/users",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { email } = req.body as { email?: string };
+    if (!email) {
+      res.status(400).json({ success: false, error: "Email required" });
+      return;
+    }
+
+    const [deleted] = await db
+      .delete(usersTable)
+      .where(eq(usersTable.email, email.toLowerCase().trim()))
+      .returning({ id: usersTable.id, email: usersTable.email });
+
+    if (!deleted) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    res.json({ success: true, deleted });
+  }
+);
+
 // ─── GET /api/admin/users ─────────────────────────────────
 
 router.get(
