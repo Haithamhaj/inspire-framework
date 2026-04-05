@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 import { motion } from "framer-motion";
@@ -7,6 +7,11 @@ import { useQueryClient } from "@tanstack/react-query";
 
 function apiUrl(path: string) {
   return `/api${path}`;
+}
+
+function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  return "حدث خطأ غير متوقع";
 }
 
 export default function Profile() {
@@ -25,13 +30,13 @@ export default function Profile() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordMsg, setPasswordMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  // Pre-fill once user is loaded
-  const [initialized, setInitialized] = useState(false);
-  if (user && !initialized) {
-    setName(user.name ?? "");
-    setJobTitle(user.jobTitle ?? "");
-    setInitialized(true);
-  }
+  // Pre-fill form fields once user data is available
+  useEffect(() => {
+    if (user) {
+      setName(user.name ?? "");
+      setJobTitle(user.jobTitle ?? "");
+    }
+  }, [user]);
 
   if (authLoading) {
     return (
@@ -59,8 +64,8 @@ export default function Profile() {
       if (!d.success) throw new Error(d.error || "فشل الحفظ");
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       setProfileMsg({ ok: true, text: "تم حفظ البيانات بنجاح" });
-    } catch (e: any) {
-      setProfileMsg({ ok: false, text: e.message });
+    } catch (err: unknown) {
+      setProfileMsg({ ok: false, text: getErrorMessage(err) });
     } finally {
       setProfileSaving(false);
     }
@@ -90,8 +95,8 @@ export default function Profile() {
       setNewPassword("");
       setConfirmPassword("");
       setShowPassword(false);
-    } catch (e: any) {
-      setPasswordMsg({ ok: false, text: e.message });
+    } catch (err: unknown) {
+      setPasswordMsg({ ok: false, text: getErrorMessage(err) });
     } finally {
       setPasswordSaving(false);
     }
@@ -206,6 +211,7 @@ export default function Profile() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   required
+                  autoComplete="current-password"
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                   placeholder="••••••••"
                 />
@@ -218,6 +224,7 @@ export default function Profile() {
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                   minLength={8}
+                  autoComplete="new-password"
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                   placeholder="8 أحرف على الأقل، تحتوي على رقم"
                 />
@@ -229,6 +236,7 @@ export default function Profile() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
+                  autoComplete="new-password"
                   className="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                   placeholder="••••••••"
                 />
