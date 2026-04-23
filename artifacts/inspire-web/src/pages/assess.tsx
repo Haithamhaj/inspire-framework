@@ -294,20 +294,20 @@ export default function Assess() {
 
               {/* Price display */}
               <div className="bg-secondary/50 rounded-2xl p-5 mb-6 text-center">
-              {discountInfo?.valid ? (
-                <div>
-                  <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">السعر بعد الخصم</div>
-                  <div className="text-sm text-muted-foreground line-through mb-1">${originalPrice.toFixed(2)}</div>
-                  <div className="text-4xl font-display font-black text-primary">${displayPrice.toFixed(2)}</div>
-                  <div className="text-sm text-green-600 font-semibold mt-1">تم تطبيق خصم {discountInfo.discountPercent}%</div>
-                </div>
-              ) : (
-                <div>
-                  <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">دفعة واحدة</div>
-                  <div className="text-4xl font-display font-black text-primary">${originalPrice.toFixed(2)}</div>
-                  <div className="text-sm text-muted-foreground mt-1">بدون اشتراك · تقرير PDF والمشاركة مشمولان</div>
-                </div>
-              )}
+                {discountInfo?.valid ? (
+                  <div>
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">السعر بعد الخصم</div>
+                    <div className="text-sm text-muted-foreground line-through mb-1">${originalPrice.toFixed(2)}</div>
+                    <div className="text-4xl font-display font-black text-primary">${displayPrice.toFixed(2)}</div>
+                    <div className="text-sm text-green-600 font-semibold mt-1">تم تطبيق خصم {discountInfo.discountPercent}%</div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">دفعة واحدة</div>
+                    <div className="text-4xl font-display font-black text-primary">${originalPrice.toFixed(2)}</div>
+                    <div className="text-sm text-muted-foreground mt-1">بدون اشتراك · تقرير PDF والمشاركة مشمولان</div>
+                  </div>
+                )}
               </div>
 
               {/* Discount code */}

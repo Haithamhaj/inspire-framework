@@ -555,8 +555,8 @@ export default function Results() {
               <h2 className="font-display font-bold text-xl flex items-center gap-2">
                 <Zap className="h-5 w-5 text-accent" /> تعليمات النظام الشخصية
               </h2>
-              <button
-                onClick={() => copyText(assessment.systemInstruction, "sys")}
+                <button
+                  onClick={() => copyText(assessment.systemInstruction ?? "", "sys")}
                 className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
               >
                 {copied === "sys" ? <><Check className="h-4 w-4" /> تم النسخ</> : <><Copy className="h-4 w-4" /> انسخ</>}
