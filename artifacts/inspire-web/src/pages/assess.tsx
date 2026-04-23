@@ -9,6 +9,7 @@ import {
   Loader2,
   ClipboardList,
   Brain,
+  Sparkles,
   MessageSquare,
   Zap,
   Clock,
@@ -265,27 +266,31 @@ export default function Assess() {
     const originalPrice = paypalConfig?.price ?? 10;
 
     return (
-      <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
-        <div className="w-full max-w-3xl space-y-6">
+      <div className="min-h-[calc(100vh-5rem)] py-10 px-4 flex justify-center">
+        <div className="w-full max-w-4xl space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-card rounded-3xl border border-border p-8 md:p-10 shadow-xl text-right"
           >
-            <div className="max-w-xl mx-auto">
+            <div className="max-w-2xl mx-auto">
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
                   <CreditCard className="h-8 w-8 text-primary" />
                 </div>
               </div>
-              <div className="text-center mb-8">
+              <div className="text-center mb-7">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/70 border border-border text-xs font-semibold text-muted-foreground mb-4">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  انطباع أول قوي · ترقية واضحة · تجربة سريعة
+                </div>
                 <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
                   {previousAssessmentId ? "إعادة تقييم" : "تقييم جديد"}
                 </p>
-                <h1 className="text-3xl font-display font-black text-foreground mb-3">
+                <h1 className="text-3xl md:text-4xl font-display font-black text-foreground mb-3 leading-tight">
                   {previousAssessmentId ? "ارجع لتقييمك السابق وطور نتيجتك" : "ابدأ تقييمك الكامل واحصل على نظامك الشخصي"}
                 </h1>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                   {previousAssessmentId
                     ? "ستُنشئ نسخة محسّنة مرتبطة بتقييمك السابق، مع مقارنة واضحة ونتيجة أكثر عمقاً."
                     : "ستحصل على تعليمات نظام شخصية كاملة مبنية على 7 محاور سلوكية، جاهزة للنسخ إلى أي نموذج ذكاء اصطناعي."}
@@ -293,26 +298,27 @@ export default function Assess() {
               </div>
 
               {/* Price display */}
-              <div className="bg-secondary/50 rounded-2xl p-5 mb-6 text-center">
+              <div className="bg-secondary/50 rounded-3xl p-6 mb-5 text-center border border-border/60">
                 {discountInfo?.valid ? (
                   <div>
-                    <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">السعر بعد الخصم</div>
-                    <div className="text-sm text-muted-foreground line-through mb-1">${originalPrice.toFixed(2)}</div>
-                    <div className="text-4xl font-display font-black text-primary">${displayPrice.toFixed(2)}</div>
-                    <div className="text-sm text-green-600 font-semibold mt-1">تم تطبيق خصم {discountInfo.discountPercent}%</div>
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">السعر بعد الخصم</div>
+                    <div className="flex items-end justify-center gap-3 mb-2">
+                      <div className="text-sm text-muted-foreground line-through pb-1">${originalPrice.toFixed(2)}</div>
+                      <div className="text-4xl font-display font-black text-primary">${displayPrice.toFixed(2)}</div>
+                    </div>
+                    <div className="text-sm text-green-600 font-semibold">تم تطبيق خصم {discountInfo.discountPercent}%</div>
                   </div>
                 ) : (
                   <div>
                     <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">دفعة واحدة</div>
                     <div className="text-4xl font-display font-black text-primary">${originalPrice.toFixed(2)}</div>
-                    <div className="text-sm text-muted-foreground mt-1">بدون اشتراك · تقرير PDF والمشاركة مشمولان</div>
+                    <div className="text-sm text-muted-foreground mt-2">بدون اشتراك · تقرير PDF والمشاركة مشمولان</div>
                   </div>
                 )}
               </div>
 
-              {/* Discount code */}
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-foreground mb-2">هل لديك كود خصم؟</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">كود الخصم</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -323,15 +329,15 @@ export default function Assess() {
                     }}
                     onKeyDown={(e) => { if (e.key === "Enter") checkDiscount(); }}
                     placeholder="INSPIRE10"
-                    className="flex-1 bg-secondary border border-border rounded-xl px-4 py-3 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="flex-1 bg-background border border-border rounded-2xl px-4 py-3 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
                     dir="ltr"
                   />
-                  <button
-                    onClick={checkDiscount}
-                    disabled={checkingDiscount || !discountCode.trim()}
-                    className="px-4 py-3 bg-secondary border border-border rounded-xl text-sm font-semibold hover:bg-secondary/80 disabled:opacity-50 transition-colors"
-                  >
-                    {checkingDiscount ? <Loader2 className="h-4 w-4 animate-spin" /> : "تطبيق"}
+                <button
+                  onClick={checkDiscount}
+                  disabled={checkingDiscount || !discountCode.trim()}
+                  className="px-5 py-3 bg-secondary border border-border rounded-2xl text-sm font-semibold hover:bg-secondary/80 disabled:opacity-50 transition-colors"
+                >
+                    {checkingDiscount ? <Loader2 className="h-4 w-4 animate-spin" /> : "تحقق"}
                   </button>
                 </div>
                 {discountInfo !== null && (
@@ -348,7 +354,7 @@ export default function Assess() {
                 <button
                   onClick={handleFreeOrder}
                   disabled={processingFree}
-                  className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all disabled:opacity-70"
+                  className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-green-600/20 transition-all disabled:opacity-70"
                 >
                   {processingFree ? (
                     <><Loader2 className="h-5 w-5 animate-spin" /> جارٍ التفعيل...</>
@@ -416,8 +422,8 @@ export default function Assess() {
                   <Brain className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">شاهد كيف تبدو النتيجة الكاملة</p>
-                  <p className="text-xs text-muted-foreground">معاينة حقيقية بشكل مبسّط قبل الدفع</p>
+                  <p className="text-sm font-semibold text-foreground">مثال سريع على النتيجة الكاملة</p>
+                  <p className="text-xs text-muted-foreground">لتعرف بالضبط ماذا ستحصل عليه قبل الدفع</p>
                 </div>
               </div>
               <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
@@ -427,7 +433,7 @@ export default function Assess() {
               </div>
             </div>
             <div className="relative">
-              <div className="p-6 space-y-4 select-none pointer-events-none" style={{ filter: "blur(3px)", opacity: 0.62 }}>
+              <div className="p-6 space-y-4 select-none pointer-events-none" style={{ filter: "blur(2.5px)", opacity: 0.65 }}>
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">نمطك السلوكي</p>
                   <p className="text-sm text-foreground leading-relaxed">
@@ -452,9 +458,9 @@ export default function Assess() {
                 </div>
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-background/90 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border shadow-lg text-center max-w-xs">
-                  <p className="text-sm font-bold text-foreground mb-1">ادفع مرة واحدة واحصل على نسختك الكاملة</p>
-                  <p className="text-xs text-muted-foreground">تعليمات شخصية + PDF + مشاركة + إعادة استخدام</p>
+                <div className="bg-background/95 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border shadow-lg text-center max-w-xs">
+                  <p className="text-sm font-bold text-foreground mb-1">ادفع مرة واحدة واحصل على النسخة الكاملة</p>
+                  <p className="text-xs text-muted-foreground">تعليمات شخصية + PDF + مشاركة</p>
                 </div>
               </div>
             </div>
