@@ -266,135 +266,142 @@ export default function Assess() {
 
     return (
       <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
-        <div className="w-full max-w-2xl space-y-6">
-          <div className="max-w-md mx-auto">
+        <div className="w-full max-w-3xl space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-card rounded-3xl border border-border p-8 md:p-10 shadow-xl text-right"
           >
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <CreditCard className="h-8 w-8 text-primary" />
+            <div className="max-w-xl mx-auto">
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <CreditCard className="h-8 w-8 text-primary" />
+                </div>
               </div>
-            </div>
-            <h1 className="text-2xl font-display font-bold text-foreground mb-2 text-center">
-              {previousAssessmentId ? "إعادة التقييم" : "تقييم جديد"}
-            </h1>
-            <p className="text-muted-foreground text-center mb-8 text-sm">
-              {previousAssessmentId
-                ? "ستُجري تقييماً محدّثاً مرتبطاً بتقييمك السابق — يمكنك مقارنة النتائج لاحقاً."
-                : "لقد استخدمت تقييمك المجاني. ادفع لإنشاء تقييم جديد — PDF والمشاركة مشمولة."}
-            </p>
+              <div className="text-center mb-8">
+                <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+                  {previousAssessmentId ? "إعادة تقييم" : "تقييم جديد"}
+                </p>
+                <h1 className="text-3xl font-display font-black text-foreground mb-3">
+                  {previousAssessmentId ? "ارجع لتقييمك السابق وطور نتيجتك" : "ابدأ تقييمك الكامل واحصل على نظامك الشخصي"}
+                </h1>
+                <p className="text-muted-foreground leading-relaxed">
+                  {previousAssessmentId
+                    ? "ستُنشئ نسخة محسّنة مرتبطة بتقييمك السابق، مع مقارنة واضحة ونتيجة أكثر عمقاً."
+                    : "ستحصل على تعليمات نظام شخصية كاملة مبنية على 7 محاور سلوكية، جاهزة للنسخ إلى أي نموذج ذكاء اصطناعي."}
+                </p>
+              </div>
 
-            {/* Price display */}
-            <div className="bg-secondary/50 rounded-2xl p-5 mb-6 text-center">
+              {/* Price display */}
+              <div className="bg-secondary/50 rounded-2xl p-5 mb-6 text-center">
               {discountInfo?.valid ? (
                 <div>
+                  <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">السعر بعد الخصم</div>
                   <div className="text-sm text-muted-foreground line-through mb-1">${originalPrice.toFixed(2)}</div>
                   <div className="text-4xl font-display font-black text-primary">${displayPrice.toFixed(2)}</div>
-                  <div className="text-sm text-green-600 font-semibold mt-1">خصم {discountInfo.discountPercent}% مطبق ✓</div>
+                  <div className="text-sm text-green-600 font-semibold mt-1">تم تطبيق خصم {discountInfo.discountPercent}%</div>
                 </div>
               ) : (
                 <div>
+                  <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">دفعة واحدة</div>
                   <div className="text-4xl font-display font-black text-primary">${originalPrice.toFixed(2)}</div>
-                  <div className="text-sm text-muted-foreground mt-1">دفعة واحدة · بدون اشتراك</div>
+                  <div className="text-sm text-muted-foreground mt-1">بدون اشتراك · تقرير PDF والمشاركة مشمولان</div>
                 </div>
               )}
-            </div>
-
-            {/* Discount code */}
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-foreground mb-2">كود خصم (اختياري)</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={discountCode}
-                  onChange={(e) => {
-                    setDiscountCode(e.target.value.toUpperCase());
-                    setDiscountInfo(null);
-                  }}
-                  onKeyDown={(e) => { if (e.key === "Enter") checkDiscount(); }}
-                  placeholder="INSPIRE10"
-                  className="flex-1 bg-secondary border border-border rounded-xl px-4 py-2.5 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  dir="ltr"
-                />
-                <button
-                  onClick={checkDiscount}
-                  disabled={checkingDiscount || !discountCode.trim()}
-                  className="px-4 py-2.5 bg-secondary border border-border rounded-xl text-sm font-semibold hover:bg-secondary/80 disabled:opacity-50 transition-colors"
-                >
-                  {checkingDiscount ? <Loader2 className="h-4 w-4 animate-spin" /> : "تطبيق"}
-                </button>
               </div>
-              {discountInfo !== null && (
-                <p className={`text-xs mt-2 ${discountInfo.valid ? "text-green-600" : "text-red-500"}`}>
-                  {discountInfo.valid
-                    ? `✓ كود صالح — خصم ${discountInfo.discountPercent}%`
-                    : "✗ الكود غير صالح أو منتهي الصلاحية"}
-                </p>
+
+              {/* Discount code */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold text-foreground mb-2">هل لديك كود خصم؟</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={discountCode}
+                    onChange={(e) => {
+                      setDiscountCode(e.target.value.toUpperCase());
+                      setDiscountInfo(null);
+                    }}
+                    onKeyDown={(e) => { if (e.key === "Enter") checkDiscount(); }}
+                    placeholder="INSPIRE10"
+                    className="flex-1 bg-secondary border border-border rounded-xl px-4 py-3 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    dir="ltr"
+                  />
+                  <button
+                    onClick={checkDiscount}
+                    disabled={checkingDiscount || !discountCode.trim()}
+                    className="px-4 py-3 bg-secondary border border-border rounded-xl text-sm font-semibold hover:bg-secondary/80 disabled:opacity-50 transition-colors"
+                  >
+                    {checkingDiscount ? <Loader2 className="h-4 w-4 animate-spin" /> : "تطبيق"}
+                  </button>
+                </div>
+                {discountInfo !== null && (
+                  <p className={`text-xs mt-2 ${discountInfo.valid ? "text-green-600" : "text-red-500"}`}>
+                    {discountInfo.valid
+                      ? `✓ كود صالح — خصم ${discountInfo.discountPercent}%`
+                      : "✗ الكود غير صالح أو منتهي الصلاحية"}
+                  </p>
+                )}
+              </div>
+
+              {/* Free button (100% discount) or PayPal */}
+              {discountInfo?.valid && displayPrice === 0 ? (
+                <button
+                  onClick={handleFreeOrder}
+                  disabled={processingFree}
+                  className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all disabled:opacity-70"
+                >
+                  {processingFree ? (
+                    <><Loader2 className="h-5 w-5 animate-spin" /> جارٍ التفعيل...</>
+                  ) : (
+                    previousAssessmentId ? "ابدأ إعادة التقييم مجاناً ←" : "ابدأ التقييم مجاناً ←"
+                  )}
+                </button>
+              ) : paypalConfig ? (
+                <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
+                  <PayPalButtons
+                    style={{ layout: "vertical", color: "blue", shape: "rect", label: "pay" }}
+                    createOrder={async () => {
+                      setPaymentError("");
+                      const res = await fetch(apiUrl("/billing/create-order"), {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          discountCode: (discountInfo?.valid && discountCode.trim()) ? discountCode.trim() : undefined,
+                        }),
+                      });
+                      const d = await res.json() as { success: boolean; orderId?: string; error?: string };
+                      if (!d.success || !d.orderId) throw new Error(d.error ?? "فشل إنشاء الطلب");
+                      return d.orderId;
+                    }}
+                    onApprove={async (data) => {
+                      const res = await fetch(apiUrl("/billing/capture-order"), {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ orderId: data.orderID }),
+                      });
+                      const d = await res.json() as { success: boolean; paymentId?: string; error?: string };
+                      if (!d.success || !d.paymentId) throw new Error(d.error ?? "فشل تأكيد الدفع");
+                      setPaymentId(d.paymentId);
+                      setPaymentStatus("paid");
+                    }}
+                    onError={(err) => {
+                      setPaymentError("حدث خطأ في الدفع. يُرجى المحاولة مجدداً.");
+                      console.error("PayPal error:", err);
+                    }}
+                  />
+                </PayPalScriptProvider>
+              ) : (
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-4">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  جارٍ تحميل بوابة الدفع...
+                </div>
+              )}
+
+              {paymentError && (
+                <p className="text-sm text-red-500 text-center mt-3">{paymentError}</p>
               )}
             </div>
-
-            {/* Free button (100% discount) or PayPal */}
-            {discountInfo?.valid && displayPrice === 0 ? (
-              <button
-                onClick={handleFreeOrder}
-                disabled={processingFree}
-                className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition-all disabled:opacity-70"
-              >
-                {processingFree ? (
-                  <><Loader2 className="h-5 w-5 animate-spin" /> جارٍ التفعيل...</>
-                ) : (
-                  previousAssessmentId ? "ابدأ إعادة التقييم مجاناً ←" : "ابدأ التقييم مجاناً ←"
-                )}
-              </button>
-            ) : paypalConfig ? (
-              <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
-                <PayPalButtons
-                  style={{ layout: "vertical", color: "blue", shape: "rect", label: "pay" }}
-                  createOrder={async () => {
-                    setPaymentError("");
-                    const res = await fetch(apiUrl("/billing/create-order"), {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        discountCode: (discountInfo?.valid && discountCode.trim()) ? discountCode.trim() : undefined,
-                      }),
-                    });
-                    const d = await res.json() as { success: boolean; orderId?: string; error?: string };
-                    if (!d.success || !d.orderId) throw new Error(d.error ?? "فشل إنشاء الطلب");
-                    return d.orderId;
-                  }}
-                  onApprove={async (data) => {
-                    const res = await fetch(apiUrl("/billing/capture-order"), {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ orderId: data.orderID }),
-                    });
-                    const d = await res.json() as { success: boolean; paymentId?: string; error?: string };
-                    if (!d.success || !d.paymentId) throw new Error(d.error ?? "فشل تأكيد الدفع");
-                    setPaymentId(d.paymentId);
-                    setPaymentStatus("paid");
-                  }}
-                  onError={(err) => {
-                    setPaymentError("حدث خطأ في الدفع. يُرجى المحاولة مجدداً.");
-                    console.error("PayPal error:", err);
-                  }}
-                />
-              </PayPalScriptProvider>
-            ) : (
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-4">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                جارٍ تحميل بوابة الدفع...
-              </div>
-            )}
-
-            {paymentError && (
-              <p className="text-sm text-red-500 text-center mt-3">{paymentError}</p>
-            )}
           </motion.div>
-          </div>
 
           {/* ── Static Example Preview ──────────────────────────── */}
           <motion.div
@@ -403,44 +410,51 @@ export default function Assess() {
             transition={{ delay: 0.15 }}
             className="bg-card rounded-3xl border border-border overflow-hidden shadow-sm"
           >
-            <div className="px-6 py-4 border-b border-border bg-secondary/30 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Brain className="h-4 w-4 text-primary" />
+            <div className="px-6 py-4 border-b border-border bg-secondary/30 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Brain className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">شاهد كيف تبدو النتيجة الكاملة</p>
+                  <p className="text-xs text-muted-foreground">معاينة حقيقية بشكل مبسّط قبل الدفع</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">مثال على مخرجات التقييم الكامل</p>
-                <p className="text-xs text-muted-foreground">ستحصل على تعليمات مخصصة لك بهذا الشكل</p>
+              <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="px-2.5 py-1 rounded-full bg-secondary">7 محاور</span>
+                <span className="px-2.5 py-1 rounded-full bg-secondary">PDF</span>
+                <span className="px-2.5 py-1 rounded-full bg-secondary">مشاركة</span>
               </div>
             </div>
             <div className="relative">
-              <div className="p-6 space-y-4 select-none pointer-events-none" style={{ filter: "blur(3px)", opacity: 0.55 }}>
+              <div className="p-6 space-y-4 select-none pointer-events-none" style={{ filter: "blur(3px)", opacity: 0.62 }}>
                 <div>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">نمطك السلوكي</p>
                   <p className="text-sm text-foreground leading-relaxed">
-                    أنت شخص يميل إلى التخطيط المنهجي قبل التنفيذ، وتُفضّل أن يقدم لك الذكاء الاصطناعي تفسيراً كاملاً للمنطق قبل الحل. تعمل بشكل أفضل في بيئات هادئة ومنظمة مع حدود واضحة.
+                    أنت تميل إلى التخطيط الواضح قبل التنفيذ، وتحتاج من الذكاء الاصطناعي أن يشرح المنطق أولاً ثم يقترح الحلول العملية بشكل منظم.
                   </p>
                 </div>
                 <div className="bg-primary rounded-2xl p-4">
                   <p className="text-xs font-bold text-primary-foreground/70 uppercase tracking-widest mb-2">تعليمات النظام — جاهزة للنسخ</p>
                   <p className="text-xs text-primary-foreground/90 leading-relaxed font-mono">
-                    {"## Universal Rules\nAlways respond in Arabic.\n\n## Behavioral Profile\nI: Focused — Always prioritize a single clear goal...\nN: Analyst — Usually provide full reasoning...\nS: Structured — When needed, present step-by-step...\nP: Deep — Always explain logic before conclusions...\n\n## For [اسم مشروعك]\n• Goal: [هدفك المحدد]\n• Style: منهجي تحليلي\n• Depth: شرح كامل مع أمثلة"}
+                    {"## Universal Rules\nAlways respond in Arabic.\nBe concise, practical, and specific.\n\n## Behavioral Profile\nI: Focused — Always prioritize one clear goal.\nN: Analyst — Usually explain the reasoning first.\nS: Structured — When needed, present step-by-step.\nP: Deep — Always connect conclusions to evidence.\n\n## For [اسم مشروعك]\n• Goal: [هدفك المحدد]\n• Style: منهجي، تحليلي، واضح\n• Depth: شرح كامل مع أمثلة قابلة للتطبيق"}
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-secondary/50 rounded-xl p-3">
                     <p className="text-xs font-bold text-foreground mb-1">نقاط القوة</p>
-                    <p className="text-xs text-muted-foreground">• التحليل المعمّق<br/>• التخطيط الاستراتيجي</p>
+                    <p className="text-xs text-muted-foreground">• التحليل المعمّق<br/>• التخطيط الاستراتيجي<br/>• وضوح التنفيذ</p>
                   </div>
                   <div className="bg-secondary/50 rounded-xl p-3">
                     <p className="text-xs font-bold text-foreground mb-1">مناطق التطوير</p>
-                    <p className="text-xs text-muted-foreground">• الاستجابة السريعة<br/>• المرونة في التغيير</p>
+                    <p className="text-xs text-muted-foreground">• الاستجابة السريعة<br/>• المرونة في التغيير<br/>• تقليل التردد</p>
                   </div>
                 </div>
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-background/80 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border shadow-lg text-center">
-                  <p className="text-sm font-bold text-foreground mb-1">ادفع للحصول على تعليماتك الشخصية</p>
-                  <p className="text-xs text-muted-foreground">مُولَّدة خصيصاً لك ولمشروعك</p>
+                <div className="bg-background/90 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border shadow-lg text-center max-w-xs">
+                  <p className="text-sm font-bold text-foreground mb-1">ادفع مرة واحدة واحصل على نسختك الكاملة</p>
+                  <p className="text-xs text-muted-foreground">تعليمات شخصية + PDF + مشاركة + إعادة استخدام</p>
                 </div>
               </div>
             </div>
