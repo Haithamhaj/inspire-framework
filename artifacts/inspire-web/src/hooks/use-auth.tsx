@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { useGetMe, useRefreshToken, useLogout } from "@workspace/api-client-react";
+import { useGetMe, useRefreshToken, useLogout, getGetMeQueryKey, type UserInfo } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 // Module-level token for the fetch interceptor (no React re-render needed here)
@@ -22,7 +22,7 @@ window.fetch = async (...args) => {
 };
 
 interface AuthContextType {
-  user: unknown | null;
+  user: UserInfo | null;
   isLoading: boolean;
   login: (token: string) => void;
   logout: () => void;
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     isMounted.current = true;
-    performRefresh({})
+    performRefresh()
       .then((res) => {
         if (res.success && res.access_token) {
           _memoryToken = res.access_token;
@@ -62,6 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const { data: meData, isLoading: isMeLoading, isFetching: isMeFetching } = useGetMe({
     query: {
+      queryKey: getGetMeQueryKey(),
       enabled: !isInitializing && !!token,
       retry: false,
     },
@@ -85,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isLoading = isInitializing || (!!token && (isMeLoading || isMeFetching));
-  const user = meData?.success ? meData.user : null;
+  const user: UserInfo | null = meData?.success ? meData.user : null;
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout }}>
