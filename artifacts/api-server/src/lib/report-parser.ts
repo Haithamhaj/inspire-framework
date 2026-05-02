@@ -71,3 +71,82 @@ export function parseFullReport(text: string) {
     quickStarters: quickStarters.length > 0 ? quickStarters : [rawQS].filter(Boolean).slice(0, 3),
   };
 }
+
+// ─── V2 Report Parser ─────────────────────────────────────────────────────────
+// Maps AI output sections (using v2 markers) to existing DB fields.
+// Per Correction 5 mapping:
+//   full_copy_ready_instruction → systemInstruction
+//   starter_prompts             → quickStarters
+//   red_lines_failure_triggers  → redLines
+//   recommended_usage_strategy  → recommendations
+//   ai_interaction_style + recommended_identity + domain_operating_mode → roleAnalysis
+//   strengths                   → strengths
+//   risks_blindspots            → developmentAreas
+//   behavioral_signal_map       → inspireTable (null for v2)
+
+export function parseFullReportV2(text: string): {
+  systemInstruction: string;
+  quickStarters: string[];
+  redLines: string[];
+  recommendations: string[];
+  roleAnalysis: string;
+  strengths: string[];
+  developmentAreas: string[];
+  inspireTable: null;
+} {
+  const extract = (start: string, end: string): string => {
+    const m = text.match(new RegExp(`${start}([\\s\\S]*?)${end}`));
+    return m ? m[1].trim() : "";
+  };
+
+  const parseBulletSection = (raw: string, maxItems: number): string[] => {
+    const items = raw
+      .split("\n")
+      .filter((l) => l.trim().startsWith("•"))
+      .map((l) => l.replace(/^•\s*/, "").trim())
+      .filter(Boolean);
+    if (items.length > 0) return items.slice(0, maxItems);
+    return raw
+      .split("\n")
+      .map((l) => l.replace(/^[-*]\s*/, "").trim())
+      .filter(Boolean)
+      .slice(0, maxItems);
+  };
+
+  const parseNumberedSection = (raw: string, maxItems: number): string[] => {
+    const items = raw
+      .split("\n")
+      .filter((l) => /^\d+\./.test(l.trim()))
+      .map((l) => l.replace(/^\d+\.\s*/, "").trim())
+      .filter(Boolean);
+    if (items.length > 0) return items.slice(0, maxItems);
+    return raw
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean)
+      .slice(0, maxItems);
+  };
+
+  const rawInstruction = extract("===FULL_INSTRUCTION_START===", "===FULL_INSTRUCTION_END===");
+  const rawStarters = extract("===STARTERS_START===", "===STARTERS_END===");
+  const rawRedLines = extract("===RED_LINES_START===", "===RED_LINES_END===");
+  const rawStrengths = extract("===STRENGTHS_START===", "===STRENGTHS_END===");
+  const rawRisks = extract("===RISKS_START===", "===RISKS_END===");
+  const rawRoleAnalysis = extract("===ROLE_ANALYSIS_START===", "===ROLE_ANALYSIS_END===");
+  const rawRecommendations = extract("===RECOMMENDATIONS_START===", "===RECOMMENDATIONS_END===");
+
+  const quickStarters = parseNumberedSection(rawStarters, 3).map((s) =>
+    s.replace(/^[""]/, "").replace(/[""]$/, "").trim()
+  );
+
+  return {
+    systemInstruction: UNIVERSAL_RULES + "\n\n" + rawInstruction,
+    quickStarters: quickStarters.length > 0 ? quickStarters : rawStarters.split("\n").filter(Boolean).slice(0, 3),
+    redLines: parseBulletSection(rawRedLines, 5),
+    recommendations: parseNumberedSection(rawRecommendations, 5),
+    roleAnalysis: rawRoleAnalysis,
+    strengths: parseBulletSection(rawStrengths, 5),
+    developmentAreas: parseBulletSection(rawRisks, 5),
+    inspireTable: null,
+  };
+}

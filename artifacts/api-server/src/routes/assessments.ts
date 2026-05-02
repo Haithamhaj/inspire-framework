@@ -3,10 +3,16 @@ import { db } from "@workspace/db";
 import { assessmentsTable, usersTable, paymentsTable } from "@workspace/db/schema";
 import { eq, and, count, isNull } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
-import { AssessmentStartSchema, AssessmentSubmitSchema } from "../lib/validators";
-import { generateReport, processRetryQueue } from "../lib/ai-engine";
+import {
+  AssessmentStartSchema,
+  MiniSubmitSchema,
+  V2SubmitSchema,
+} from "../lib/validators";
+import { generateReport, generateReportV2, processRetryQueue } from "../lib/ai-engine";
 import { rateLimit, getClientIp } from "../lib/rate-limit";
 import { logger } from "../lib/logger";
+import { REQUIRED_V2_QUESTION_IDS } from "../data/questions-v2";
+import { VALID_OPTION_IDS_BY_QUESTION } from "../data/option-routing";
 
 const router: IRouter = Router();
 
@@ -184,7 +190,63 @@ router.post(
       return;
     }
 
-    const parsed = AssessmentSubmitSchema.safeParse(req.body);
+    const assessmentType = existing.assessmentType ?? "full";
+
+    // ── Mini path ──────────────────────────────────────────────────────────────
+    if (assessmentType === "mini") {
+      const parsed = MiniSubmitSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({
+          success: false,
+          error: "Validation failed",
+          details: parsed.error.flatten(),
+        });
+        return;
+      }
+
+      const {
+        behavioral_answers,
+        scenario_answers,
+        open_answer,
+        completion_time_seconds,
+      } = parsed.data;
+
+      await db
+        .update(assessmentsTable)
+        .set({
+          behavioralAnswers: behavioral_answers,
+          scenarioAnswers: scenario_answers,
+          openAnswer: open_answer,
+          completionTimeSeconds: completion_time_seconds,
+          status: "processing",
+        })
+        .where(eq(assessmentsTable.id, id as string));
+
+      res.json({ success: true, status: "processing" });
+
+      setImmediate(async () => {
+        try {
+          await generateReport(id as string, {
+            name: user.name,
+            jobTitle: user.jobTitle ?? undefined,
+            projectName: existing.projectName,
+            projectGoal: existing.projectGoal,
+            reportLanguage: existing.reportLanguage as "ar" | "en" | "both",
+            behavioralAnswers: behavioral_answers,
+            scenarioAnswers: scenario_answers,
+            openAnswer: open_answer,
+            assessmentType: "mini",
+          });
+        } catch (err) {
+          logger.error({ assessmentId: id, err }, "generateReport (mini) threw unexpectedly");
+        }
+      });
+
+      return;
+    }
+
+    // ── V2 Full path ───────────────────────────────────────────────────────────
+    const parsed = V2SubmitSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
         success: false,
@@ -194,19 +256,42 @@ router.post(
       return;
     }
 
-    const {
-      behavioral_answers,
-      scenario_answers,
-      open_answer,
-      completion_time_seconds,
-    } = parsed.data;
+    const { answers, open_answer, completion_time_seconds } = parsed.data;
+
+    // Cross-validate: all 21 required question IDs must be present
+    const submittedIds = new Set(answers.map((a) => a.questionId));
+    const missingIds = REQUIRED_V2_QUESTION_IDS.filter((qid) => !submittedIds.has(qid));
+    if (missingIds.length > 0) {
+      res.status(400).json({
+        success: false,
+        error: "Missing required question IDs",
+        details: { missingIds },
+      });
+      return;
+    }
+
+    // Cross-validate: each optionId must be valid for its questionId
+    const invalidOptions: Array<{ questionId: string; optionId: string }> = [];
+    for (const answer of answers) {
+      const validOptions = VALID_OPTION_IDS_BY_QUESTION.get(answer.questionId);
+      if (!validOptions || !validOptions.has(answer.optionId)) {
+        invalidOptions.push({ questionId: answer.questionId, optionId: answer.optionId });
+      }
+    }
+    if (invalidOptions.length > 0) {
+      res.status(400).json({
+        success: false,
+        error: "Invalid option IDs",
+        details: { invalidOptions },
+      });
+      return;
+    }
 
     await db
       .update(assessmentsTable)
       .set({
-        behavioralAnswers: behavioral_answers,
-        scenarioAnswers: scenario_answers,
-        openAnswer: open_answer,
+        behavioralAnswers: answers,
+        openAnswer: open_answer ?? null,
         completionTimeSeconds: completion_time_seconds,
         status: "processing",
       })
@@ -216,19 +301,17 @@ router.post(
 
     setImmediate(async () => {
       try {
-        await generateReport(id as string, {
+        await generateReportV2(id as string, {
           name: user.name,
           jobTitle: user.jobTitle ?? undefined,
           projectName: existing.projectName,
           projectGoal: existing.projectGoal,
           reportLanguage: existing.reportLanguage as "ar" | "en" | "both",
-          behavioralAnswers: behavioral_answers,
-          scenarioAnswers: scenario_answers,
-          openAnswer: open_answer,
-          assessmentType: (existing.assessmentType ?? "full") as "full" | "mini",
+          answers,
+          openAnswer: open_answer ?? undefined,
         });
       } catch (err) {
-        logger.error({ assessmentId: id, err }, "generateReport threw unexpectedly");
+        logger.error({ assessmentId: id, err }, "generateReportV2 threw unexpectedly");
       }
     });
   }

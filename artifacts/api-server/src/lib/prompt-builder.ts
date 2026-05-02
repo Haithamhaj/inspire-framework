@@ -1,5 +1,6 @@
 import { BEHAVIORAL_QUESTIONS } from "../data/questions";
 import { SCENARIOS } from "../data/scenarios";
+import { getOptionRoute, type InstructionSection } from "../data/option-routing";
 
 // ─── Universal Rules ───────────────────────────────────────
 // These 6 rules are appended to EVERY generated system instruction
@@ -60,6 +61,16 @@ export interface PromptData {
   scenarioAnswers: Array<{ scenario_index: number; choice: "a" | "b" }>;
   openAnswer: string;
   assessmentType?: "full" | "mini";
+}
+
+export interface PromptDataV2 {
+  name: string;
+  jobTitle?: string;
+  projectName: string;
+  projectGoal: string;
+  reportLanguage: "ar" | "en" | "both";
+  answers: Array<{ questionId: string; optionId: string }>;
+  openAnswer?: string;
 }
 
 // ─── Score Calculator ──────────────────────────────────────
@@ -324,4 +335,209 @@ Write EXACTLY 3 ready-to-use prompt starters this person can immediately use wit
 2. "[prompt starter 2]"
 3. "[prompt starter 3]"
 ===QS_END===`;
+}
+
+// ─── V2 Prompt Builder ────────────────────────────────────────────────────────
+// Anti-bloat pipeline:
+//   selected option routes
+//     → collect behavioralSignal strings for all 21 answers
+//     → cluster signals by instructionSection (group signals per section bucket)
+//     → within each bucket: merge overlapping/redundant signals into one dominant descriptor
+//     → identify 3–5 dominant patterns across all buckets
+//     → build prompt: pass section names + dominant pattern descriptors as compact context
+//     → instruct AI: produce the 8 named output sections
+
+export function buildPromptV2(data: PromptDataV2): string {
+  const lang =
+    data.reportLanguage === "en"
+      ? "English"
+      : data.reportLanguage === "both"
+        ? "Arabic and English"
+        : "Arabic";
+
+  // Step 1: Collect behavioral signals and instruction sections for each answer
+  type SignalEntry = {
+    questionId: string;
+    optionId: string;
+    behavioralSignal: string;
+    instructionSections: InstructionSection[];
+    strength: "strong" | "moderate" | "mild";
+    redLineEffect: string;
+    thinkingModeEffect: string;
+  };
+
+  const signalEntries: SignalEntry[] = [];
+  for (const answer of data.answers) {
+    const route = getOptionRoute(answer.questionId, answer.optionId);
+    if (!route) continue;
+    signalEntries.push({
+      questionId: answer.questionId,
+      optionId: answer.optionId,
+      behavioralSignal: route.behavioralSignal,
+      instructionSections: route.instructionSections,
+      strength: route.strength,
+      redLineEffect: route.redLineEffect,
+      thinkingModeEffect: route.thinkingModeEffect,
+    });
+  }
+
+  // Step 2: Cluster signals by instruction section bucket
+  const sectionBuckets = new Map<InstructionSection, SignalEntry[]>();
+  for (const entry of signalEntries) {
+    for (const section of entry.instructionSections) {
+      if (!sectionBuckets.has(section)) sectionBuckets.set(section, []);
+      sectionBuckets.get(section)!.push(entry);
+    }
+  }
+
+  // Step 3: Within each bucket, merge overlapping signals into dominant descriptors
+  // Group by signal prefix (first word) to detect overlaps
+  const mergeBucket = (entries: SignalEntry[]): string => {
+    // Prioritize strong signals
+    const sorted = [...entries].sort((a, b) => {
+      const order = { strong: 0, moderate: 1, mild: 2 };
+      return order[a.strength] - order[b.strength];
+    });
+    // Deduplicate by similar signal roots (first segment before _)
+    const seen = new Set<string>();
+    const merged: string[] = [];
+    for (const e of sorted) {
+      const root = e.behavioralSignal.split("_").slice(0, 2).join("_");
+      if (!seen.has(root)) {
+        seen.add(root);
+        merged.push(e.behavioralSignal.replace(/_/g, " "));
+      }
+    }
+    return merged.slice(0, 3).join(", ");
+  };
+
+  // Step 4: Identify 3–5 dominant patterns across all buckets
+  // Count signal frequency and pick top signals by strength weight
+  const signalFrequency = new Map<string, { count: number; strength: number }>();
+  for (const entry of signalEntries) {
+    const sig = entry.behavioralSignal;
+    const strengthWeight = entry.strength === "strong" ? 3 : entry.strength === "moderate" ? 2 : 1;
+    if (!signalFrequency.has(sig)) signalFrequency.set(sig, { count: 0, strength: 0 });
+    const curr = signalFrequency.get(sig)!;
+    curr.count += 1;
+    curr.strength += strengthWeight;
+  }
+
+  const dominantPatterns = [...signalFrequency.entries()]
+    .sort((a, b) => b[1].strength - a[1].strength)
+    .slice(0, 5)
+    .map(([sig]) => sig.replace(/_/g, " "));
+
+  // Collect red line effects from strong signals
+  const redLineEffects = signalEntries
+    .filter((e) => e.strength === "strong" && e.redLineEffect)
+    .slice(0, 5)
+    .map((e) => `• ${e.redLineEffect.replace(/_/g, " ")}`);
+
+  // Collect thinking mode effects from strong signals
+  const thinkingModes = signalEntries
+    .filter((e) => e.strength === "strong" && e.thinkingModeEffect)
+    .map((e) => e.thinkingModeEffect.replace(/_/g, " "))
+    .filter((v, i, a) => a.indexOf(v) === i)
+    .slice(0, 4);
+
+  // Step 5: Build section context lines (compact, never pasting raw ruleText)
+  const sectionContextLines: string[] = [];
+  for (const [section, entries] of sectionBuckets.entries()) {
+    const descriptor = mergeBucket(entries);
+    if (descriptor) {
+      sectionContextLines.push(`• ${section}: ${descriptor}`);
+    }
+  }
+
+  return `You are an expert behavioral analyst specializing in the INSPIRE Framework — a personalized AI interaction profiling system.
+
+## Subject Profile
+- Name: ${data.name}
+- Job Title: ${data.jobTitle ?? "Not specified"}
+- Project: ${data.projectName}
+- Project Goal: ${data.projectGoal}
+- Report Language: ${lang}
+
+## Behavioral Analysis Summary (from 21-question v2 assessment)
+
+### Dominant Behavioral Patterns (ranked by signal strength)
+${dominantPatterns.map((p, i) => `${i + 1}. ${p}`).join("\n")}
+
+### Behavioral Signals by Instruction Domain
+${sectionContextLines.join("\n")}
+
+### Thinking Mode Profile
+${thinkingModes.map((m) => `• ${m}`).join("\n")}
+
+### Key Red Lines (things this person will not tolerate)
+${redLineEffects.join("\n")}
+
+${data.openAnswer ? `## Personal Reflection (in their own words)\n${data.openAnswer}` : ""}
+
+---
+
+## Your Task
+
+Based on this behavioral profile, generate a comprehensive, highly personalized AI interaction report. Write everything in ${lang}.
+
+Output EXACTLY these 8 sections using the markers shown. Do not add or omit any section.
+
+===FULL_INSTRUCTION_START===
+Write a complete, standalone AI system instruction (600-900 words) this person can paste directly into any AI tool as their permanent system prompt.
+
+Structure it as follows:
+1. Opening identity line establishing the AI's role relative to this user and their project
+2. Core behavioral directives (6-8 rules) derived from the dominant patterns above — each as a direct instruction to the AI
+3. Communication style rules: response format, depth, and directness preferences based on the behavioral profile
+4. Thinking mode alignment: how the AI should approach reasoning given the identified thinking modes
+5. Interaction protocol: role division between user and AI based on the behavioral signals
+6. Red lines section: explicit "never do" rules based on the red line effects
+7. Closing adaptive loop rule
+
+Write in second person addressing the AI. Sound authoritative and natural, not mechanical.
+Do NOT include Universal Rules or Performance Rules — those are prepended separately.
+===FULL_INSTRUCTION_END===
+
+===STARTERS_START===
+Write EXACTLY 3 ready-to-use prompt starters tailored to this person's behavioral profile and project goal. Each should be immediately usable in an AI tool.
+1. "[starter 1]"
+2. "[starter 2]"
+3. "[starter 3]"
+===STARTERS_END===
+
+===RED_LINES_START===
+List 4-5 specific behaviors this person absolutely cannot tolerate in AI interactions, derived from their red line signals and behavioral profile. Each on its own line starting with •
+• [red line]
+===RED_LINES_END===
+
+===STRENGTHS_START===
+List 4-5 behavioral and cognitive strengths revealed by this profile. Each on its own line starting with •
+• [strength]
+===STRENGTHS_END===
+
+===RISKS_START===
+List 3-4 growth areas or blind spots this profile reveals. Each on its own line starting with •
+• [risk or blind spot]
+===RISKS_END===
+
+===ROLE_ANALYSIS_START===
+Write 4-6 sentences covering:
+1. This person's behavioral archetype and dominant cognitive style
+2. How they naturally operate in professional settings
+3. Their ideal AI interaction style (from the ai_interaction_style, recommended_identity, and domain_operating_mode signals)
+4. What makes their AI partnership uniquely effective or challenging
+===ROLE_ANALYSIS_END===
+
+===RECOMMENDATIONS_START===
+List 4-5 specific, actionable recommendations for how this person should use AI tools to maximize value. Numbered list.
+1. [recommendation]
+2. [recommendation]
+3. [recommendation]
+4. [recommendation]
+===RECOMMENDATIONS_END===
+
+===SIGNAL_MAP_START===
+If you can represent the behavioral signal clusters in a structured table format (signal name | section | strength), do so. Otherwise write "null".
+===SIGNAL_MAP_END===`;
 }

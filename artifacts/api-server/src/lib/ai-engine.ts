@@ -3,13 +3,24 @@ import Anthropic from "@anthropic-ai/sdk";
 import { db } from "@workspace/db";
 import { assessmentsTable, usersTable } from "@workspace/db/schema";
 import { eq, lte, lt, and } from "drizzle-orm";
-import { buildPrompt, type PromptData } from "./prompt-builder";
-import { parseFullReport } from "./report-parser";
+import { buildPrompt, buildPromptV2, type PromptData, type PromptDataV2 } from "./prompt-builder";
+import { parseFullReport, parseFullReportV2 } from "./report-parser";
 import { sendResultsEmail, sendFailureEmail } from "./email";
 import { logger } from "./logger";
 
 const OPENAI_MODEL_DEFAULT = "gpt-5.4";
 const CLAUDE_MODEL_DEFAULT = "claude-sonnet-4-6";
+
+type V2Answer = { questionId: string; optionId: string };
+
+function isV2Answers(value: unknown): value is V2Answer[] {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    typeof (value[0] as Record<string, unknown>)?.questionId === "string" &&
+    typeof (value[0] as Record<string, unknown>)?.optionId === "string"
+  );
+}
 
 let _openai: OpenAI | null = null;
 let _anthropic: Anthropic | null = null;
@@ -35,7 +46,7 @@ const RETRY_INTERVALS_MS = [
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// ─── MAIN ENTRY ──────────────────────────────────────────
+// ─── MAIN ENTRY (v1 / mini path) ──────────────────────────────────────────────
 
 export async function generateReport(
   assessmentId: string,
@@ -49,7 +60,8 @@ export async function generateReport(
       assessmentId,
       openaiResult.text!,
       "openai",
-      process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT
+      process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT,
+      "v1"
     );
     return;
   }
@@ -58,6 +70,51 @@ export async function generateReport(
     const claudeResult = await tryClaude(prompt);
     if (claudeResult.success) {
       await finish(
+        assessmentId,
+        claudeResult.text!,
+        "anthropic",
+        process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT,
+        "v1"
+      );
+      return;
+    }
+  }
+
+  await db
+    .update(assessmentsTable)
+    .set({
+      status: "pending_retry",
+      retryCount: 0,
+      nextRetryAt: new Date(Date.now() + RETRY_INTERVALS_MS[0]),
+    })
+    .where(eq(assessmentsTable.id, assessmentId));
+
+  logger.warn({ assessmentId }, "Both AI providers failed — queued for retry");
+}
+
+// ─── V2 ENTRY (full assessment, section-routing) ──────────────────────────────
+
+export async function generateReportV2(
+  assessmentId: string,
+  promptData: PromptDataV2
+): Promise<void> {
+  const prompt = buildPromptV2(promptData);
+
+  const openaiResult = await tryOpenAI(prompt);
+  if (openaiResult.success) {
+    await finishV2(
+      assessmentId,
+      openaiResult.text!,
+      "openai",
+      process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT
+    );
+    return;
+  }
+
+  if (process.env["ANTHROPIC_API_KEY"]) {
+    const claudeResult = await tryClaude(prompt);
+    if (claudeResult.success) {
+      await finishV2(
         assessmentId,
         claudeResult.text!,
         "anthropic",
@@ -76,10 +133,10 @@ export async function generateReport(
     })
     .where(eq(assessmentsTable.id, assessmentId));
 
-  logger.warn({ assessmentId }, "Both AI providers failed — queued for retry");
+  logger.warn({ assessmentId }, "Both AI providers failed (v2) — queued for retry");
 }
 
-// ─── CRON JOB (called every minute) ──────────────────────
+// ─── CRON JOB (called every minute) ──────────────────────────────────────────
 
 export async function processRetryQueue(): Promise<void> {
   const pending = await db
@@ -101,40 +158,71 @@ export async function processRetryQueue(): Promise<void> {
 
     if (!user) continue;
 
-    const promptData: PromptData = {
-      name: user.name,
-      jobTitle: user.jobTitle ?? undefined,
-      projectName: assessment.projectName,
-      projectGoal: assessment.projectGoal,
-      reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
-      behavioralAnswers: (assessment.behavioralAnswers as any) ?? [],
-      scenarioAnswers: (assessment.scenarioAnswers as any) ?? [],
-      openAnswer: assessment.openAnswer ?? "",
-    };
-
-    const prompt = buildPrompt(promptData);
     const count = assessment.retryCount ?? 0;
+
+    // Determine retry path: assessmentType is the primary branch; answer shape
+    // is a secondary typed guard for full assessments to distinguish v2 vs v1.
+    const aType = assessment.assessmentType ?? "full";
+    const storedAnswers = assessment.behavioralAnswers;
+    const isV2Full = aType === "full" && isV2Answers(storedAnswers);
+
+    let prompt: string;
+
+    if (aType === "mini") {
+      const promptData: PromptData = {
+        name: user.name,
+        jobTitle: user.jobTitle ?? undefined,
+        projectName: assessment.projectName,
+        projectGoal: assessment.projectGoal,
+        reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
+        behavioralAnswers: (assessment.behavioralAnswers as unknown[]) ?? [],
+        scenarioAnswers: (assessment.scenarioAnswers as unknown[]) ?? [],
+        openAnswer: assessment.openAnswer ?? "",
+      };
+      prompt = buildPrompt(promptData);
+    } else if (isV2Full) {
+      const promptDataV2: PromptDataV2 = {
+        name: user.name,
+        jobTitle: user.jobTitle ?? undefined,
+        projectName: assessment.projectName,
+        projectGoal: assessment.projectGoal,
+        reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
+        answers: storedAnswers,
+        openAnswer: assessment.openAnswer ?? undefined,
+      };
+      prompt = buildPromptV2(promptDataV2);
+    } else {
+      const promptData: PromptData = {
+        name: user.name,
+        jobTitle: user.jobTitle ?? undefined,
+        projectName: assessment.projectName,
+        projectGoal: assessment.projectGoal,
+        reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
+        behavioralAnswers: (assessment.behavioralAnswers as any) ?? [],
+        scenarioAnswers: (assessment.scenarioAnswers as any) ?? [],
+        openAnswer: assessment.openAnswer ?? "",
+      };
+      prompt = buildPrompt(promptData);
+    }
 
     const openaiResult = await tryOpenAI(prompt);
     if (openaiResult.success) {
-      await finish(
-        assessment.id,
-        openaiResult.text!,
-        "openai",
-        process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT
-      );
+      if (isV2Full) {
+        await finishV2(assessment.id, openaiResult.text!, "openai", process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT);
+      } else {
+        await finish(assessment.id, openaiResult.text!, "openai", process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT, "v1");
+      }
       continue;
     }
 
     if (process.env["ANTHROPIC_API_KEY"]) {
       const claudeResult = await tryClaude(prompt);
       if (claudeResult.success) {
-        await finish(
-          assessment.id,
-          claudeResult.text!,
-          "anthropic",
-          process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT
-        );
+        if (isV2Full) {
+          await finishV2(assessment.id, claudeResult.text!, "anthropic", process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT);
+        } else {
+          await finish(assessment.id, claudeResult.text!, "anthropic", process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT, "v1");
+        }
         continue;
       }
     }
@@ -149,7 +237,6 @@ export async function processRetryQueue(): Promise<void> {
         { assessmentId: assessment.id },
         "Assessment failed after 10 retries"
       );
-      // Notify the user that their report failed
       sendFailureEmail(user.email, user.name).catch((err) =>
         logger.error({ assessmentId: assessment.id, err }, "sendFailureEmail threw")
       );
@@ -167,7 +254,7 @@ export async function processRetryQueue(): Promise<void> {
   }
 }
 
-// ─── PROVIDER CALLERS ─────────────────────────────────────
+// ─── PROVIDER CALLERS ─────────────────────────────────────────────────────────
 
 async function tryOpenAI(
   prompt: string
@@ -216,13 +303,14 @@ async function tryClaude(
   }
 }
 
-// ─── SAVE ─────────────────────────────────────────────────
+// ─── SAVE (v1 / mini) ─────────────────────────────────────────────────────────
 
 async function finish(
   assessmentId: string,
   rawText: string,
   provider: string,
-  model: string
+  model: string,
+  _version: "v1"
 ): Promise<void> {
   const parsed = parseFullReport(rawText);
   await db
@@ -236,7 +324,40 @@ async function finish(
       nextRetryAt: null,
     })
     .where(eq(assessmentsTable.id, assessmentId));
-  logger.info({ assessmentId, provider, model }, "Assessment completed");
+  logger.info({ assessmentId, provider, model }, "Assessment completed (v1)");
+  sendResultsEmail(assessmentId).catch((err) =>
+    logger.error({ assessmentId, err }, "sendResultsEmail threw")
+  );
+}
+
+// ─── SAVE (v2) ────────────────────────────────────────────────────────────────
+
+async function finishV2(
+  assessmentId: string,
+  rawText: string,
+  provider: string,
+  model: string
+): Promise<void> {
+  const parsed = parseFullReportV2(rawText);
+  await db
+    .update(assessmentsTable)
+    .set({
+      systemInstruction: parsed.systemInstruction,
+      quickStarters: parsed.quickStarters,
+      redLines: parsed.redLines,
+      recommendations: parsed.recommendations,
+      roleAnalysis: parsed.roleAnalysis,
+      strengths: parsed.strengths,
+      developmentAreas: parsed.developmentAreas,
+      inspireTable: parsed.inspireTable,
+      status: "completed",
+      aiProvider: provider,
+      aiModel: model,
+      retryCount: 0,
+      nextRetryAt: null,
+    })
+    .where(eq(assessmentsTable.id, assessmentId));
+  logger.info({ assessmentId, provider, model }, "Assessment completed (v2)");
   sendResultsEmail(assessmentId).catch((err) =>
     logger.error({ assessmentId, err }, "sendResultsEmail threw")
   );

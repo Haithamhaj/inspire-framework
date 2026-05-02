@@ -101,6 +101,34 @@ Utility scripts package. Each script is a `.ts` file in `src/` with a correspond
 
 INSPIRE is a behavioral profiling web app with Arabic RTL interface. Build order follows CLAUDE.md.
 
+### Phase 6 — V2 Question/Scoring Foundation (COMPLETE)
+
+**Backend data** (`artifacts/api-server/src/data/`):
+- `questions-v2.ts` — 21 v2 questions: S2, S3 (5 options each, Setup / Behavioral Bridge), Q01–Q15 (4 options each, Behavioral Backbone), AI01–AI04 (4 options each, AI-Use Scenario). Bilingual AR+EN. Exports `REQUIRED_V2_QUESTION_IDS`.
+- `option-routing.ts` — 86 option routes with `behavioralSignal`, `instructionSections[]`, `reportSections[]`, `strength`, `thinkingModeEffect`, `redLineEffect`, `riskGuard`. Exports `getOptionRoute()` and `VALID_OPTION_IDS_BY_QUESTION`. Backend-only — never exposed to frontend.
+
+**Backend routes** (`artifacts/api-server/src/routes/`):
+- `questions.ts` — `GET /api/questions` — public endpoint returning only the public question shape (no backend metadata). Registered in `routes/index.ts`.
+
+**Backend libs** (`artifacts/api-server/src/lib/`):
+- `validators.ts` — Old `AssessmentSubmitSchema` renamed to `MiniSubmitSchema` (snake_case, unchanged). Added `V2SubmitSchema` (camelCase, 21 answers array, optional open_answer). Both used in assessments route.
+- `prompt-builder.ts` — Added `PromptDataV2` interface and `buildPromptV2()` function. Anti-bloat pipeline: collects behavioral signals from all 21 option routes → clusters by instruction section → merges overlapping signals → identifies 3–5 dominant patterns → builds compact prompt instructing AI to produce 8 named output sections.
+- `report-parser.ts` — Added `parseFullReportV2()` alongside existing `parseFullReport()`. Maps v2 markers (FULL_INSTRUCTION, STARTERS, RED_LINES, STRENGTHS, RISKS, ROLE_ANALYSIS, RECOMMENDATIONS) to existing DB fields. `inspireTable` always null for v2.
+- `ai-engine.ts` — Added `generateReportV2()` parallel to existing `generateReport()`. Retry queue auto-detects v2 by checking if stored answers have `questionId` field.
+
+**Backend routes** (`artifacts/api-server/src/routes/assessments.ts`):
+- `POST /api/assessments/:id/submit` — Now branches by `assessmentType`: mini → `MiniSubmitSchema` → existing pipeline; full → `V2SubmitSchema` + cross-validation (missing questionIds, invalid optionIds) → v2 pipeline.
+
+**Frontend** (`artifacts/inspire-web/src/pages/assess.tsx`):
+- Removed hardcoded `BEHAVIORAL_QUESTIONS` and `SCENARIOS` arrays.
+- Fetches questions from `GET /api/questions` on mount.
+- Unified `Answer` type: `{questionId, optionId}` (camelCase).
+- No separate scenario step — all 21 questions in unified paginated flow (3 per page = 7 pages).
+- Open answer is optional (submit button always enabled).
+- Submit payload: `{answers, open_answer?, completion_time_seconds}`.
+
+**Mini assessment** (`pages/assess-mini.tsx`): **UNTOUCHED** — unchanged.
+
 ### Phase 5 — Admin + Mini + Polish (COMPLETE)
 
 **Backend**:

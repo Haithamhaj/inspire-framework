@@ -14,89 +14,48 @@ import {
   Zap,
   Clock,
   RotateCcw,
-  Copy,
-  Check,
   CreditCard,
 } from "lucide-react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
-// ─── DATA ────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────
 
-const BEHAVIORAL_QUESTIONS = [
-  // 1–3 Intention
-  { textAr: "عندما تبدأ مشروعاً جديداً، ما الذي يحفزك أكثر؟", options: ["تحقيق هدف واضح ومحدد", "استكشاف إمكانيات جديدة غير محددة", "المساهمة في فريق أو مجتمع", "تطوير مهاراتي الشخصية"] },
-  { textAr: "كيف تحدد الأولويات عند مواجهة مهام متعددة؟", options: ["حسب الأهمية والتأثير الاستراتيجي", "حسب ترتيب الورود والإلحاح", "حسب ما يثير اهتمامي أكثر", "حسب ما يرضي الآخرين ويفيدهم"] },
-  { textAr: "ما الذي يجعلك تشعر أن عملك ناجح حقاً؟", options: ["تحقيق الأهداف المرسومة بدقة", "الحصول على تقدير وإشادة من الآخرين", "تعلم شيء جديد من التجربة", "إحداث تأثير إيجابي ملموس"] },
-  // 4–6 Narrative
-  { textAr: "كيف تفضل تلقي المعلومات الجديدة؟", options: ["ملخص موجز ونقاط رئيسية", "شرح مفصل مع أمثلة", "تصور بصري أو مخطط", "نقاش وحوار تفاعلي"] },
-  { textAr: "عندما تشرح فكرة معقدة، كيف تبدأ عادةً؟", options: ["من الصورة الكبيرة ثم التفاصيل", "من التفاصيل وصولاً للصورة الكاملة", "بضرب مثال واقعي أولاً", "بطرح أسئلة لفهم ما يعرفه المستمع"] },
-  { textAr: "ما الأسلوب الذي تفضله في التواصل المهني؟", options: ["رسمي ومنظم", "ودي ومباشر", "تحليلي وموضوعي", "قصصي وإلهامي"] },
-  // 7–9 Style
-  { textAr: "كيف تتعامل مع مشكلة غير متوقعة في العمل؟", options: ["أتوقف وأخطط بشكل منظم قبل التصرف", "أتصرف فوراً ثم أعدل المسار لاحقاً", "أبحث عمن يمكن أن يساعدني", "أفكر في بدائل إبداعية خارج الصندوق"] },
-  { textAr: "ما طبيعة بيئة العمل المثالية لك؟", options: ["هادئة ومنظمة مع حدود واضحة", "ديناميكية ومتغيرة باستمرار", "تعاونية وإنسانية", "مستقلة تمنحني حرية القرار"] },
-  { textAr: "كيف تتعامل مع التغيير المفاجئ في الخطط؟", options: ["يزعجني وأحتاج وقتاً للتكيف", "أتقبله وأتكيف بسرعة", "أنظر إليه كفرصة جديدة", "أحاول إعادة الخطط الأصلية"] },
-  // 10–12 Preferences
-  { textAr: "كم عدد المهام التي تفضل العمل عليها في وقت واحد؟", options: ["مهمة واحدة حتى أُكملها", "مهمتان أو ثلاث بشكل متوازٍ", "أُفضل تعدد المهام والتنويع", "يعتمد على نوع المهمة"] },
-  { textAr: "ما الذي يساعدك أكثر على الإنتاجية؟", options: ["جدول واضح ومواعيد نهائية", "حرية في إدارة وقتي", "العمل مع فريق", "أهداف طموحة تُحفزني"] },
-  { textAr: "كيف تفضل اتخاذ القرارات المهمة؟", options: ["بعد جمع بيانات وتحليل كامل", "بناءً على خبرتي وحدسي", "بعد التشاور مع المعنيين", "بتجربة الخيار الأقل خطراً أولاً"] },
-  // 13–15 Interaction
-  { textAr: "ما دورك المفضل في فريق العمل؟", options: ["القائد الذي يحدد الاتجاه", "المنفذ الذي يُنجز المهام", "الوسيط الذي يُوحّد الآراء", "المفكر الاستراتيجي"] },
-  { textAr: "كيف تتعامل مع الخلاف في الرأي في العمل؟", options: ["أُفضل النقاش المباشر لحل الأمر فوراً", "أبحث عن أرضية مشتركة", "أتراجع وأُعيد تقييم موقفي", "أتجنب الجدال وأُركز على العمل"] },
-  { textAr: "ما الذي يُعزز ثقتك بشخص تعمل معه؟", options: ["الكفاءة والاحترافية العالية", "الصدق والشفافية", "الالتزام بالمواعيد والوعود", "الدعم والاهتمام بالفريق"] },
-  // 16–18 Reflection
-  { textAr: "كيف تتعلم أفضل من تجاربك السابقة؟", options: ["بمراجعة ما حدث وتحليله بشكل منهجي", "بالتجربة والخطأ المستمر", "بالحوار مع من مروا بتجارب مماثلة", "بالقراءة والبحث في الموضوع"] },
-  { textAr: "ما مدى وضوح نقاط قوتك وضعفك في عملك؟", options: ["أعرفها بشكل واضح وجلي", "أعرف قوتي لكن ضعفي أقل وضوحاً", "أحتاج لتغذية راجعة من الآخرين", "أكتشفها تدريجياً عبر التجارب"] },
-  { textAr: "ما موقفك من الأخطاء التي ترتكبها؟", options: ["أتعلم منها وأتجاوزها بسرعة", "أُحلّلها بعمق لتجنب تكرارها", "أُحاسب نفسي بشدة أحياناً", "أعتبرها جزءاً طبيعياً من المسيرة"] },
-  // 19–21 Evaluation
-  { textAr: "ما معيارك لقياس جودة العمل؟", options: ["المعايير الموضوعية والمقاييس الدقيقة", "مدى رضا المستخدم أو العميل", "مقارنة النتائج بالأهداف المحددة", "إحساسي الشخصي بالجودة"] },
-  { textAr: "كيف تتعامل مع النقد على عملك؟", options: ["أُقيّمه بموضوعية وآخذ ما يفيدني", "أُحلله بدقة للتأكد من صحته", "يؤثر عليّ عاطفياً في البداية", "أُبدي دفاعاً إذا كنت مقتنعاً بعملي"] },
-  { textAr: "ما مستوى المخاطرة الذي تقبله في القرارات؟", options: ["أُفضل الأمان وتجنب المخاطر", "أقبل مخاطر محسوبة ومدروسة", "أُحب التجريب ولو بمخاطر عالية", "يعتمد على السياق والظروف"] },
-  // 22–24 Mixed
-  { textAr: "كيف تستجيب عندما تُكلَّف بمهمة لا تُحبها؟", options: ["أُكملها بمهنية عالية رغم ذلك", "أبحث عن طريقة تجعلها أكثر إثارة", "أُفاوض على تعديلها أو تفويضها", "أُنجزها أولاً ثم أُعبّر عن رأيي"] },
-  { textAr: "ما الذي تبحث عنه في التغذية الراجعة؟", options: ["نقاط تحسين محددة وقابلة للتطبيق", "تحقق من اتجاهي الصحيح", "إشادة بما أحسنت فيه", "رؤية شاملة لأدائي العام"] },
-  { textAr: "عند انتهاء مشروع ما، ما أول شيء تفعله؟", options: ["أُوثّق الدروس المستفادة", "أُقيّم النتائج بموضوعية", "أحتفل وأُكافئ الفريق", "أبدأ التخطيط للمشروع التالي"] },
-];
+interface V2Option {
+  optionId: string;
+  textAr: string;
+  textEn: string;
+}
 
-const SCENARIOS = [
-  { dimension_ar: "العمق / السرعة", question: "عندما تعمل مع الذكاء الاصطناعي، هل تفضل أن يُعطيك الحل مباشرة وبسرعة؟ أم تفضل أن يشرح التفكير والمنطق معك خطوة بخطوة؟", option_a: "أريد الحل مباشرة وبسرعة دون تفاصيل زائدة", option_b: "أفضل الشرح خطوة بخطوة مع المنطق الكامل" },
-  { dimension_ar: "القيادة / التنفيذ", question: "عند استخدام الذكاء الاصطناعي في مشروع، هل تفضل أن تقود أنت الحوار وتوجّهه؟ أم تترك للذكاء الاصطناعي المبادرة باقتراح الخطوات؟", option_a: "أقود أنا الحوار وأحدد الاتجاه بنفسي", option_b: "أترك للذكاء الاصطناعي المبادرة واقتراح الخطوات" },
-  { dimension_ar: "التحدي / التأكيد", question: "عندما تطرح فكرة على الذكاء الاصطناعي، ماذا تريد منه؟ أن يتحداها ويكشف نقاط ضعفها؟ أم أن يدعمها ويساعدك على تطويرها؟", option_a: "أريده أن يتحدى فكرتي ويكشف نقاط ضعفها", option_b: "أريده أن يدعم فكرتي ويساعدني على تطويرها" },
-  { dimension_ar: "الخطية / التشعب", question: "كيف تفضل أن يسير حوارك مع الذكاء الاصطناعي؟ خطياً ومنظماً؟ أم بشكل متشعب تستكشف فيه أفكاراً متعددة؟", option_a: "خطياً ومنظماً من البداية للنهاية", option_b: "متشعباً أستكشف فيه أفكاراً متعددة في آنٍ واحد" },
-  { dimension_ar: "التعلم / الإنجاز", question: "عند استخدامك للذكاء الاصطناعي، ما الذي يهمك أكثر: أن تفهم وتتعلم من العملية؟ أم أن تُنجز المهمة بأسرع وقت؟", option_a: "أن أفهم وأتعلم من العملية نفسها", option_b: "أن أُنجز المهمة وأحصل على النتيجة بأسرع وقت" },
-  { dimension_ar: "الاستقلالية / الاتكاء", question: "كيف تصف علاقتك المثالية مع الذكاء الاصطناعي؟ أداة تستخدمها عند الحاجة؟ أم شريك دائم تعتمد عليه؟", option_a: "أداة أستخدمها عند الحاجة فقط وأعتمد على نفسي", option_b: "شريك دائم أعتمد عليه في معظم مهامي" },
-  { dimension_ar: "تحمل الغموض", question: "عندما تطرح سؤالاً ليس له إجابة واضحة، كيف تريد الذكاء الاصطناعي أن يتعامل معه؟", option_a: "يُقر بالغموض ويعطيني خيارات وجوانب متعددة", option_b: "يختار أفضل إجابة ويُقدمها بثقة حتى لو لم تكن مثالية" },
-  { dimension_ar: "السياق", question: "عند بدء محادثة جديدة مع الذكاء الاصطناعي، هل تفضل أن تشرح له السياق الكامل؟ أم تدخل مباشرة في الطلب؟", option_a: "أشرح السياق الكامل وأهدافي في البداية دائماً", option_b: "أدخل مباشرة في الطلب دون مقدمات" },
-];
+interface V2Question {
+  questionId: string;
+  block: string;
+  selectionMode: string;
+  questionAr: string;
+  questionEn: string;
+  options: V2Option[];
+}
 
-// ─── WIZARD CONFIG ────────────────────────────────────────
-// Step 0: project setup
-// Steps 1-6: 4 behavioral questions each (6 pages × 4 = 24)
-// Step 7: 8 scenarios
-// Step 8: open question
-const Q_PAGES = 6;
-const Q_PER_PAGE = 4;
-const SCENARIO_STEP = 7;
-const OPEN_STEP = 8;
-const TOTAL_WIZARD_STEPS = 9; // steps 1-9 for progress bar (0 = setup, not counted)
+interface Answer {
+  questionId: string;
+  optionId: string;
+}
+
+// ─── Wizard Config ────────────────────────────────────────
+const Q_PER_PAGE = 3;
+const OPEN_STEP_OFFSET = 1; // open step comes after all question pages
 
 function apiUrl(path: string) {
   return `/api${path}`;
 }
 
-interface BehavioralAnswer { question_index: number; answer_index: number }
-interface ScenarioAnswer { scenario_index: number; choice: "a" | "b" }
-
-function ProgressBar({ step }: { step: number }) {
-  // step 0 = setup (no bar), steps 1-8 shown
-  const pct = Math.round((step / TOTAL_WIZARD_STEPS) * 100);
+function ProgressBar({ step, totalSteps }: { step: number; totalSteps: number }) {
+  const pct = Math.round((step / totalSteps) * 100);
   return (
     <div className="w-full mb-8">
       <div className="flex justify-between items-center mb-2 text-sm text-muted-foreground">
         <span>
-          {step <= Q_PAGES
-            ? `الأسئلة السلوكية — الصفحة ${step} من ${Q_PAGES}`
-            : step === SCENARIO_STEP
-            ? "أسئلة التفاعل مع الذكاء الاصطناعي"
+          {step <= totalSteps - 1
+            ? `الأسئلة — الصفحة ${step} من ${totalSteps - 1}`
             : "السؤال المفتوح"}
         </span>
         <span className="font-bold text-primary">{pct}%</span>
@@ -146,17 +105,20 @@ interface DiscountInfo {
 export default function Assess() {
   const { user, isLoading } = useAuth();
 
-  // Read optional previousAssessmentId from ?prev= query param
   const previousAssessmentId = new URLSearchParams(window.location.search).get("prev");
 
   const [step, setStep] = useState(0);
   const [projectName, setProjectName] = useState("");
   const [projectGoal, setProjectGoal] = useState("");
   const [reportLanguage, setReportLanguage] = useState<"ar" | "en" | "both">("ar");
-  const [assessmentType, setAssessmentType] = useState<"full" | "mini">("full");
 
-  const [behavioralAnswers, setBehavioralAnswers] = useState<BehavioralAnswer[]>([]);
-  const [scenarioAnswers, setScenarioAnswers] = useState<ScenarioAnswer[]>([]);
+  // v2 question bank (fetched from API)
+  const [questions, setQuestions] = useState<V2Question[]>([]);
+  const [questionsLoading, setQuestionsLoading] = useState(true);
+  const [questionsError, setQuestionsError] = useState(false);
+
+  // v2 answers
+  const [answers, setAnswers] = useState<Answer[]>([]);
   const [openAnswer, setOpenAnswer] = useState("");
 
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
@@ -179,6 +141,21 @@ export default function Assess() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
+
+  // Fetch questions from API
+  useEffect(() => {
+    fetch(apiUrl("/questions"))
+      .then((r) => r.json() as Promise<{ success: boolean; questions: V2Question[] }>)
+      .then((d) => {
+        if (d.success && d.questions?.length > 0) {
+          setQuestions(d.questions);
+        } else {
+          setQuestionsError(true);
+        }
+      })
+      .catch(() => setQuestionsError(true))
+      .finally(() => setQuestionsLoading(false));
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -293,7 +270,7 @@ export default function Assess() {
                 <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                   {previousAssessmentId
                     ? "ستُنشئ نسخة محسّنة مرتبطة بتقييمك السابق، مع مقارنة واضحة ونتيجة أكثر عمقاً."
-                    : "ستحصل على تعليمات نظام شخصية كاملة مبنية على 7 محاور سلوكية، جاهزة للنسخ إلى أي نموذج ذكاء اصطناعي."}
+                    : "ستحصل على تعليمات نظام شخصية كاملة مبنية على 21 سؤالاً تحليلياً، جاهزة للنسخ إلى أي نموذج ذكاء اصطناعي."}
                 </p>
               </div>
 
@@ -332,11 +309,11 @@ export default function Assess() {
                     className="flex-1 bg-background border border-border rounded-2xl px-4 py-3 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
                     dir="ltr"
                   />
-                <button
-                  onClick={checkDiscount}
-                  disabled={checkingDiscount || !discountCode.trim()}
-                  className="px-5 py-3 bg-secondary border border-border rounded-2xl text-sm font-semibold hover:bg-secondary/80 disabled:opacity-50 transition-colors"
-                >
+                  <button
+                    onClick={checkDiscount}
+                    disabled={checkingDiscount || !discountCode.trim()}
+                    className="px-5 py-3 bg-secondary border border-border rounded-2xl text-sm font-semibold hover:bg-secondary/80 disabled:opacity-50 transition-colors"
+                  >
                     {checkingDiscount ? <Loader2 className="h-4 w-4 animate-spin" /> : "تحقق"}
                   </button>
                 </div>
@@ -365,7 +342,7 @@ export default function Assess() {
               ) : paypalConfig ? (
                 <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
                   <PayPalButtons
-                    style={{ layout: "vertical", color: "blue", shape: "rect", label: "pay" }}
+                    style={{ layout: "vertical", shape: "rect", label: "pay" }}
                     createOrder={async () => {
                       setPaymentError("");
                       const res = await fetch(apiUrl("/billing/create-order"), {
@@ -427,7 +404,7 @@ export default function Assess() {
                 </div>
               </div>
               <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="px-2.5 py-1 rounded-full bg-secondary">7 محاور</span>
+                <span className="px-2.5 py-1 rounded-full bg-secondary">21 سؤالاً</span>
                 <span className="px-2.5 py-1 rounded-full bg-secondary">PDF</span>
                 <span className="px-2.5 py-1 rounded-full bg-secondary">مشاركة</span>
               </div>
@@ -443,7 +420,7 @@ export default function Assess() {
                 <div className="bg-primary rounded-2xl p-4">
                   <p className="text-xs font-bold text-primary-foreground/70 uppercase tracking-widest mb-2">تعليمات النظام — جاهزة للنسخ</p>
                   <p className="text-xs text-primary-foreground/90 leading-relaxed font-mono">
-                    {"## Universal Rules\nAlways respond in Arabic.\nBe concise, practical, and specific.\n\n## Behavioral Profile\nI: Focused — Always prioritize one clear goal.\nN: Analyst — Usually explain the reasoning first.\nS: Structured — When needed, present step-by-step.\nP: Deep — Always connect conclusions to evidence.\n\n## For [اسم مشروعك]\n• Goal: [هدفك المحدد]\n• Style: منهجي، تحليلي، واضح\n• Depth: شرح كامل مع أمثلة قابلة للتطبيق"}
+                    {"أنت مساعد ذكاء اصطناعي شخصي متخصص في دعم أهدافي المهنية.\n\n• قدّم الإجابات مباشرةً ثم وضّح المنطق.\n• تحدّ أفكاري وأكشف نقاط ضعفها.\n• اعمل خطوة بخطوة مع سياق كامل.\n• لا تطوّل بلا داعٍ — الإيجاز مع العمق."}
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -470,38 +447,29 @@ export default function Assess() {
     );
   }
 
-  // ── Behavioral helpers ─────────────────────────────────
+  // ── Derived wizard config from fetched questions ───────
+  const totalQPages = Math.ceil(questions.length / Q_PER_PAGE);
+  const OPEN_STEP = totalQPages + OPEN_STEP_OFFSET;
+  const TOTAL_WIZARD_STEPS = OPEN_STEP;
 
-  function setAnswer(qIdx: number, aIdx: number) {
-    setBehavioralAnswers(prev => [
-      ...prev.filter(a => a.question_index !== qIdx),
-      { question_index: qIdx, answer_index: aIdx },
+  // ── Answer helpers ─────────────────────────────────────
+
+  function setAnswer(questionId: string, optionId: string) {
+    setAnswers((prev) => [
+      ...prev.filter((a) => a.questionId !== questionId),
+      { questionId, optionId },
     ]);
   }
 
-  function getAnswer(qIdx: number) {
-    return behavioralAnswers.find(a => a.question_index === qIdx)?.answer_index ?? -1;
+  function getAnswer(questionId: string): string | null {
+    return answers.find((a) => a.questionId === questionId)?.optionId ?? null;
   }
 
-  function pageComplete(page: number) {
+  function pageComplete(page: number): boolean {
     const start = (page - 1) * Q_PER_PAGE;
-    return Array.from({ length: Q_PER_PAGE }, (_, i) => start + i).every(i => getAnswer(i) >= 0);
+    const pageQuestions = questions.slice(start, start + Q_PER_PAGE);
+    return pageQuestions.every((q) => getAnswer(q.questionId) !== null);
   }
-
-  // ── Scenario helpers ───────────────────────────────────
-
-  function setScenario(sIdx: number, choice: "a" | "b") {
-    setScenarioAnswers(prev => [
-      ...prev.filter(a => a.scenario_index !== sIdx),
-      { scenario_index: sIdx, choice },
-    ]);
-  }
-
-  function getScenario(sIdx: number) {
-    return scenarioAnswers.find(a => a.scenario_index === sIdx)?.choice ?? null;
-  }
-
-  const scenariosComplete = SCENARIOS.every((_, i) => getScenario(i) !== null);
 
   // ── Setup submit ───────────────────────────────────────
 
@@ -517,7 +485,7 @@ export default function Assess() {
           project_name: projectName.trim(),
           project_goal: projectGoal.trim(),
           report_language: reportLanguage,
-          assessment_type: assessmentType,
+          assessment_type: "full",
           ...(previousAssessmentId ? { previous_assessment_id: previousAssessmentId } : {}),
           ...(paymentId ? { payment_id: paymentId } : {}),
         }),
@@ -535,7 +503,7 @@ export default function Assess() {
   // ── Final submit ───────────────────────────────────────
 
   async function handleFinalSubmit() {
-    if (!assessmentId || openAnswer.trim().length < 20 || submitting) return;
+    if (!assessmentId || submitting) return;
     setSubmitting(true);
     const elapsed = Math.round((Date.now() - startTime.current) / 1000);
     try {
@@ -543,9 +511,8 @@ export default function Assess() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          behavioral_answers: behavioralAnswers,
-          scenario_answers: scenarioAnswers,
-          open_answer: openAnswer.trim(),
+          answers,
+          ...(openAnswer.trim() ? { open_answer: openAnswer.trim() } : {}),
           completion_time_seconds: elapsed,
         }),
       });
@@ -585,7 +552,7 @@ export default function Assess() {
             </div>
           </div>
           <h2 className="text-3xl font-display font-bold text-foreground mb-4">INSPIRE يُحلّل نمطك</h2>
-          <p className="text-muted-foreground text-lg mb-6">يجري الذكاء الاصطناعي تحليلاً عميقاً عبر الأبعاد السبعة</p>
+          <p className="text-muted-foreground text-lg mb-6">يجري الذكاء الاصطناعي تحليلاً عميقاً لأنماطك السلوكية</p>
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
             <span>يستغرق عادةً 30–60 ثانية</span>
@@ -610,12 +577,36 @@ export default function Assess() {
     );
   }
 
+  // ── Loading questions ──────────────────────────────────
+
+  if (questionsLoading) {
+    return (
+      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (questionsError) {
+    return (
+      <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center gap-4 text-center px-4" dir="rtl">
+        <p className="text-lg font-medium text-gray-700">تعذّر تحميل الأسئلة. يرجى المحاولة مرة أخرى.</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          إعادة المحاولة
+        </button>
+      </div>
+    );
+  }
+
   // ── WIZARD ─────────────────────────────────────────────
 
   return (
     <div className="min-h-[calc(100vh-5rem)] py-10 px-4 flex justify-center bg-gray-50/50">
       <div className="w-full max-w-2xl">
-        {step > 0 && <ProgressBar step={step} />}
+        {step > 0 && <ProgressBar step={step} totalSteps={TOTAL_WIZARD_STEPS} />}
 
         {/* Step 0 — Project Setup */}
         {step === 0 && (
@@ -635,62 +626,82 @@ export default function Assess() {
             <form onSubmit={handleSetupSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-semibold text-foreground mb-2">اسم المشروع أو مجال العمل</label>
-                <input type="text" value={projectName} onChange={e => setProjectName(e.target.value)} placeholder="مثال: تطوير منصة تعليمية" className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" required minLength={2} />
+                <input
+                  type="text"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder="مثال: تطوير منصة تعليمية"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  required
+                  minLength={2}
+                />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-foreground mb-2">ما هدفك الرئيسي من استخدام الذكاء الاصطناعي؟</label>
-                <textarea value={projectGoal} onChange={e => setProjectGoal(e.target.value)} placeholder="مثال: أريد استخدام الذكاء الاصطناعي لمساعدتي في كتابة المحتوى التعليمي وتصميم المناهج" className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[100px] resize-none" required minLength={10} />
+                <textarea
+                  value={projectGoal}
+                  onChange={(e) => setProjectGoal(e.target.value)}
+                  placeholder="مثال: أريد استخدام الذكاء الاصطناعي لمساعدتي في كتابة المحتوى التعليمي وتصميم المناهج"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[100px] resize-none"
+                  required
+                  minLength={10}
+                />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">لغة التقرير</label>
-                  <select value={reportLanguage} onChange={e => setReportLanguage(e.target.value as any)} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-                    <option value="ar">عربي</option>
-                    <option value="en">English</option>
-                    <option value="both">كلاهما</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">نوع التقييم</label>
-                  <select value={assessmentType} onChange={e => setAssessmentType(e.target.value as any)} className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
-                    <option value="full">الكامل — 24 سؤالاً</option>
-                    <option value="mini">السريع — 12 سؤالاً</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">لغة التقرير</label>
+                <select
+                  value={reportLanguage}
+                  onChange={(e) => setReportLanguage(e.target.value as "ar" | "en" | "both")}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                >
+                  <option value="ar">عربي</option>
+                  <option value="en">English</option>
+                  <option value="both">كلاهما</option>
+                </select>
               </div>
-              <button type="submit" className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+              <button
+                type="submit"
+                className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+              >
                 ابدأ التقييم <ChevronLeft className="h-5 w-5" />
               </button>
             </form>
           </StepCard>
         )}
 
-        {/* Steps 1–6 — 4 behavioral questions per page */}
-        {step >= 1 && step <= Q_PAGES && (
+        {/* Question Pages */}
+        {step >= 1 && step <= totalQPages && (
           <StepCard stepKey={`q-${step}`}>
             <div className="mb-8">
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                الأسئلة {(step - 1) * Q_PER_PAGE + 1}–{step * Q_PER_PAGE}
+                الأسئلة {(step - 1) * Q_PER_PAGE + 1}–{Math.min(step * Q_PER_PAGE, questions.length)}
               </p>
-              <h2 className="text-xl font-display font-bold text-foreground">الأسئلة السلوكية</h2>
+              <h2 className="text-xl font-display font-bold text-foreground">
+                {questions[(step - 1) * Q_PER_PAGE]?.block ?? "الأسئلة السلوكية"}
+              </h2>
             </div>
 
             <div className="space-y-8">
-              {Array.from({ length: Q_PER_PAGE }, (_, i) => {
-                const qIdx = (step - 1) * Q_PER_PAGE + i;
-                const q = BEHAVIORAL_QUESTIONS[qIdx];
-                if (!q) return null;
-                const selected = getAnswer(qIdx);
+              {questions.slice((step - 1) * Q_PER_PAGE, step * Q_PER_PAGE).map((q, i) => {
+                const globalIdx = (step - 1) * Q_PER_PAGE + i;
+                const selected = getAnswer(q.questionId);
                 return (
-                  <div key={qIdx}>
+                  <div key={q.questionId}>
                     <p className="font-semibold text-foreground mb-3 leading-relaxed">
-                      <span className="text-accent font-bold text-sm ml-1">{qIdx + 1}.</span> {q.textAr}
+                      <span className="text-accent font-bold text-sm ml-1">{globalIdx + 1}.</span> {q.questionAr}
                     </p>
                     <div className="grid gap-2">
-                      {q.options.map((opt, oi) => (
-                        <button key={oi} onClick={() => setAnswer(qIdx, oi)}
-                          className={`text-right w-full px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${selected === oi ? "border-primary bg-primary/5 text-primary" : "border-border bg-background text-foreground hover:border-primary/40"}`}>
-                          {opt}
+                      {q.options.map((opt) => (
+                        <button
+                          key={opt.optionId}
+                          onClick={() => setAnswer(q.questionId, opt.optionId)}
+                          className={`text-right w-full px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                            selected === opt.optionId
+                              ? "border-primary bg-primary/5 text-primary"
+                              : "border-border bg-background text-foreground hover:border-primary/40"
+                          }`}
+                        >
+                          {opt.textAr}
                         </button>
                       ))}
                     </div>
@@ -700,65 +711,24 @@ export default function Assess() {
             </div>
 
             <div className="flex justify-between mt-8 gap-4">
-              <button onClick={() => setStep(s => s - 1)} className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors">
+              <button
+                onClick={() => setStep((s) => s - 1)}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors"
+              >
                 <ChevronRight className="h-4 w-4" /> السابق
               </button>
-              <button onClick={() => setStep(s => s + 1)} disabled={!pageComplete(step)}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center">
-                {step === Q_PAGES ? "انتقل لأسئلة الذكاء الاصطناعي" : "التالي"} <ChevronLeft className="h-4 w-4" />
+              <button
+                onClick={() => setStep((s) => s + 1)}
+                disabled={!pageComplete(step)}
+                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center"
+              >
+                {step === totalQPages ? "انتقل للخطوة الأخيرة" : "التالي"} <ChevronLeft className="h-4 w-4" />
               </button>
             </div>
           </StepCard>
         )}
 
-        {/* Step 7 — 8 Scenarios */}
-        {step === SCENARIO_STEP && (
-          <StepCard stepKey="scenarios">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-rose-600 flex items-center justify-center text-white shrink-0">
-                <Zap className="h-7 w-7" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-0.5">الخطوة 7 من 8</p>
-                <h2 className="text-xl font-display font-bold text-foreground">بروتوكول التفاعل مع الذكاء الاصطناعي</h2>
-              </div>
-            </div>
-            <p className="text-muted-foreground mb-6 text-sm">لكل سؤال، اختر الخيار الذي يصف تفضيلك الحقيقي</p>
-
-            <div className="space-y-5">
-              {SCENARIOS.map((s, i) => {
-                const chosen = getScenario(i);
-                return (
-                  <div key={i} className="bg-secondary/30 rounded-2xl p-4">
-                    <p className="font-semibold text-foreground mb-3 text-sm leading-relaxed">
-                      <span className="text-accent font-bold">{s.dimension_ar} — </span>{s.question}
-                    </p>
-                    <div className="grid gap-2">
-                      {(["a", "b"] as const).map(choice => (
-                        <button key={choice} onClick={() => setScenario(i, choice)}
-                          className={`text-right px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${chosen === choice ? "border-accent bg-accent/5 text-accent" : "border-border bg-background text-foreground hover:border-accent/40"}`}>
-                          {choice === "a" ? s.option_a : s.option_b}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="flex justify-between mt-8 gap-4">
-              <button onClick={() => setStep(Q_PAGES)} className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors">
-                <ChevronRight className="h-4 w-4" /> السابق
-              </button>
-              <button onClick={() => setStep(OPEN_STEP)} disabled={!scenariosComplete}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center">
-                التالي <ChevronLeft className="h-4 w-4" />
-              </button>
-            </div>
-          </StepCard>
-        )}
-
-        {/* Step 8 — Open question */}
+        {/* Open Question Step */}
         {step === OPEN_STEP && (
           <StepCard stepKey="open">
             <div className="flex items-center gap-4 mb-6">
@@ -771,17 +741,21 @@ export default function Assess() {
               </div>
             </div>
 
-            <p className="text-muted-foreground mb-6 leading-relaxed">
-              هذا السؤال الأهم في التقييم. اكتب بحرية كيف تصف نمطك في العمل، أسلوبك مع الذكاء الاصطناعي، أو أي شيء تريد أن يأخذه التقرير بعين الاعتبار.
+            <p className="text-muted-foreground mb-2 leading-relaxed">
+              اكتب بحرية كيف تصف نمطك في العمل، أسلوبك مع الذكاء الاصطناعي، أو أي شيء تريد أن يأخذه التقرير بعين الاعتبار.
+            </p>
+            <p className="text-xs text-muted-foreground mb-6 flex items-center gap-1">
+              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+              اختياري — يمكنك الإرسال دون تعبئة هذا الحقل
             </p>
 
-            <textarea value={openAnswer} onChange={e => setOpenAnswer(e.target.value)}
-              placeholder="اكتب هنا بحرية... (20 حرفاً على الأقل)"
-              className="w-full bg-background border border-border rounded-xl px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[160px] resize-none mb-2" />
-            <div className="flex justify-between text-xs text-muted-foreground mb-8">
-              <span className={openAnswer.length >= 20 ? "text-green-600 font-medium" : ""}>
-                {openAnswer.length < 20 ? `${20 - openAnswer.length} حرفاً متبقية` : "✓ جاهز للإرسال"}
-              </span>
+            <textarea
+              value={openAnswer}
+              onChange={(e) => setOpenAnswer(e.target.value)}
+              placeholder="اكتب هنا بحرية... (اختياري)"
+              className="w-full bg-background border border-border rounded-xl px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[160px] resize-none mb-2"
+            />
+            <div className="flex justify-end text-xs text-muted-foreground mb-8">
               <span>{openAnswer.length}/2000</span>
             </div>
 
@@ -790,12 +764,21 @@ export default function Assess() {
             )}
 
             <div className="flex justify-between gap-4">
-              <button onClick={() => setStep(SCENARIO_STEP)} className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors">
+              <button
+                onClick={() => setStep(OPEN_STEP - 1)}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors"
+              >
                 <ChevronRight className="h-4 w-4" /> السابق
               </button>
-              <button onClick={handleFinalSubmit} disabled={submitting || openAnswer.trim().length < 20}
-                className="flex items-center gap-2 bg-gradient-to-l from-accent to-red-500 text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center">
-                {submitting ? <><Loader2 className="h-4 w-4 animate-spin" /> جارٍ الإرسال...</> : <><Zap className="h-4 w-4" /> توليد تقريري الآن</>}
+              <button
+                onClick={handleFinalSubmit}
+                disabled={submitting}
+                className="flex items-center gap-2 bg-gradient-to-l from-accent to-red-500 text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center"
+              >
+                {submitting
+                  ? <><Loader2 className="h-4 w-4 animate-spin" /> جارٍ الإرسال...</>
+                  : <><Zap className="h-4 w-4" /> توليد تقريري الآن</>
+                }
               </button>
             </div>
           </StepCard>

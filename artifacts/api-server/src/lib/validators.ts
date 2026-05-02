@@ -28,7 +28,8 @@ export const AssessmentStartSchema = z.object({
   payment_id: z.string().uuid().optional(),
 });
 
-export const AssessmentSubmitSchema = z.object({
+// ─── Mini path (snake_case, unchanged) ───────────────────────────────────────
+export const MiniSubmitSchema = z.object({
   behavioral_answers: z.array(
     z.object({
       question_index: z.number().int().min(0).max(23),
@@ -41,7 +42,21 @@ export const AssessmentSubmitSchema = z.object({
       choice: z.enum(["a", "b"]),
     })
   ),
-  open_answer: z.string().min(20).max(2000),
+  open_answer: z.string().min(1).max(2000),
+  completion_time_seconds: z.number().int().positive(),
+});
+
+// ─── V2 full path (camelCase) ─────────────────────────────────────────────────
+export const V2SubmitSchema = z.object({
+  answers: z
+    .array(
+      z.object({
+        questionId: z.string().min(1),
+        optionId: z.string().min(1),
+      })
+    )
+    .length(21, "Exactly 21 answers required"),
+  open_answer: z.string().max(2000).optional(),
   completion_time_seconds: z.number().int().positive(),
 });
 
@@ -57,7 +72,6 @@ export const ProfileUpdateSchema = z.object({
     .optional(),
 }).refine(
   (d) => {
-    // If either password field is present, both must be present
     const hasCurrent = !!d.current_password;
     const hasNew = !!d.new_password;
     return hasCurrent === hasNew;
@@ -69,4 +83,5 @@ export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type ProfileUpdateInput = z.infer<typeof ProfileUpdateSchema>;
 export type AssessmentStartInput = z.infer<typeof AssessmentStartSchema>;
-export type AssessmentSubmitInput = z.infer<typeof AssessmentSubmitSchema>;
+export type MiniSubmitInput = z.infer<typeof MiniSubmitSchema>;
+export type V2SubmitInput = z.infer<typeof V2SubmitSchema>;
