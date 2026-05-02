@@ -1,0 +1,111 @@
+You are working inside the Replit environment for Haithamhaj/inspire-framework.
+
+Task:
+Run one full end-to-end INSPIRE v2 assessment test using the live app/backend environment.
+
+This is TEST ONLY.
+
+Hard rules:
+- Do not modify files.
+- Do not commit.
+- Do not change UI.
+- Do not change payment, auth, admin, PDF, landing, or mini assessment.
+- Do not edit question bank or routing.
+- Do not fake the AI result.
+- If the external AI call fails, report the real failure.
+
+Goal:
+Verify that the merged v2 full-assessment flow works end-to-end using the real Replit environment/API keys.
+
+Test scenario:
+Use a random but valid answer for each of the 21 v2 analytical questions.
+
+Domain/project setup:
+- Project/domain name: "AI book for non-technical readers"
+- Project goal: "Create a clear, practical, non-technical book that explains AI without hype and helps normal users understand how to use AI responsibly."
+- Report language: Arabic
+- Assessment type: full
+
+Steps:
+
+1. Confirm the current code is on latest main and includes PR #1:
+   - print current git commit
+   - confirm questions-v2.ts has 21 questions
+   - confirm option-routing.ts has 86 routes
+
+2. Start or use the existing Replit server.
+
+3. Use GET /api/questions and confirm:
+   - success = true
+   - question count = 21
+   - every question has options
+   - the response exposes only public fields:
+     questionId, block, selectionMode, questionAr, questionEn, options, optionId, textAr, textEn
+   - no routing metadata is exposed
+
+4. Create or use a test user if needed.
+   If authentication blocks the flow, tell me exactly what endpoint or auth requirement blocks it.
+   Do not bypass auth by changing code.
+
+5. Start a full assessment.
+   If payment blocks the flow, use any existing valid 100% discount/test payment path if already supported.
+   Do not modify payment code.
+   If payment cannot be completed in test mode, report that clearly and stop before submit.
+
+6. Submit exactly 21 answers.
+   For each question returned by /api/questions:
+   - choose one valid optionId randomly
+   - build payload:
+     {
+       answers: [
+         { questionId, optionId }
+       ],
+       completion_time_seconds: 300
+     }
+   - open_answer is optional; leave it empty or omit it.
+
+7. Wait for processing to complete.
+   Poll the assessment status/results until:
+   - completed
+   - failed
+   - or timeout after a reasonable period
+
+8. If completed, fetch /api/results/:id and report:
+   - status
+   - has roleAnalysis? yes/no
+   - has systemInstruction? yes/no
+   - has quickStarters? yes/no
+   - has redLines? yes/no
+   - has strengths? yes/no
+   - has developmentAreas? yes/no
+   - has recommendations? yes/no
+   - inspireTable is null or not
+
+9. Print a short excerpt only:
+   - first 800 characters of roleAnalysis
+   - first 1200 characters of systemInstruction
+   - quickStarters list
+   - redLines list
+
+10. Review the generated output for:
+   - Does the assistant identity feel clear?
+   - Does it mention the project/domain?
+   - Does it avoid numeric scoring?
+   - Does it avoid answer_index/question_index logic?
+   - Does it avoid bloated paste-all-rules behavior?
+   - Are dynamic roles present or weak?
+   - Are thinking modes present and compact?
+   - Are red lines practical?
+
+11. Final report format:
+   A. Environment / commit
+   B. Question API check
+   C. Submission payload summary
+   D. Processing result
+   E. Output excerpt
+   F. Quality review
+   G. Any blocker found
+   H. Recommendation: pass / needs fix
+
+Do not modify files.
+Do not commit.
