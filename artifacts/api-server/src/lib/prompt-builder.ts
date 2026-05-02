@@ -361,8 +361,8 @@ export function buildPromptV2(data: PromptDataV2): string {
     optionId: string;
     behavioralSignal: string;
     instructionSections: InstructionSection[];
-    strength: "strong" | "moderate" | "mild";
-    redLineEffect: string;
+    strength: "primary" | "secondary";
+    redLineEffect: string | null;
     thinkingModeEffect: string;
   };
 
@@ -393,9 +393,9 @@ export function buildPromptV2(data: PromptDataV2): string {
   // Step 3: Within each bucket, merge overlapping signals into dominant descriptors
   // Group by signal prefix (first word) to detect overlaps
   const mergeBucket = (entries: SignalEntry[]): string => {
-    // Prioritize strong signals
+    // Prioritize primary signals from the approved routing matrix.
     const sorted = [...entries].sort((a, b) => {
-      const order = { strong: 0, moderate: 1, mild: 2 };
+      const order = { primary: 0, secondary: 1 };
       return order[a.strength] - order[b.strength];
     });
     // Deduplicate by similar signal roots (first segment before _)
@@ -416,7 +416,7 @@ export function buildPromptV2(data: PromptDataV2): string {
   const signalFrequency = new Map<string, { count: number; strength: number }>();
   for (const entry of signalEntries) {
     const sig = entry.behavioralSignal;
-    const strengthWeight = entry.strength === "strong" ? 3 : entry.strength === "moderate" ? 2 : 1;
+    const strengthWeight = entry.strength === "primary" ? 2 : 1;
     if (!signalFrequency.has(sig)) signalFrequency.set(sig, { count: 0, strength: 0 });
     const curr = signalFrequency.get(sig)!;
     curr.count += 1;
@@ -428,15 +428,15 @@ export function buildPromptV2(data: PromptDataV2): string {
     .slice(0, 5)
     .map(([sig]) => sig.replace(/_/g, " "));
 
-  // Collect red line effects from strong signals
+  // Collect red line effects from primary signals.
   const redLineEffects = signalEntries
-    .filter((e) => e.strength === "strong" && e.redLineEffect)
+    .filter((e) => e.strength === "primary" && e.redLineEffect)
     .slice(0, 5)
-    .map((e) => `• ${e.redLineEffect.replace(/_/g, " ")}`);
+    .map((e) => `• ${e.redLineEffect!.replace(/_/g, " ")}`);
 
-  // Collect thinking mode effects from strong signals
+  // Collect thinking mode effects from primary signals.
   const thinkingModes = signalEntries
-    .filter((e) => e.strength === "strong" && e.thinkingModeEffect)
+    .filter((e) => e.strength === "primary" && e.thinkingModeEffect)
     .map((e) => e.thinkingModeEffect.replace(/_/g, " "))
     .filter((v, i, a) => a.indexOf(v) === i)
     .slice(0, 4);
