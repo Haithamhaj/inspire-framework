@@ -8,335 +8,653 @@ export interface V2Question {
   id: string;
   block: "Setup / Behavioral Bridge" | "Behavioral Backbone" | "AI-Use Scenario";
   selectionMode: "single";
-  displayCondition: "always";
+  displayCondition: string;
   questionAr: string;
   questionEn: string;
   options: V2Option[];
 }
 
 export const V2_QUESTIONS: V2Question[] = [
-  // ─── Block 1: Setup / Behavioral Bridge (S2, S3) ────────────────────────────
-
   {
-    id: "S2",
-    block: "Setup / Behavioral Bridge",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تصف نمط عملك العام عند مواجهة مهمة جديدة أو تحدٍّ غير مألوف؟",
-    questionEn: "How would you describe your general work pattern when facing a new task or unfamiliar challenge?",
-    options: [
-      { id: "S2-a", textAr: "أُحلّل الوضع أولاً وأضع خطة واضحة قبل الشروع", textEn: "I analyze the situation first and make a clear plan before starting" },
-      { id: "S2-b", textAr: "أبدأ فوراً وأعدّل المسار أثناء التنفيذ", textEn: "I start immediately and adjust course as I go" },
-      { id: "S2-c", textAr: "أبحث عن نماذج ناجحة وأستلهم منها", textEn: "I look for successful models and draw inspiration from them" },
-      { id: "S2-d", textAr: "أستشير من لديهم خبرة وأبني على رأيهم", textEn: "I consult experienced people and build on their input" },
-      { id: "S2-e", textAr: "أجرّب أكثر من نهج في وقت واحد وأختار الأنجح", textEn: "I try multiple approaches simultaneously and choose the most effective" },
-    ],
+    "id": "S2_messy_task_help",
+    "block": "Setup / Behavioral Bridge",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تأتي للذكاء الاصطناعي بفكرة أو مهمة غير مرتبة، أي نوع من المساعدة يجعلك تتقدم فعلًا؟",
+    "questionEn": "When you bring AI a messy idea or unfinished task, what kind of help actually moves you forward?",
+    "options": [
+      {
+        "id": "organize_into_plan",
+        "textAr": "يرتب الفكرة ويحوّلها إلى خطة واضحة.",
+        "textEn": "It organizes the idea and turns it into a clear plan."
+      },
+      {
+        "id": "show_possible_directions",
+        "textAr": "يعرض أكثر من اتجاه ممكن قبل اختيار المسار.",
+        "textEn": "It shows more than one possible direction before choosing a path."
+      },
+      {
+        "id": "draft_first_refine",
+        "textAr": "ينتج نسخة أولية قابلة للتعديل بدل الكلام النظري.",
+        "textEn": "It produces a first editable version instead of theoretical talk."
+      },
+      {
+        "id": "identify_gaps_before_build",
+        "textAr": "يكشف ما هو ناقص أو ضعيف قبل البناء عليها.",
+        "textEn": "It reveals what is missing or weak before building on it."
+      },
+      {
+        "id": "simplify_then_continue",
+        "textAr": "يبسط الفكرة حتى أفهمها ثم نكمل عليها.",
+        "textEn": "It simplifies the idea so I understand it, then we continue building."
+      }
+    ]
   },
-
   {
-    id: "S3",
-    block: "Setup / Behavioral Bridge",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تتعامل مع المعلومات الجديدة التي تتلقاها في سياق العمل؟",
-    questionEn: "How do you process new information you receive in a work context?",
-    options: [
-      { id: "S3-a", textAr: "أتحقق من مصادرها وموثوقيتها فوراً قبل الاستخدام", textEn: "I immediately verify sources and reliability before using them" },
-      { id: "S3-b", textAr: "أربطها بما أعرفه وأبني عليها فهماً أعمق", textEn: "I connect it to what I know and build a deeper understanding" },
-      { id: "S3-c", textAr: "أُطبّقها مباشرةً وأرى مدى نجاحها في الواقع", textEn: "I apply it directly and see how it works in practice" },
-      { id: "S3-d", textAr: "أُشارك غيري بها لمناقشتها وتكوين رأي جماعي", textEn: "I share it with others to discuss and form a collective view" },
-      { id: "S3-e", textAr: "أحتفظ بها وأراجعها لاحقاً حين تواجهني مشكلة مماثلة", textEn: "I store it and revisit it later when a similar problem arises" },
-    ],
+    "id": "S3_idea_clarity_for_others",
+    "block": "Setup / Behavioral Bridge",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تحتاج أن تجعل فكرة أو نتيجة مفهومة لشخص آخر، ما الذي تنتبه له أولًا؟",
+    "questionEn": "When you need to make an idea or result understandable to someone else, what do you pay attention to first?",
+    "options": [
+      {
+        "id": "self_clarity_first",
+        "textAr": "أن أفهمها أنا بوضوح قبل أن أشرحها.",
+        "textEn": "That I understand it clearly myself before explaining it."
+      },
+      {
+        "id": "plain_language_no_assumed_expertise",
+        "textAr": "أن تُشرح بلغة بسيطة بدون افتراض خبرة مسبقة.",
+        "textEn": "That it is explained in simple language without assuming prior expertise."
+      },
+      {
+        "id": "relevance_to_other_person",
+        "textAr": "أن يعرف الطرف الآخر لماذا تهمه الفكرة.",
+        "textEn": "That the other person understands why the idea matters to them."
+      },
+      {
+        "id": "structured_for_following",
+        "textAr": "أن تكون مرتبة بحيث يسهل تتبعها.",
+        "textEn": "That it is organized so it is easy to follow."
+      },
+      {
+        "id": "context_adaptive_style",
+        "textAr": "أن يتغير الأسلوب حسب الشخص أو الموقف.",
+        "textEn": "That the style changes depending on the person or situation."
+      }
+    ]
   },
-
-  // ─── Block 2: Behavioral Backbone (Q01–Q15) ─────────────────────────────────
-
   {
-    id: "Q01",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "ما الذي يحفّزك بشكل أساسي عند الشروع في مشروع جديد؟",
-    questionEn: "What primarily motivates you when starting a new project?",
-    options: [
-      { id: "Q01-a", textAr: "تحقيق هدف واضح ومحدد بدقة", textEn: "Achieving a clearly defined specific goal" },
-      { id: "Q01-b", textAr: "استكشاف إمكانيات جديدة وفرص غير معروفة", textEn: "Exploring new possibilities and unknown opportunities" },
-      { id: "Q01-c", textAr: "المساهمة في نجاح الفريق أو المجتمع", textEn: "Contributing to team or community success" },
-      { id: "Q01-d", textAr: "تطوير مهاراتي الشخصية والنمو المستمر", textEn: "Developing my personal skills and continuous growth" },
-    ],
+    "id": "Q01_starting_orientation",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تبدأ فكرة أو مهمة جديدة، ما أول شيء يميل عقلك للتركيز عليه؟",
+    "questionEn": "When you start a new idea or task, what does your mind usually focus on first?",
+    "options": [
+      {
+        "id": "beneficiary_oriented",
+        "textAr": "من سيستفيد من هذه الفكرة أو المهمة؟",
+        "textEn": "Who will benefit from this idea or task?"
+      },
+      {
+        "id": "outcome_oriented",
+        "textAr": "كيف يجب أن تبدو النتيجة النهائية؟",
+        "textEn": "What should the final outcome look like?"
+      },
+      {
+        "id": "resource_oriented",
+        "textAr": "ما الموارد أو المعلومات المتاحة لدي؟",
+        "textEn": "What resources or information do I already have?"
+      },
+      {
+        "id": "action_oriented",
+        "textAr": "ما أول خطوة عملية يجب أن أبدأ بها؟",
+        "textEn": "What is the first practical step I should take?"
+      }
+    ]
   },
-
   {
-    id: "Q02",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تُحدّد الأولويات عند مواجهة مهام متعددة في آنٍ واحد؟",
-    questionEn: "How do you prioritize when facing multiple tasks simultaneously?",
-    options: [
-      { id: "Q02-a", textAr: "حسب الأهمية الاستراتيجية والتأثير بعيد المدى", textEn: "By strategic importance and long-term impact" },
-      { id: "Q02-b", textAr: "حسب الإلحاح والمواعيد النهائية القريبة", textEn: "By urgency and approaching deadlines" },
-      { id: "Q02-c", textAr: "حسب ما يثير اهتمامي وشغفي في اللحظة الراهنة", textEn: "By what interests and excites me at the current moment" },
-      { id: "Q02-d", textAr: "حسب احتياجات الفريق وما يُفيد الآخرين أولاً", textEn: "By team needs and what benefits others first" },
-    ],
+    "id": "Q02_ambiguity_handling",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "إذا بدأت مهمة جديدة والتفاصيل غير مكتملة، ما التصرف الأقرب لك عادةً؟",
+    "questionEn": "If you start a new task and the details are incomplete, what do you usually do first?",
+    "options": [
+      {
+        "id": "iterative_action",
+        "textAr": "أبدأ بما هو واضح وأتعلم أثناء التنفيذ.",
+        "textEn": "I start with what is clear and learn while doing."
+      },
+      {
+        "id": "clarification_first",
+        "textAr": "أطلب توضيحًا قبل أن أبدأ.",
+        "textEn": "I ask for clarification before starting."
+      },
+      {
+        "id": "stakeholder_oriented",
+        "textAr": "أبحث عمّن يجب إشراكه أو سؤاله.",
+        "textEn": "I identify who should be involved or asked."
+      },
+      {
+        "id": "gap_mapping",
+        "textAr": "أكتب الأسئلة أو النقاط الناقصة أولًا.",
+        "textEn": "I write down the missing questions or information first."
+      }
+    ]
   },
-
   {
-    id: "Q03",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "ما الذي يجعلك تشعر أن عملك ناجح فعلاً؟",
-    questionEn: "What makes you feel your work is genuinely successful?",
-    options: [
-      { id: "Q03-a", textAr: "تحقيق النتائج المستهدفة بدقة قياسية", textEn: "Achieving targeted results with measurable precision" },
-      { id: "Q03-b", textAr: "اكتساب خبرة ومعرفة جديدة من التجربة", textEn: "Gaining new experience and knowledge from the process" },
-      { id: "Q03-c", textAr: "الحصول على تقدير وإشادة من المحيطين", textEn: "Receiving recognition and appreciation from those around me" },
-      { id: "Q03-d", textAr: "الإحساس الداخلي بالرضا والإنجاز الحقيقي", textEn: "An inner sense of satisfaction and genuine accomplishment" },
-    ],
+    "id": "Q03_unfamiliar_decision",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "إذا احتجت لاتخاذ قرار في موضوع غير مألوف، ما التصرف الأقرب لك؟",
+    "questionEn": "If you need to make a decision in an unfamiliar area, what do you usually do?",
+    "options": [
+      {
+        "id": "intuition_tested",
+        "textAr": "أبدأ من تقديري الأولي ثم أختبره بسرعة.",
+        "textEn": "I start from my initial judgment, then test it quickly."
+      },
+      {
+        "id": "reference_seeking",
+        "textAr": "أبحث عن مرجع أو مثال موثوق.",
+        "textEn": "I look for a reliable reference or example."
+      },
+      {
+        "id": "collaborative_decision",
+        "textAr": "أشارك القرار مع شخص آخر قبل الحسم.",
+        "textEn": "I discuss the decision with someone else before deciding."
+      },
+      {
+        "id": "evaluation_first",
+        "textAr": "أطلب وقتًا لتحليل الخيارات والمخاطر.",
+        "textEn": "I ask for time to analyze options and risks."
+      }
+    ]
   },
-
   {
-    id: "Q04",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تُفضّل شرح فكرة معقدة لشخص آخر؟",
-    questionEn: "How do you prefer to explain a complex idea to someone?",
-    options: [
-      { id: "Q04-a", textAr: "بأمثلة واقعية وقصص قابلة للتطبيق", textEn: "Through real-world examples and applicable stories" },
-      { id: "Q04-b", textAr: "بتفكيكها إلى خطوات منطقية متسلسلة", textEn: "By breaking it into sequential logical steps" },
-      { id: "Q04-c", textAr: "برسم مخطط أو خريطة بصرية توضيحية", textEn: "By drawing a diagram or visual map" },
-      { id: "Q04-d", textAr: "بالتدريب العملي والتجربة المباشرة", textEn: "Through hands-on practice and direct experience" },
-    ],
+    "id": "Q04_plan_failure",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "إذا فشلت خطة كنت واثقًا منها، ما أول ما تميل لفعله؟",
+    "questionEn": "If a plan you trusted fails, what do you tend to do first?",
+    "options": [
+      {
+        "id": "context_constraints",
+        "textAr": "أراجع الظروف التي أثرت على الخطة.",
+        "textEn": "I review the conditions that affected the plan."
+      },
+      {
+        "id": "root_cause",
+        "textAr": "أعيد تحليل ما حدث لأفهم السبب.",
+        "textEn": "I re-analyze what happened to understand the cause."
+      },
+      {
+        "id": "second_opinion",
+        "textAr": "أطلب رأيًا أو دعمًا من شخص آخر.",
+        "textEn": "I ask someone else for input or support."
+      },
+      {
+        "id": "adaptive_pivot",
+        "textAr": "أغير الخطة بسرعة وأجرب مسارًا آخر.",
+        "textEn": "I quickly change the plan and try another path."
+      }
+    ]
   },
-
   {
-    id: "Q05",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "ما نوع المحتوى الذي تجد نفسك تستهلكه أكثر في حياتك المهنية؟",
-    questionEn: "What type of content do you find yourself consuming most in your professional life?",
-    options: [
-      { id: "Q05-a", textAr: "مقالات تحليلية وتقارير متعمقة", textEn: "Analytical articles and in-depth reports" },
-      { id: "Q05-b", textAr: "مقاطع فيديو تعليمية سريعة وملخصات موجزة", textEn: "Quick educational videos and concise summaries" },
-      { id: "Q05-c", textAr: "نقاشات ومحادثات مباشرة مع متخصصين", textEn: "Direct discussions and conversations with specialists" },
-      { id: "Q05-d", textAr: "كتب ومراجع شاملة ودراسات معمقة", textEn: "Comprehensive books, references, and in-depth studies" },
-    ],
+    "id": "Q05_stalled_task",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تتوقف في مهمة معقدة ولا تعرف كيف تكمل، ما الذي تفعله غالبًا؟",
+    "questionEn": "When you get stuck in a complex task and do not know how to continue, what do you usually do?",
+    "options": [
+      {
+        "id": "blocker_diagnosis",
+        "textAr": "أبحث عن السبب الذي جعلني أتوقف.",
+        "textEn": "I look for the reason I got stuck."
+      },
+      {
+        "id": "tool_method",
+        "textAr": "أبحث عن أداة أو طريقة تنظّم المشكلة.",
+        "textEn": "I look for a tool or method to organize the problem."
+      },
+      {
+        "id": "sequencing",
+        "textAr": "أغير ترتيب المهام أو أبدأ من جزء أسهل.",
+        "textEn": "I change the order of tasks or start with an easier part."
+      },
+      {
+        "id": "external_feedback",
+        "textAr": "أطلب تقييمًا أو رأيًا خارجيًا.",
+        "textEn": "I ask for external assessment or feedback."
+      }
+    ]
   },
-
   {
-    id: "Q06",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تتعامل مع الأخطاء التي ترتكبها في العمل؟",
-    questionEn: "How do you handle mistakes you make at work?",
-    options: [
-      { id: "Q06-a", textAr: "أُحلّلها بعمق لفهم أسبابها ومنع تكرارها", textEn: "I analyze them deeply to understand root causes and prevent recurrence" },
-      { id: "Q06-b", textAr: "أتجاوزها بسرعة وأتعلم منها دون توقف طويل", textEn: "I move past them quickly and learn without dwelling" },
-      { id: "Q06-c", textAr: "أعتذر وأُعيد بناء الثقة مع من تأثروا", textEn: "I apologize and rebuild trust with those affected" },
-      { id: "Q06-d", textAr: "أُفكر فيها طويلاً حتى أتأكد من فهمها الكامل", textEn: "I reflect on them at length until I fully understand them" },
-    ],
+    "id": "Q06_success_clarity",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "قبل أن تبدأ مهمة جديدة، ما الذي تحتاجه أكثر حتى تشعر أنك تسير في الاتجاه الصحيح؟",
+    "questionEn": "Before starting a new task, what do you need most to feel you are moving in the right direction?",
+    "options": [
+      {
+        "id": "success_criteria",
+        "textAr": "معرفة شروط النجاح بوضوح.",
+        "textEn": "Knowing the success criteria clearly."
+      },
+      {
+        "id": "learn_by_doing",
+        "textAr": "البدء والتعلم أثناء التجربة.",
+        "textEn": "Starting and learning through the process."
+      },
+      {
+        "id": "multi_path",
+        "textAr": "تجربة أكثر من طريقة قبل اختيار واحدة.",
+        "textEn": "Trying more than one approach before choosing."
+      },
+      {
+        "id": "goal_beneficiary",
+        "textAr": "فهم الهدف أو المستفيد من المهمة.",
+        "textEn": "Understanding the goal or who benefits from the task."
+      }
+    ]
   },
-
   {
-    id: "Q07",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تصف أسلوب عملك العام؟",
-    questionEn: "How would you describe your general work style?",
-    options: [
-      { id: "Q07-a", textAr: "منهجي ومنظم وأتّبع خطة واضحة ومحددة", textEn: "Systematic and organized, following a clear defined plan" },
-      { id: "Q07-b", textAr: "مرن وقادر على التكيف السريع مع المتغيرات", textEn: "Flexible and capable of rapid adaptation to changes" },
-      { id: "Q07-c", textAr: "تعاوني وأعتمد على التشاور والعمل الجماعي", textEn: "Collaborative and relying on consultation and teamwork" },
-      { id: "Q07-d", textAr: "مستقل وأُفضّل اتخاذ القرارات والعمل بنفسي", textEn: "Independent, preferring to make decisions and work solo" },
-    ],
+    "id": "Q07_learning_style",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تريد فهم شيء جديد، ما الطريقة التي تساعدك أكثر؟",
+    "questionEn": "When you want to understand something new, what helps you most?",
+    "options": [
+      {
+        "id": "demo_learning",
+        "textAr": "مثال عملي أو عرض مباشر للفكرة.",
+        "textEn": "A practical example or demonstration of the idea."
+      },
+      {
+        "id": "analytical_learning",
+        "textAr": "شرح منظم وتحليل خطوة بخطوة.",
+        "textEn": "A structured explanation and step-by-step analysis."
+      },
+      {
+        "id": "interactive_learning",
+        "textAr": "نقاش أو أسئلة تفاعلية.",
+        "textEn": "Discussion or interactive questions."
+      },
+      {
+        "id": "practice_learning",
+        "textAr": "تطبيق عملي أو تمرين صغير.",
+        "textEn": "A practical application or small exercise."
+      }
+    ]
   },
-
   {
-    id: "Q08",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "ما نوع الملاحظات التي تجدها أكثر فائدة في تحسين أدائك؟",
-    questionEn: "What type of feedback do you find most useful for improving your performance?",
-    options: [
-      { id: "Q08-a", textAr: "ملاحظات مباشرة وصريحة حتى لو كانت قاسية", textEn: "Direct and candid feedback even if it's harsh" },
-      { id: "Q08-b", textAr: "ملاحظات متوازنة تجمع بين الإيجابي والسلبي", textEn: "Balanced feedback combining positives and areas for improvement" },
-      { id: "Q08-c", textAr: "ملاحظات مفصلة مع أمثلة وخطوات إجرائية واضحة", textEn: "Detailed feedback with examples and clear action steps" },
-      { id: "Q08-d", textAr: "أسئلة توجيهية تُساعدني على اكتشاف الحل بنفسي", textEn: "Guiding questions that help me discover solutions on my own" },
-    ],
+    "id": "Q08_new_challenge",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تواجه تحديًا جديدًا لا تملك عنه خبرة كافية، ما أول ما تميل لفعله؟",
+    "questionEn": "When you face a new challenge you do not have enough experience with, what do you tend to do first?",
+    "options": [
+      {
+        "id": "precedent",
+        "textAr": "أبحث عن حالات أو تجارب مشابهة.",
+        "textEn": "I look for similar cases or previous examples."
+      },
+      {
+        "id": "experiment",
+        "textAr": "أجرب طريقة أولية وأتعلم من النتيجة.",
+        "textEn": "I try an initial approach and learn from the result."
+      },
+      {
+        "id": "expert_guidance",
+        "textAr": "أطلب توجيهًا ممن لديه خبرة.",
+        "textEn": "I ask for guidance from someone with experience."
+      },
+      {
+        "id": "risk_first",
+        "textAr": "أقيّم المخاطر قبل أن أبدأ.",
+        "textEn": "I assess the risks before starting."
+      }
+    ]
   },
-
   {
-    id: "Q09",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تتعامل مع التغيير المفاجئ في الخطط والتوقعات؟",
-    questionEn: "How do you handle sudden changes in plans and expectations?",
-    options: [
-      { id: "Q09-a", textAr: "يستغرق الأمر مني وقتاً للتكيف وأحتاج مرحلة انتقالية", textEn: "It takes me time to adapt and I need a transition phase" },
-      { id: "Q09-b", textAr: "أتكيف بمرونة وأُعيد ترتيب أولوياتي بسرعة", textEn: "I adapt flexibly and quickly reorder my priorities" },
-      { id: "Q09-c", textAr: "أنظر إليه كفرصة للتجديد والاختبار الإبداعي", textEn: "I see it as an opportunity for renewal and creative experimentation" },
-      { id: "Q09-d", textAr: "أسعى لاستعادة الخطة الأصلية إن أمكن ذلك", textEn: "I try to restore the original plan if possible" },
-    ],
+    "id": "Q09_repeating_problems",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تتكرر نفس المشكلة أكثر من مرة، ما أول ما تفعله عادةً؟",
+    "questionEn": "When the same problem repeats more than once, what do you usually do first?",
+    "options": [
+      {
+        "id": "root_pattern",
+        "textAr": "أبحث عن السبب المشترك وراء التكرار.",
+        "textEn": "I look for the common cause behind the repetition."
+      },
+      {
+        "id": "collaborative_review",
+        "textAr": "أناقش المشكلة مع من له علاقة بها.",
+        "textEn": "I discuss the issue with the people involved."
+      },
+      {
+        "id": "alternative_search",
+        "textAr": "أجرب طريقة مختلفة بدل تكرار نفس الحل.",
+        "textEn": "I try a different approach instead of repeating the same solution."
+      },
+      {
+        "id": "documentation_prevention",
+        "textAr": "أوثق الأسباب وما حدث حتى لا يتكرر.",
+        "textEn": "I document the causes and what happened so it does not repeat."
+      }
+    ]
   },
-
   {
-    id: "Q10",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "ما أسلوبك المفضل في اتخاذ القرارات المهمة؟",
-    questionEn: "What is your preferred style for making important decisions?",
-    options: [
-      { id: "Q10-a", textAr: "أجمع البيانات وأُحلّل الخيارات بشكل منهجي شامل", textEn: "I gather data and analyze options in a comprehensive systematic way" },
-      { id: "Q10-b", textAr: "أثق بحدسي وخبرتي السابقة في المواقف المشابهة", textEn: "I trust my intuition and past experience in similar situations" },
-      { id: "Q10-c", textAr: "أستشير الآخرين وآخذ آراءهم بعين الاعتبار", textEn: "I consult others and take their perspectives into account" },
-      { id: "Q10-d", textAr: "أُجري تجارب صغيرة قبل الالتزام بالقرار النهائي", textEn: "I run small experiments before committing to a final decision" },
-    ],
+    "id": "Q10_disagreement",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما يظهر خلاف حول طريقة تنفيذ عمل أو قرار، ما التصرف الأقرب لك؟",
+    "questionEn": "When there is disagreement about how to execute work or make a decision, what do you usually do?",
+    "options": [
+      {
+        "id": "consensus",
+        "textAr": "أبحث عن حل يرضي الأطراف قدر الإمكان.",
+        "textEn": "I look for a solution that satisfies the involved sides as much as possible."
+      },
+      {
+        "id": "outcome_priority",
+        "textAr": "أركز على مصلحة العمل والنتيجة المطلوبة.",
+        "textEn": "I focus on the work interest and required outcome."
+      },
+      {
+        "id": "conflict_analysis",
+        "textAr": "أحلل سبب الخلاف قبل اقتراح حل.",
+        "textEn": "I analyze the reason for the disagreement before suggesting a solution."
+      },
+      {
+        "id": "delay_clarity",
+        "textAr": "أؤجل النقاش حتى تتضح الصورة أكثر.",
+        "textEn": "I delay the discussion until the situation becomes clearer."
+      }
+    ]
   },
-
   {
-    id: "Q11",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تتصرف عادةً في الاجتماعات والنقاشات الجماعية؟",
-    questionEn: "How do you typically behave in group meetings and discussions?",
-    options: [
-      { id: "Q11-a", textAr: "أقود النقاش وأُوجّه الحوار نحو الأهداف", textEn: "I lead the discussion and direct dialogue toward goals" },
-      { id: "Q11-b", textAr: "أُساهم عند الضرورة وأستمع بعناية للآخرين", textEn: "I contribute when necessary and listen carefully to others" },
-      { id: "Q11-c", textAr: "أطرح أسئلة توضيحية لتعميق الفهم المشترك", textEn: "I ask clarifying questions to deepen shared understanding" },
-      { id: "Q11-d", textAr: "أُلخّص ما قيل وأستخلص النقاط والقرارات الجوهرية", textEn: "I summarize what was said and extract key points and decisions" },
-    ],
+    "id": "Q11_tasks_piling",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تتراكم عليك مهام كثيرة، ما التصرف الذي يساعدك أكثر؟",
+    "questionEn": "When many tasks pile up, what helps you most?",
+    "options": [
+      {
+        "id": "schedule",
+        "textAr": "أرتب جدولًا أو خطة زمنية.",
+        "textEn": "I create a schedule or time plan."
+      },
+      {
+        "id": "priority",
+        "textAr": "أبدأ بالأهم أو الأعلى أثرًا.",
+        "textEn": "I start with the most important or highest-impact task."
+      },
+      {
+        "id": "delegate",
+        "textAr": "أطلب دعمًا أو أوزع بعض المهام.",
+        "textEn": "I ask for support or distribute some tasks."
+      },
+      {
+        "id": "efficiency_tool",
+        "textAr": "أبحث عن طريقة أو أداة تسرّع الإنجاز.",
+        "textEn": "I look for a method or tool that speeds up execution."
+      }
+    ]
   },
-
   {
-    id: "Q12",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تتعامل مع الاختلاف في وجهات النظر داخل الفريق؟",
-    questionEn: "How do you handle differences of opinion within a team?",
-    options: [
-      { id: "Q12-a", textAr: "أناقش بحزم ووضوح للوصول إلى حل مقبول للجميع", textEn: "I discuss firmly and clearly to reach a solution acceptable to all" },
-      { id: "Q12-b", textAr: "أحاول فهم وجهة نظر الطرف الآخر أولاً قبل الرد", textEn: "I try to understand the other party's perspective before responding" },
-      { id: "Q12-c", textAr: "أبحث عن أرضية مشتركة ونقاط التقاء ممكنة", textEn: "I look for common ground and possible convergence points" },
-      { id: "Q12-d", textAr: "أتجنب الجدال المباشر وأتعامل مع الأمر لاحقاً", textEn: "I avoid direct argument and address the matter later" },
-    ],
+    "id": "Q12_postponing",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تؤجل مهمة أكثر من مرة، ما السبب الأقرب عادةً؟",
+    "questionEn": "When you postpone a task more than once, what is usually the closest reason?",
+    "options": [
+      {
+        "id": "focus_energy",
+        "textAr": "لا أكون مركزًا أو لا أجد طاقة كافية للبدء.",
+        "textEn": "I am not focused or do not have enough energy to start."
+      },
+      {
+        "id": "unclear_requirements",
+        "textAr": "المطلوب غير واضح بما يكفي.",
+        "textEn": "The requirements are not clear enough."
+      },
+      {
+        "id": "bad_sequence",
+        "textAr": "الخطة أو ترتيب الخطوات غير مضبوط.",
+        "textEn": "The plan or sequence of steps is not well organized."
+      },
+      {
+        "id": "coordination",
+        "textAr": "أحتاج تنسيقًا أو تواصلًا مع طرف آخر.",
+        "textEn": "I need coordination or communication with someone else."
+      }
+    ]
   },
-
   {
-    id: "Q13",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تحكم على جودة قراراتك بعد اتخاذها؟",
-    questionEn: "How do you assess the quality of your decisions after making them?",
-    options: [
-      { id: "Q13-a", textAr: "بمقارنة النتائج الفعلية بالأهداف والمعايير المحددة", textEn: "By comparing actual results to defined goals and standards" },
-      { id: "Q13-b", textAr: "بمدى رضا من تأثروا بالقرار وردود فعلهم", textEn: "By the satisfaction of those affected and their reactions" },
-      { id: "Q13-c", textAr: "بالشعور الداخلي بأنني اتخذت القرار الصحيح", textEn: "By an inner feeling that I made the right decision" },
-      { id: "Q13-d", textAr: "بتقييم الآخرين لأدائي وملاحظاتهم عليه", textEn: "By how others evaluate my performance and their feedback on it" },
-    ],
+    "id": "Q13_completion_review",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "بعد إنهاء عمل أو مشروع مهم، ما أول شيء تميل لفعله؟",
+    "questionEn": "After completing an important piece of work or project, what do you tend to do first?",
+    "options": [
+      {
+        "id": "result_review",
+        "textAr": "أراجع النتائج وما تحقق فعليًا.",
+        "textEn": "I review the results and what was actually achieved."
+      },
+      {
+        "id": "share_feedback",
+        "textAr": "أشارك الإنجاز أو أطلب رأيًا حوله.",
+        "textEn": "I share the achievement or ask for feedback on it."
+      },
+      {
+        "id": "forward_planning",
+        "textAr": "أبدأ التفكير في الخطوة أو المشروع التالي.",
+        "textEn": "I start thinking about the next step or project."
+      },
+      {
+        "id": "recovery",
+        "textAr": "أرتاح قليلًا قبل المراجعة أو الانتقال لما بعده.",
+        "textEn": "I take a short break before reviewing or moving on."
+      }
+    ]
   },
-
   {
-    id: "Q14",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تعالج مشاعر الإحباط أو الضغط المهني؟",
-    questionEn: "How do you process feelings of professional frustration or pressure?",
-    options: [
-      { id: "Q14-a", textAr: "بالتحليل المنطقي للمشكلة وإيجاد حلول عملية", textEn: "Through logical analysis of the problem and finding practical solutions" },
-      { id: "Q14-b", textAr: "بالتحدث مع شخص موثوق وأخذ رأيه", textEn: "By talking to a trusted person and getting their perspective" },
-      { id: "Q14-c", textAr: "بممارسة نشاط يساعدني على التنفيس والاسترخاء", textEn: "By engaging in an activity that helps me decompress and relax" },
-      { id: "Q14-d", textAr: "بمنح نفسي وقتاً للتأمل الهادئ والتفكير المنفرد", textEn: "By giving myself time for quiet reflection and solitary thinking" },
-    ],
+    "id": "Q14_error_feedback",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما يلفت أحد انتباهك إلى خطأ في عملك، ما رد فعلك الأقرب؟",
+    "questionEn": "When someone points out an error in your work, what is your closest reaction?",
+    "options": [
+      {
+        "id": "detail_verify",
+        "textAr": "أراجع التفاصيل لأتأكد من الخطأ.",
+        "textEn": "I review the details to verify the error."
+      },
+      {
+        "id": "rationale_context",
+        "textAr": "أشرح سبب اختياري أو طريقتي.",
+        "textEn": "I explain the reason behind my choice or approach."
+      },
+      {
+        "id": "fix_oriented",
+        "textAr": "أبحث عن حل عملي لإصلاحه.",
+        "textEn": "I look for a practical way to fix it."
+      },
+      {
+        "id": "prevention",
+        "textAr": "أركز على منع تكراره لاحقًا.",
+        "textEn": "I focus on preventing it from happening again."
+      }
+    ]
   },
-
   {
-    id: "Q15",
-    block: "Behavioral Backbone",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "كيف تتعامل مع المخاطر في مشاريعك المهنية؟",
-    questionEn: "How do you handle risks in your professional projects?",
-    options: [
-      { id: "Q15-a", textAr: "أُحدّد المخاطر مسبقاً وأضع خططاً احتياطية لها", textEn: "I identify risks in advance and prepare contingency plans" },
-      { id: "Q15-b", textAr: "أتعامل مع المخاطر عند ظهورها فعلياً", textEn: "I deal with risks when they actually emerge" },
-      { id: "Q15-c", textAr: "أقبل المخاطر المحسوبة وأعتبرها جزءاً من التقدم", textEn: "I accept calculated risks and consider them part of progress" },
-      { id: "Q15-d", textAr: "أُفضّل الأمان والتحفظ وتجنب المخاطر قدر الإمكان", textEn: "I prefer safety, caution, and avoiding risks as much as possible" },
-    ],
+    "id": "Q15_repeated_no_progress",
+    "block": "Behavioral Backbone",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما تشعر أن محاولاتك لا تحقق التقدم المطلوب أكثر من مرة، ما التصرف الأقرب لك؟",
+    "questionEn": "When you feel that your attempts are not making the progress you expected more than once, what do you usually do?",
+    "options": [
+      {
+        "id": "under_root",
+        "textAr": "أبحث عن السبب الجذري وراء التعثر.",
+        "textEn": "I look for the root cause behind the lack of progress."
+      },
+      {
+        "id": "support_perspective",
+        "textAr": "أطلب دعمًا أو رأيًا من شخص آخر.",
+        "textEn": "I ask for support or another perspective."
+      },
+      {
+        "id": "change_plan",
+        "textAr": "أضع خطة تغيير واضحة.",
+        "textEn": "I create a clear change plan."
+      },
+      {
+        "id": "learn_examples",
+        "textAr": "أبحث عن أمثلة مشابهة لأتعلم منها.",
+        "textEn": "I look for similar examples to learn from."
+      }
+    ]
   },
-
-  // ─── Block 3: AI-Use Scenario (AI01–AI04) ───────────────────────────────────
-
   {
-    id: "AI01",
-    block: "AI-Use Scenario",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "عندما تستخدم الذكاء الاصطناعي في العمل، ما أسلوبك المفضل في الحصول على الإجابات؟",
-    questionEn: "When using AI at work, what is your preferred style for getting answers?",
-    options: [
-      { id: "AI01-a", textAr: "إجابات مباشرة وموجزة دون تفاصيل زائدة", textEn: "Direct and concise answers without extra details" },
-      { id: "AI01-b", textAr: "شرح مفصل مع السياق والمنطق الكامن وراء كل خطوة", textEn: "Detailed explanation with context and the logic behind each step" },
-      { id: "AI01-c", textAr: "خيارات متعددة مع مزايا وعيوب كل منها لأختار أنا", textEn: "Multiple options with pros and cons of each so I can choose" },
-      { id: "AI01-d", textAr: "حوار تفاعلي يشبه النقاش مع متخصص يُرشدني", textEn: "An interactive dialogue resembling a discussion with an expert who guides me" },
-    ],
+    "id": "AI01_correct_unusable",
+    "block": "AI-Use Scenario",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "أحيانًا يعطيك الذكاء الاصطناعي جوابًا يبدو صحيحًا، لكنه لا يساعدك بالشكل المطلوب. ما السبب الأقرب عادةً؟",
+    "questionEn": "Sometimes AI gives an answer that seems correct, but it still does not help you the way you need. What is usually the closest reason?",
+    "options": [
+      {
+        "id": "no_context",
+        "textAr": "لا يربط الجواب بسياقي أو هدفي الحالي.",
+        "textEn": "It does not connect the answer to my current context or goal."
+      },
+      {
+        "id": "not_practical",
+        "textAr": "لا يحوّل الفكرة إلى شيء عملي يمكنني استخدامه.",
+        "textEn": "It does not turn the idea into something practical I can use."
+      },
+      {
+        "id": "no_gap",
+        "textAr": "لا يوضح لي أين قد تكون المشكلة أو النقص.",
+        "textEn": "It does not show where the issue, weakness, or missing part might be."
+      },
+      {
+        "id": "no_quality_check",
+        "textAr": "لا يعطيني طريقة أتأكد بها من جودة الجواب.",
+        "textEn": "It does not give me a way to judge whether the answer is good enough."
+      }
+    ]
   },
-
   {
-    id: "AI02",
-    block: "AI-Use Scenario",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "عند استخدام الذكاء الاصطناعي في مشروع ما، كيف تُفضّل توزيع الأدوار؟",
-    questionEn: "When using AI in a project, how do you prefer to divide roles?",
-    options: [
-      { id: "AI02-a", textAr: "أقود الحوار وأُحدّد الاتجاه وأستخدم الذكاء الاصطناعي كأداة تنفيذ", textEn: "I lead the dialogue, set direction, and use AI as an execution tool" },
-      { id: "AI02-b", textAr: "أترك للذكاء الاصطناعي المبادرة باقتراح الخطوات والاتجاه", textEn: "I let AI take initiative in suggesting steps and direction" },
-      { id: "AI02-c", textAr: "تعاون متوازن — أُساهم بالرؤية وأطلب من الذكاء الاصطناعي تطويرها", textEn: "Balanced collaboration — I contribute the vision and ask AI to develop it" },
-      { id: "AI02-d", textAr: "أُحدّد المشكلة وأدع الذكاء الاصطناعي يُقترح حلولاً أُقيّمها", textEn: "I define the problem and let AI suggest solutions for me to evaluate" },
-    ],
+    "id": "AI02_incomplete_request",
+    "block": "AI-Use Scenario",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما يكون طلبك للذكاء الاصطناعي غير مكتمل، لكن يمكن البدء منه، أي رد يساعدك أكثر؟",
+    "questionEn": "When your request to AI is incomplete, but there is still enough to begin, which response helps you most?",
+    "options": [
+      {
+        "id": "ask_one",
+        "textAr": "يسألني سؤالًا واحدًا عن أهم نقطة ناقصة.",
+        "textEn": "It asks me one question about the most important missing point."
+      },
+      {
+        "id": "assume_start",
+        "textAr": "يذكر ما فهمه وما افترضه ثم يبدأ.",
+        "textEn": "It states what it understood and assumed, then starts."
+      },
+      {
+        "id": "conditional_paths",
+        "textAr": "يعطيني مسارين أو ثلاثة حسب الاحتمالات الممكنة.",
+        "textEn": "It gives me two or three possible paths based on likely interpretations."
+      },
+      {
+        "id": "draft_refine",
+        "textAr": "يبدأ بمسودة أولية ثم يوضح ما الذي يحتاجه لتحسينها.",
+        "textEn": "It starts with a first draft, then explains what it needs to improve it."
+      }
+    ]
   },
-
   {
-    id: "AI03",
-    block: "AI-Use Scenario",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "عندما تطرح فكرة على الذكاء الاصطناعي، ماذا تتوقع منه؟",
-    questionEn: "When you present an idea to AI, what do you expect from it?",
-    options: [
-      { id: "AI03-a", textAr: "يتحدى الفكرة ويكشف نقاط ضعفها ومخاطرها", textEn: "It challenges the idea and reveals its weaknesses and risks" },
-      { id: "AI03-b", textAr: "يدعم الفكرة ويساعدني على تطويرها وتقويتها", textEn: "It supports the idea and helps me develop and strengthen it" },
-      { id: "AI03-c", textAr: "يُقيّم الفكرة بموضوعية ويُعطيني صورة متوازنة شاملة", textEn: "It evaluates the idea objectively and gives me a balanced comprehensive picture" },
-      { id: "AI03-d", textAr: "يُقارنها بأفكار مماثلة ويُعطيني سياقاً أوسع لها", textEn: "It compares it to similar ideas and gives me a broader context for it" },
-    ],
+    "id": "AI03_repeated_ai_mistake",
+    "block": "AI-Use Scenario",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "إذا لاحظت أن الذكاء الاصطناعي يكرر نفس نوع الخطأ أو الأسلوب غير المناسب، ما التصرف الذي تفضله؟",
+    "questionEn": "If you notice AI repeating the same kind of mistake or unsuitable style, what would you prefer it to do?",
+    "options": [
+      {
+        "id": "local_only",
+        "textAr": "يلتزم بتصحيحي داخل نفس المحادثة فقط.",
+        "textEn": "It applies my correction within the same conversation only."
+      },
+      {
+        "id": "auto_adjust",
+        "textAr": "يلاحظ النمط ويعدّل أسلوبه تلقائيًا.",
+        "textEn": "It notices the pattern and adjusts its style automatically."
+      },
+      {
+        "id": "suggest_rule",
+        "textAr": "يخبرني أنه لاحظ التكرار ويقترح قاعدة جديدة.",
+        "textEn": "It tells me it noticed the pattern and suggests a new rule."
+      },
+      {
+        "id": "confirm_permanent",
+        "textAr": "يسألني قبل أن يعتبر التصحيح قاعدة دائمة.",
+        "textEn": "It asks me before treating the correction as a permanent rule."
+      }
+    ]
   },
-
   {
-    id: "AI04",
-    block: "AI-Use Scenario",
-    selectionMode: "single",
-    displayCondition: "always",
-    questionAr: "ما الذي يُعرقل تجربتك مع الذكاء الاصطناعي أكثر من غيره؟",
-    questionEn: "What disrupts your experience with AI the most?",
-    options: [
-      { id: "AI04-a", textAr: "ردود طويلة ومفصّلة لا تصل للنقطة المطلوبة", textEn: "Long detailed responses that don't get to the required point" },
-      { id: "AI04-b", textAr: "ردود غامضة أو عامة لا تُعالج وضعي المحدد", textEn: "Vague or generic responses that don't address my specific situation" },
-      { id: "AI04-c", textAr: "عدم الاتساق والتناقض في الردود المتعاقبة", textEn: "Inconsistency and contradiction in successive responses" },
-      { id: "AI04-d", textAr: "ردود متحفظة مفرطة أو رفض غير مبرر للطلبات", textEn: "Excessively cautious responses or unjustified refusal of requests" },
-    ],
-  },
+    "id": "AI04_trust_verification",
+    "block": "AI-Use Scenario",
+    "selectionMode": "single",
+    "displayCondition": "Always",
+    "questionAr": "عندما يعطيك الذكاء الاصطناعي معلومة مهمة أو توصية قد تعتمد عليها، ما الذي يجعلك تطمئن أكثر؟",
+    "questionEn": "When AI gives you important information or a recommendation you may rely on, what makes you trust it more?",
+    "options": [
+      {
+        "id": "simple_limits",
+        "textAr": "أن يوضح الفكرة ببساطة ويذكر حدودها.",
+        "textEn": "It explains the idea simply and mentions its limits."
+      },
+      {
+        "id": "fact_inference_reco",
+        "textAr": "أن يميز بين الحقيقة والاستنتاج والتوصية.",
+        "textEn": "It distinguishes fact, inference, and recommendation."
+      },
+      {
+        "id": "source_needed",
+        "textAr": "أن يذكر مصدرًا أو ينبهني أن الموضوع يحتاج تحققًا.",
+        "textEn": "It cites a source or warns me when verification is needed."
+      },
+      {
+        "id": "validation_criteria",
+        "textAr": "أن يعطيني معيارًا أستخدمه للحكم على جودة الجواب.",
+        "textEn": "It gives me a criterion to judge whether the answer is good enough."
+      }
+    ]
+  }
 ];
 
 export const REQUIRED_V2_QUESTION_IDS = V2_QUESTIONS.map((q) => q.id);

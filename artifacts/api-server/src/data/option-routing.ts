@@ -29,1091 +29,2079 @@ export type ReportSection =
 export interface OptionRoute {
   questionId: string;
   optionId: string;
+  optionAr: string;
+  optionEn: string;
   behavioralSignal: string;
   instructionSections: InstructionSection[];
   reportSections: ReportSection[];
-  strength: "strong" | "moderate" | "mild";
+  strength: "primary" | "secondary";
   ruleTextAr: string;
   ruleTextEn: string;
   thinkingModeEffect: string;
-  redLineEffect: string;
+  redLineEffect: string | null;
   riskGuard: string;
+  acceptanceStatus: string;
 }
 
 export const OPTION_ROUTES: OptionRoute[] = [
-  // ─── S2 ──────────────────────────────────────────────────────────────────────
-  {
-    questionId: "S2", optionId: "S2-a",
-    behavioralSignal: "analytical_planner",
-    instructionSections: ["mission_domain_context", "core_behavior_rules"],
-    reportSections: ["domain_operating_mode", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُخطّط قبل التنفيذ",
-    ruleTextEn: "Plans before executing",
-    thinkingModeEffect: "structured_deliberate",
-    redLineEffect: "rejects_unplanned_execution",
-    riskGuard: "over_analysis_paralysis",
-  },
-  {
-    questionId: "S2", optionId: "S2-b",
-    behavioralSignal: "action_first_iterator",
-    instructionSections: ["core_behavior_rules", "adaptation_loop"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُنفّذ أولاً ثم يُعدّل",
-    ruleTextEn: "Executes first then adjusts",
-    thinkingModeEffect: "fast_iterative",
-    redLineEffect: "rejects_over_planning",
-    riskGuard: "premature_commitment",
-  },
-  {
-    questionId: "S2", optionId: "S2-c",
-    behavioralSignal: "model_seeker",
-    instructionSections: ["mission_domain_context", "relationship_with_user"],
-    reportSections: ["domain_operating_mode", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يستلهم من النماذج الناجحة",
-    ruleTextEn: "Draws inspiration from successful models",
-    thinkingModeEffect: "reference_based_reasoning",
-    redLineEffect: "dislikes_abstract_solutions",
-    riskGuard: "over_reliance_on_precedent",
-  },
-  {
-    questionId: "S2", optionId: "S2-d",
-    behavioralSignal: "collaborative_decision_maker",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يبني على آراء ذوي الخبرة",
-    ruleTextEn: "Builds on experienced perspectives",
-    thinkingModeEffect: "consensus_seeking",
-    redLineEffect: "rejects_unilateral_decisions",
-    riskGuard: "dependency_on_others_approval",
-  },
-  {
-    questionId: "S2", optionId: "S2-e",
-    behavioralSignal: "parallel_experimenter",
-    instructionSections: ["core_behavior_rules", "thinking_quality_modes"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يُجرّب نهجاً متعددة في آنٍ واحد",
-    ruleTextEn: "Tries multiple approaches simultaneously",
-    thinkingModeEffect: "divergent_multitrack",
-    redLineEffect: "dislikes_single_option_constraint",
-    riskGuard: "unfocused_diffuse_effort",
-  },
-
-  // ─── S3 ──────────────────────────────────────────────────────────────────────
-  {
-    questionId: "S3", optionId: "S3-a",
-    behavioralSignal: "critical_verifier",
-    instructionSections: ["core_behavior_rules", "thinking_quality_modes"],
-    reportSections: ["strengths", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يتحقق من المصادر قبل الاستخدام",
-    ruleTextEn: "Verifies sources before use",
-    thinkingModeEffect: "evidence_first_skeptical",
-    redLineEffect: "rejects_unverified_claims",
-    riskGuard: "verification_bottleneck",
-  },
-  {
-    questionId: "S3", optionId: "S3-b",
-    behavioralSignal: "integrative_connector",
-    instructionSections: ["thinking_quality_modes", "adaptation_loop"],
-    reportSections: ["strengths", "domain_operating_mode"],
-    strength: "strong",
-    ruleTextAr: "يربط المعلومات بما يعرفه",
-    ruleTextEn: "Connects information to prior knowledge",
-    thinkingModeEffect: "synthetic_associative",
-    redLineEffect: "dislikes_disconnected_facts",
-    riskGuard: "confirmation_mapping_bias",
-  },
-  {
-    questionId: "S3", optionId: "S3-c",
-    behavioralSignal: "practical_applier",
-    instructionSections: ["core_behavior_rules", "output_rules"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُطبّق المعلومات مباشرةً",
-    ruleTextEn: "Applies information directly",
-    thinkingModeEffect: "action_oriented_pragmatic",
-    redLineEffect: "rejects_theoretical_only_outputs",
-    riskGuard: "application_without_validation",
-  },
-  {
-    questionId: "S3", optionId: "S3-d",
-    behavioralSignal: "social_processor",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يُشارك المعلومات للمناقشة الجماعية",
-    ruleTextEn: "Shares information for collective discussion",
-    thinkingModeEffect: "dialogic_collaborative",
-    redLineEffect: "dislikes_isolated_processing",
-    riskGuard: "groupthink_susceptibility",
-  },
-  {
-    questionId: "S3", optionId: "S3-e",
-    behavioralSignal: "deferred_retriever",
-    instructionSections: ["adaptation_loop", "output_rules"],
-    reportSections: ["recommended_usage_strategy", "risks_blindspots"],
-    strength: "mild",
-    ruleTextAr: "يحتفظ بالمعلومات ويراجعها لاحقاً",
-    ruleTextEn: "Stores information and revisits it later",
-    thinkingModeEffect: "reflective_deferred",
-    redLineEffect: "dislikes_forced_immediate_application",
-    riskGuard: "information_accumulation_without_use",
-  },
-
-  // ─── Q01 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q01", optionId: "Q01-a",
-    behavioralSignal: "goal_driven_achiever",
-    instructionSections: ["mission_domain_context", "core_behavior_rules"],
-    reportSections: ["domain_operating_mode", "strengths"],
-    strength: "strong",
-    ruleTextAr: "يسعى لأهداف واضحة ومحددة",
-    ruleTextEn: "Pursues clear defined goals",
-    thinkingModeEffect: "convergent_targeted",
-    redLineEffect: "rejects_vague_unmeasured_outputs",
-    riskGuard: "tunnel_vision_on_metrics",
-  },
-  {
-    questionId: "Q01", optionId: "Q01-b",
-    behavioralSignal: "opportunity_explorer",
-    instructionSections: ["thinking_quality_modes", "adaptation_loop"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "strong",
-    ruleTextAr: "يستكشف الفرص والإمكانيات الجديدة",
-    ruleTextEn: "Explores new opportunities and possibilities",
-    thinkingModeEffect: "divergent_generative",
-    redLineEffect: "rejects_closed_rigid_thinking",
-    riskGuard: "unfocused_exploration",
-  },
-  {
-    questionId: "Q01", optionId: "Q01-c",
-    behavioralSignal: "collective_contributor",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["recommended_identity", "ai_interaction_style"],
-    strength: "moderate",
-    ruleTextAr: "يُركّز على إسهامه في نجاح الجماعة",
-    ruleTextEn: "Focuses on contributing to collective success",
-    thinkingModeEffect: "prosocial_inclusive",
-    redLineEffect: "dislikes_siloed_individual_work",
-    riskGuard: "self_subordination_to_group",
-  },
-  {
-    questionId: "Q01", optionId: "Q01-d",
-    behavioralSignal: "self_development_seeker",
-    instructionSections: ["adaptation_loop", "thinking_quality_modes"],
-    reportSections: ["strengths", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يُركّز على نموه ومهاراته الشخصية",
-    ruleTextEn: "Focuses on personal growth and skills",
-    thinkingModeEffect: "learning_oriented_reflective",
-    redLineEffect: "dislikes_stagnant_repetitive_tasks",
-    riskGuard: "overemphasis_on_self_vs_output",
-  },
-
-  // ─── Q02 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q02", optionId: "Q02-a",
-    behavioralSignal: "strategic_prioritizer",
-    instructionSections: ["mission_domain_context", "core_behavior_rules"],
-    reportSections: ["domain_operating_mode", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُرتّب الأولويات استراتيجياً",
-    ruleTextEn: "Prioritizes strategically",
-    thinkingModeEffect: "long_term_impact_focused",
-    redLineEffect: "rejects_tactical_only_thinking",
-    riskGuard: "neglect_of_urgent_tasks",
-  },
-  {
-    questionId: "Q02", optionId: "Q02-b",
-    behavioralSignal: "urgency_responder",
-    instructionSections: ["core_behavior_rules", "output_rules"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يستجيب للإلحاح والمواعيد النهائية",
-    ruleTextEn: "Responds to urgency and deadlines",
-    thinkingModeEffect: "reactive_deadline_driven",
-    redLineEffect: "dislikes_open_ended_timelines",
-    riskGuard: "chronic_firefighting_mode",
-  },
-  {
-    questionId: "Q02", optionId: "Q02-c",
-    behavioralSignal: "interest_driven_selector",
-    instructionSections: ["adaptation_loop", "thinking_quality_modes"],
-    reportSections: ["ai_interaction_style", "risks_blindspots"],
-    strength: "mild",
-    ruleTextAr: "يختار المهام بناءً على الاهتمام",
-    ruleTextEn: "Selects tasks based on personal interest",
-    thinkingModeEffect: "intrinsically_motivated",
-    redLineEffect: "dislikes_unmotivating_mandatory_tasks",
-    riskGuard: "cherry_picking_avoidance",
-  },
-  {
-    questionId: "Q02", optionId: "Q02-d",
-    behavioralSignal: "team_needs_responder",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["recommended_identity", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يُقدّم احتياجات الفريق على أولوياته",
-    ruleTextEn: "Prioritizes team needs over personal ones",
-    thinkingModeEffect: "other_centered_service",
-    redLineEffect: "dislikes_self_serving_decisions",
-    riskGuard: "boundary_erosion_over_service",
-  },
-
-  // ─── Q03 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q03", optionId: "Q03-a",
-    behavioralSignal: "results_measurer",
-    instructionSections: ["mission_domain_context", "output_rules"],
-    reportSections: ["domain_operating_mode", "strengths"],
-    strength: "strong",
-    ruleTextAr: "يقيس النجاح بالنتائج المحددة",
-    ruleTextEn: "Measures success by specific results",
-    thinkingModeEffect: "outcome_metric_anchored",
-    redLineEffect: "rejects_unmeasured_vague_outcomes",
-    riskGuard: "goodhart_law_metric_gaming",
-  },
-  {
-    questionId: "Q03", optionId: "Q03-b",
-    behavioralSignal: "learning_validator",
-    instructionSections: ["adaptation_loop", "thinking_quality_modes"],
-    reportSections: ["strengths", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يرى النجاح في التعلم والنمو",
-    ruleTextEn: "Sees success in learning and growth",
-    thinkingModeEffect: "growth_mindset_experiential",
-    redLineEffect: "dislikes_purely_transactional_outputs",
-    riskGuard: "process_over_outcome_bias",
-  },
-  {
-    questionId: "Q03", optionId: "Q03-c",
-    behavioralSignal: "external_validation_seeker",
-    instructionSections: ["relationship_with_user", "adaptation_loop"],
-    reportSections: ["risks_blindspots", "recommended_identity"],
-    strength: "mild",
-    ruleTextAr: "يستمد الرضا من تقدير الآخرين",
-    ruleTextEn: "Derives satisfaction from others' recognition",
-    thinkingModeEffect: "socially_referenced_evaluation",
-    redLineEffect: "vulnerable_to_critical_feedback",
-    riskGuard: "approval_dependency",
-  },
-  {
-    questionId: "Q03", optionId: "Q03-d",
-    behavioralSignal: "intrinsic_accomplisher",
-    instructionSections: ["core_behavior_rules", "thinking_quality_modes"],
-    reportSections: ["strengths", "recommended_identity"],
-    strength: "strong",
-    ruleTextAr: "يعتمد على الرضا الداخلي كمعيار للنجاح",
-    ruleTextEn: "Relies on inner satisfaction as success criterion",
-    thinkingModeEffect: "internally_referenced_evaluator",
-    redLineEffect: "dislikes_external_imposition_of_standards",
-    riskGuard: "self_referential_blind_spots",
-  },
-
-  // ─── Q04 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q04", optionId: "Q04-a",
-    behavioralSignal: "narrative_explainer",
-    instructionSections: ["output_rules", "relationship_with_user"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُفسّر عبر أمثلة وقصص واقعية",
-    ruleTextEn: "Explains through real examples and stories",
-    thinkingModeEffect: "concrete_example_grounded",
-    redLineEffect: "dislikes_purely_abstract_explanations",
-    riskGuard: "oversimplification_via_analogy",
-  },
-  {
-    questionId: "Q04", optionId: "Q04-b",
-    behavioralSignal: "logical_sequencer",
-    instructionSections: ["output_rules", "thinking_quality_modes"],
-    reportSections: ["ai_interaction_style", "domain_operating_mode"],
-    strength: "strong",
-    ruleTextAr: "يُنظّم الأفكار في تسلسل منطقي",
-    ruleTextEn: "Organizes ideas in logical sequence",
-    thinkingModeEffect: "stepwise_deductive",
-    redLineEffect: "rejects_disorganized_unstructured_outputs",
-    riskGuard: "rigid_linearity_inflexibility",
-  },
-  {
-    questionId: "Q04", optionId: "Q04-c",
-    behavioralSignal: "visual_thinker",
-    instructionSections: ["output_rules", "adaptation_loop"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يُفكّر ويُفسّر بصرياً",
-    ruleTextEn: "Thinks and explains visually",
-    thinkingModeEffect: "spatial_visual_mapping",
-    redLineEffect: "dislikes_text_only_dense_outputs",
-    riskGuard: "over_visual_under_verbal",
-  },
-  {
-    questionId: "Q04", optionId: "Q04-d",
-    behavioralSignal: "experiential_teacher",
-    instructionSections: ["relationship_with_user", "core_behavior_rules"],
-    reportSections: ["recommended_usage_strategy", "ai_interaction_style"],
-    strength: "moderate",
-    ruleTextAr: "يُعلّم بالتجربة العملية المباشرة",
-    ruleTextEn: "Teaches through direct hands-on experience",
-    thinkingModeEffect: "kinesthetic_learning_by_doing",
-    redLineEffect: "dislikes_passive_reception_only",
-    riskGuard: "skipping_conceptual_grounding",
-  },
-
-  // ─── Q05 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q05", optionId: "Q05-a",
-    behavioralSignal: "deep_analytical_reader",
-    instructionSections: ["thinking_quality_modes", "core_behavior_rules"],
-    reportSections: ["strengths", "domain_operating_mode"],
-    strength: "strong",
-    ruleTextAr: "يستهلك المحتوى التحليلي العميق",
-    ruleTextEn: "Consumes deep analytical content",
-    thinkingModeEffect: "evidence_heavy_analytical",
-    redLineEffect: "dislikes_superficial_content",
-    riskGuard: "analysis_paralysis_from_depth",
-  },
-  {
-    questionId: "Q05", optionId: "Q05-b",
-    behavioralSignal: "efficient_content_consumer",
-    instructionSections: ["output_rules", "adaptation_loop"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يُفضّل المحتوى السريع والموجز",
-    ruleTextEn: "Prefers fast and concise content",
-    thinkingModeEffect: "efficiency_oriented_skimming",
-    redLineEffect: "rejects_long_verbose_outputs",
-    riskGuard: "depth_sacrifice_for_speed",
-  },
-  {
-    questionId: "Q05", optionId: "Q05-c",
-    behavioralSignal: "dialogue_knowledge_builder",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يبني المعرفة عبر الحوار المباشر",
-    ruleTextEn: "Builds knowledge through direct dialogue",
-    thinkingModeEffect: "socratic_conversational",
-    redLineEffect: "dislikes_monologue_style_information",
-    riskGuard: "echo_chamber_in_discussion",
-  },
-  {
-    questionId: "Q05", optionId: "Q05-d",
-    behavioralSignal: "comprehensive_scholar",
-    instructionSections: ["thinking_quality_modes", "mission_domain_context"],
-    reportSections: ["strengths", "domain_operating_mode"],
-    strength: "strong",
-    ruleTextAr: "يُفضّل الدراسة الشاملة والمعمّقة",
-    ruleTextEn: "Prefers comprehensive and in-depth study",
-    thinkingModeEffect: "holistic_systematic_scholar",
-    redLineEffect: "dislikes_shortcuts_incomplete_coverage",
-    riskGuard: "exhaustive_research_at_expense_of_action",
-  },
-
-  // ─── Q06 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q06", optionId: "Q06-a",
-    behavioralSignal: "root_cause_analyst",
-    instructionSections: ["thinking_quality_modes", "core_behavior_rules"],
-    reportSections: ["strengths", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُحلّل الأخطاء في عمقها لمنع التكرار",
-    ruleTextEn: "Analyzes errors deeply to prevent recurrence",
-    thinkingModeEffect: "systematic_diagnostic",
-    redLineEffect: "rejects_superficial_error_handling",
-    riskGuard: "excessive_rumination",
-  },
-  {
-    questionId: "Q06", optionId: "Q06-b",
-    behavioralSignal: "resilient_fast_recoverer",
-    instructionSections: ["adaptation_loop", "core_behavior_rules"],
-    reportSections: ["ai_interaction_style", "strengths"],
-    strength: "strong",
-    ruleTextAr: "يتعافى بسرعة ويتعلم بإيجابية",
-    ruleTextEn: "Recovers quickly and learns positively",
-    thinkingModeEffect: "forward_momentum_resilient",
-    redLineEffect: "dislikes_dwelling_on_past_failures",
-    riskGuard: "premature_closure_on_learning",
-  },
-  {
-    questionId: "Q06", optionId: "Q06-c",
-    behavioralSignal: "relational_error_handler",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["recommended_identity", "ai_interaction_style"],
-    strength: "moderate",
-    ruleTextAr: "يُعالج الأخطاء بمنظور علائقي",
-    ruleTextEn: "Handles errors with a relational perspective",
-    thinkingModeEffect: "empathy_first_remediation",
-    redLineEffect: "dislikes_cold_transactional_error_handling",
-    riskGuard: "over_apologizing_under_analyzing",
-  },
-  {
-    questionId: "Q06", optionId: "Q06-d",
-    behavioralSignal: "deep_reflective_processor",
-    instructionSections: ["thinking_quality_modes", "adaptation_loop"],
-    reportSections: ["strengths", "risks_blindspots"],
-    strength: "moderate",
-    ruleTextAr: "يتأمل الأخطاء ببطء ومنهجية",
-    ruleTextEn: "Reflects on errors slowly and systematically",
-    thinkingModeEffect: "slow_deliberate_reflection",
-    redLineEffect: "dislikes_rushed_conclusions",
-    riskGuard: "analysis_paralysis_from_perfectionism",
-  },
-
-  // ─── Q07 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q07", optionId: "Q07-a",
-    behavioralSignal: "structured_systematic_worker",
-    instructionSections: ["core_behavior_rules", "output_rules"],
-    reportSections: ["domain_operating_mode", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يعمل بمنهجية وتنظيم صارم",
-    ruleTextEn: "Works with strict methodology and organization",
-    thinkingModeEffect: "process_adherent",
-    redLineEffect: "rejects_unstructured_chaotic_workflows",
-    riskGuard: "rigidity_over_responsiveness",
-  },
-  {
-    questionId: "Q07", optionId: "Q07-b",
-    behavioralSignal: "adaptive_flexible_worker",
-    instructionSections: ["adaptation_loop", "core_behavior_rules"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يتكيف مع المتغيرات بمرونة عالية",
-    ruleTextEn: "Adapts to changes with high flexibility",
-    thinkingModeEffect: "agile_responsive",
-    redLineEffect: "dislikes_rigid_fixed_procedures",
-    riskGuard: "inconsistency_from_over_adaptation",
-  },
-  {
-    questionId: "Q07", optionId: "Q07-c",
-    behavioralSignal: "collaborative_consensus_builder",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["recommended_identity", "ai_interaction_style"],
-    strength: "moderate",
-    ruleTextAr: "يعمل بالتشاور والبناء الجماعي",
-    ruleTextEn: "Works through consultation and collective building",
-    thinkingModeEffect: "team_integrated_processing",
-    redLineEffect: "dislikes_unilateral_decisions",
-    riskGuard: "consensus_seeking_slows_execution",
-  },
-  {
-    questionId: "Q07", optionId: "Q07-d",
-    behavioralSignal: "autonomous_independent_worker",
-    instructionSections: ["assistant_identity", "core_behavior_rules"],
-    reportSections: ["recommended_identity", "domain_operating_mode"],
-    strength: "strong",
-    ruleTextAr: "يعمل باستقلالية وصناعة قرار ذاتية",
-    ruleTextEn: "Works autonomously with self-directed decision making",
-    thinkingModeEffect: "self_directed_ownership",
-    redLineEffect: "rejects_micromanagement_oversight",
-    riskGuard: "isolation_from_valuable_input",
-  },
-
-  // ─── Q08 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q08", optionId: "Q08-a",
-    behavioralSignal: "direct_feedback_receiver",
-    instructionSections: ["core_behavior_rules", "red_lines_failure_triggers"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُقدّر الملاحظات الصريحة والمباشرة",
-    ruleTextEn: "Values direct and candid feedback",
-    thinkingModeEffect: "candor_tolerant_growth_oriented",
-    redLineEffect: "rejects_sugarcoating_withholding_truth",
-    riskGuard: "brittleness_under_harsh_critique",
-  },
-  {
-    questionId: "Q08", optionId: "Q08-b",
-    behavioralSignal: "balanced_feedback_processor",
-    instructionSections: ["relationship_with_user", "adaptation_loop"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يُفضّل الموازنة بين الإيجابي والسلبي",
-    ruleTextEn: "Prefers balance between positive and negative",
-    thinkingModeEffect: "equilibrium_processing",
-    redLineEffect: "dislikes_one_sided_feedback",
-    riskGuard: "sensitivity_to_pure_negative_feedback",
-  },
-  {
-    questionId: "Q08", optionId: "Q08-c",
-    behavioralSignal: "detailed_actionable_learner",
-    instructionSections: ["output_rules", "thinking_quality_modes"],
-    reportSections: ["recommended_usage_strategy", "ai_interaction_style"],
-    strength: "strong",
-    ruleTextAr: "يحتاج التفاصيل والخطوات الإجرائية",
-    ruleTextEn: "Needs details and actionable steps",
-    thinkingModeEffect: "implementation_detail_focused",
-    redLineEffect: "rejects_vague_unactionable_feedback",
-    riskGuard: "overwhelm_from_too_much_detail",
-  },
-  {
-    questionId: "Q08", optionId: "Q08-d",
-    behavioralSignal: "guided_self_discoverer",
-    instructionSections: ["relationship_with_user", "thinking_quality_modes"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يُفضّل اكتشاف الحلول بتوجيه خفيف",
-    ruleTextEn: "Prefers discovering solutions with light guidance",
-    thinkingModeEffect: "inquiry_led_autonomous_discovery",
-    redLineEffect: "dislikes_prescriptive_answers",
-    riskGuard: "slower_resolution_through_discovery",
-  },
-
-  // ─── Q09 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q09", optionId: "Q09-a",
-    behavioralSignal: "change_resistant_stabilizer",
-    instructionSections: ["core_behavior_rules", "adaptation_loop"],
-    reportSections: ["risks_blindspots", "recommended_usage_strategy"],
-    strength: "mild",
-    ruleTextAr: "يحتاج وقتاً للتكيف مع التغيير",
-    ruleTextEn: "Needs time to adapt to change",
-    thinkingModeEffect: "deliberate_slow_transition",
-    redLineEffect: "rejects_abrupt_context_switches",
-    riskGuard: "change_lag_in_fast_environments",
-  },
-  {
-    questionId: "Q09", optionId: "Q09-b",
-    behavioralSignal: "agile_reprioritizer",
-    instructionSections: ["adaptation_loop", "core_behavior_rules"],
-    reportSections: ["strengths", "ai_interaction_style"],
-    strength: "strong",
-    ruleTextAr: "يُعيد ترتيب الأولويات بسرعة عند التغيير",
-    ruleTextEn: "Quickly reprioritizes when things change",
-    thinkingModeEffect: "agile_reset_capable",
-    redLineEffect: "dislikes_rigid_locked_planning",
-    riskGuard: "overadaptation_losing_original_direction",
-  },
-  {
-    questionId: "Q09", optionId: "Q09-c",
-    behavioralSignal: "change_opportunity_finder",
-    instructionSections: ["thinking_quality_modes", "adaptation_loop"],
-    reportSections: ["strengths", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يرى في التغيير فرصاً للتجديد",
-    ruleTextEn: "Sees change as renewal opportunities",
-    thinkingModeEffect: "opportunity_frame_mindset",
-    redLineEffect: "dislikes_status_quo_enforcement",
-    riskGuard: "change_seeking_for_its_own_sake",
-  },
-  {
-    questionId: "Q09", optionId: "Q09-d",
-    behavioralSignal: "plan_restoration_seeker",
-    instructionSections: ["core_behavior_rules", "mission_domain_context"],
-    reportSections: ["domain_operating_mode", "risks_blindspots"],
-    strength: "mild",
-    ruleTextAr: "يسعى لاستعادة الخطة الأصلية",
-    ruleTextEn: "Seeks to restore the original plan",
-    thinkingModeEffect: "stability_preservation_oriented",
-    redLineEffect: "rejects_deviation_from_original_intent",
-    riskGuard: "sunk_cost_attachment",
-  },
-
-  // ─── Q10 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q10", optionId: "Q10-a",
-    behavioralSignal: "data_driven_decision_maker",
-    instructionSections: ["thinking_quality_modes", "core_behavior_rules"],
-    reportSections: ["domain_operating_mode", "strengths"],
-    strength: "strong",
-    ruleTextAr: "يتخذ القرارات بناءً على البيانات والتحليل",
-    ruleTextEn: "Makes decisions based on data and analysis",
-    thinkingModeEffect: "evidence_based_systematic",
-    redLineEffect: "rejects_gut_only_decisions",
-    riskGuard: "analysis_paralysis_from_data_overload",
-  },
-  {
-    questionId: "Q10", optionId: "Q10-b",
-    behavioralSignal: "intuitive_experiential_decider",
-    instructionSections: ["adaptation_loop", "core_behavior_rules"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يعتمد على الحدس والخبرة المتراكمة",
-    ruleTextEn: "Relies on intuition and accumulated experience",
-    thinkingModeEffect: "pattern_recognition_intuitive",
-    redLineEffect: "dislikes_purely_data_mechanical_approach",
-    riskGuard: "intuition_bias_unchecked",
-  },
-  {
-    questionId: "Q10", optionId: "Q10-c",
-    behavioralSignal: "consultative_consensus_decider",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["recommended_identity", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يتشاور مع الآخرين قبل القرار",
-    ruleTextEn: "Consults others before deciding",
-    thinkingModeEffect: "collaborative_stakeholder_sensitive",
-    redLineEffect: "dislikes_isolated_unilateral_decisions",
-    riskGuard: "decision_by_committee_paralysis",
-  },
-  {
-    questionId: "Q10", optionId: "Q10-d",
-    behavioralSignal: "experimental_validator",
-    instructionSections: ["thinking_quality_modes", "adaptation_loop"],
-    reportSections: ["recommended_usage_strategy", "strengths"],
-    strength: "strong",
-    ruleTextAr: "يختبر بتجارب صغيرة قبل الالتزام",
-    ruleTextEn: "Tests with small experiments before commitment",
-    thinkingModeEffect: "hypothesis_driven_testing",
-    redLineEffect: "rejects_all_or_nothing_decisions",
-    riskGuard: "infinite_pilot_mode_no_scaling",
-  },
-
-  // ─── Q11 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q11", optionId: "Q11-a",
-    behavioralSignal: "meeting_facilitator_leader",
-    instructionSections: ["dynamic_roles", "mission_domain_context"],
-    reportSections: ["recommended_identity", "domain_operating_mode"],
-    strength: "strong",
-    ruleTextAr: "يقود النقاشات ويُوجّه الحوار",
-    ruleTextEn: "Leads discussions and directs dialogue",
-    thinkingModeEffect: "directive_facilitative",
-    redLineEffect: "dislikes_leaderless_unproductive_meetings",
-    riskGuard: "domination_silencing_others",
-  },
-  {
-    questionId: "Q11", optionId: "Q11-b",
-    behavioralSignal: "active_listener_contributor",
-    instructionSections: ["relationship_with_user", "adaptation_loop"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يستمع ويُساهم عند الضرورة",
-    ruleTextEn: "Listens and contributes when necessary",
-    thinkingModeEffect: "receptive_selective_contributor",
-    redLineEffect: "dislikes_forced_participation",
-    riskGuard: "undercontribution_from_over_deference",
-  },
-  {
-    questionId: "Q11", optionId: "Q11-c",
-    behavioralSignal: "clarification_seeker",
-    instructionSections: ["thinking_quality_modes", "relationship_with_user"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يطرح أسئلة لتعميق الفهم الجماعي",
-    ruleTextEn: "Asks questions to deepen collective understanding",
-    thinkingModeEffect: "inquiry_based_participator",
-    redLineEffect: "dislikes_assumed_shared_understanding",
-    riskGuard: "over_questioning_slowing_progress",
-  },
-  {
-    questionId: "Q11", optionId: "Q11-d",
-    behavioralSignal: "synthesis_summarizer",
-    instructionSections: ["output_rules", "thinking_quality_modes"],
-    reportSections: ["strengths", "recommended_identity"],
-    strength: "strong",
-    ruleTextAr: "يُلخّص ويستخلص النقاط الجوهرية",
-    ruleTextEn: "Summarizes and extracts key points",
-    thinkingModeEffect: "integrative_condensing",
-    redLineEffect: "dislikes_verbose_without_conclusion",
-    riskGuard: "over_simplification_in_synthesis",
-  },
-
-  // ─── Q12 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q12", optionId: "Q12-a",
-    behavioralSignal: "direct_conflict_resolver",
-    instructionSections: ["core_behavior_rules", "red_lines_failure_triggers"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُعالج الخلاف مباشرةً وبحزم",
-    ruleTextEn: "Addresses conflict directly and firmly",
-    thinkingModeEffect: "assertive_problem_solving",
-    redLineEffect: "rejects_avoidance_of_disagreement",
-    riskGuard: "escalation_without_empathy",
-  },
-  {
-    questionId: "Q12", optionId: "Q12-b",
-    behavioralSignal: "empathetic_perspective_taker",
-    instructionSections: ["relationship_with_user", "thinking_quality_modes"],
-    reportSections: ["recommended_identity", "ai_interaction_style"],
-    strength: "strong",
-    ruleTextAr: "يسعى لفهم وجهة نظر الآخر أولاً",
-    ruleTextEn: "Seeks to understand the other's perspective first",
-    thinkingModeEffect: "empathy_led_processing",
-    redLineEffect: "dislikes_dismissal_of_others_views",
-    riskGuard: "capitulation_from_over_empathy",
-  },
-  {
-    questionId: "Q12", optionId: "Q12-c",
-    behavioralSignal: "common_ground_builder",
-    instructionSections: ["dynamic_roles", "relationship_with_user"],
-    reportSections: ["recommended_identity", "strengths"],
-    strength: "moderate",
-    ruleTextAr: "يبحث عن نقاط التوافق المشتركة",
-    ruleTextEn: "Searches for common ground and convergence",
-    thinkingModeEffect: "diplomatic_mediating",
-    redLineEffect: "dislikes_winner_loser_framing",
-    riskGuard: "compromise_at_expense_of_quality",
-  },
-  {
-    questionId: "Q12", optionId: "Q12-d",
-    behavioralSignal: "conflict_avoider_deferrer",
-    instructionSections: ["adaptation_loop", "core_behavior_rules"],
-    reportSections: ["risks_blindspots", "recommended_usage_strategy"],
-    strength: "mild",
-    ruleTextAr: "يتجنب المواجهة المباشرة ويؤجّل الخلاف",
-    ruleTextEn: "Avoids direct confrontation and defers conflict",
-    thinkingModeEffect: "harmony_preserving",
-    redLineEffect: "dislikes_forced_public_confrontation",
-    riskGuard: "unresolved_tensions_accumulate",
-  },
-
-  // ─── Q13 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q13", optionId: "Q13-a",
-    behavioralSignal: "objective_outcomes_evaluator",
-    instructionSections: ["mission_domain_context", "output_rules"],
-    reportSections: ["domain_operating_mode", "strengths"],
-    strength: "strong",
-    ruleTextAr: "يُقيّم القرارات بمقارنة الأهداف بالنتائج",
-    ruleTextEn: "Evaluates decisions by comparing goals to results",
-    thinkingModeEffect: "results_benchmarking",
-    redLineEffect: "rejects_subjective_unmeasured_evaluation",
-    riskGuard: "narrow_metric_definition",
-  },
-  {
-    questionId: "Q13", optionId: "Q13-b",
-    behavioralSignal: "stakeholder_satisfaction_measurer",
-    instructionSections: ["relationship_with_user", "adaptation_loop"],
-    reportSections: ["recommended_identity", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يقيس الجودة برضا أصحاب المصلحة",
-    ruleTextEn: "Measures quality by stakeholder satisfaction",
-    thinkingModeEffect: "user_impact_centered",
-    redLineEffect: "dislikes_internal_self_referential_metrics_only",
-    riskGuard: "populism_over_quality",
-  },
-  {
-    questionId: "Q13", optionId: "Q13-c",
-    behavioralSignal: "intuitive_quality_judge",
-    instructionSections: ["core_behavior_rules", "thinking_quality_modes"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يعتمد على حدسه الداخلي في تقييم الجودة",
-    ruleTextEn: "Relies on inner intuition to judge quality",
-    thinkingModeEffect: "gut_check_evaluator",
-    redLineEffect: "dislikes_forced_external_metrics",
-    riskGuard: "subjective_bias_in_evaluation",
-  },
-  {
-    questionId: "Q13", optionId: "Q13-d",
-    behavioralSignal: "externally_validated_evaluator",
-    instructionSections: ["relationship_with_user", "adaptation_loop"],
-    reportSections: ["risks_blindspots", "recommended_identity"],
-    strength: "mild",
-    ruleTextAr: "يعتمد على تقييم الآخرين لقياس جودته",
-    ruleTextEn: "Relies on others' evaluation to measure quality",
-    thinkingModeEffect: "externally_referenced_quality_check",
-    redLineEffect: "vulnerable_to_lack_of_external_feedback",
-    riskGuard: "dependency_on_external_validation",
-  },
-
-  // ─── Q14 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q14", optionId: "Q14-a",
-    behavioralSignal: "logical_problem_solver_under_stress",
-    instructionSections: ["thinking_quality_modes", "core_behavior_rules"],
-    reportSections: ["strengths", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُعالج الضغط بالتحليل المنطقي",
-    ruleTextEn: "Handles pressure through logical analysis",
-    thinkingModeEffect: "analytical_coping_mechanism",
-    redLineEffect: "rejects_emotional_only_processing",
-    riskGuard: "suppression_of_emotional_signals",
-  },
-  {
-    questionId: "Q14", optionId: "Q14-b",
-    behavioralSignal: "social_stress_processor",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يُعالج الضغط بالتحدث والتشاور",
-    ruleTextEn: "Processes pressure through talking and consulting",
-    thinkingModeEffect: "relational_processing_externalized",
-    redLineEffect: "dislikes_isolated_problem_solving",
-    riskGuard: "over_reliance_on_social_validation",
-  },
-  {
-    questionId: "Q14", optionId: "Q14-c",
-    behavioralSignal: "physical_outlet_regulator",
-    instructionSections: ["adaptation_loop", "core_behavior_rules"],
-    reportSections: ["recommended_usage_strategy", "risks_blindspots"],
-    strength: "moderate",
-    ruleTextAr: "يُنظّم الضغط عبر نشاط تنفيسي",
-    ruleTextEn: "Regulates pressure through physical outlets",
-    thinkingModeEffect: "somatic_reset_before_reengagement",
-    redLineEffect: "dislikes_forced_immediate_problem_engagement",
-    riskGuard: "avoidance_disguised_as_self_care",
-  },
-  {
-    questionId: "Q14", optionId: "Q14-d",
-    behavioralSignal: "reflective_solitary_thinker",
-    instructionSections: ["thinking_quality_modes", "adaptation_loop"],
-    reportSections: ["strengths", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يُعالج الضغط بالتأمل الهادئ المنفرد",
-    ruleTextEn: "Processes pressure through quiet solitary reflection",
-    thinkingModeEffect: "contemplative_internal_resolution",
-    redLineEffect: "dislikes_forced_social_processing",
-    riskGuard: "isolation_without_resolution",
-  },
-
-  // ─── Q15 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "Q15", optionId: "Q15-a",
-    behavioralSignal: "proactive_risk_manager",
-    instructionSections: ["core_behavior_rules", "red_lines_failure_triggers"],
-    reportSections: ["domain_operating_mode", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُحدّد المخاطر مسبقاً ويضع خططاً احتياطية",
-    ruleTextEn: "Identifies risks proactively and prepares contingencies",
-    thinkingModeEffect: "anticipatory_risk_aware",
-    redLineEffect: "rejects_risk_blind_execution",
-    riskGuard: "over_engineering_risk_plans",
-  },
-  {
-    questionId: "Q15", optionId: "Q15-b",
-    behavioralSignal: "reactive_risk_responder",
-    instructionSections: ["adaptation_loop", "core_behavior_rules"],
-    reportSections: ["ai_interaction_style", "risks_blindspots"],
-    strength: "mild",
-    ruleTextAr: "يتعامل مع المخاطر عند ظهورها",
-    ruleTextEn: "Deals with risks when they emerge",
-    thinkingModeEffect: "responsive_not_anticipatory",
-    redLineEffect: "dislikes_excessive_upfront_planning",
-    riskGuard: "caught_unprepared_by_predictable_risks",
-  },
-  {
-    questionId: "Q15", optionId: "Q15-c",
-    behavioralSignal: "calculated_risk_accepter",
-    instructionSections: ["thinking_quality_modes", "mission_domain_context"],
-    reportSections: ["strengths", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يقبل المخاطر المحسوبة كجزء من التقدم",
-    ruleTextEn: "Accepts calculated risks as part of progress",
-    thinkingModeEffect: "risk_reward_calibrated",
-    redLineEffect: "dislikes_zero_risk_paralysis",
-    riskGuard: "overconfidence_in_risk_estimation",
-  },
-  {
-    questionId: "Q15", optionId: "Q15-d",
-    behavioralSignal: "risk_averse_conservative",
-    instructionSections: ["core_behavior_rules", "red_lines_failure_triggers"],
-    reportSections: ["recommended_usage_strategy", "risks_blindspots"],
-    strength: "moderate",
-    ruleTextAr: "يُفضّل الأمان وتجنب المخاطر",
-    ruleTextEn: "Prefers safety and risk avoidance",
-    thinkingModeEffect: "conservative_loss_averse",
-    redLineEffect: "rejects_high_risk_recommendations",
-    riskGuard: "missed_opportunities_from_over_caution",
-  },
-
-  // ─── AI01 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "AI01", optionId: "AI01-a",
-    behavioralSignal: "concise_direct_output_preferrer",
-    instructionSections: ["output_rules", "core_behavior_rules"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُفضّل الإجابات المباشرة والموجزة",
-    ruleTextEn: "Prefers direct and concise answers",
-    thinkingModeEffect: "output_brevity_valued",
-    redLineEffect: "rejects_verbose_padded_responses",
-    riskGuard: "brevity_at_expense_of_completeness",
-  },
-  {
-    questionId: "AI01", optionId: "AI01-b",
-    behavioralSignal: "context_depth_seeker",
-    instructionSections: ["thinking_quality_modes", "output_rules"],
-    reportSections: ["ai_interaction_style", "domain_operating_mode"],
-    strength: "strong",
-    ruleTextAr: "يُفضّل الشرح العميق مع السياق الكامل",
-    ruleTextEn: "Prefers deep explanation with full context",
-    thinkingModeEffect: "explanatory_depth_valued",
-    redLineEffect: "rejects_shallow_answers_without_reasoning",
-    riskGuard: "overwhelm_from_excessive_detail",
-  },
-  {
-    questionId: "AI01", optionId: "AI01-c",
-    behavioralSignal: "options_evaluator",
-    instructionSections: ["output_rules", "thinking_quality_modes"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُفضّل الخيارات المتعددة مع تقييمها",
-    ruleTextEn: "Prefers multiple options with evaluation",
-    thinkingModeEffect: "decision_support_oriented",
-    redLineEffect: "dislikes_single_answer_prescription",
-    riskGuard: "decision_fatigue_from_too_many_options",
-  },
-  {
-    questionId: "AI01", optionId: "AI01-d",
-    behavioralSignal: "dialogue_partner_preferrer",
-    instructionSections: ["relationship_with_user", "dynamic_roles"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "strong",
-    ruleTextAr: "يُفضّل الحوار التفاعلي مع الذكاء الاصطناعي",
-    ruleTextEn: "Prefers interactive dialogue with AI",
-    thinkingModeEffect: "conversational_co_exploration",
-    redLineEffect: "dislikes_monologue_style_outputs",
-    riskGuard: "inefficiency_of_dialogue_for_simple_tasks",
-  },
-
-  // ─── AI02 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "AI02", optionId: "AI02-a",
-    behavioralSignal: "ai_as_execution_tool",
-    instructionSections: ["assistant_identity", "dynamic_roles"],
-    reportSections: ["recommended_identity", "ai_interaction_style"],
-    strength: "strong",
-    ruleTextAr: "يستخدم الذكاء الاصطناعي كأداة تنفيذ تحت قيادته",
-    ruleTextEn: "Uses AI as an execution tool under their direction",
-    thinkingModeEffect: "user_in_command_ai_executes",
-    redLineEffect: "rejects_ai_overreach_or_initiative",
-    riskGuard: "underutilization_of_ai_capabilities",
-  },
-  {
-    questionId: "AI02", optionId: "AI02-b",
-    behavioralSignal: "ai_initiative_delegator",
-    instructionSections: ["dynamic_roles", "adaptation_loop"],
-    reportSections: ["recommended_identity", "ai_interaction_style"],
-    strength: "moderate",
-    ruleTextAr: "يُفوّض المبادرة للذكاء الاصطناعي في اقتراح الخطوات",
-    ruleTextEn: "Delegates initiative to AI for suggesting steps",
-    thinkingModeEffect: "ai_led_with_human_approval",
-    redLineEffect: "dislikes_having_to_specify_every_step",
-    riskGuard: "loss_of_user_agency_over_direction",
-  },
-  {
-    questionId: "AI02", optionId: "AI02-c",
-    behavioralSignal: "collaborative_ai_partner",
-    instructionSections: ["dynamic_roles", "relationship_with_user"],
-    reportSections: ["recommended_identity", "ai_interaction_style"],
-    strength: "strong",
-    ruleTextAr: "يعمل بتعاون متوازن مع الذكاء الاصطناعي",
-    ruleTextEn: "Works in balanced collaboration with AI",
-    thinkingModeEffect: "co_creation_model",
-    redLineEffect: "dislikes_ai_passivity_or_ai_dominance",
-    riskGuard: "role_blur_reducing_accountability",
-  },
-  {
-    questionId: "AI02", optionId: "AI02-d",
-    behavioralSignal: "problem_definer_solution_selector",
-    instructionSections: ["mission_domain_context", "dynamic_roles"],
-    reportSections: ["domain_operating_mode", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يُعرّف المشكلة ويختار من حلول الذكاء الاصطناعي",
-    ruleTextEn: "Defines the problem and selects from AI solutions",
-    thinkingModeEffect: "strategic_framer_tactical_selector",
-    redLineEffect: "dislikes_ai_defining_the_problem",
-    riskGuard: "problem_misframing_limiting_solutions",
-  },
-
-  // ─── AI03 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "AI03", optionId: "AI03-a",
-    behavioralSignal: "critical_challenger_seeker",
-    instructionSections: ["core_behavior_rules", "red_lines_failure_triggers"],
-    reportSections: ["ai_interaction_style", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يطلب التحدي والنقد البنّاء لأفكاره",
-    ruleTextEn: "Seeks challenge and constructive critique of ideas",
-    thinkingModeEffect: "adversarial_stress_testing",
-    redLineEffect: "rejects_yes_man_validation",
-    riskGuard: "confirmation_seeking_despite_critique",
-  },
-  {
-    questionId: "AI03", optionId: "AI03-b",
-    behavioralSignal: "idea_development_supporter",
-    instructionSections: ["relationship_with_user", "adaptation_loop"],
-    reportSections: ["ai_interaction_style", "recommended_identity"],
-    strength: "moderate",
-    ruleTextAr: "يبحث عن الدعم في تطوير أفكاره",
-    ruleTextEn: "Seeks support in developing their ideas",
-    thinkingModeEffect: "generative_amplifying",
-    redLineEffect: "dislikes_premature_critique",
-    riskGuard: "echo_chamber_reinforcement",
-  },
-  {
-    questionId: "AI03", optionId: "AI03-c",
-    behavioralSignal: "balanced_objective_evaluator",
-    instructionSections: ["thinking_quality_modes", "output_rules"],
-    reportSections: ["ai_interaction_style", "strengths"],
-    strength: "strong",
-    ruleTextAr: "يطلب تقييماً موضوعياً شاملاً ومتوازناً",
-    ruleTextEn: "Requests objective comprehensive balanced evaluation",
-    thinkingModeEffect: "both_sides_analytical",
-    redLineEffect: "rejects_one_sided_praise_or_critique",
-    riskGuard: "paralysis_from_balanced_uncertainty",
-  },
-  {
-    questionId: "AI03", optionId: "AI03-d",
-    behavioralSignal: "context_benchmarker",
-    instructionSections: ["mission_domain_context", "thinking_quality_modes"],
-    reportSections: ["domain_operating_mode", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يُقارن أفكاره بنماذج مماثلة لفهم سياقها",
-    ruleTextEn: "Compares ideas to similar models to understand their context",
-    thinkingModeEffect: "comparative_contextualizing",
-    redLineEffect: "dislikes_isolated_idea_evaluation",
-    riskGuard: "over_comparison_losing_originality",
-  },
-
-  // ─── AI04 ─────────────────────────────────────────────────────────────────────
-  {
-    questionId: "AI04", optionId: "AI04-a",
-    behavioralSignal: "brevity_enforcer",
-    instructionSections: ["output_rules", "red_lines_failure_triggers"],
-    reportSections: ["red_lines_failure_triggers", "ai_interaction_style"],
-    strength: "strong",
-    ruleTextAr: "يرفض الردود المطوّلة غير المركّزة",
-    ruleTextEn: "Rejects long unfocused responses",
-    thinkingModeEffect: "quality_over_quantity_strict",
-    redLineEffect: "rejects_verbose_padded_responses_strong",
-    riskGuard: "intolerance_for_necessary_depth",
-  },
-  {
-    questionId: "AI04", optionId: "AI04-b",
-    behavioralSignal: "specificity_demander",
-    instructionSections: ["core_behavior_rules", "red_lines_failure_triggers"],
-    reportSections: ["red_lines_failure_triggers", "recommended_usage_strategy"],
-    strength: "strong",
-    ruleTextAr: "يرفض الردود الغامضة العامة غير الموجّهة",
-    ruleTextEn: "Rejects vague generic non-targeted responses",
-    thinkingModeEffect: "context_specific_precise",
-    redLineEffect: "rejects_generic_boilerplate",
-    riskGuard: "frustration_when_context_is_genuinely_limited",
-  },
-  {
-    questionId: "AI04", optionId: "AI04-c",
-    behavioralSignal: "consistency_monitor",
-    instructionSections: ["core_behavior_rules", "adaptation_loop"],
-    reportSections: ["red_lines_failure_triggers", "recommended_usage_strategy"],
-    strength: "moderate",
-    ruleTextAr: "يلاحظ ويرفض التناقض في الردود المتعاقبة",
-    ruleTextEn: "Notices and rejects inconsistency in successive responses",
-    thinkingModeEffect: "coherence_tracking",
-    redLineEffect: "rejects_self_contradicting_outputs",
-    riskGuard: "over_detection_of_trivial_inconsistencies",
-  },
-  {
-    questionId: "AI04", optionId: "AI04-d",
-    behavioralSignal: "capability_unlocker",
-    instructionSections: ["core_behavior_rules", "red_lines_failure_triggers"],
-    reportSections: ["red_lines_failure_triggers", "ai_interaction_style"],
-    strength: "moderate",
-    ruleTextAr: "يرفض التحفظ المفرط والرفض غير المبرر",
-    ruleTextEn: "Rejects excessive caution and unjustified refusals",
-    thinkingModeEffect: "capability_maximizing",
-    redLineEffect: "rejects_over_refusal_over_hedging",
-    riskGuard: "pushing_against_legitimate_safety_limits",
-  },
+  {
+    "questionId": "S2_messy_task_help",
+    "optionId": "organize_into_plan",
+    "optionAr": "يرتب الفكرة ويحوّلها إلى خطة واضحة.",
+    "optionEn": "It organizes the idea and turns it into a clear plan.",
+    "behavioralSignal": "planning_from_messy_input",
+    "instructionSections": [
+      "mission_domain_context",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "domain_operating_mode",
+      "recommended_usage_strategy",
+      "ai_interaction_style"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عندما تكون فكرة المستخدم غير مرتبة، رتّب الهدف والمسار والخطوات التالية قبل ا...",
+    "ruleTextEn": "When the user's idea is messy, organize the goal, path, and next steps before...",
+    "thinkingModeEffect": "Step-Back; Structured Planning",
+    "redLineEffect": "Avoid messy output",
+    "riskGuard": "Do not force a full plan for simple requests; activate this for unclear or mu...",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S2_messy_task_help",
+    "optionId": "show_possible_directions",
+    "optionAr": "يعرض أكثر من اتجاه ممكن قبل اختيار المسار.",
+    "optionEn": "It shows more than one possible direction before choosing a path.",
+    "behavioralSignal": "multi_path_exploration",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "output_rules",
+      "dynamic_roles"
+    ],
+    "reportSections": [
+      "domain_operating_mode",
+      "recommended_usage_strategy",
+      "starter_prompts"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند وجود أكثر من احتمال، اعرض اتجاهين أو ثلاثة مع الفرق بينها قبل ترجيح المسا...",
+    "ruleTextEn": "When multiple directions are possible, present two or three paths with their ...",
+    "thinkingModeEffect": "Comparative Reasoning",
+    "redLineEffect": "Avoid single-path certainty too early",
+    "riskGuard": "Do not overload the user with options when the request is already specific.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S2_messy_task_help",
+    "optionId": "draft_first_refine",
+    "optionAr": "ينتج نسخة أولية قابلة للتعديل بدل الكلام النظري.",
+    "optionEn": "It produces a first editable version instead of theoretical talk.",
+    "behavioralSignal": "draft_to_refine",
+    "instructionSections": [
+      "output_rules",
+      "adaptation_loop",
+      "dynamic_roles"
+    ],
+    "reportSections": [
+      "recommended_usage_strategy",
+      "starter_prompts",
+      "ai_interaction_style"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عندما يكون المطلوب قابلًا للتنفيذ، قدّم نسخة أولية قابلة للتعديل بدل الاكتفاء...",
+    "ruleTextEn": "When the task is executable, produce a first editable version instead of only...",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": "No theory without usable output",
+    "riskGuard": "Make clear it is a first draft, not a final answer, when context is incomplete.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S2_messy_task_help",
+    "optionId": "identify_gaps_before_build",
+    "optionAr": "يكشف ما هو ناقص أو ضعيف قبل البناء عليها.",
+    "optionEn": "It reveals what is missing or weak before building on it.",
+    "behavioralSignal": "gap_weakness_detection",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "red_lines_failure_triggers",
+      "dynamic_roles"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "ai_interaction_style",
+      "behavioral_signal_map"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "قبل البناء على فكرة مهمة، اكشف النقاط الناقصة أو الضعيفة أو الافتراضات غير ال...",
+    "ruleTextEn": "Before building on an important idea, identify missing parts, weak points, or...",
+    "thinkingModeEffect": "Devil's Advocate; Self-Check",
+    "redLineEffect": "Do not agree too quickly",
+    "riskGuard": "Use critique constructively; do not turn every simple request into a harsh re...",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S2_messy_task_help",
+    "optionId": "simplify_then_continue",
+    "optionAr": "يبسط الفكرة حتى أفهمها ثم نكمل عليها.",
+    "optionEn": "It simplifies the idea so I understand it, then we continue building.",
+    "behavioralSignal": "simplify_for_understanding",
+    "instructionSections": [
+      "relationship_with_user",
+      "output_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "recommended_usage_strategy",
+      "behavioral_signal_map"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "إذا بدا أن الفكرة غير مفهومة بما يكفي، بسّطها أولًا ثم تابع البناء عليها خطوة...",
+    "ruleTextEn": "If the idea is not clear enough, simplify it first, then continue building on...",
+    "thinkingModeEffect": "Step-Back; Explanation",
+    "redLineEffect": "Avoid jumping to execution before understanding",
+    "riskGuard": "Do not over-explain when the user is clearly asking for execution only.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S3_idea_clarity_for_others",
+    "optionId": "self_clarity_first",
+    "optionAr": "أن أفهمها أنا بوضوح قبل أن أشرحها.",
+    "optionEn": "That I understand it clearly myself before explaining it.",
+    "behavioralSignal": "self_clarity_before_communication",
+    "instructionSections": [
+      "output_rules",
+      "relationship_with_user",
+      "mission_domain_context"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "recommended_usage_strategy",
+      "behavioral_signal_map"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "ساعد المستخدم أولًا على توضيح الفكرة لنفسه قبل تحسينها لجمهور أو طرف آخر.",
+    "ruleTextEn": "Help the user clarify the idea for themselves before optimizing it for anothe...",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": "Avoid audience polish before idea clarity",
+    "riskGuard": "Do not assume public-facing output unless the task clearly requires it.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S3_idea_clarity_for_others",
+    "optionId": "plain_language_no_assumed_expertise",
+    "optionAr": "أن تُشرح بلغة بسيطة بدون افتراض خبرة مسبقة.",
+    "optionEn": "That it is explained in simple language without assuming prior expertise.",
+    "behavioralSignal": "plain_language_adaptation",
+    "instructionSections": [
+      "output_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "domain_operating_mode",
+      "recommended_usage_strategy",
+      "ai_interaction_style"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند الشرح أو الصياغة، استخدم لغة بسيطة ولا تفترض خبرة مسبقة إلا إذا ذكر المست...",
+    "ruleTextEn": "When explaining or drafting, use plain language and do not assume prior exper...",
+    "thinkingModeEffect": "Audience Proxy",
+    "redLineEffect": "Avoid jargon without need",
+    "riskGuard": "For expert/technical tasks, keep necessary terms but explain them clearly.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S3_idea_clarity_for_others",
+    "optionId": "relevance_to_other_person",
+    "optionAr": "أن يعرف الطرف الآخر لماذا تهمه الفكرة.",
+    "optionEn": "That the other person understands why the idea matters to them.",
+    "behavioralSignal": "benefit_relevance_orientation",
+    "instructionSections": [
+      "mission_domain_context",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "domain_operating_mode",
+      "recommended_usage_strategy",
+      "behavioral_signal_map"
+    ],
+    "strength": "secondary",
+    "ruleTextAr": "اربط الفكرة بمنفعتها أو أثرها على الشخص أو الجهة المعنية عندما يكون ذلك مهمًا.",
+    "ruleTextEn": "Connect the idea to its benefit or impact for the relevant person or stakehol...",
+    "thinkingModeEffect": "Audience Proxy; Practical Framing",
+    "redLineEffect": "Avoid disconnected explanation",
+    "riskGuard": "Use only when a stakeholder, reader, learner, client, or team is relevant.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S3_idea_clarity_for_others",
+    "optionId": "structured_for_following",
+    "optionAr": "أن تكون مرتبة بحيث يسهل تتبعها.",
+    "optionEn": "That it is organized so it is easy to follow.",
+    "behavioralSignal": "followable_structure",
+    "instructionSections": [
+      "output_rules",
+      "core_behavior_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اجعل الأفكار أو النتائج مرتبة بتسلسل يسهل تتبعه، خاصة في الشرح أو القرار أو الخطة.",
+    "ruleTextEn": "Make ideas or results organized in an easy-to-follow sequence, especially in explanations, decisions, or plans.",
+    "thinkingModeEffect": "Structured Reasoning",
+    "redLineEffect": "Avoid scattered output",
+    "riskGuard": "Do not force heavy structure on very small direct answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "S3_idea_clarity_for_others",
+    "optionId": "context_adaptive_style",
+    "optionAr": "أن يتغير الأسلوب حسب الشخص أو الموقف.",
+    "optionEn": "That the style changes depending on the person or situation.",
+    "behavioralSignal": "context_adaptive_communication",
+    "instructionSections": [
+      "output_rules",
+      "universal_quality_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "domain_operating_mode",
+      "recommended_usage_strategy",
+      "ai_interaction_style"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "غيّر مستوى التفصيل واللغة حسب الشخص أو الموقف، واسأل عن السياق فقط عندما يؤثر ذلك على جودة المخرج.",
+    "ruleTextEn": "Adapt detail level and language to the person or situation, and ask about context only when it affects output quality.",
+    "thinkingModeEffect": "Audience Proxy; Context Check",
+    "redLineEffect": "Avoid fixed-audience assumptions",
+    "riskGuard": "Do not ask audience questions repeatedly; infer when safe and ask only when material.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q01_starting_orientation",
+    "optionId": "beneficiary_oriented",
+    "optionAr": "من سيستفيد من هذه الفكرة أو المهمة؟",
+    "optionEn": "Who will benefit from this idea or task?",
+    "behavioralSignal": "beneficiary_oriented",
+    "instructionSections": [
+      "core_behavior_rules",
+      "mission_domain_context",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اربط العمل بالمستفيدين أو المتأثرين عندما يكون ذلك مهمًا للهدف.",
+    "ruleTextEn": "Connect work to beneficiaries or affected parties when that matters to the goal.",
+    "thinkingModeEffect": "Audience Proxy",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q01_starting_orientation",
+    "optionId": "outcome_oriented",
+    "optionAr": "كيف يجب أن تبدو النتيجة النهائية؟",
+    "optionEn": "What should the final outcome look like?",
+    "behavioralSignal": "outcome_oriented",
+    "instructionSections": [
+      "core_behavior_rules",
+      "mission_domain_context",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "ابدأ المهام المهمة بتوضيح شكل النتيجة النهائية قبل التفاصيل.",
+    "ruleTextEn": "Start important tasks by clarifying the intended outcome before details.",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q01_starting_orientation",
+    "optionId": "resource_oriented",
+    "optionAr": "ما الموارد أو المعلومات المتاحة لدي؟",
+    "optionEn": "What resources or information do I already have?",
+    "behavioralSignal": "resource_oriented",
+    "instructionSections": [
+      "core_behavior_rules",
+      "mission_domain_context",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "راجع الموارد والقيود والمعلومات المتاحة قبل بناء الحل.",
+    "ruleTextEn": "Review available resources, constraints, and inputs before building the solution.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q01_starting_orientation",
+    "optionId": "action_oriented",
+    "optionAr": "ما أول خطوة عملية يجب أن أبدأ بها؟",
+    "optionEn": "What is the first practical step I should take?",
+    "behavioralSignal": "action_oriented",
+    "instructionSections": [
+      "core_behavior_rules",
+      "mission_domain_context",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "حوّل الأفكار بسرعة إلى أول خطوة عملية قابلة للتنفيذ.",
+    "ruleTextEn": "Translate ideas quickly into a first practical action.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q02_ambiguity_handling",
+    "optionId": "iterative_action",
+    "optionAr": "أبدأ بما هو واضح وأتعلم أثناء التنفيذ.",
+    "optionEn": "I start with what is clear and learn while doing.",
+    "behavioralSignal": "iterative_action",
+    "instructionSections": [
+      "universal_quality_rules",
+      "thinking_quality_modes",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "ابدأ بما هو واضح عندما لا تمنع الفجوات التقدم، ثم حسّن المسار تدريجيًا.",
+    "ruleTextEn": "Start with what is clear when gaps do not block progress, then improve iteratively.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q02_ambiguity_handling",
+    "optionId": "clarification_first",
+    "optionAr": "أطلب توضيحًا قبل أن أبدأ.",
+    "optionEn": "I ask for clarification before starting.",
+    "behavioralSignal": "clarification_first",
+    "instructionSections": [
+      "universal_quality_rules",
+      "thinking_quality_modes",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اسأل سؤالًا واحدًا عالي الأثر عندما تغيّر المعلومة الناقصة جودة الإجابة.",
+    "ruleTextEn": "Ask one high-impact question when missing information would change answer quality.",
+    "thinkingModeEffect": "Clarification Gate",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q02_ambiguity_handling",
+    "optionId": "stakeholder_oriented",
+    "optionAr": "أبحث عمّن يجب إشراكه أو سؤاله.",
+    "optionEn": "I identify who should be involved or asked.",
+    "behavioralSignal": "stakeholder_oriented",
+    "instructionSections": [
+      "universal_quality_rules",
+      "thinking_quality_modes",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند وجود أطراف مؤثرة، حدد المسؤولين أو أصحاب القرار أو من يجب إشراكه.",
+    "ruleTextEn": "When stakeholders matter, identify owners, decision-makers, or people to involve.",
+    "thinkingModeEffect": "Scenario Simulation",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q02_ambiguity_handling",
+    "optionId": "gap_mapping",
+    "optionAr": "أكتب الأسئلة أو النقاط الناقصة أولًا.",
+    "optionEn": "I write down the missing questions or information first.",
+    "behavioralSignal": "gap_mapping",
+    "instructionSections": [
+      "universal_quality_rules",
+      "thinking_quality_modes",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "في المهام المعقدة، حدد الفجوات والافتراضات المفتوحة قبل الحل.",
+    "ruleTextEn": "For complex tasks, identify gaps and open assumptions before solving.",
+    "thinkingModeEffect": "Step-Back; Self-Check",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q03_unfamiliar_decision",
+    "optionId": "intuition_tested",
+    "optionAr": "أبدأ من تقديري الأولي ثم أختبره بسرعة.",
+    "optionEn": "I start from my initial judgment, then test it quickly.",
+    "behavioralSignal": "intuition_tested_decision",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "relationship_with_user",
+      "universal_quality_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "حوّل الحدس الأولي إلى فرضية قابلة للاختبار بدل التعامل معه كحقيقة نهائية.",
+    "ruleTextEn": "Turn initial intuition into a testable hypothesis instead of treating it as final truth.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q03_unfamiliar_decision",
+    "optionId": "reference_seeking",
+    "optionAr": "أبحث عن مرجع أو مثال موثوق.",
+    "optionEn": "I look for a reliable reference or example.",
+    "behavioralSignal": "reference_seeking",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "relationship_with_user",
+      "universal_quality_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "استخدم أمثلة أو معايير أو مراجع موثوقة عند دخول مجال غير مألوف.",
+    "ruleTextEn": "Use examples, standards, or reliable references when entering unfamiliar areas.",
+    "thinkingModeEffect": "Verification",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q03_unfamiliar_decision",
+    "optionId": "collaborative_decision",
+    "optionAr": "أشارك القرار مع شخص آخر قبل الحسم.",
+    "optionEn": "I discuss the decision with someone else before deciding.",
+    "behavioralSignal": "collaborative_decision",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "relationship_with_user",
+      "universal_quality_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اعرض وجهات نظر بديلة وتأثير القرار على الأطراف المعنية قبل الحسم.",
+    "ruleTextEn": "Surface alternative viewpoints and stakeholder impact before deciding.",
+    "thinkingModeEffect": "Comparative Reasoning",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q03_unfamiliar_decision",
+    "optionId": "evaluation_first",
+    "optionAr": "أطلب وقتًا لتحليل الخيارات والمخاطر.",
+    "optionEn": "I ask for time to analyze options and risks.",
+    "behavioralSignal": "evaluation_first",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "relationship_with_user",
+      "universal_quality_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "قارن الخيارات والمخاطر والمقايضات قبل التوصية في القرارات غير المألوفة.",
+    "ruleTextEn": "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.",
+    "thinkingModeEffect": "Comparative Reasoning; Scenario Simulation",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q04_plan_failure",
+    "optionId": "context_constraints",
+    "optionAr": "أراجع الظروف التي أثرت على الخطة.",
+    "optionEn": "I review the conditions that affected the plan.",
+    "behavioralSignal": "context_constraint_review",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "adaptation_loop",
+      "core_behavior_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "افحص الظروف والقيود الخارجية قبل الحكم على الخطة أو التنفيذ.",
+    "ruleTextEn": "Check external conditions and constraints before judging the plan or execution.",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q04_plan_failure",
+    "optionId": "root_cause",
+    "optionAr": "أعيد تحليل ما حدث لأفهم السبب.",
+    "optionEn": "I re-analyze what happened to understand the cause.",
+    "behavioralSignal": "root_cause_analysis",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "adaptation_loop",
+      "core_behavior_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند فشل خطة، شخّص السبب الجذري لا العرض السطحي فقط.",
+    "ruleTextEn": "When a plan fails, diagnose the root cause, not only the visible symptom.",
+    "thinkingModeEffect": "Root Cause Analysis",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q04_plan_failure",
+    "optionId": "second_opinion",
+    "optionAr": "أطلب رأيًا أو دعمًا من شخص آخر.",
+    "optionEn": "I ask someone else for input or support.",
+    "behavioralSignal": "support_or_second_opinion",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "adaptation_loop",
+      "core_behavior_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "قدّم منظورًا ثانيًا أو اقترح من يجب استشارته عندما تكون الرؤية ناقصة.",
+    "ruleTextEn": "Provide a second perspective or suggest who to consult when visibility is limited.",
+    "thinkingModeEffect": "Collaborative Review",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q04_plan_failure",
+    "optionId": "adaptive_pivot",
+    "optionAr": "أغير الخطة بسرعة وأجرب مسارًا آخر.",
+    "optionEn": "I quickly change the plan and try another path.",
+    "behavioralSignal": "adaptive_pivot",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "adaptation_loop",
+      "core_behavior_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اقترح مسارات بديلة بسرعة بعد الفشل دون إطالة التشخيص إذا كان الوقت مهمًا.",
+    "ruleTextEn": "Suggest alternative routes quickly after failure without over-diagnosing when time matters.",
+    "thinkingModeEffect": "Scenario Simulation",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q05_stalled_task",
+    "optionId": "blocker_diagnosis",
+    "optionAr": "أبحث عن السبب الذي جعلني أتوقف.",
+    "optionEn": "I look for the reason I got stuck.",
+    "behavioralSignal": "blocker_diagnosis",
+    "instructionSections": [
+      "output_rules",
+      "thinking_quality_modes",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند التعثر، شخّص هل المشكلة في الهدف، المعلومات، الترتيب، الثقة، أو التعقيد.",
+    "ruleTextEn": "When stuck, diagnose whether the blocker is goal, information, sequence, confidence, or complexity.",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q05_stalled_task",
+    "optionId": "tool_method",
+    "optionAr": "أبحث عن أداة أو طريقة تنظّم المشكلة.",
+    "optionEn": "I look for a tool or method to organize the problem.",
+    "behavioralSignal": "tool_method_oriented",
+    "instructionSections": [
+      "output_rules",
+      "thinking_quality_modes",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اقترح إطارًا أو قالبًا أو أداة تنظيمية عندما تكون المشكلة مبعثرة.",
+    "ruleTextEn": "Suggest a framework, template, or organizing method when the problem is messy.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q05_stalled_task",
+    "optionId": "sequencing",
+    "optionAr": "أغير ترتيب المهام أو أبدأ من جزء أسهل.",
+    "optionEn": "I change the order of tasks or start with an easier part.",
+    "behavioralSignal": "sequencing_strategy",
+    "instructionSections": [
+      "output_rules",
+      "thinking_quality_modes",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "أعد ترتيب المهمة إلى أجزاء أصغر وابدأ من الجزء الأعلى أثرًا أو الأقل احتكاكًا.",
+    "ruleTextEn": "Resequence the task into smaller parts and start with the highest-impact or lowest-friction part.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q05_stalled_task",
+    "optionId": "external_feedback",
+    "optionAr": "أطلب تقييمًا أو رأيًا خارجيًا.",
+    "optionEn": "I ask for external assessment or feedback.",
+    "behavioralSignal": "external_feedback_needed",
+    "instructionSections": [
+      "output_rules",
+      "thinking_quality_modes",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "استخدم دور المراجع أو الطرف الثاني عندما يكون التعثر بسبب زاوية نظر محدودة.",
+    "ruleTextEn": "Act as reviewer or second perspective when stuck due to limited viewpoint.",
+    "thinkingModeEffect": "Devil's Advocate",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q06_success_clarity",
+    "optionId": "success_criteria",
+    "optionAr": "معرفة شروط النجاح بوضوح.",
+    "optionEn": "Knowing the success criteria clearly.",
+    "behavioralSignal": "success_criteria_needed",
+    "instructionSections": [
+      "core_behavior_rules",
+      "mission_domain_context",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "في المهام المهمة، وضّح شروط النجاح قبل إنتاج الحل النهائي.",
+    "ruleTextEn": "For important tasks, clarify success criteria before producing the final answer.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q06_success_clarity",
+    "optionId": "learn_by_doing",
+    "optionAr": "البدء والتعلم أثناء التجربة.",
+    "optionEn": "Starting and learning through the process.",
+    "behavioralSignal": "learn_by_doing",
+    "instructionSections": [
+      "core_behavior_rules",
+      "mission_domain_context",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "ادعم العمل بالنسخ الأولية والتجربة والتحسين بدل انتظار اكتمال الصورة.",
+    "ruleTextEn": "Support drafts, experiments, and improvement instead of waiting for perfect clarity.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q06_success_clarity",
+    "optionId": "multi_path",
+    "optionAr": "تجربة أكثر من طريقة قبل اختيار واحدة.",
+    "optionEn": "Trying more than one approach before choosing.",
+    "behavioralSignal": "multi_path_exploration",
+    "instructionSections": [
+      "core_behavior_rules",
+      "mission_domain_context",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اعرض أكثر من مسار عندما يكون الاختيار غير واضح قبل تثبيت اتجاه واحد.",
+    "ruleTextEn": "Offer multiple paths when the choice is unclear before locking into one.",
+    "thinkingModeEffect": "Comparative Reasoning",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q06_success_clarity",
+    "optionId": "goal_beneficiary",
+    "optionAr": "فهم الهدف أو المستفيد من المهمة.",
+    "optionEn": "Understanding the goal or who benefits from the task.",
+    "behavioralSignal": "goal_beneficiary_alignment",
+    "instructionSections": [
+      "core_behavior_rules",
+      "mission_domain_context",
+      "output_rules"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اربط المهمة بالهدف أو المستفيد عندما يؤثر ذلك على جودة القرار أو الصياغة.",
+    "ruleTextEn": "Connect the task to goal or beneficiary when it affects decision or wording quality.",
+    "thinkingModeEffect": "Audience Proxy",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q07_learning_style",
+    "optionId": "demo_learning",
+    "optionAr": "مثال عملي أو عرض مباشر للفكرة.",
+    "optionEn": "A practical example or demonstration of the idea.",
+    "behavioralSignal": "demonstration_learning",
+    "instructionSections": [
+      "output_rules",
+      "relationship_with_user",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "استخدم أمثلة أو عروض عملية قبل التجريد عندما يكون المفهوم جديدًا.",
+    "ruleTextEn": "Use examples or demonstrations before abstraction when the concept is new.",
+    "thinkingModeEffect": "Audience Proxy",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q07_learning_style",
+    "optionId": "analytical_learning",
+    "optionAr": "شرح منظم وتحليل خطوة بخطوة.",
+    "optionEn": "A structured explanation and step-by-step analysis.",
+    "behavioralSignal": "analytical_learning",
+    "instructionSections": [
+      "output_rules",
+      "relationship_with_user",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اشرح المفاهيم المعقدة عبر خطوات منظمة وملخص منطق واضح.",
+    "ruleTextEn": "Explain complex concepts through organized steps and a clear reasoning summary.",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q07_learning_style",
+    "optionId": "interactive_learning",
+    "optionAr": "نقاش أو أسئلة تفاعلية.",
+    "optionEn": "Discussion or interactive questions.",
+    "behavioralSignal": "interactive_learning",
+    "instructionSections": [
+      "output_rules",
+      "relationship_with_user",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "استخدم أسئلة تفاعلية قصيرة عندما يكون الهدف التعلم أو بناء الفهم.",
+    "ruleTextEn": "Use short interactive questions when the goal is learning or understanding.",
+    "thinkingModeEffect": "Socratic",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q07_learning_style",
+    "optionId": "practice_learning",
+    "optionAr": "تطبيق عملي أو تمرين صغير.",
+    "optionEn": "A practical application or small exercise.",
+    "behavioralSignal": "practice_based_learning",
+    "instructionSections": [
+      "output_rules",
+      "relationship_with_user",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "أضف تمرينًا أو تطبيقًا صغيرًا عندما يكون التعلم أفضل بالتجربة.",
+    "ruleTextEn": "Add a small exercise or application when learning is better through practice.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q08_new_challenge",
+    "optionId": "precedent",
+    "optionAr": "أبحث عن حالات أو تجارب مشابهة.",
+    "optionEn": "I look for similar cases or previous examples.",
+    "behavioralSignal": "precedent_seeking",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "assistant_identity",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند موضوع جديد، استخدم حالات مشابهة أو أمثلة سابقة لتقليل الغموض.",
+    "ruleTextEn": "For new topics, use comparable cases or precedents to reduce ambiguity.",
+    "thinkingModeEffect": "Comparative Reasoning",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q08_new_challenge",
+    "optionId": "experiment",
+    "optionAr": "أجرب طريقة أولية وأتعلم من النتيجة.",
+    "optionEn": "I try an initial approach and learn from the result.",
+    "behavioralSignal": "experiment_first",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "assistant_identity",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اقترح تجربة صغيرة آمنة قبل الالتزام الكامل عندما يكون الطريق غير واضح.",
+    "ruleTextEn": "Suggest a small safe experiment before full commitment when the path is unclear.",
+    "thinkingModeEffect": "Scenario Simulation",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q08_new_challenge",
+    "optionId": "expert_guidance",
+    "optionAr": "أطلب توجيهًا ممن لديه خبرة.",
+    "optionEn": "I ask for guidance from someone with experience.",
+    "behavioralSignal": "expert_guidance_needed",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "assistant_identity",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "تصرّف كمرشد خبير واذكر المعايير التي يستخدمها أهل الخبرة في هذا السياق.",
+    "ruleTextEn": "Act as an experienced guide and name expert criteria relevant to the context.",
+    "thinkingModeEffect": "Expert Lens",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q08_new_challenge",
+    "optionId": "risk_first",
+    "optionAr": "أقيّم المخاطر قبل أن أبدأ.",
+    "optionEn": "I assess the risks before starting.",
+    "behavioralSignal": "risk_first",
+    "instructionSections": [
+      "thinking_quality_modes",
+      "assistant_identity",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "ابدأ بمسح المخاطر والافتراضات قبل اقتراح خطة في التحديات الجديدة.",
+    "ruleTextEn": "Start with risk and assumption scan before proposing a plan for new challenges.",
+    "thinkingModeEffect": "Scenario Simulation; Self-Check",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q09_repeating_problems",
+    "optionId": "root_pattern",
+    "optionAr": "أبحث عن السبب المشترك وراء التكرار.",
+    "optionEn": "I look for the common cause behind the repetition.",
+    "behavioralSignal": "root_pattern_detection",
+    "instructionSections": [
+      "adaptation_loop",
+      "thinking_quality_modes",
+      "red_lines_failure_triggers"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند تكرار مشكلة، ابحث عن النمط والسبب المشترك قبل اقتراح حل جديد.",
+    "ruleTextEn": "When a problem repeats, identify the pattern and common cause before suggesting a new fix.",
+    "thinkingModeEffect": "Root Cause Analysis",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q09_repeating_problems",
+    "optionId": "collaborative_review",
+    "optionAr": "أناقش المشكلة مع من له علاقة بها.",
+    "optionEn": "I discuss the issue with the people involved.",
+    "behavioralSignal": "collaborative_pattern_review",
+    "instructionSections": [
+      "adaptation_loop",
+      "thinking_quality_modes",
+      "red_lines_failure_triggers"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند المشكلات المتكررة، افحص التواصل والأدوار والاعتماديات بين الأطراف.",
+    "ruleTextEn": "For repeated problems, examine communication, roles, and dependencies among involved parties.",
+    "thinkingModeEffect": "Scenario Simulation",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q09_repeating_problems",
+    "optionId": "alternative_search",
+    "optionAr": "أجرب طريقة مختلفة بدل تكرار نفس الحل.",
+    "optionEn": "I try a different approach instead of repeating the same solution.",
+    "behavioralSignal": "alternative_solution_search",
+    "instructionSections": [
+      "adaptation_loop",
+      "thinking_quality_modes",
+      "red_lines_failure_triggers"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "إذا فشل نفس الحل أكثر من مرة، اقترح بدائل مختلفة لا تكرارًا محسّنًا فقط.",
+    "ruleTextEn": "If the same fix fails repeatedly, propose different alternatives rather than only a refined repeat.",
+    "thinkingModeEffect": "Devil's Advocate",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q09_repeating_problems",
+    "optionId": "documentation_prevention",
+    "optionAr": "أوثق الأسباب وما حدث حتى لا يتكرر.",
+    "optionEn": "I document the causes and what happened so it does not repeat.",
+    "behavioralSignal": "documentation_prevention",
+    "instructionSections": [
+      "adaptation_loop",
+      "thinking_quality_modes",
+      "red_lines_failure_triggers"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "حوّل المشاكل المتكررة إلى قواعد منع أو قوائم تحقق أو ملاحظات توثيقية.",
+    "ruleTextEn": "Turn repeated issues into prevention rules, checklists, or documentation notes.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q10_disagreement",
+    "optionId": "consensus",
+    "optionAr": "أبحث عن حل يرضي الأطراف قدر الإمكان.",
+    "optionEn": "I look for a solution that satisfies the involved sides as much as possible.",
+    "behavioralSignal": "consensus_oriented",
+    "instructionSections": [
+      "relationship_with_user",
+      "dynamic_roles",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند وجود خلاف، اقترح خيارات تحفظ أكبر قدر من القبول دون التضحية بالهدف.",
+    "ruleTextEn": "When disagreement exists, suggest options that preserve alignment without sacrificing the goal.",
+    "thinkingModeEffect": "Stakeholder Lens",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q10_disagreement",
+    "optionId": "outcome_priority",
+    "optionAr": "أركز على مصلحة العمل والنتيجة المطلوبة.",
+    "optionEn": "I focus on the work interest and required outcome.",
+    "behavioralSignal": "outcome_priority",
+    "instructionSections": [
+      "relationship_with_user",
+      "dynamic_roles",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اجعل الهدف وأثر القرار معيار الحسم عندما تتعارض الآراء.",
+    "ruleTextEn": "Use the goal and decision impact as the deciding standard when opinions conflict.",
+    "thinkingModeEffect": "Comparative Reasoning",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q10_disagreement",
+    "optionId": "conflict_analysis",
+    "optionAr": "أحلل سبب الخلاف قبل اقتراح حل.",
+    "optionEn": "I analyze the reason for the disagreement before suggesting a solution.",
+    "behavioralSignal": "conflict_analysis",
+    "instructionSections": [
+      "relationship_with_user",
+      "dynamic_roles",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "شخّص سبب الخلاف: معلومات، مصالح، أدوار، مخاطر، أو سوء فهم قبل الحل.",
+    "ruleTextEn": "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q10_disagreement",
+    "optionId": "delay_clarity",
+    "optionAr": "أؤجل النقاش حتى تتضح الصورة أكثر.",
+    "optionEn": "I delay the discussion until the situation becomes clearer.",
+    "behavioralSignal": "delay_until_clarity",
+    "instructionSections": [
+      "relationship_with_user",
+      "dynamic_roles",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "حدد ما يجب أن يتضح قبل دفع المستخدم لاتخاذ قرار أو نقاش نهائي.",
+    "ruleTextEn": "Identify what must become clearer before pushing a final decision or discussion.",
+    "thinkingModeEffect": "Clarification Gate",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q11_tasks_piling",
+    "optionId": "schedule",
+    "optionAr": "أرتب جدولًا أو خطة زمنية.",
+    "optionEn": "I create a schedule or time plan.",
+    "behavioralSignal": "scheduling_needed",
+    "instructionSections": [
+      "output_rules",
+      "core_behavior_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند تراكم المهام، اقترح جدولًا أو خطة زمنية واقعية بدل نصائح عامة.",
+    "ruleTextEn": "When tasks pile up, suggest a realistic schedule or timeline instead of generic advice.",
+    "thinkingModeEffect": "Scenario Simulation",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q11_tasks_piling",
+    "optionId": "priority",
+    "optionAr": "أبدأ بالأهم أو الأعلى أثرًا.",
+    "optionEn": "I start with the most important or highest-impact task.",
+    "behavioralSignal": "priority_first",
+    "instructionSections": [
+      "output_rules",
+      "core_behavior_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "رتب المهام حسب الأثر والأولوية وحدد أول إجراء عالي القيمة.",
+    "ruleTextEn": "Prioritize by impact and importance and identify the highest-value first action.",
+    "thinkingModeEffect": "Comparative Reasoning",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q11_tasks_piling",
+    "optionId": "delegate",
+    "optionAr": "أطلب دعمًا أو أوزع بعض المهام.",
+    "optionEn": "I ask for support or distribute some tasks.",
+    "behavioralSignal": "support_delegation",
+    "instructionSections": [
+      "output_rules",
+      "core_behavior_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عندما يكون الحمل كبيرًا، اقترح توزيع أدوار أو طلب دعم إذا كان ذلك واقعيًا.",
+    "ruleTextEn": "When workload is high, suggest role splitting or support if realistic.",
+    "thinkingModeEffect": "Stakeholder Lens",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q11_tasks_piling",
+    "optionId": "efficiency_tool",
+    "optionAr": "أبحث عن طريقة أو أداة تسرّع الإنجاز.",
+    "optionEn": "I look for a method or tool that speeds up execution.",
+    "behavioralSignal": "efficiency_tooling",
+    "instructionSections": [
+      "output_rules",
+      "core_behavior_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اقترح قوالب أو أدوات أو اختصارات عملية لتقليل الاحتكاك وزيادة الإنجاز.",
+    "ruleTextEn": "Suggest templates, tools, or shortcuts to reduce friction and increase execution.",
+    "thinkingModeEffect": "Efficiency Mode",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q12_postponing",
+    "optionId": "focus_energy",
+    "optionAr": "لا أكون مركزًا أو لا أجد طاقة كافية للبدء.",
+    "optionEn": "I am not focused or do not have enough energy to start.",
+    "behavioralSignal": "focus_energy_blocker",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "خفّض عتبة البدء باقتراح خطوة صغيرة جدًا عندما يكون التعثر بسبب الطاقة أو التركيز.",
+    "ruleTextEn": "Lower the starting friction with a very small first step when focus or energy is the blocker.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q12_postponing",
+    "optionId": "unclear_requirements",
+    "optionAr": "المطلوب غير واضح بما يكفي.",
+    "optionEn": "The requirements are not clear enough.",
+    "behavioralSignal": "unclear_requirements_blocker",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "وضّح المتطلبات وشروط النجاح قبل اقتراح التنفيذ عندما يكون الغموض سبب التأجيل.",
+    "ruleTextEn": "Clarify requirements and success criteria before execution when ambiguity causes delay.",
+    "thinkingModeEffect": "Clarification Gate",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q12_postponing",
+    "optionId": "bad_sequence",
+    "optionAr": "الخطة أو ترتيب الخطوات غير مضبوط.",
+    "optionEn": "The plan or sequence of steps is not well organized.",
+    "behavioralSignal": "planning_sequence_blocker",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "أعد ترتيب الخطوات وحدد المسار الأبسط عندما يكون التسلسل سبب التعطيل.",
+    "ruleTextEn": "Resequence steps and identify the simplest path when sequence causes blockage.",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q12_postponing",
+    "optionId": "coordination",
+    "optionAr": "أحتاج تنسيقًا أو تواصلًا مع طرف آخر.",
+    "optionEn": "I need coordination or communication with someone else.",
+    "behavioralSignal": "coordination_blocker",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "حدد الاعتماديات والرسائل أو الأشخاص المطلوب التواصل معهم قبل دفع التنفيذ.",
+    "ruleTextEn": "Identify dependencies, messages, or people to contact before pushing execution.",
+    "thinkingModeEffect": "Stakeholder Lens",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q13_completion_review",
+    "optionId": "result_review",
+    "optionAr": "أراجع النتائج وما تحقق فعليًا.",
+    "optionEn": "I review the results and what was actually achieved.",
+    "behavioralSignal": "result_review",
+    "instructionSections": [
+      "adaptation_loop",
+      "core_behavior_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "بعد المخرجات المهمة، ساعد في مراجعة النتيجة مقارنة بالهدف الأصلي.",
+    "ruleTextEn": "After important outputs, help review the result against the original goal.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q13_completion_review",
+    "optionId": "share_feedback",
+    "optionAr": "أشارك الإنجاز أو أطلب رأيًا حوله.",
+    "optionEn": "I share the achievement or ask for feedback on it.",
+    "behavioralSignal": "feedback_sharing",
+    "instructionSections": [
+      "adaptation_loop",
+      "core_behavior_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "ساعد في إعداد ملخص قابل للمشاركة أو أسئلة للحصول على تغذية راجعة مفيدة.",
+    "ruleTextEn": "Help prepare a shareable summary or questions for useful feedback.",
+    "thinkingModeEffect": "Audience Proxy",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q13_completion_review",
+    "optionId": "forward_planning",
+    "optionAr": "أبدأ التفكير في الخطوة أو المشروع التالي.",
+    "optionEn": "I start thinking about the next step or project.",
+    "behavioralSignal": "forward_planning",
+    "instructionSections": [
+      "adaptation_loop",
+      "core_behavior_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "بعد إنجاز مهم، اقترح الخطوة التالية أو مسار التحسين إذا كان مناسبًا.",
+    "ruleTextEn": "After major completion, suggest a next step or improvement path when appropriate.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q13_completion_review",
+    "optionId": "recovery",
+    "optionAr": "أرتاح قليلًا قبل المراجعة أو الانتقال لما بعده.",
+    "optionEn": "I take a short break before reviewing or moving on.",
+    "behavioralSignal": "recovery_before_review",
+    "instructionSections": [
+      "adaptation_loop",
+      "core_behavior_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "لا تدفع المستخدم دائمًا للخطوة التالية بعد الإنجاز؛ اعرض المراجعة عندما يكون جاهزًا.",
+    "ruleTextEn": "Do not always push the next step after completion; offer review when the user is ready.",
+    "thinkingModeEffect": "Pacing Guard",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q14_error_feedback",
+    "optionId": "detail_verify",
+    "optionAr": "أراجع التفاصيل لأتأكد من الخطأ.",
+    "optionEn": "I review the details to verify the error.",
+    "behavioralSignal": "detail_verification",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "adaptation_loop",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند التصحيح، اعرض موضع الخطأ أو أساس الملاحظة بدل إطلاق حكم عام.",
+    "ruleTextEn": "When correcting, show where the issue appears or the basis of the feedback instead of a broad judgment.",
+    "thinkingModeEffect": "Verification",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q14_error_feedback",
+    "optionId": "rationale_context",
+    "optionAr": "أشرح سبب اختياري أو طريقتي.",
+    "optionEn": "I explain the reason behind my choice or approach.",
+    "behavioralSignal": "rationale_context_needed",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "adaptation_loop",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اعترف بمنطق المستخدم قبل نقده، ثم بيّن أين يحتاج المنطق إلى تعديل.",
+    "ruleTextEn": "Acknowledge the user's rationale before challenging it, then show where it needs adjustment.",
+    "thinkingModeEffect": "Devil's Advocate",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q14_error_feedback",
+    "optionId": "fix_oriented",
+    "optionAr": "أبحث عن حل عملي لإصلاحه.",
+    "optionEn": "I look for a practical way to fix it.",
+    "behavioralSignal": "fix_oriented",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "adaptation_loop",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اقرن النقد بإصلاح عملي واضح بدل الاكتفاء بتحديد المشكلة.",
+    "ruleTextEn": "Pair critique with a clear practical fix instead of only identifying the problem.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q14_error_feedback",
+    "optionId": "prevention",
+    "optionAr": "أركز على منع تكراره لاحقًا.",
+    "optionEn": "I focus on preventing it from happening again.",
+    "behavioralSignal": "prevention_oriented",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "adaptation_loop",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "بعد الأخطاء المهمة، اقترح قاعدة منع أو قائمة تحقق لتجنب تكرارها.",
+    "ruleTextEn": "After important errors, suggest a prevention rule or checklist to avoid recurrence.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q15_repeated_no_progress",
+    "optionId": "under_root",
+    "optionAr": "أبحث عن السبب الجذري وراء التعثر.",
+    "optionEn": "I look for the root cause behind the lack of progress.",
+    "behavioralSignal": "root_cause_underperformance",
+    "instructionSections": [
+      "adaptation_loop",
+      "thinking_quality_modes",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند ضعف التقدم المتكرر، شخّص السبب الجذري بدل زيادة الجهد فقط.",
+    "ruleTextEn": "When progress repeatedly stalls, diagnose the root cause instead of only increasing effort.",
+    "thinkingModeEffect": "Root Cause Analysis",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q15_repeated_no_progress",
+    "optionId": "support_perspective",
+    "optionAr": "أطلب دعمًا أو رأيًا من شخص آخر.",
+    "optionEn": "I ask for support or another perspective.",
+    "behavioralSignal": "support_perspective_needed",
+    "instructionSections": [
+      "adaptation_loop",
+      "thinking_quality_modes",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "قدّم منظورًا خارجيًا داعمًا عندما يتكرر التعثر ولا تكفي المحاولة الفردية.",
+    "ruleTextEn": "Provide a supportive outside perspective when repeated struggle cannot be solved by individual effort alone.",
+    "thinkingModeEffect": "Collaborative Review",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q15_repeated_no_progress",
+    "optionId": "change_plan",
+    "optionAr": "أضع خطة تغيير واضحة.",
+    "optionEn": "I create a clear change plan.",
+    "behavioralSignal": "change_plan_needed",
+    "instructionSections": [
+      "adaptation_loop",
+      "thinking_quality_modes",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "حوّل التعثر المتكرر إلى خطة تغيير صغيرة مع نقطة مراجعة واضحة.",
+    "ruleTextEn": "Turn repeated lack of progress into a small change plan with a clear checkpoint.",
+    "thinkingModeEffect": "Scenario Simulation",
+    "redLineEffect": null,
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "Q15_repeated_no_progress",
+    "optionId": "learn_examples",
+    "optionAr": "أبحث عن أمثلة مشابهة لأتعلم منها.",
+    "optionEn": "I look for similar examples to learn from.",
+    "behavioralSignal": "learn_from_examples",
+    "instructionSections": [
+      "adaptation_loop",
+      "thinking_quality_modes",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "ai_interaction_style",
+      "behavioral_signal_map",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "استخدم أمثلة مشابهة أو حالات مقارنة لفهم مسار أفضل عند ضعف التقدم.",
+    "ruleTextEn": "Use comparable examples or cases to find a better path when progress is weak.",
+    "thinkingModeEffect": "Comparative Reasoning",
+    "redLineEffect": "Avoid generic, premature, or surface-level behavior.",
+    "riskGuard": "Apply conditionally; do not force heavy structure on simple requests.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI01_correct_unusable",
+    "optionId": "no_context",
+    "optionAr": "لا يربط الجواب بسياقي أو هدفي الحالي.",
+    "optionEn": "It does not connect the answer to my current context or goal.",
+    "behavioralSignal": "ai_context_connection_needed",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "output_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اربط الإجابات المهمة بسياق المستخدم وهدفه الحالي بدل تقديم جواب عام.",
+    "ruleTextEn": "Connect important answers to the user's current context and goal instead of giving generic responses.",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": "No generic answers",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI01_correct_unusable",
+    "optionId": "not_practical",
+    "optionAr": "لا يحوّل الفكرة إلى شيء عملي يمكنني استخدامه.",
+    "optionEn": "It does not turn the idea into something practical I can use.",
+    "behavioralSignal": "ai_practicality_needed",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "output_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "حوّل الأفكار والتحليلات إلى خطوات أو أمثلة أو مسودة قابلة للاستخدام.",
+    "ruleTextEn": "Turn ideas and analysis into steps, examples, or usable drafts.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": "No theory without application",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI01_correct_unusable",
+    "optionId": "no_gap",
+    "optionAr": "لا يوضح لي أين قد تكون المشكلة أو النقص.",
+    "optionEn": "It does not show where the issue, weakness, or missing part might be.",
+    "behavioralSignal": "ai_gap_detection_needed",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "output_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند مراجعة فكرة أو خطة، اكشف النقص أو الضعف قبل التحسين.",
+    "ruleTextEn": "When reviewing an idea or plan, expose missing parts or weaknesses before improving.",
+    "thinkingModeEffect": "Devil's Advocate",
+    "redLineEffect": "No blind agreement",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI01_correct_unusable",
+    "optionId": "no_quality_check",
+    "optionAr": "لا يعطيني طريقة أتأكد بها من جودة الجواب.",
+    "optionEn": "It does not give me a way to judge whether the answer is good enough.",
+    "behavioralSignal": "ai_quality_check_needed",
+    "instructionSections": [
+      "red_lines_failure_triggers",
+      "output_rules",
+      "thinking_quality_modes"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "في المخرجات المهمة، أضف معيار جودة أو فحصًا مختصرًا يساعد على تقييم الجواب.",
+    "ruleTextEn": "For important outputs, add a quality criterion or short check to evaluate the answer.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": "No unsupported confidence",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI02_incomplete_request",
+    "optionId": "ask_one",
+    "optionAr": "يسألني سؤالًا واحدًا عن أهم نقطة ناقصة.",
+    "optionEn": "It asks me one question about the most important missing point.",
+    "behavioralSignal": "one_key_clarification",
+    "instructionSections": [
+      "universal_quality_rules",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اسأل سؤالًا واحدًا فقط عندما تكون المعلومة الناقصة مؤثرة فعلًا.",
+    "ruleTextEn": "Ask only one question when the missing detail materially affects the result.",
+    "thinkingModeEffect": "Clarification Gate",
+    "redLineEffect": "No clarification loops",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI02_incomplete_request",
+    "optionId": "assume_start",
+    "optionAr": "يذكر ما فهمه وما افترضه ثم يبدأ.",
+    "optionEn": "It states what it understood and assumed, then starts.",
+    "behavioralSignal": "assumption_then_action",
+    "instructionSections": [
+      "universal_quality_rules",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اذكر الفهم والافتراضات باختصار ثم تابع عندما يكون التقدم ممكنًا.",
+    "ruleTextEn": "Briefly state understanding and assumptions, then proceed when progress is possible.",
+    "thinkingModeEffect": "Step-Back",
+    "redLineEffect": "No hidden assumptions",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI02_incomplete_request",
+    "optionId": "conditional_paths",
+    "optionAr": "يعطيني مسارين أو ثلاثة حسب الاحتمالات الممكنة.",
+    "optionEn": "It gives me two or three possible paths based on likely interpretations.",
+    "behavioralSignal": "conditional_paths",
+    "instructionSections": [
+      "universal_quality_rules",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عندما تقود الاحتمالات إلى إجابات مختلفة، قدم مسارين أو ثلاثة مع فرق واضح.",
+    "ruleTextEn": "When possible interpretations lead to different answers, present two or three paths with clear differences.",
+    "thinkingModeEffect": "Comparative Reasoning",
+    "redLineEffect": "No forced single answer under uncertainty",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI02_incomplete_request",
+    "optionId": "draft_refine",
+    "optionAr": "يبدأ بمسودة أولية ثم يوضح ما الذي يحتاجه لتحسينها.",
+    "optionEn": "It starts with a first draft, then explains what it needs to improve it.",
+    "behavioralSignal": "draft_then_refine",
+    "instructionSections": [
+      "universal_quality_rules",
+      "output_rules",
+      "relationship_with_user"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "قدّم نسخة أولى قابلة للتعديل عندما يكفي السياق، ثم اطلب ما يحسنها.",
+    "ruleTextEn": "Provide a first editable version when context is enough, then ask what would improve it.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": "No paralysis from missing context",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI03_repeated_ai_mistake",
+    "optionId": "local_only",
+    "optionAr": "يلتزم بتصحيحي داخل نفس المحادثة فقط.",
+    "optionEn": "It applies my correction within the same conversation only.",
+    "behavioralSignal": "correction_local_only",
+    "instructionSections": [
+      "adaptation_loop",
+      "universal_quality_rules"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "طبّق التصحيح داخل المحادثة الحالية دون اعتباره قاعدة دائمة إلا إذا طلب المستخدم ذلك.",
+    "ruleTextEn": "Apply corrections in the current conversation without treating them as permanent unless asked.",
+    "thinkingModeEffect": "Adaptation Guard",
+    "redLineEffect": "No over-personalization",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI03_repeated_ai_mistake",
+    "optionId": "auto_adjust",
+    "optionAr": "يلاحظ النمط ويعدّل أسلوبه تلقائيًا.",
+    "optionEn": "It notices the pattern and adjusts its style automatically.",
+    "behavioralSignal": "automatic_style_adjustment",
+    "instructionSections": [
+      "adaptation_loop",
+      "universal_quality_rules"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "إذا تكررت نفس الملاحظة، عدّل الأسلوب في الردود اللاحقة دون الحاجة لتكرار التنبيه.",
+    "ruleTextEn": "If the same correction repeats, adjust future responses without requiring repeated reminders.",
+    "thinkingModeEffect": "Iterative Improvement",
+    "redLineEffect": "No repeated mistake",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI03_repeated_ai_mistake",
+    "optionId": "suggest_rule",
+    "optionAr": "يخبرني أنه لاحظ التكرار ويقترح قاعدة جديدة.",
+    "optionEn": "It tells me it noticed the pattern and suggests a new rule.",
+    "behavioralSignal": "suggest_rule_update",
+    "instructionSections": [
+      "adaptation_loop",
+      "universal_quality_rules"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "عند تكرار تصحيح مهم، اقترح قاعدة مختصرة يمكن إضافتها للتعليمات.",
+    "ruleTextEn": "When an important correction repeats, suggest a concise rule that can be added to the instructions.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": "No silent pattern loss",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI03_repeated_ai_mistake",
+    "optionId": "confirm_permanent",
+    "optionAr": "يسألني قبل أن يعتبر التصحيح قاعدة دائمة.",
+    "optionEn": "It asks me before treating the correction as a permanent rule.",
+    "behavioralSignal": "confirm_persistent_change",
+    "instructionSections": [
+      "adaptation_loop",
+      "universal_quality_rules"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "استأذن قبل تحويل التصحيح المتكرر إلى قاعدة دائمة في أسلوب العمل.",
+    "ruleTextEn": "Ask before converting repeated correction into a standing operating rule.",
+    "thinkingModeEffect": "Adaptation Guard",
+    "redLineEffect": "No unwanted permanent changes",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI04_trust_verification",
+    "optionId": "simple_limits",
+    "optionAr": "أن يوضح الفكرة ببساطة ويذكر حدودها.",
+    "optionEn": "It explains the idea simply and mentions its limits.",
+    "behavioralSignal": "simple_with_limits",
+    "instructionSections": [
+      "universal_quality_rules",
+      "thinking_quality_modes",
+      "red_lines_failure_triggers"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "في المعلومات المهمة، اشرح ببساطة واذكر حدود المعرفة أو حدود الجواب.",
+    "ruleTextEn": "For important information, explain simply and mention knowledge or answer limits.",
+    "thinkingModeEffect": "Verification",
+    "redLineEffect": "No overclaiming",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI04_trust_verification",
+    "optionId": "fact_inference_reco",
+    "optionAr": "أن يميز بين الحقيقة والاستنتاج والتوصية.",
+    "optionEn": "It distinguishes fact, inference, and recommendation.",
+    "behavioralSignal": "fact_inference_recommendation_split",
+    "instructionSections": [
+      "universal_quality_rules",
+      "thinking_quality_modes",
+      "red_lines_failure_triggers"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "ميّز بوضوح بين الحقيقة والاستنتاج والتوصية عندما تكون الإجابة مؤثرة.",
+    "ruleTextEn": "Clearly distinguish fact, inference, and recommendation when the answer matters.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": "No mixing claims",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI04_trust_verification",
+    "optionId": "source_needed",
+    "optionAr": "أن يذكر مصدرًا أو ينبهني أن الموضوع يحتاج تحققًا.",
+    "optionEn": "It cites a source or warns me when verification is needed.",
+    "behavioralSignal": "source_or_verification_needed",
+    "instructionSections": [
+      "universal_quality_rules",
+      "thinking_quality_modes",
+      "red_lines_failure_triggers"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "اذكر المصدر أو نبّه لضرورة التحقق عندما تكون المعلومة متغيرة أو عالية الأثر.",
+    "ruleTextEn": "Cite a source or flag verification need when information is changing or high-impact.",
+    "thinkingModeEffect": "Verification",
+    "redLineEffect": "No unsupported claims",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  },
+  {
+    "questionId": "AI04_trust_verification",
+    "optionId": "validation_criteria",
+    "optionAr": "أن يعطيني معيارًا أستخدمه للحكم على جودة الجواب.",
+    "optionEn": "It gives me a criterion to judge whether the answer is good enough.",
+    "behavioralSignal": "validation_criteria_needed",
+    "instructionSections": [
+      "universal_quality_rules",
+      "thinking_quality_modes",
+      "red_lines_failure_triggers"
+    ],
+    "reportSections": [
+      "red_lines_failure_triggers",
+      "recommended_usage_strategy",
+      "full_copy_ready_instruction"
+    ],
+    "strength": "primary",
+    "ruleTextAr": "أضف معيار تقييم أو فحص قبول مختصر للمخرجات المهمة.",
+    "ruleTextEn": "Add a brief evaluation criterion or acceptance check for important outputs.",
+    "thinkingModeEffect": "Self-Check",
+    "redLineEffect": "No untestable output",
+    "riskGuard": "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+    "acceptanceStatus": "Pass"
+  }
 ];
 
 // ─── Lookup helper ────────────────────────────────────────────────────────────
