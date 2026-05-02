@@ -1,0 +1,67 @@
+Your Patch 1 plan is directionally accepted, but do not implement yet.
+
+Revise the plan with these required corrections:
+
+1. GET /api/questions must expose only public question content:
+   - questionId
+   - block
+   - selectionMode
+   - questionAr/questionEn
+   - optionId
+   - option text
+
+   Do NOT expose option routing metadata, ruleText, reportSections, instructionSections, redLineEffect, thinkingModeEffect, or riskGuard to the frontend. Routing must remain backend-only.
+
+2. Full v2 assessment must require all 21 analytical questions.
+   Do not use min 10 / max 21.
+   Validate that submitted answers match the required v2 question IDs exactly, unless a question is explicitly conditional in the bank.
+
+3. Use one naming convention:
+   Use questionId and optionId everywhere in frontend payload, backend validation, stored JSONB, and PromptDataV2.
+   Do not mix question_id/option_id with questionId/optionId.
+
+4. Do not break mini assessment.
+   Since mini still uses the old payload, the submit endpoint must validate based on assessment type:
+   - full → v2 schema
+   - mini → legacy/mini schema
+   Or use a safe union schema with explicit routing.
+   Show exactly how you will avoid breaking assess-mini.tsx.
+
+5. Improve v2-to-existing-DB-field mapping.
+   Do not map domain_operating_mode + ai_interaction_style into strengths because results.tsx will display strengths under “نقاط القوة”.
+   Proposed safer mapping:
+   - full_copy_ready_instruction → systemInstruction
+   - starter_prompts → quickStarters
+   - red_lines_failure_triggers → redLines
+   - recommended_usage_strategy → recommendations
+   - ai_interaction_style + recommended_identity + domain_operating_mode → roleAnalysis
+   - strengths → strengths
+   - risks_blindspots → developmentAreas
+   - behavioral_signal_map → inspireTable only if represented as display signal rows; otherwise leave null knowingly.
+
+6. Add a no-bloat generator guardrail:
+   The prompt builder must not pass selected route rules as paste-ready content.
+   Correct flow:
+   selected routes → cluster signals → merge overlaps → choose dominant patterns → generate compact report/instruction.
+   Wrong flow:
+   selected routes → paste all ruleText items.
+
+7. Universal Rules placement is out of scope for Patch 1.
+   Do not move them in this patch.
+   Do not add new universal rules.
+   Do not change parser behavior for Universal Rules unless required by type compatibility.
+
+8. Keep these out of scope:
+   - UI redesign
+   - landing page
+   - marketing copy
+   - pricing/payment
+   - admin
+   - PDF
+   - mini redesign
+   - database migration
+
+Return a revised implementation plan only.
+Do not modify files yet.
+Do not write code.
+Do not commit.

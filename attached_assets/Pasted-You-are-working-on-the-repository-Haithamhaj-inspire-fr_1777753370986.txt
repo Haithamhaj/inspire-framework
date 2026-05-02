@@ -1,0 +1,131 @@
+You are working on the repository:
+
+Haithamhaj/inspire-framework
+
+Task type:
+TECHNICAL AUDIT ONLY.
+
+Do not modify any files.
+Do not write code.
+Do not refactor.
+Do not run migrations.
+Do not commit.
+Do not change UI, design, landing page, payment, admin, PDF, or marketing content.
+Only inspect and report.
+
+Context:
+We are preparing INSPIRE Web v2. The current goal is to identify the internal protocol problems before making changes.
+
+I need you to inspect the codebase and confirm the technical issues below. For each issue, report:
+
+1. File path(s)
+2. Current behavior
+3. Why it is a problem
+4. What would need to change later
+5. Risk level: Low / Medium / High
+6. Whether fixing it would require frontend change, backend change, database migration, or only prompt/parser logic
+
+Important:
+Do not fix anything yet. Wait for my decision after your report.
+
+Audit these issues:
+
+1. Duplicate question banks
+   Check whether the frontend has hardcoded assessment questions and whether the backend has a separate question bank.
+   Specifically inspect:
+   - artifacts/inspire-web/src/pages/assess.tsx
+   - artifacts/api-server/src/data/questions.ts
+   - artifacts/api-server/src/data/scenarios.ts
+
+2. Index-based answer submission
+   Check where the app submits or validates:
+   - question_index
+   - answer_index
+   - scenario_index
+   - choice
+
+   Confirm whether the frontend and backend depend on question order instead of stable questionId/optionId.
+
+3. Old scoring logic
+   Inspect:
+   - artifacts/api-server/src/lib/prompt-builder.ts
+
+   Confirm whether scoring is calculated from answer_index.
+   Check whether option order is treated as score/intensity.
+
+4. Required open-ended answer
+   Inspect frontend and backend validation.
+   Confirm whether open_answer is required and has a minimum length.
+   We want to know whether this conflicts with making optional notes optional later.
+
+5. Report parser contract
+   Inspect:
+   - artifacts/api-server/src/lib/report-parser.ts
+
+   Confirm which section markers it expects:
+   TABLE, ROLE, REDLINES, STRENGTHS, DEVELOPMENT, RECOMMENDATIONS, SYS, QS, etc.
+
+   Confirm whether the parser is tightly coupled to the old 8-section report structure.
+
+6. Results page dependency on old report fields
+   Inspect:
+   - artifacts/inspire-web/src/pages/results.tsx
+   - artifacts/api-server/src/routes/results.ts
+
+   Confirm how the results page depends on:
+   - inspireTable
+   - roleAnalysis
+   - redLines
+   - strengths
+   - developmentAreas
+   - recommendations
+   - systemInstruction
+   - quickStarters
+
+   Confirm whether inspireTable is displayed as percentage bars.
+
+7. Database flexibility
+   Inspect:
+   - lib/db/src/schema/assessments.ts
+
+   Confirm whether behavioralAnswers and scenarioAnswers are jsonb.
+   Tell me whether changing the answer payload shape would require a database migration or not.
+
+8. Mini assessment drift
+   Inspect:
+   - artifacts/inspire-web/src/pages/assess-mini.tsx
+
+   Confirm whether mini assessment uses old direct AI scenarios and required open answer.
+   Do not change it. Just report whether it would become inconsistent with full v2.
+
+9. Universal rules placement
+   Inspect:
+   - artifacts/api-server/src/lib/prompt-builder.ts
+   - artifacts/api-server/src/lib/report-parser.ts
+
+   Confirm whether universal rules are prepended before the generated system instruction.
+   Report whether this conflicts with a final instruction structure that should begin with Assistant Identity and Mission.
+
+Output format:
+
+A. Executive Summary
+- 5–8 bullet points maximum.
+
+B. Issue-by-Issue Audit Table
+Columns:
+- Issue
+- Files inspected
+- Current behavior
+- Risk
+- Required future change
+- Requires DB migration? Yes/No/Unclear
+
+C. Recommended First Fix
+Tell me which issue should be fixed first and why.
+Do not implement it.
+
+D. Safe Patch Plan
+Give a proposed patch sequence only, without writing code.
+
+Hard rule:
+Do not change any file. This is inspection only.
