@@ -381,8 +381,9 @@ router.post(
 router.get(
   "/pdfs/:filename",
   (req: Request, res: Response): void => {
-    const { filename } = req.params;
-    if (!filename?.endsWith(".pdf") || filename.includes("..")) {
+    const rawFilename = req.params.filename;
+    const filename = Array.isArray(rawFilename) ? rawFilename[0] : rawFilename;
+    if (!filename || !filename.endsWith(".pdf") || filename.includes("..")) {
       res.status(400).send("Invalid filename");
       return;
     }

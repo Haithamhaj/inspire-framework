@@ -1,0 +1,66 @@
+Patch 1C — Fix existing TypeScript errors only.
+
+Current errors:
+1. artifacts/api-server/src/lib/ai-engine.ts lines 178-179:
+   unknown[] is not assignable to PromptData legacy answer types.
+
+2. artifacts/api-server/src/lib/pdf.ts line 2:
+   missing React type declarations.
+
+3. artifacts/api-server/src/routes/results.ts lines 385 and 389:
+   filename is typed as string | string[].
+
+Hard rules:
+- Do not change INSPIRE v2 question bank.
+- Do not change option-routing.
+- Do not change prompt content.
+- Do not change UI design.
+- Do not touch landing, payment, admin, mini assessment, or marketing.
+- Do not modify PDF layout except what is required for TypeScript compatibility.
+- Do not add new features.
+- Make the smallest possible type-safe fixes.
+
+Required fixes:
+
+A. ai-engine.ts
+Fix the retry path typing by casting stored JSONB data to the legacy PromptData expected types only in the legacy/mini path.
+
+Suggested approach:
+Define local types:
+type LegacyBehavioralAnswer = { question_index: number; answer_index: number };
+type LegacyScenarioAnswer = { scenario_index: number; choice: "a" | "b" };
+
+Then replace unknown[] assignments with safe casts:
+behavioralAnswers: ((assessment.behavioralAnswers as LegacyBehavioralAnswer[]) ?? [])
+scenarioAnswers: ((assessment.scenarioAnswers as LegacyScenarioAnswer[]) ?? [])
+
+Do not change the v2 path.
+
+B. pdf.ts
+Fix missing React type declarations with the smallest safe change.
+Preferred:
+- Check whether @types/react is missing in the relevant workspace package.
+- If missing, add @types/react as a devDependency where TypeScript needs it.
+Do not redesign PDF.
+
+C. results.ts
+Fix filename type narrowing.
+req.params.filename may be string | string[].
+Add a guard:
+const rawFilename = req.params.filename;
+const filename = Array.isArray(rawFilename) ? rawFilename[0] : rawFilename;
+if (!filename || !filename.endsWith(".pdf") || filename.includes("..")) { ... }
+
+Then use filename only after narrowing.
+
+After changes run:
+pnpm run typecheck
+pnpm run build
+
+Report:
+1. Files changed
+2. Exact fixes
+3. typecheck result
+4. build result
+5. git status
+6. Confirm no INSPIRE matrix/question/routing files changed

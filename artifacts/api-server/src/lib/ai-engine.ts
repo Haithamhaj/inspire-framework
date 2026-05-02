@@ -169,14 +169,16 @@ export async function processRetryQueue(): Promise<void> {
     let prompt: string;
 
     if (aType === "mini") {
+      type LegacyBehavioralAnswer = { question_index: number; answer_index: number };
+      type LegacyScenarioAnswer = { scenario_index: number; choice: "a" | "b" };
       const promptData: PromptData = {
         name: user.name,
         jobTitle: user.jobTitle ?? undefined,
         projectName: assessment.projectName,
         projectGoal: assessment.projectGoal,
         reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
-        behavioralAnswers: (assessment.behavioralAnswers as unknown[]) ?? [],
-        scenarioAnswers: (assessment.scenarioAnswers as unknown[]) ?? [],
+        behavioralAnswers: (assessment.behavioralAnswers as LegacyBehavioralAnswer[]) ?? [],
+        scenarioAnswers: (assessment.scenarioAnswers as LegacyScenarioAnswer[]) ?? [],
         openAnswer: assessment.openAnswer ?? "",
       };
       prompt = buildPrompt(promptData);
