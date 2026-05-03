@@ -1,0 +1,111 @@
+Task:
+Part 1 Planning Only — UI / Animation / Visual System Audit.
+
+Do not modify files.
+Do not write code.
+Do not commit.
+Do not touch backend, API, payment, auth, database, question bank, routing, prompt-builder, report-parser, or mini logic.
+
+Goal:
+Plan a high-quality visual and interaction upgrade for INSPIRE v2.
+
+Context:
+The technical core is stable. Now we want to improve the user-facing experience:
+- landing page
+- full assessment flow
+- processing/loading state
+- results page
+- visual hierarchy
+- animation system
+- dynamic UI
+
+This is Part 1 only:
+Focus on UI structure, animation, interaction, layout, design system, and component behavior.
+Do not rewrite final marketing copy yet.
+Content/copy refinement will be Part 2.
+
+Inspect:
+- artifacts/inspire-web/src/pages/landing.tsx
+- artifacts/inspire-web/src/pages/results.tsx
+- artifacts/inspire-web/src/pages/assess.tsx
+- artifacts/inspire-web/src/components/layout/Navbar.tsx
+- global styles/theme files if relevant
+- package.json for available UI/animation libraries
+
+Report:
+
+A. Current UI diagnosis
+- What works
+- What feels outdated or inconsistent
+- What is misleading after v2
+- What parts feel weak for a paid $10 product
+
+B. Available capabilities
+Based on current stack, identify what we can use:
+- framer-motion
+- Tailwind
+- Radix components
+- lucide icons
+- recharts
+- embla carousel
+- any existing utilities/components
+
+C. Proposed visual direction
+Describe:
+- mood
+- colors
+- motion style
+- card system
+- typography hierarchy
+- spacing
+- premium feel
+
+D. Page-by-page upgrade plan
+
+1. Landing page
+- layout upgrades
+- animation ideas
+- product preview ideas
+- sections to keep
+- sections to redesign
+- sections to remove
+
+2. Assessment page
+- question card design
+- progress design
+- block navigation
+- answer selection animation
+- pre-submit confirmation
+- loading state
+
+3. Results page
+- v2-specific result layout
+- Assistant Identity card
+- Dynamic Roles cards
+- Thinking Modes section
+- Red Lines / Strengths / Risks section
+- System Instruction viewer
+- Quick Starters cards
+
+4. Navbar / global shell
+- what to improve
+- what not to touch
+
+E. 3–4 hour implementation plan
+Break into phases:
+- first 60 minutes
+- second 60 minutes
+- third 60 minutes
+- final QA/polish
+
+F. Risk list
+- what might break
+- what should not be touched
+- what should be postponed
+
+G. Recommended first implementation slice
+Choose one first slice only.
+My preference is Results Page v2 visual upgrade first, unless you strongly disagree.
+
+Do not implement yet.
+Return the plan only.
