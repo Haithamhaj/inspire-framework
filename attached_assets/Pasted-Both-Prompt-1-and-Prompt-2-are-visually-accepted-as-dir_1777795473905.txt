@@ -1,0 +1,98 @@
+Both Prompt 1 and Prompt 2 are visually accepted as direction.
+
+Decision:
+- Prompt 1 (Results Reveal Demo): accepted as direction
+- Prompt 2 (Hero Experience Demo): accepted as direction
+- Visual capability test: complete
+
+Do not build production UI yet.
+Do not start a new demo.
+Next task is PLANNING ONLY.
+
+Task:
+Review the current INSPIRE web codebase and produce a production implementation plan that translates the approved visual directions from:
+- /results-demo
+- /hero-demo
+
+into the real product safely and incrementally.
+
+Important:
+This is planning only.
+No code changes.
+No commits.
+No backend/API/auth/payment/database work.
+No changes to question bank / routing logic / prompt-builder / report-parser / mini / PDF logic.
+
+What the plan must include:
+
+1. Recommended implementation order
+   - Which production area should be implemented first, and why
+   - Expected order across:
+     - results page
+     - landing/hero
+     - assess flow
+     - shared visual system
+
+2. Reusable UI primitives/components
+   Identify what can become reusable components from the demos, for example:
+   - premium hero section patterns
+   - profile preview card
+   - signal chips
+   - CTA system
+   - section header pattern
+   - premium cards
+   - role cards
+   - mode chips
+   - comparison cards
+   - copy-ready instruction container
+
+3. File-level production plan
+   Specify which real files would likely need changes for each phase.
+   Distinguish between:
+   - new reusable component files
+   - production page files
+   - style/token files
+   - route/layout files if needed
+
+4. Safe first implementation slice
+   Recommend the smallest safe production slice to build first.
+   My expectation is likely:
+   - Results Page production upgrade first
+   But I want your repo-aware judgment based on the actual codebase.
+
+5. Risk analysis
+   For each proposed phase, identify:
+   - regression risk
+   - dependency risk
+   - scope creep risk
+   - mismatch risk with current v2 logic
+   - mobile/responsive risk
+
+6. Visual polish notes carried forward
+   Include the main polish notes we want to remember later, including:
+   - stronger prominence for Assistant Identity
+   - tighter spacing in mid sections
+   - Arabic-first presentation
+   - reduce visual clutter from English labels
+   - refine signal-chip overlap
+   - suppress unrelated overlay/mascot elements
+   - review navbar integration with the premium dark visual system
+
+7. Acceptance criteria
+   For each proposed phase, define clear acceptance checks.
+
+Output format:
+Provide a concise but structured planning document with sections:
+- Summary recommendation
+- Recommended build order
+- Component map
+- File impact map
+- Safe first slice
+- Risks
+- Acceptance criteria
+
+Again:
+Planning only.
+No code.
+No commits.
+Hold after delivering the plan.
