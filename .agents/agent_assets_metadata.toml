@@ -318,3 +318,51 @@ id = "ZbpeGLHYP1tDCWlRMXG5V"
 uri = "file://screenshots/p13-mob-en-5-faq.png"
 type = "image"
 title = "Task #13 — Mobile EN · FAQ"
+
+[[outputs]]
+id = "DWiBakYSkmH26RxajVGBK"
+uri = "file://screenshots/p3-ar-axes.png"
+type = "image"
+title = "P3 — AR · Axes / Components"
+
+[[outputs]]
+id = "toKAQ3MKisERhOWxf1yRq"
+uri = "file://screenshots/p3-en-axes.png"
+type = "image"
+title = "P3 — EN · Axes / Components"
+
+[[outputs]]
+id = "gCl-xL8RFqxhHB3xkDAkA"
+uri = "file://screenshots/p3-ar-how.png"
+type = "image"
+title = "P3 — AR · How it works + Pricing top"
+
+[[outputs]]
+id = "iD0ti2X2DpwfVUzmEgzsl"
+uri = "file://screenshots/p3-en-pricing.png"
+type = "image"
+title = "P3 — EN · How it works + Pricing"
+
+[[outputs]]
+id = "40P01E6fsy8ILUjjwivu3"
+uri = "file://screenshots/p3-ar-pricing.png"
+type = "image"
+title = "P3 — AR · Pricing"
+
+[[outputs]]
+id = "iL490POyRtNK_oPAvNtMY"
+uri = "file://screenshots/p3-ar-sample.png"
+type = "image"
+title = "P3 — AR · Sample output (## Assistant Identity visible)"
+
+[[outputs]]
+id = "MwQeH8fMGB36frABsU8R1"
+uri = "file://screenshots/p3-ar-faq.png"
+type = "image"
+title = "P3 — AR · FAQ"
+
+[[outputs]]
+id = "KHCSbreXhhKMIodDTWuN3"
+uri = "file://screenshots/p3-en-faq.png"
+type = "image"
+title = "P3 — EN · FAQ"
