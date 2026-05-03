@@ -1,0 +1,157 @@
+P0 and P1 are accepted.
+
+Proceed to P2 only.
+
+P2 scope:
+Production Landing Hero integration only.
+
+Goal:
+Replace/upgrade the real production landing page hero using the approved /hero-demo visual direction, while keeping the implementation narrow, bilingual, and safe.
+
+Use /hero-demo as visual reference, but do not copy demo code blindly if production structure requires cleaner integration.
+
+Allowed:
+- Modify landing.tsx hero section only
+- Add small reusable visual components only if needed by the landing hero
+- Add bilingual i18n keys to ar.ts and en.ts for landing hero chrome/copy
+- Use existing P0 i18n infrastructure: useT(), RTL/LTR behavior
+- Use existing visual stack: Tailwind, Framer Motion, lucide-react
+- Use static UI copy from dictionaries
+- Preserve existing CTA routes/actions
+- Preserve existing page sections below hero unless a tiny anchor/id adjustment is required for “شاهد كيف يعمل”
+
+Forbidden:
+- No backend/API changes
+- No auth/payment/database/admin changes
+- No questions/routing/prompt-builder/report-parser changes
+- No assessment flow changes
+- No results page changes
+- No mini assessment changes
+- No PDF/share changes
+- No Navbar changes
+- No global theme flip
+- No new dependencies
+- No full landing rewrite
+- No FAQ/pricing/how-it-works rewrite in this phase
+- No client-side translation of generated report content
+
+Hero requirements:
+1. Arabic and English support
+   - Arabic mode: RTL, Arabic primary
+   - English mode: LTR, English primary
+   - All hero UI copy must come from i18n dictionaries
+   - No hardcoded one-language production strings
+
+2. Core message
+   Use the approved positioning:
+   - Next Step AI / Human Interactive AI
+   - INSPIRE is a purpose-specific AI Operating Profile
+   - Positive framing: helping users get better value from AI, not blaming them for bad prompts
+   - Slogan direction: “كل هدف له إلهامه الخاص”
+
+3. Hero content structure
+   Include:
+   - eyebrow: Next Step AI / Human Interactive AI
+   - main headline
+   - supporting paragraph
+   - primary CTA: build/start assistant profile
+   - secondary CTA: see how it works
+   - trust line: works with ChatGPT / Gemini / Claude
+   - visual slogan: every goal has its own INSPIRE
+
+4. Right-side visual
+   Integrate a simplified production-safe version of the approved /hero-demo preview:
+   - signal chips flowing/aligned into AI Operating Profile card
+   - chips such as goal, work style, roles, thinking mode, red lines, output type
+   - profile preview sections:
+     - Assistant Identity
+     - Dynamic Roles
+     - Thinking Modes
+     - Output Rules
+     - Starter Prompts
+
+5. Goal selector
+   Include compact use-case selector:
+   - Project management
+   - Writing
+   - Teaching / training
+   - Creative work
+   - Business decisions
+
+   In Arabic mode:
+   - إدارة مشاريع
+   - كتابة
+   - تعليم وتدريب
+   - إبداع
+   - قرارات أعمال
+
+   In English mode:
+   - Project Management
+   - Writing
+   - Teaching & Training
+   - Creative Work
+   - Business Decisions
+
+   The selected goal should update the preview copy visually using mock/static UI content only.
+
+6. Before / With INSPIRE micro-demo
+   Include a compact positive comparison if it fits cleanly in the hero area or immediately below it:
+   - Without INSPIRE: more general AI response
+   - With INSPIRE: more contextual, role-aware, structured, actionable response
+
+   Keep it positive. Do not shame the user.
+
+Visual direction:
+- premium AI relationship layer
+- dark navy depth
+- warm rose/orange accent
+- violet/teal intelligence accents
+- glass cards
+- soft signal lines
+- subtle glow
+- layered surfaces
+- precise Arabic and English typography
+- modern but human-first
+
+Motion:
+Use meaningful Framer Motion only:
+- staggered hero reveal
+- subtle signal-chip movement
+- profile card formation
+- goal selector transition
+- CTA hover/tap
+- respect prefers-reduced-motion
+
+Avoid:
+- robots
+- mascots
+- terminal/code look
+- childish animation
+- heavy sci-fi cliché
+- random particles
+- excessive bounce
+- fake scoring/charts
+- negative “you don’t know prompting” messaging
+
+Acceptance criteria:
+1. Typecheck passes.
+2. Only landing.tsx and locale files changed, plus tiny reusable component files if absolutely needed.
+3. No forbidden files touched.
+4. No new dependencies.
+5. Existing landing CTAs/routes still work.
+6. Arabic desktop screenshot.
+7. Arabic mobile screenshot.
+8. English desktop screenshot.
+9. English mobile screenshot.
+10. RTL/LTR verified.
+11. Hero communicates the product idea within 5 seconds.
+12. Page below hero remains functional and not rewritten.
+
+Provide final report:
+- exact files changed
+- git diff --stat
+- typecheck command/result
+- screenshots AR/EN desktop/mobile
+- confirmation no backend/API/auth/payment/database/questions/routing/prompt-builder/report-parser/assessment/results/mini/PDF/share/Navbar files touched
+
+Hold after P2. Do not proceed to P3.
