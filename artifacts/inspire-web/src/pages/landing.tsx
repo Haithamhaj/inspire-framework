@@ -1,7 +1,8 @@
 import { Link } from "wouter";
-import { ArrowLeft, ArrowDown, Brain, FileText, Zap, CheckCircle2, ChevronDown, ChevronUp, CreditCard, Copy, Sparkles, Target, Layers, MessageSquare, Eye, BarChart3, RefreshCw } from "lucide-react";
+import { ArrowLeft, Brain, FileText, Zap, CheckCircle2, ChevronDown, ChevronUp, CreditCard, Copy, Sparkles, Target, Layers, MessageSquare, Eye, BarChart3, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import LandingHero from "@/components/landing-hero/landing-hero";
 
 // ─── INSPIRE AXES ─────────────────────────────────────────
 const AXES = [
@@ -184,85 +185,7 @@ export default function Landing() {
     <div className="overflow-x-hidden" dir="rtl">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <section className="relative min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center overflow-hidden px-6 py-20">
-        {/* layered gradient background */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-background to-accent/5" />
-        <div className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full bg-accent/8 blur-[140px] -z-10 pointer-events-none" />
-        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] rounded-full bg-violet-500/6 blur-[120px] -z-10 pointer-events-none" />
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative z-10 container max-w-5xl mx-auto text-center"
-        >
-          {/* brand badge */}
-          <div className="flex justify-center mb-8">
-            <img
-              src={`${import.meta.env.BASE_URL}images/imperfect-success-logo.jpg`}
-              alt="Imperfect Success"
-              width={80}
-              style={{ opacity: 0.9, borderRadius: "14px" }}
-            />
-          </div>
-
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/25 text-sm font-semibold text-accent mb-8 shadow-sm">
-            <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse" />
-            نظام التحليل السلوكي للذكاء الاصطناعي — 7 محاور
-          </div>
-
-          <h1 className="text-5xl md:text-7xl font-display font-extrabold text-foreground mb-6 leading-[1.15]">
-            الذكاء الاصطناعي لا يعرفك<br />
-            <span className="relative inline-block">
-              <span className="text-transparent bg-clip-text bg-gradient-to-l from-accent via-rose-500 to-orange-400">
-                INSPIRE يغيّر ذلك
-              </span>
-              <span className="absolute -bottom-1 left-0 right-0 h-[3px] bg-gradient-to-l from-accent to-orange-400 rounded-full opacity-40" />
-            </span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-muted-foreground mb-6 max-w-2xl mx-auto leading-relaxed">
-            معظم الناس يستخدمون AI بشكل عشوائي ويحصلون على نتائج عشوائية.
-            <br className="hidden md:block" />
-            <strong className="text-foreground"> INSPIRE يُحلّل نمطك السلوكي الحقيقي</strong> عبر 7 محاور ويُنتج تعليمات تجعل AI يفهمك تماماً.
-          </p>
-
-          {/* micro-stats */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mb-10 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5"><span className="font-bold text-foreground text-base">7</span> محاور سلوكية</span>
-            <span className="w-px h-4 bg-border" />
-            <span className="flex items-center gap-1.5"><span className="font-bold text-foreground text-base">15</span> دقيقة فقط</span>
-            <span className="w-px h-4 bg-border" />
-            <span className="flex items-center gap-1.5"><span className="font-bold text-foreground text-base">500+</span> كلمة في تعليمات النظام</span>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/assess/mini"
-              className="flex items-center gap-2 bg-gradient-to-l from-accent to-rose-600 hover:from-accent/90 hover:to-rose-500 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl shadow-accent/30 transition-all hover:-translate-y-1 hover:shadow-accent/40 active:translate-y-0 w-full sm:w-auto justify-center"
-            >
-              <Zap className="h-5 w-5" />
-              ابدأ مجاناً — 5 دقائق
-            </Link>
-            <Link
-              href="/privacy-consent"
-              className="flex items-center gap-2 bg-card border-2 border-border hover:border-foreground/30 text-foreground px-6 py-3.5 rounded-2xl font-semibold text-base shadow-sm transition-all hover:-translate-y-0.5 w-full sm:w-auto justify-center"
-            >
-              التقييم الكامل — $10
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground/50 animate-bounce"
-        >
-          <ArrowDown className="h-5 w-5" />
-        </motion.div>
-      </section>
+      <LandingHero primaryHref="/assess/mini" secondaryAnchorId="how-it-works" />
 
       {/* ─── PHILOSOPHY (THE PROBLEM) ─────────────────────── */}
       <section className="py-24 px-6 bg-foreground text-background">
@@ -503,7 +426,7 @@ export default function Landing() {
       </section>
 
       {/* ─── HOW IT WORKS ─────────────────────────────────── */}
-      <section className="py-24 px-6">
+      <section id="how-it-works" className="py-24 px-6">
         <div className="container max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
