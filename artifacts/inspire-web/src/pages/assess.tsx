@@ -792,57 +792,87 @@ export default function Assess() {
         {/* Question Pages */}
         {step >= 1 && step <= totalQPages && (
           <StepCard stepKey={`q-${step}`}>
-            <div className="mb-8">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                {t("assessment.wizard.questionRange")
-                  .replace("{start}", String((step - 1) * Q_PER_PAGE + 1))
-                  .replace("{end}", String(Math.min(step * Q_PER_PAGE, questions.length)))}
-              </p>
-              <h2 className="text-xl font-display font-bold text-foreground">
-                {questions[(step - 1) * Q_PER_PAGE]?.block ?? t("assessment.wizard.fallbackBlock")}
-              </h2>
+            <div className="mb-7 rounded-2xl border border-border/70 bg-secondary/40 p-4 md:p-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="mb-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    {t("assessment.wizard.questionRange")
+                      .replace("{start}", String((step - 1) * Q_PER_PAGE + 1))
+                      .replace("{end}", String(Math.min(step * Q_PER_PAGE, questions.length)))}
+                  </p>
+                  <h2 className="text-xl font-display font-bold leading-tight text-foreground">
+                    {questions[(step - 1) * Q_PER_PAGE]?.block ?? t("assessment.wizard.fallbackBlock")}
+                  </h2>
+                </div>
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background text-sm font-black text-primary shadow-sm">
+                  {step}
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-5">
               {questions.slice((step - 1) * Q_PER_PAGE, step * Q_PER_PAGE).map((q, i) => {
                 const globalIdx = (step - 1) * Q_PER_PAGE + i;
                 const selected = getAnswer(q.questionId);
                 return (
-                  <div key={q.questionId}>
-                    <p className="font-semibold text-foreground mb-3 leading-relaxed">
-                      <span className="text-accent font-bold text-sm ml-1">{globalIdx + 1}.</span> {locale === "ar" ? q.questionAr : q.questionEn}
-                    </p>
-                    <div className="grid gap-2">
+                  <motion.div
+                    key={q.questionId}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.22, delay: i * 0.04 }}
+                    className="rounded-2xl border border-border/70 bg-background/70 p-4 shadow-sm md:p-5"
+                  >
+                    <div className="mb-4 flex items-start gap-3">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-black text-primary-foreground">
+                        {globalIdx + 1}
+                      </span>
+                      <p className="pt-1 text-base font-bold leading-7 text-foreground">
+                        {locale === "ar" ? q.questionAr : q.questionEn}
+                      </p>
+                    </div>
+                    <div className="grid gap-2.5">
                       {q.options.map((opt) => (
-                        <button
+                        <motion.button
                           key={opt.optionId}
                           onClick={() => setAnswer(q.questionId, opt.optionId)}
-                          className={`w-full px-4 py-3 text-start rounded-xl border-2 text-sm font-medium transition-all ${
+                          whileHover={{ y: -1 }}
+                          whileTap={{ scale: 0.995 }}
+                          className={`group flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3.5 text-start text-sm font-semibold leading-6 transition-all md:px-5 ${
                             selected === opt.optionId
-                              ? "border-primary bg-primary/5 text-primary"
-                              : "border-border bg-background text-foreground hover:border-primary/40"
+                              ? "border-primary bg-primary/10 text-primary shadow-sm ring-2 ring-primary/10"
+                              : "border-border/80 bg-card text-foreground hover:border-primary/35 hover:bg-secondary/50"
                           }`}
                         >
-                          {locale === "ar" ? opt.textAr : opt.textEn}
-                        </button>
+                          <span className="min-w-0 flex-1">{locale === "ar" ? opt.textAr : opt.textEn}</span>
+                          <span
+                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all ${
+                              selected === opt.optionId
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background text-transparent group-hover:border-primary/40"
+                            }`}
+                            aria-hidden="true"
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </span>
+                        </motion.button>
                       ))}
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
 
-            <div className="flex justify-between mt-8 gap-4">
+            <div className="mt-7 flex flex-col-reverse justify-between gap-3 sm:flex-row sm:gap-4">
               <button
                 onClick={() => setStep((s) => s - 1)}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors"
+                className="flex items-center justify-center gap-2 rounded-xl border-2 border-border px-6 py-3 font-medium text-foreground transition-colors hover:border-primary/30"
               >
                 <ChevronRight className="h-4 w-4" /> {t("common.actions.back")}
               </button>
               <button
                 onClick={() => setStep((s) => s + 1)}
                 disabled={!pageComplete(step)}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {step === totalQPages ? t("assessment.wizard.goToFinalStep") : t("common.actions.next")} <ChevronLeft className="h-4 w-4" />
               </button>
