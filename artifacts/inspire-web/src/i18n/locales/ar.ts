@@ -19,6 +19,13 @@ export const ar = {
       isRtl: "عربي (يمين-يسار)",
       isLtr: "إنجليزي (يسار-يمين)",
     },
+    nav: {
+      brandTagline: "تعليمات ذكاء اصطناعي شخصية",
+      myReports: "تقاريري",
+      logout: "تسجيل الخروج",
+      login: "تسجيل الدخول",
+      startAssessment: "ابدأ التقييم",
+    },
   },
   results: {
     pageTitle: "ملف تشغيل مساعدك",

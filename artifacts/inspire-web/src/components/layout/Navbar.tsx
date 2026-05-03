@@ -2,9 +2,11 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, User, ClipboardList, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { useT } from "@/i18n";
 
 export function Navbar() {
   const { user, logout, isLoading } = useAuth();
+  const t = useT();
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
@@ -28,14 +30,14 @@ export function Navbar() {
                     <Sparkles className="h-3.5 w-3.5" />
                     INSPIRE
                   </div>
-                  <span className="text-[10px] text-primary/70 leading-none mt-0.5">Personal AI Instructions</span>
+                  <span className="text-[10px] text-primary/70 leading-none mt-0.5">{t("common.nav.brandTagline")}</span>
                 </div>
                 <Link
                   href="/my-assessments"
                   className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
                 >
                   <ClipboardList className="h-4 w-4" />
-                  <span>تقاريري</span>
+                  <span>{t("common.nav.myReports")}</span>
                 </Link>
                 <Link
                   href="/profile"
@@ -49,7 +51,7 @@ export function Navbar() {
                   className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent transition-colors"
                 >
                   <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">تسجيل الخروج</span>
+                  <span className="hidden sm:inline">{t("common.nav.logout")}</span>
                 </button>
               </div>
             ) : (
@@ -58,13 +60,13 @@ export function Navbar() {
                   href="/login"
                   className="text-sm font-medium text-foreground hover:text-primary transition-colors px-4 py-2"
                 >
-                  تسجيل الدخول
+                  {t("common.nav.login")}
                 </Link>
                 <Link
                   href="/privacy-consent"
                   className="text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2.5 rounded-xl shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  ابدأ التقييم
+                  {t("common.nav.startAssessment")}
                 </Link>
               </div>
             )

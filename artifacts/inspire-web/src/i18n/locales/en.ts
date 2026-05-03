@@ -21,6 +21,13 @@ export const en: Dictionary = {
       isRtl: "Arabic (right-to-left)",
       isLtr: "English (left-to-right)",
     },
+    nav: {
+      brandTagline: "Personal AI Instructions",
+      myReports: "My reports",
+      logout: "Log out",
+      login: "Log in",
+      startAssessment: "Start assessment",
+    },
   },
   results: {
     pageTitle: "Your assistant operating profile",
