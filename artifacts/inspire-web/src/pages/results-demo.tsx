@@ -459,6 +459,25 @@ export default function ResultsDemo() {
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    // Honor URL hash on mount (Wouter doesn't auto-scroll). Re-attempt a few
+    // times because framer-motion's initial opacity:0 + delayed reveal can
+    // shift layout after first paint.
+    const hash = window.location.hash.replace("#", "");
+    if (!hash) return;
+    let attempts = 0;
+    const tick = () => {
+      const el = document.getElementById(hash);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 24;
+        window.scrollTo({ top: y, behavior: "auto" });
+      }
+      attempts++;
+      if (attempts < 12) setTimeout(tick, 200);
+    };
+    tick();
+  }, []);
+
   const fullProfileText = buildFullProfileText();
 
   return (
@@ -563,6 +582,7 @@ export default function ResultsDemo() {
 
         {/* ── 2. ASSISTANT IDENTITY (PREMIUM CARD — money shot) ──────── */}
         <motion.section
+          id="identity"
           initial={{ opacity: 0, y: 24, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: reduce ? 0 : 1.0, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -620,6 +640,7 @@ export default function ResultsDemo() {
 
         {/* ── 3. WHAT THIS PROFILE CHANGES ───────────────────────────── */}
         <motion.section
+          id="benefits"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -667,6 +688,7 @@ export default function ResultsDemo() {
 
         {/* ── 4. DYNAMIC ROLES ───────────────────────────────────────── */}
         <motion.section
+          id="roles"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -721,6 +743,7 @@ export default function ResultsDemo() {
 
         {/* ── 5. THINKING & QUALITY MODES ─────────────────────────────── */}
         <motion.section
+          id="modes"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -766,6 +789,7 @@ export default function ResultsDemo() {
 
         {/* ── 6. RED LINES ───────────────────────────────────────────── */}
         <motion.section
+          id="redlines"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
@@ -968,6 +992,7 @@ export default function ResultsDemo() {
 
         {/* ── 9. STARTER PROMPTS ──────────────────────────────────────── */}
         <motion.section
+          id="starters"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
