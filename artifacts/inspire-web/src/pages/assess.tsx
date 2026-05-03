@@ -15,8 +15,13 @@ import {
   Clock,
   RotateCcw,
   CreditCard,
+  ShieldCheck,
+  Target,
+  Layers3,
+  Check,
 } from "lucide-react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { useI18n } from "@/i18n";
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -48,25 +53,43 @@ function apiUrl(path: string) {
   return `/api${path}`;
 }
 
-function ProgressBar({ step, totalSteps }: { step: number; totalSteps: number }) {
+function ProgressBar({
+  step,
+  totalSteps,
+  progressLabel,
+  openStepLabel,
+}: {
+  step: number;
+  totalSteps: number;
+  progressLabel: (page: number, total: number) => string;
+  openStepLabel: string;
+}) {
   const pct = Math.round((step / totalSteps) * 100);
   return (
-    <div className="w-full mb-8">
-      <div className="flex justify-between items-center mb-2 text-sm text-muted-foreground">
-        <span>
+    <div className="w-full rounded-2xl border border-border/70 bg-card/95 p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-4 text-sm">
+        <span className="font-semibold text-foreground">
           {step <= totalSteps - 1
-            ? `الأسئلة — الصفحة ${step} من ${totalSteps - 1}`
-            : "السؤال المفتوح"}
+            ? progressLabel(step, totalSteps - 1)
+            : openStepLabel}
         </span>
-        <span className="font-bold text-primary">{pct}%</span>
+        <span className="shrink-0 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">{pct}%</span>
       </div>
-      <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
         <motion.div
-          className="h-full bg-gradient-to-l from-accent to-primary rounded-full"
+          className="h-full rounded-full bg-gradient-to-l from-accent to-primary"
           initial={false}
           animate={{ width: `${pct}%` }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         />
+      </div>
+      <div className="mt-3 grid grid-cols-4 gap-1.5" aria-hidden="true">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className={`h-1 rounded-full ${pct >= (i + 1) * 25 ? "bg-accent" : "bg-secondary"}`}
+          />
+        ))}
       </div>
     </div>
   );
@@ -81,11 +104,102 @@ function StepCard({ children, stepKey }: { children: React.ReactNode; stepKey: s
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.25 }}
-        className="bg-card rounded-3xl shadow-xl border border-border p-8 md:p-10"
+        className="rounded-2xl border border-border/80 bg-card p-6 shadow-xl shadow-primary/5 md:p-8"
       >
         {children}
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+function AssessmentShell({
+  children,
+  step,
+  totalSteps,
+}: {
+  children: React.ReactNode;
+  step: number;
+  totalSteps: number;
+}) {
+  const showProgress = step > 0;
+  const { dir, t } = useI18n();
+
+  return (
+    <div dir={dir} className="min-h-[calc(100vh-5rem)] bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_42%,hsl(var(--background))_100%)] px-4 py-6 md:py-10">
+      <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+        <aside className="order-2 lg:order-1">
+          <div className="sticky top-28 space-y-4">
+            <div className="rounded-2xl border border-border/80 bg-primary p-6 text-primary-foreground shadow-xl shadow-primary/10">
+              <div className="mb-5 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
+                  <Brain className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/55">INSPIRE v2</p>
+                  <h2 className="text-lg font-black leading-tight">{t("assessment.shell.sidebarTitle")}</h2>
+                </div>
+              </div>
+              <p className="text-sm leading-7 text-white/72">
+                {t("assessment.shell.sidebarDescription")}
+              </p>
+            </div>
+
+            <div className="grid gap-3 rounded-2xl border border-border/80 bg-card p-4 shadow-sm">
+              {[
+                { icon: Target, label: t("assessment.shell.contextLabel"), value: t("assessment.shell.contextValue") },
+                { icon: Layers3, label: t("assessment.shell.questionsLabel"), value: t("assessment.shell.questionsValue") },
+                { icon: ShieldCheck, label: t("assessment.shell.privacyLabel"), value: t("assessment.shell.privacyValue") },
+              ].map((item) => (
+                <div key={item.label} className="flex items-start gap-3 rounded-xl bg-secondary/60 p-3">
+                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-background text-primary">
+                    <item.icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{item.label}</p>
+                    <p className="text-xs leading-5 text-muted-foreground">{item.value}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        <section className="order-1 min-w-0 space-y-5 lg:order-2">
+          <div className="rounded-2xl border border-border/80 bg-card/95 p-5 shadow-sm md:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="mb-2 inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs font-bold text-accent">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {t("assessment.shell.badge")}
+                </p>
+                <h1 className="text-2xl font-black leading-tight text-foreground md:text-3xl">
+                  {t("assessment.shell.title")}
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                  {t("assessment.shell.subtitle")}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border border-border bg-secondary/50 px-3 py-2 text-xs font-semibold text-muted-foreground">
+                <Check className="h-4 w-4 text-accent" />
+                {t("assessment.shell.noScores")}
+              </div>
+            </div>
+          </div>
+
+          {showProgress && (
+            <ProgressBar
+              step={step}
+              totalSteps={totalSteps}
+              progressLabel={(page, total) => t("assessment.progress.questions")
+                .replace("{page}", String(page))
+                .replace("{total}", String(total))}
+              openStepLabel={t("assessment.progress.openStep")}
+            />
+          )}
+          {children}
+        </section>
+      </div>
+    </div>
   );
 }
 
@@ -104,6 +218,7 @@ interface DiscountInfo {
 
 export default function Assess() {
   const { user, isLoading } = useAuth();
+  const { dir, locale, t } = useI18n();
 
   const previousAssessmentId = new URLSearchParams(window.location.search).get("prev");
 
@@ -230,8 +345,12 @@ export default function Assess() {
 
   if (isLoading || (!!user && paymentStatus === "loading")) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div dir={dir} className="min-h-[calc(100vh-5rem)] bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_70%)] px-4 py-10">
+        <div className="mx-auto flex min-h-[22rem] max-w-xl flex-col items-center justify-center rounded-2xl border border-border/80 bg-card p-8 text-center shadow-xl shadow-primary/5">
+          <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
+          <p className="text-lg font-bold text-foreground">{t("assessment.status.preparingTitle")}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("assessment.status.preparingSubtitle")}</p>
+        </div>
       </div>
     );
   }
@@ -543,19 +662,19 @@ export default function Assess() {
 
   if (phase === "processing") {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center px-4">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
+      <div dir={dir} className="min-h-[calc(100vh-5rem)] bg-primary px-4 py-10 text-primary-foreground">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mx-auto flex min-h-[30rem] max-w-lg flex-col items-center justify-center text-center">
           <div className="relative w-28 h-28 mx-auto mb-8">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent opacity-20 animate-ping" />
-            <div className="relative flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-br from-primary to-accent">
+            <div className="absolute inset-0 rounded-2xl bg-white/15 animate-ping" />
+            <div className="relative flex h-28 w-28 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
               <Brain className="h-14 w-14 text-white" />
             </div>
           </div>
-          <h2 className="text-3xl font-display font-bold text-foreground mb-4">INSPIRE يُحلّل نمطك</h2>
-          <p className="text-muted-foreground text-lg mb-6">يجري الذكاء الاصطناعي تحليلاً عميقاً لأنماطك السلوكية</p>
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <h2 className="text-3xl font-display font-bold mb-4">{t("assessment.status.processingTitle")}</h2>
+          <p className="text-white/70 text-lg mb-6">{t("assessment.status.processingSubtitle")}</p>
+          <div className="flex items-center justify-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white/70">
             <Clock className="h-4 w-4" />
-            <span>يستغرق عادةً 30–60 ثانية</span>
+            <span>{t("assessment.status.processingTime")}</span>
           </div>
         </motion.div>
       </div>
@@ -566,11 +685,11 @@ export default function Assess() {
 
   if (phase === "error") {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center px-4">
-        <div className="text-center max-w-lg bg-card rounded-3xl border border-border p-10 shadow-xl">
-          <p className="text-xl text-destructive mb-6">فشلت عملية التحليل. يُرجى المحاولة مرة أخرى لاحقاً.</p>
+      <div dir={dir} className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_70%)] px-4">
+        <div className="text-center max-w-lg bg-card rounded-2xl border border-border p-10 shadow-xl">
+          <p className="text-xl text-destructive mb-6">{t("assessment.status.errorTitle")}</p>
           <button onClick={() => { setPhase("wizard"); setSubmitting(false); }} className="flex items-center gap-2 mx-auto bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold">
-            <RotateCcw className="h-4 w-4" /> العودة للمحاولة مجدداً
+            <RotateCcw className="h-4 w-4" /> {t("assessment.status.errorRetry")}
           </button>
         </div>
       </div>
@@ -581,21 +700,25 @@ export default function Assess() {
 
   if (questionsLoading) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <div dir={dir} className="min-h-[calc(100vh-5rem)] bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_70%)] px-4 py-10">
+        <div className="mx-auto flex min-h-[22rem] max-w-xl flex-col items-center justify-center rounded-2xl border border-border/80 bg-card p-8 text-center shadow-xl shadow-primary/5">
+          <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
+          <p className="text-lg font-bold text-foreground">{t("assessment.status.loadingQuestionsTitle")}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("assessment.status.loadingQuestionsSubtitle")}</p>
+        </div>
       </div>
     );
   }
 
   if (questionsError) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center gap-4 text-center px-4" dir="rtl">
-        <p className="text-lg font-medium text-gray-700">تعذّر تحميل الأسئلة. يرجى المحاولة مرة أخرى.</p>
+      <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center gap-4 bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_70%)] px-4 text-center" dir={dir}>
+        <p className="text-lg font-medium text-foreground">{t("assessment.status.questionsError")}</p>
         <button
           onClick={() => window.location.reload()}
           className="px-6 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
         >
-          إعادة المحاولة
+          {t("assessment.status.questionsRetry")}
         </button>
       </div>
     );
@@ -604,10 +727,7 @@ export default function Assess() {
   // ── WIZARD ─────────────────────────────────────────────
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] py-10 px-4 flex justify-center bg-gray-50/50">
-      <div className="w-full max-w-2xl">
-        {step > 0 && <ProgressBar step={step} totalSteps={TOTAL_WIZARD_STEPS} />}
-
+    <AssessmentShell step={step} totalSteps={TOTAL_WIZARD_STEPS}>
         {/* Step 0 — Project Setup */}
         {step === 0 && (
           <StepCard stepKey="setup">
@@ -615,8 +735,8 @@ export default function Assess() {
               <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <ClipboardList className="h-8 w-8 text-primary" />
               </div>
-              <h1 className="text-2xl font-display font-bold text-foreground mb-2">أخبرنا عن مشروعك</h1>
-              <p className="text-muted-foreground">هذه المعلومات تُشكّل سياق التقرير وتعليمات الذكاء الاصطناعي</p>
+              <h1 className="text-2xl font-display font-bold text-foreground mb-2">{t("assessment.wizard.setupTitle")}</h1>
+              <p className="text-muted-foreground">{t("assessment.wizard.setupSubtitle")}</p>
             </div>
 
             {setupError && (
@@ -625,45 +745,45 @@ export default function Assess() {
 
             <form onSubmit={handleSetupSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">اسم المشروع أو مجال العمل</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("assessment.wizard.projectNameLabel")}</label>
                 <input
                   type="text"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  placeholder="مثال: تطوير منصة تعليمية"
+                  placeholder={t("assessment.wizard.projectNamePlaceholder")}
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                   required
                   minLength={2}
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">ما هدفك الرئيسي من استخدام الذكاء الاصطناعي؟</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("assessment.wizard.projectGoalLabel")}</label>
                 <textarea
                   value={projectGoal}
                   onChange={(e) => setProjectGoal(e.target.value)}
-                  placeholder="مثال: أريد استخدام الذكاء الاصطناعي لمساعدتي في كتابة المحتوى التعليمي وتصميم المناهج"
+                  placeholder={t("assessment.wizard.projectGoalPlaceholder")}
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[100px] resize-none"
                   required
                   minLength={10}
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">لغة التقرير</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("assessment.wizard.reportLanguageLabel")}</label>
                 <select
                   value={reportLanguage}
                   onChange={(e) => setReportLanguage(e.target.value as "ar" | "en" | "both")}
                   className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                 >
-                  <option value="ar">عربي</option>
+                  <option value="ar">{t("assessment.wizard.reportLanguageArabic")}</option>
                   <option value="en">English</option>
-                  <option value="both">كلاهما</option>
+                  <option value="both">{t("assessment.wizard.reportLanguageBoth")}</option>
                 </select>
               </div>
               <button
                 type="submit"
                 className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
               >
-                ابدأ التقييم <ChevronLeft className="h-5 w-5" />
+                {t("assessment.wizard.startButton")} <ChevronLeft className="h-5 w-5" />
               </button>
             </form>
           </StepCard>
@@ -674,10 +794,12 @@ export default function Assess() {
           <StepCard stepKey={`q-${step}`}>
             <div className="mb-8">
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                الأسئلة {(step - 1) * Q_PER_PAGE + 1}–{Math.min(step * Q_PER_PAGE, questions.length)}
+                {t("assessment.wizard.questionRange")
+                  .replace("{start}", String((step - 1) * Q_PER_PAGE + 1))
+                  .replace("{end}", String(Math.min(step * Q_PER_PAGE, questions.length)))}
               </p>
               <h2 className="text-xl font-display font-bold text-foreground">
-                {questions[(step - 1) * Q_PER_PAGE]?.block ?? "الأسئلة السلوكية"}
+                {questions[(step - 1) * Q_PER_PAGE]?.block ?? t("assessment.wizard.fallbackBlock")}
               </h2>
             </div>
 
@@ -688,20 +810,20 @@ export default function Assess() {
                 return (
                   <div key={q.questionId}>
                     <p className="font-semibold text-foreground mb-3 leading-relaxed">
-                      <span className="text-accent font-bold text-sm ml-1">{globalIdx + 1}.</span> {q.questionAr}
+                      <span className="text-accent font-bold text-sm ml-1">{globalIdx + 1}.</span> {locale === "ar" ? q.questionAr : q.questionEn}
                     </p>
                     <div className="grid gap-2">
                       {q.options.map((opt) => (
                         <button
                           key={opt.optionId}
                           onClick={() => setAnswer(q.questionId, opt.optionId)}
-                          className={`text-right w-full px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                          className={`w-full px-4 py-3 text-start rounded-xl border-2 text-sm font-medium transition-all ${
                             selected === opt.optionId
                               ? "border-primary bg-primary/5 text-primary"
                               : "border-border bg-background text-foreground hover:border-primary/40"
                           }`}
                         >
-                          {opt.textAr}
+                          {locale === "ar" ? opt.textAr : opt.textEn}
                         </button>
                       ))}
                     </div>
@@ -715,14 +837,14 @@ export default function Assess() {
                 onClick={() => setStep((s) => s - 1)}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors"
               >
-                <ChevronRight className="h-4 w-4" /> السابق
+                <ChevronRight className="h-4 w-4" /> {t("common.actions.back")}
               </button>
               <button
                 onClick={() => setStep((s) => s + 1)}
                 disabled={!pageComplete(step)}
                 className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center"
               >
-                {step === totalQPages ? "انتقل للخطوة الأخيرة" : "التالي"} <ChevronLeft className="h-4 w-4" />
+                {step === totalQPages ? t("assessment.wizard.goToFinalStep") : t("common.actions.next")} <ChevronLeft className="h-4 w-4" />
               </button>
             </div>
           </StepCard>
@@ -736,23 +858,23 @@ export default function Assess() {
                 <MessageSquare className="h-7 w-7" />
               </div>
               <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-0.5">الخطوة الأخيرة</p>
-                <h2 className="text-xl font-display font-bold text-foreground">أنت بكلماتك الخاصة</h2>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-0.5">{t("assessment.wizard.finalStepEyebrow")}</p>
+                <h2 className="text-xl font-display font-bold text-foreground">{t("assessment.wizard.openTitle")}</h2>
               </div>
             </div>
 
             <p className="text-muted-foreground mb-2 leading-relaxed">
-              اكتب بحرية كيف تصف نمطك في العمل، أسلوبك مع الذكاء الاصطناعي، أو أي شيء تريد أن يأخذه التقرير بعين الاعتبار.
+              {t("assessment.wizard.openDescription")}
             </p>
             <p className="text-xs text-muted-foreground mb-6 flex items-center gap-1">
               <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-              اختياري — يمكنك الإرسال دون تعبئة هذا الحقل
+              {t("assessment.wizard.openOptional")}
             </p>
 
             <textarea
               value={openAnswer}
               onChange={(e) => setOpenAnswer(e.target.value)}
-              placeholder="اكتب هنا بحرية... (اختياري)"
+              placeholder={t("assessment.wizard.openPlaceholder")}
               className="w-full bg-background border border-border rounded-xl px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[160px] resize-none mb-2"
             />
             <div className="flex justify-end text-xs text-muted-foreground mb-8">
@@ -768,7 +890,7 @@ export default function Assess() {
                 onClick={() => setStep(OPEN_STEP - 1)}
                 className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors"
               >
-                <ChevronRight className="h-4 w-4" /> السابق
+                <ChevronRight className="h-4 w-4" /> {t("common.actions.back")}
               </button>
               <button
                 onClick={handleFinalSubmit}
@@ -776,14 +898,13 @@ export default function Assess() {
                 className="flex items-center gap-2 bg-gradient-to-l from-accent to-red-500 text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center"
               >
                 {submitting
-                  ? <><Loader2 className="h-4 w-4 animate-spin" /> جارٍ الإرسال...</>
-                  : <><Zap className="h-4 w-4" /> توليد تقريري الآن</>
+                  ? <><Loader2 className="h-4 w-4 animate-spin" /> {t("assessment.wizard.submitting")}</>
+                  : <><Zap className="h-4 w-4" /> {t("assessment.wizard.submitButton")}</>
                 }
               </button>
             </div>
           </StepCard>
         )}
-      </div>
-    </div>
+    </AssessmentShell>
   );
 }

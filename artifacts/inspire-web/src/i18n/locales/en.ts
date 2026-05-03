@@ -29,6 +29,67 @@ export const en: Dictionary = {
       startAssessment: "Start assessment",
     },
   },
+  assessment: {
+    shell: {
+      sidebarTitle: "Focused assessment shell",
+      sidebarDescription:
+        "Answer calmly. Each choice guides your final AI instructions without numeric scoring or shallow comparison.",
+      contextLabel: "Project context",
+      contextValue: "Builds the report around your goal",
+      questionsLabel: "21 questions",
+      questionsValue: "Grouped into short pages",
+      privacyLabel: "Route privacy",
+      privacyValue: "Analysis happens only after submission",
+      badge: "Full assessment",
+      title: "Shape AI instructions around how you think",
+      subtitle:
+        "The assessment interface now emphasizes progress, answer clarity, and reduced distraction so you can reach the final report smoothly.",
+      noScores: "No numeric scores",
+    },
+    progress: {
+      questions: "Questions — page {page} of {total}",
+      openStep: "Open question",
+    },
+    status: {
+      preparingTitle: "Preparing the assessment",
+      preparingSubtitle: "Loading the analytical question bank before you begin.",
+      processingTitle: "INSPIRE is analyzing your pattern",
+      processingSubtitle:
+        "The AI is running a deep analysis of your behavioral patterns",
+      processingTime: "Usually takes 30–60 seconds",
+      errorTitle: "Analysis failed. Please try again later.",
+      errorRetry: "Return and try again",
+      loadingQuestionsTitle: "Loading questions",
+      loadingQuestionsSubtitle: "We will begin as soon as the question bank is ready.",
+      questionsError: "Could not load the questions. Please try again.",
+      questionsRetry: "Try again",
+    },
+    wizard: {
+      setupTitle: "Tell us about your project",
+      setupSubtitle:
+        "This information shapes the report context and your AI instructions",
+      projectNameLabel: "Project name or work domain",
+      projectNamePlaceholder: "Example: Building an education platform",
+      projectGoalLabel: "What is your main goal for using AI?",
+      projectGoalPlaceholder:
+        "Example: I want to use AI to help me write educational content and design curricula",
+      reportLanguageLabel: "Report language",
+      reportLanguageArabic: "Arabic",
+      reportLanguageBoth: "Both",
+      startButton: "Start assessment",
+      questionRange: "Questions {start}–{end}",
+      fallbackBlock: "Behavioral questions",
+      goToFinalStep: "Go to final step",
+      finalStepEyebrow: "Final step",
+      openTitle: "In your own words",
+      openDescription:
+        "Write freely about how you describe your work style, your way of using AI, or anything you want the report to consider.",
+      openOptional: "Optional — you can submit without filling this field",
+      openPlaceholder: "Write freely here... (optional)",
+      submitting: "Submitting...",
+      submitButton: "Generate my report now",
+    },
+  },
   results: {
     pageTitle: "Your assistant operating profile",
     mismatchNotice:

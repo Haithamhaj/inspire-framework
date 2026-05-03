@@ -27,6 +27,67 @@ export const ar = {
       startAssessment: "ابدأ التقييم",
     },
   },
+  assessment: {
+    shell: {
+      sidebarTitle: "غلاف تقييم مركّز",
+      sidebarDescription:
+        "أجب بهدوء. كل اختيار يوجّه شكل تعليمات الذكاء الاصطناعي النهائية بدون درجات رقمية أو مقارنة سطحية.",
+      contextLabel: "سياق المشروع",
+      contextValue: "يبني التقرير حول هدفك",
+      questionsLabel: "21 سؤالاً",
+      questionsValue: "مقسمة إلى صفحات قصيرة",
+      privacyLabel: "خصوصية المسار",
+      privacyValue: "التحليل يتم بعد الإرسال فقط",
+      badge: "تقييم كامل",
+      title: "صمّم تعليمات AI تناسب طريقة تفكيرك",
+      subtitle:
+        "واجهة التقييم الآن مركّزة على التقدم، وضوح الإجابة، وتقليل التشتيت حتى تصل للتقرير النهائي بسلاسة.",
+      noScores: "لا توجد درجات رقمية",
+    },
+    progress: {
+      questions: "الأسئلة — الصفحة {page} من {total}",
+      openStep: "السؤال المفتوح",
+    },
+    status: {
+      preparingTitle: "جارٍ تجهيز التقييم",
+      preparingSubtitle: "نحمّل بنك الأسئلة التحليلي قبل البدء.",
+      processingTitle: "INSPIRE يُحلّل نمطك",
+      processingSubtitle:
+        "يجري الذكاء الاصطناعي تحليلاً عميقاً لأنماطك السلوكية",
+      processingTime: "يستغرق عادةً 30–60 ثانية",
+      errorTitle: "فشلت عملية التحليل. يُرجى المحاولة مرة أخرى لاحقاً.",
+      errorRetry: "العودة للمحاولة مجدداً",
+      loadingQuestionsTitle: "جارٍ تحميل الأسئلة",
+      loadingQuestionsSubtitle: "سنبدأ مباشرة بعد تجهيز بنك الأسئلة.",
+      questionsError: "تعذّر تحميل الأسئلة. يرجى المحاولة مرة أخرى.",
+      questionsRetry: "إعادة المحاولة",
+    },
+    wizard: {
+      setupTitle: "أخبرنا عن مشروعك",
+      setupSubtitle:
+        "هذه المعلومات تُشكّل سياق التقرير وتعليمات الذكاء الاصطناعي",
+      projectNameLabel: "اسم المشروع أو مجال العمل",
+      projectNamePlaceholder: "مثال: تطوير منصة تعليمية",
+      projectGoalLabel: "ما هدفك الرئيسي من استخدام الذكاء الاصطناعي؟",
+      projectGoalPlaceholder:
+        "مثال: أريد استخدام الذكاء الاصطناعي لمساعدتي في كتابة المحتوى التعليمي وتصميم المناهج",
+      reportLanguageLabel: "لغة التقرير",
+      reportLanguageArabic: "عربي",
+      reportLanguageBoth: "كلاهما",
+      startButton: "ابدأ التقييم",
+      questionRange: "الأسئلة {start}–{end}",
+      fallbackBlock: "الأسئلة السلوكية",
+      goToFinalStep: "انتقل للخطوة الأخيرة",
+      finalStepEyebrow: "الخطوة الأخيرة",
+      openTitle: "أنت بكلماتك الخاصة",
+      openDescription:
+        "اكتب بحرية كيف تصف نمطك في العمل، أسلوبك مع الذكاء الاصطناعي، أو أي شيء تريد أن يأخذه التقرير بعين الاعتبار.",
+      openOptional: "اختياري — يمكنك الإرسال دون تعبئة هذا الحقل",
+      openPlaceholder: "اكتب هنا بحرية... (اختياري)",
+      submitting: "جارٍ الإرسال...",
+      submitButton: "توليد تقريري الآن",
+    },
+  },
   results: {
     pageTitle: "ملف تشغيل مساعدك",
     mismatchNotice:
