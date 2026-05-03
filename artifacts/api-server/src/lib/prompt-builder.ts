@@ -450,6 +450,20 @@ export function buildPromptV2(data: PromptDataV2): string {
     }
   }
 
+  const sectionDescriptor = (section: InstructionSection): string => {
+    const entries = sectionBuckets.get(section);
+    if (!entries || entries.length === 0) return "No dominant signal; infer lightly from project context.";
+    return mergeBucket(entries);
+  };
+
+  const dynamicRoleSignals = [
+    `Strategic Thinking Partner when planning, structuring, prioritizing, or turning messy input into a path: ${sectionDescriptor("mission_domain_context")}`,
+    `Critic / Weakness Reviewer when evaluating ideas, risks, assumptions, plans, or quality gates: ${sectionDescriptor("red_lines_failure_triggers")}`,
+    `Editor / Organizer when improving drafts, wording, structure, or copy-ready outputs: ${sectionDescriptor("output_rules")}`,
+    `Teacher / Simplifier when explaining unfamiliar concepts or reducing complexity: ${sectionDescriptor("thinking_quality_modes")}`,
+    `Audience Proxy when preparing public-facing, stakeholder-facing, or non-technical content: ${sectionDescriptor("relationship_with_user")}`,
+  ];
+
   return `You are an expert behavioral analyst specializing in the INSPIRE Framework — a personalized AI interaction profiling system.
 
 ## Subject Profile
@@ -470,6 +484,9 @@ ${sectionContextLines.join("\n")}
 ### Thinking Mode Profile
 ${thinkingModes.map((m) => `• ${m}`).join("\n")}
 
+### Dynamic Role Trigger Inputs
+${dynamicRoleSignals.map((r) => `• ${r}`).join("\n")}
+
 ### Key Red Lines (things this person will not tolerate)
 ${redLineEffects.join("\n")}
 
@@ -486,17 +503,56 @@ Output EXACTLY these 8 sections using the markers shown. Do not add or omit any 
 ===FULL_INSTRUCTION_START===
 Write a complete, standalone AI system instruction (600-900 words) this person can paste directly into any AI tool as their permanent system prompt.
 
-Structure it as follows:
-1. Opening identity line establishing the AI's role relative to this user and their project
-2. Core behavioral directives (6-8 rules) derived from the dominant patterns above — each as a direct instruction to the AI
-3. Communication style rules: response format, depth, and directness preferences based on the behavioral profile
-4. Thinking mode alignment: how the AI should approach reasoning given the identified thinking modes
-5. Interaction protocol: role division between user and AI based on the behavioral signals
-6. Red lines section: explicit "never do" rules based on the red line effects
-7. Closing adaptive loop rule
+MANDATORY: the first visible lines of this final instruction must start with Assistant Identity, not Universal Rules, not caveats, and not a generic preamble.
+
+Use this exact top-level order inside the final instruction:
+1. Assistant Identity
+   - Define who the AI is for ${data.name}.
+   - Name the user's project/domain: ${data.projectName}.
+   - State the assistant's default role.
+   - Explain why this assistant is different from a generic AI assistant.
+2. Mission & Domain Context
+   - Tie the assistant's purpose to the project goal and domain context.
+3. Relationship With the User
+   - Define the interaction style, collaboration level, directness, and support pattern.
+4. Dynamic Roles
+   - Make roles conditional and trigger-based; do not force all roles at once.
+   - Use only roles that fit the behavioral profile and project:
+     • Strategic Thinking Partner when planning, structuring, prioritizing, or turning messy input into a path.
+     • Critic / Weakness Reviewer when evaluating ideas, risks, assumptions, plans, or quality gates.
+     • Editor / Organizer when improving drafts, wording, structure, or copy-ready outputs.
+     • Teacher / Simplifier when explaining unfamiliar concepts or reducing complexity.
+     • Audience Proxy when preparing public-facing, stakeholder-facing, or non-technical content.
+5. Core Behavior Rules
+   - Write 6-8 direct behavioral rules derived from the dominant patterns and section buckets.
+6. Thinking & Quality Modes
+   - Choose only relevant modes from the profile; do not list every possible mode.
+   - Possible modes include Step-Back Reframing, Devil's Advocate / Weakness Detection, Self-Check / Quality Gate, Comparative Reasoning, Scenario Simulation, Audience Proxy, Iterative Improvement, and Verification / Accuracy Check.
+   - Do not reveal hidden chain-of-thought.
+   - Provide concise reasoning summaries, assumptions, trade-offs, risks, and self-check results when useful.
+7. Output Rules
+   - Define preferred format, depth, examples, options, and copy-ready behavior.
+8. Red Lines & Failure Triggers
+   - List explicit "never do" behaviors based on red line effects.
+9. Universal Quality Rules
+   - Include universal rules here only, after Red Lines: honesty when uncertain, no fabricated sources, clear fact/inference/recommendation separation, one clarifying question when needed, answer-first structure, context-shift detection, and confidence labels only when useful.
+10. Adaptation / Improvement Loop
+   - Define how the assistant should learn from corrections, refine drafts, and improve across turns.
+11. Platform Use Note
+   - State that these instructions apply across AI tools and should be adapted to each platform's constraints without weakening the user's preferences.
 
 Write in second person addressing the AI. Sound authoritative and natural, not mechanical.
-Do NOT include Universal Rules or Performance Rules — those are prepended separately.
+Do not paste all route rules, raw matrix rules, or every behavioral signal. Use the compact clusters above.
+
+Before finalizing this section, silently check that it:
+- starts with Assistant Identity
+- is domain-aware and copy-ready
+- is not generic
+- does not start with Universal Quality Rules
+- includes trigger-based Dynamic Roles
+- includes only relevant Thinking & Quality Modes
+- separates Thinking & Quality Modes from Universal Quality Rules
+- is concise and not bloated
 ===FULL_INSTRUCTION_END===
 
 ===STARTERS_START===
