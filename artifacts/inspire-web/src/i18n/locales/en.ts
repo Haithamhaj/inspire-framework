@@ -327,6 +327,179 @@ export const en: Dictionary = {
         },
       },
     },
+    philosophy: {
+      eyebrow: "The philosophy",
+      title: "Why doesn't AI give you what you want?",
+      subtitle:
+        "It's not the tool. It's that the tool doesn't know who you are. Every person has a unique behavioral pattern in how they think, learn, and work — yet most AI instructions are written as if everyone were the same.",
+      withoutTitle: "Without INSPIRE",
+      withTitle: "With INSPIRE",
+      before: [
+        "You write a prompt and hope for the best",
+        "You get generic answers that don't fit you",
+        "You rephrase over and over without clarity",
+        "AI offers options that don't match your style",
+        "Time wasted re-explaining what you want every time",
+      ],
+      after: [
+        "AI knows your style before you start",
+        "Replies tailored to exactly how you think",
+        "No re-explaining — just instant results",
+        "AI challenges you instead of just agreeing",
+        "Saves hours of repetition every week",
+      ],
+    },
+    axes: {
+      eyebrow: "The seven axes",
+      titleSuffix: "— seven dimensions that define you",
+      subtitle:
+        "Each letter represents a behavioral dimension the system analyzes to build your unique profile",
+      items: {
+        intention: {
+          name: "Intention",
+          desc: "What truly drives you? Are you outcome-driven or process-driven? This axis reveals your real inner motivation.",
+        },
+        narrative: {
+          name: "Narrative",
+          desc: "How do you frame information? Stories and examples, or raw data and facts?",
+        },
+        style: {
+          name: "Style",
+          desc: "Methodical or spontaneous? Do you prefer clear structures or freedom to think?",
+        },
+        preferences: {
+          name: "Preferences",
+          desc: "What makes you comfortable — and what frustrates you — when working with AI? Your red lines and triggers.",
+        },
+        interaction: {
+          name: "Interaction",
+          desc: "How do you engage in real time? Do you prefer back-and-forth dialogue or direct responses?",
+        },
+        reflection: {
+          name: "Reflection",
+          desc: "How deep is your analytical thinking? Do you review and infer, or look for instant answers?",
+        },
+        evaluation: {
+          name: "Evaluation",
+          desc: "How do you measure success? By quantitative metrics or by qualitative feel and impact?",
+        },
+      },
+      ctaTitle: "Discover your full profile",
+      ctaSubtitle: "What do your scores look like across each axis? The assessment tells you.",
+      ctaButton: "Start the free assessment",
+    },
+    sample: {
+      eyebrow: "The actual output",
+      title: "What do you get after the assessment?",
+      subtitle: "A complete system prompt ready to paste into any AI model",
+      features: [
+        { title: "7-axis score sheet", desc: "Precise scores for each axis with qualitative interpretation" },
+        { title: "Behavioral role analysis", desc: "Who you are specifically in the context of working with AI" },
+        { title: "Your red lines", desc: "What you can't tolerate — defined precisely" },
+        { title: "Comprehensive system prompt", desc: "500–800 words ready to paste into ChatGPT/Claude" },
+        { title: "5 instant starter prompts", desc: "Prompts tailored to your project and style" },
+        { title: "Downloadable PDF report", desc: "Easy to share with your team" },
+      ],
+      fileName: "system_prompt.txt",
+      copyLabel: "Copy",
+      copiedLabel: "Copied ✓",
+      footerHint: "Paste this directly → ChatGPT / Claude / Gemini",
+      badge: "System Prompt",
+    },
+    how: {
+      eyebrow: "The process",
+      title: "Three simple steps",
+      subtitle: "From assessment to your personal AI instructions in under 20 minutes",
+      steps: [
+        {
+          n: "1",
+          title: "Take the assessment",
+          desc: "24 behavioral questions + 8 AI scenarios that surface your real patterns",
+        },
+        {
+          n: "2",
+          title: "INSPIRE analyzes your pattern",
+          desc: "7 axes analyzed in depth, building your unique signature into a comprehensive map",
+        },
+        {
+          n: "3",
+          title: "Get your instructions",
+          desc: "Ready-to-use system prompt + PDF report + starter prompts for your project",
+        },
+      ],
+    },
+    pricing: {
+      eyebrow: "Pricing",
+      title: "Simple and transparent",
+      subtitle: "Start free and upgrade when you're ready",
+      free: {
+        badge: "Quick assessment",
+        price: "$0",
+        period: "Free forever",
+        cta: "Start for free",
+        features: [
+          "Free quick assessment (5 minutes)",
+          "Instant starter prompts",
+          "Intro to the seven axes",
+          "No credit card",
+        ],
+      },
+      paid: {
+        ribbon: "One-time payment only",
+        badge: "Full assessment",
+        price: "$10",
+        perUnit: "/ assessment",
+        sublabel: "One-time payment · No subscription",
+        cta: "Start the full assessment",
+        features: [
+          "Full personal assessment for any project",
+          "INSPIRE 7-axis score sheet",
+          "Ready-to-copy system prompt",
+          "Downloadable professional PDF report",
+          "Share results with your team",
+          "Tailored instant starter prompts",
+        ],
+      },
+    },
+    faq: {
+      eyebrow: "FAQ",
+      title: "Questions & answers",
+      items: [
+        {
+          q: "What is the INSPIRE framework?",
+          a: "INSPIRE is a 7-axis behavioral analysis system (Intention, Narrative, Style, Preferences, Interaction, Reflection, Evaluation) designed to improve how you work with AI tools. Instead of using AI randomly, INSPIRE gives you instructions tailored to who you are.",
+        },
+        {
+          q: "How long does the full assessment take?",
+          a: "The full assessment takes 15–20 minutes and includes 24 behavioral questions, 8 interactive scenarios, and an open-ended question. The quick version takes only 5 minutes and generates instant starter prompts.",
+        },
+        {
+          q: "What exactly does the assessment generate?",
+          a: "The full assessment generates: a 7-axis INSPIRE score sheet, a professional role analysis, your red lines when working with AI, your behavioral strengths, growth areas, practical recommendations, a comprehensive system prompt you can paste into ChatGPT or Claude, and ready-to-use starter prompts.",
+        },
+        {
+          q: "Can I run more than one assessment?",
+          a: "Yes. You can create multiple assessments for different projects and compare the results. Each assessment produces instructions tailored to that specific project.",
+        },
+        {
+          q: "Which AI tools do the generated instructions work with?",
+          a: "The generated instructions work with any AI tool that supports a system prompt or custom instructions, including ChatGPT, Claude, Gemini, and others.",
+        },
+        {
+          q: "What's the difference between the full and quick assessments?",
+          a: "The quick assessment focuses on 5 dimensions of how you interact with AI and generates instant starter prompts in 5 minutes for free. The full assessment analyzes 7 behavioral axes in depth and produces a comprehensive system prompt with a detailed report.",
+        },
+      ],
+    },
+    finalCta: {
+      badge: "Start today — no credit card required",
+      titleLead: "It's time for",
+      titleAccent: "AI to understand you",
+      paragraph:
+        "The difference between average AI and AI that's truly yours starts with instructions built around who you are — not what you type.",
+      primary: "Start free — 5 minutes",
+      secondary: "Full assessment — $10",
+    },
   },
   i18nDemo: {
     title: "Bilingual foundation verification",
