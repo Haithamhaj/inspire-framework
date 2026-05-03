@@ -350,14 +350,14 @@ export const en: Dictionary = {
       ],
     },
     axes: {
-      eyebrow: "The seven axes",
-      titleSuffix: "— seven dimensions that define you",
+      eyebrow: "The seven components",
+      titleSuffix: "— seven components that shape your AI Operating Profile",
       subtitle:
-        "Each letter represents a behavioral dimension the system analyzes to build your unique profile",
+        "Each letter is a profile component the system reads to build your interaction map with AI",
       items: {
         intention: {
           name: "Intention",
-          desc: "What truly drives you? Are you outcome-driven or process-driven? This axis reveals your real inner motivation.",
+          desc: "What truly drives you? Are you outcome-driven or process-driven? This component reveals your real inner motivation.",
         },
         narrative: {
           name: "Narrative",
@@ -385,7 +385,7 @@ export const en: Dictionary = {
         },
       },
       ctaTitle: "Discover your full profile",
-      ctaSubtitle: "What do your scores look like across each axis? The assessment tells you.",
+      ctaSubtitle: "Curious how your interaction profile maps across each component? The assessment shows you.",
       ctaButton: "Start the free assessment",
     },
     sample: {
@@ -393,7 +393,7 @@ export const en: Dictionary = {
       title: "What do you get after the assessment?",
       subtitle: "A complete system prompt ready to paste into any AI model",
       features: [
-        { title: "7-axis score sheet", desc: "Precise scores for each axis with qualitative interpretation" },
+        { title: "Practical profile map", desc: "A clear map of how AI should work with you across the seven INSPIRE components" },
         { title: "Behavioral role analysis", desc: "Who you are specifically in the context of working with AI" },
         { title: "Your red lines", desc: "What you can't tolerate — defined precisely" },
         { title: "Comprehensive system prompt", desc: "500–800 words ready to paste into ChatGPT/Claude" },
@@ -414,12 +414,12 @@ export const en: Dictionary = {
         {
           n: "1",
           title: "Take the assessment",
-          desc: "24 behavioral questions + 8 AI scenarios that surface your real patterns",
+          desc: "Your answers reveal practical signals about your goal, working style, and how you interact with AI",
         },
         {
           n: "2",
           title: "INSPIRE analyzes your pattern",
-          desc: "7 axes analyzed in depth, building your unique signature into a comprehensive map",
+          desc: "7 profile components analyzed in depth, building your unique interaction map with AI",
         },
         {
           n: "3",
@@ -440,7 +440,7 @@ export const en: Dictionary = {
         features: [
           "Free quick assessment (5 minutes)",
           "Instant starter prompts",
-          "Intro to the seven axes",
+          "Intro to the seven profile components",
           "No credit card",
         ],
       },
@@ -453,7 +453,7 @@ export const en: Dictionary = {
         cta: "Start the full assessment",
         features: [
           "Full personal assessment for any project",
-          "INSPIRE 7-axis score sheet",
+          "INSPIRE practical profile map across the seven components",
           "Ready-to-copy system prompt",
           "Downloadable professional PDF report",
           "Share results with your team",
@@ -467,15 +467,15 @@ export const en: Dictionary = {
       items: [
         {
           q: "What is the INSPIRE framework?",
-          a: "INSPIRE is a 7-axis behavioral analysis system (Intention, Narrative, Style, Preferences, Interaction, Reflection, Evaluation) designed to improve how you work with AI tools. Instead of using AI randomly, INSPIRE gives you instructions tailored to who you are.",
+          a: "INSPIRE is a 7-component AI Operating Profile system (Intention, Narrative, Style, Preferences, Interaction, Reflection, Evaluation) designed to help AI work better with your selected goal and style. Instead of using AI generically, INSPIRE builds an interaction map tailored to who you are.",
         },
         {
           q: "How long does the full assessment take?",
-          a: "The full assessment takes 15–20 minutes and includes 24 behavioral questions, 8 interactive scenarios, and an open-ended question. The quick version takes only 5 minutes and generates instant starter prompts.",
+          a: "The full assessment takes 15–20 minutes. Your answers across behavioral prompts and interactive scenarios reveal practical signals about your goal, style, and how you interact with AI. The quick version takes only 5 minutes and generates instant starter prompts.",
         },
         {
           q: "What exactly does the assessment generate?",
-          a: "The full assessment generates: a 7-axis INSPIRE score sheet, a professional role analysis, your red lines when working with AI, your behavioral strengths, growth areas, practical recommendations, a comprehensive system prompt you can paste into ChatGPT or Claude, and ready-to-use starter prompts.",
+          a: "The full assessment generates: a practical INSPIRE profile map across the seven components, a professional role analysis, your red lines when working with AI, your behavioral strengths, growth areas, practical recommendations, a comprehensive system prompt you can paste into ChatGPT or Claude, and ready-to-use starter prompts.",
         },
         {
           q: "Can I run more than one assessment?",
@@ -487,7 +487,7 @@ export const en: Dictionary = {
         },
         {
           q: "What's the difference between the full and quick assessments?",
-          a: "The quick assessment focuses on 5 dimensions of how you interact with AI and generates instant starter prompts in 5 minutes for free. The full assessment analyzes 7 behavioral axes in depth and produces a comprehensive system prompt with a detailed report.",
+          a: "The quick assessment focuses on 5 dimensions of how you interact with AI and generates instant starter prompts in 5 minutes for free. The full assessment reads 7 profile components in depth and produces a comprehensive system prompt with a detailed report.",
         },
       ],
     },
