@@ -1,0 +1,152 @@
+You are working on INSPIRE v2 under the Next Step AI umbrella.
+
+Task type: VISUAL CAPABILITY DEMO ONLY.
+Do not modify backend, API, auth, payment, database, question bank, routing, prompt-builder, report-parser, mini assessment, PDF, or submission logic.
+Do not commit production logic.
+Build a frontend-only mock/demo screen using static mock data.
+
+Goal:
+Create a premium Results Reveal demo that shows the moment where the user receives their purpose-specific AI Operating Profile.
+
+Product philosophy:
+INSPIRE is not a generic personality test and not a prompt-engineering course.
+It is a Human Interactive AI product that helps everyday users get better results from ChatGPT, Gemini, and Claude by building a purpose-specific AI Operating Profile.
+
+Core meaning:
+INSPIRE = structured inspiration for AI.
+Arabic meaning layer: إلهام AI بتعليمات تجعله يعمل معك بشكل أفضل.
+Slogan direction: كل هدف له إلهامه الخاص.
+
+The page must feel positive and empowering.
+Do NOT imply that the user is bad at prompting.
+Do NOT use shame-based language like “you don’t know how to ask AI.”
+Frame the value as:
+AI is already powerful. INSPIRE helps it become more useful, aligned, and consistent for this user’s goal.
+
+Demo scenario:
+Use mock result data for a user building an AI Operating Profile for Project Management.
+The result title should be specific, for example:
+“تم بناء ملف تشغيل مساعدك لإدارة المشاريع”
+
+Required sections in the demo:
+1. Results unlock header
+   - Premium reveal moment.
+   - Main headline: تم بناء ملف تشغيل مساعدك لإدارة المشاريع
+   - Supporting line: استخدمه مع ChatGPT أو Gemini أو Claude ليعمل AI معك بطريقة أوضح وأكثر اتساقًا.
+   - Main action: نسخ تعليمات المساعد
+   - Secondary action: كيف أستخدمه؟
+
+2. Assistant Identity premium card
+   - Shows a purpose-specific assistant identity.
+   - Example: “مساعد استراتيجي لإدارة المشاريع يساعدك على تحويل الأفكار إلى خطط، كشف المخاطر، ترتيب الأولويات، وتلخيص القرارات.”
+   - Must look like the emotional money-shot of the result.
+
+3. What this profile changes
+   - 4–5 benefit cards.
+   - Examples:
+     - يقلل الإجابات العامة
+     - يربط الردود بهدفك وسياقك
+     - يفعّل الدور المناسب حسب المهمة
+     - يوضح المخاطر والخطوات التالية
+     - يجعل المخرجات أكثر اتساقًا
+
+4. Dynamic Roles cards
+   - 4–5 cards with role + trigger.
+   - Example roles:
+     - Strategic Partner — عند التخطيط والقرارات
+     - Risk Reviewer — عند مراجعة خطة أو فكرة
+     - Organizer — عند ترتيب المهام والمعلومات
+     - Decision Support — عند المقارنة بين خيارات
+     - Execution Coach — عند تحويل الخطة إلى خطوات
+
+5. Thinking & Quality Modes
+   - Use chips/cards, not heavy explanation.
+   - Include:
+     - Step-Back
+     - Devil’s Advocate
+     - Self-Check
+     - Scenario Comparison
+     - Verification Check
+   - Add short Arabic explanations in tooltips or small text.
+
+6. Red Lines section
+   - Dedicated shield-style card.
+   - Title: ما يجب أن يتجنبه مساعدك
+   - Examples:
+     - لا يعطي إجابات عامة بدون ربطها بسياق المشروع
+     - لا يقفز للحلول قبل توضيح الهدف والقيود
+     - لا يمدح الفكرة دون اختبار مخاطرها
+     - لا يطيل عندما يكون المطلوب قرارًا سريعًا
+
+7. Copy-ready AI Operating Profile section
+   - Do NOT make it look like a developer code editor.
+   - Do NOT use labels like code, system-prompt.md, terminal, developer config.
+   - Use friendly labels:
+     - تعليمات مساعدك الجاهزة
+     - ملف تشغيل مساعدك
+     - انسخ هذه التعليمات إلى ChatGPT / Gemini / Claude
+   - Use accordion sections:
+     - هوية المساعد
+     - المهمة والسياق
+     - طريقة العمل معك
+     - الأدوار الديناميكية
+     - قواعد التفكير والجودة
+     - قواعد المخرجات
+     - الخطوط الحمراء
+     - طريقة التكيّف معك
+   - Include master copy button and per-section copy buttons.
+
+8. Where to use it
+   - Tabs or cards:
+     - ChatGPT
+     - Gemini
+     - Claude
+   - Explain in simple Arabic where to paste or how to start using it.
+   - Keep it non-technical.
+
+9. Starter Prompt cards
+   - 3–4 copyable prompts.
+   - Example:
+     “استخدم ملف التشغيل هذا، ثم ساعدني على تحويل هذه الفكرة إلى خطة تنفيذ من 5 خطوات.”
+
+Visual direction:
+Premium Human-AI interaction layer.
+Use dark navy depth, warm rose/orange accent, violet/teal intelligence accents, soft glow, glass surfaces, layered cards, refined Arabic typography, and subtle AI-native motion.
+
+Motion direction:
+Use motion to tell the story of profile formation and reveal:
+- soft unlock/reveal on first load
+- staggered section entrance
+- signal chips aligning into profile card
+- subtle glow activation for roles/modes
+- smooth hover/tap micro-interactions
+
+Avoid:
+- childish confetti
+- robots
+- sci-fi clichés
+- heavy terminal/code aesthetics
+- fake charts or fake scoring
+- excessive animation noise
+- generic SaaS look
+
+Technical constraints:
+Use existing frontend stack where possible:
+React, Tailwind, Framer Motion, Radix UI, lucide-react, SVG/CSS visuals.
+Do not add heavy 3D/WebGL/Three.js.
+Static mock data is enough.
+This can be built as a standalone demo component/page without touching production flow.
+
+Evaluation criteria:
+1. Does the result feel worth paying for?
+2. Does it clearly communicate “AI Operating Profile”?
+3. Does it feel human-first and non-technical?
+4. Does it show that every goal has its own INSPIRE?
+5. Does motion support the product idea instead of decorating randomly?
+6. Does the page make the user want to copy and use the profile?
+
+Deliverables:
+- A working frontend mock/demo screen.
+- Brief note explaining what files were touched.
+- Brief note explaining which visual ideas were used.
+- Confirm that no backend/API/payment/auth/database/question/routing/prompt-builder/report-parser/mini/PDF files were touched.

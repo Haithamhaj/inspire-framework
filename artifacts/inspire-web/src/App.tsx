@@ -19,6 +19,7 @@ import Profile from "@/pages/profile";
 import Share from "@/pages/share";
 import Admin from "@/pages/admin";
 import BillingSuccess from "@/pages/billing-success";
+import ResultsDemo from "@/pages/results-demo";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/share/:token" component={Share} />
           <Route path="/billing/success" component={BillingSuccess} />
+          <Route path="/results-demo" component={ResultsDemo} />
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
