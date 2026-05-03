@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, Redirect, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Brain,
-  ClipboardList,
   CheckCircle2,
   Zap,
   MessageSquare,
@@ -13,15 +12,31 @@ import {
   Loader2,
   Download,
   ChevronRight,
-  TrendingUp,
   AlertTriangle,
   Share2,
   LinkIcon,
   Trash2,
-  TrendingDown,
-  Minus,
-  RefreshCw,
+  Sparkles,
+  ShieldAlert,
+  BookOpen,
+  Settings2,
+  Lightbulb,
+  ArrowLeft,
+  ArrowRight,
 } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useI18n, useT } from "@/i18n";
+import {
+  ReportBlock,
+  MismatchNotice,
+  type ReportLanguage,
+} from "@/components/premium/ReportBlock";
 
 function apiUrl(path: string) {
   return `/api${path}`;
@@ -61,7 +76,11 @@ interface AssessmentDto {
 }
 
 function Skeleton({ className }: { className?: string }) {
-  return <div className={`animate-pulse bg-secondary/70 rounded-xl ${className ?? ""}`} />;
+  return (
+    <div
+      className={`animate-pulse bg-white/5 rounded-xl ${className ?? ""}`}
+    />
+  );
 }
 
 function ResultsSkeleton() {
@@ -79,10 +98,124 @@ function ResultsSkeleton() {
   );
 }
 
+function PageShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative min-h-[calc(100vh-5rem)] overflow-x-hidden bg-[#0b0d1f] text-white">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0b0d1f] via-[#0e1130] to-[#0a0c1c]" />
+        <div className="absolute -top-40 -end-40 w-[700px] h-[700px] rounded-full bg-rose-500/10 blur-[160px]" />
+        <div className="absolute top-[40%] -start-40 w-[700px] h-[700px] rounded-full bg-violet-500/10 blur-[160px]" />
+        <div className="absolute bottom-0 end-1/3 w-[500px] h-[500px] rounded-full bg-teal-500/8 blur-[140px]" />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Section heading primitive ────────────────────────────────────────────────
+function SectionHeading({
+  eyebrow,
+  title,
+  subtitle,
+}: {
+  eyebrow: string;
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <div className="text-center max-w-2xl mx-auto">
+      <p className="text-[11px] uppercase tracking-widest text-white/45 font-semibold mb-2">
+        {eyebrow}
+      </p>
+      <h2 className="font-display font-bold text-2xl md:text-3xl text-white mb-2">
+        {title}
+      </h2>
+      {subtitle && (
+        <p className="text-white/60 text-sm md:text-base leading-relaxed">
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── Inline copy button ───────────────────────────────────────────────────────
+function CopyButton({
+  text,
+  label,
+  successLabel,
+  variant = "ghost",
+  size = "sm",
+}: {
+  text: string;
+  label: string;
+  successLabel: string;
+  variant?: "ghost" | "primary";
+  size?: "sm" | "md" | "lg";
+}) {
+  const [copied, setCopied] = useState(false);
+  function onClick() {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    });
+  }
+  const base =
+    "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all active:scale-[0.97]";
+  const sizes = {
+    sm: "px-3 py-1.5 text-xs",
+    md: "px-4 py-2 text-sm",
+    lg: "px-6 py-3.5 text-base",
+  } as const;
+  const variants = {
+    ghost:
+      "bg-white/5 hover:bg-white/10 text-white/80 hover:text-white border border-white/10",
+    primary:
+      "bg-gradient-to-l from-rose-500 to-orange-500 hover:from-rose-400 hover:to-orange-400 text-white shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40",
+  } as const;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`${base} ${sizes[size]} ${variants[variant]}`}
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        {copied ? (
+          <motion.span
+            key="ok"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.15 }}
+            className="inline-flex items-center gap-2"
+          >
+            <Check className="h-4 w-4" />
+            {successLabel}
+          </motion.span>
+        ) : (
+          <motion.span
+            key="copy"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.15 }}
+            className="inline-flex items-center gap-2"
+          >
+            <Copy className="h-4 w-4" />
+            {label}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </button>
+  );
+}
+
 export default function Results() {
   const { id } = useParams<{ id: string }>();
   const { user, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
+  const t = useT();
+  const { locale } = useI18n();
 
   const [assessment, setAssessment] = useState<AssessmentDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -152,7 +285,7 @@ export default function Results() {
       const url = buildShareUrl(d.shareToken);
       setAssessment((prev) => prev ? { ...prev, shareToken: d.shareToken as string, shareEnabled: true } : prev);
       await navigator.clipboard.writeText(url);
-      setShareMsg(`تم نسخ الرابط: ${url}`);
+      setShareMsg(`${t("results.header.linkCopiedPrefix")} ${url}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "حدث خطأ";
       setShareMsg(msg);
@@ -170,7 +303,7 @@ export default function Results() {
       const d = await res.json();
       if (!d.success) throw new Error(d.error || "فشل إلغاء المشاركة");
       setAssessment((prev) => prev ? { ...prev, shareToken: null, shareEnabled: false } : prev);
-      setShareMsg("تم إلغاء رابط المشاركة");
+      setShareMsg(t("results.header.shareCancelled"));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "حدث خطأ";
       setShareMsg(msg);
@@ -194,64 +327,94 @@ export default function Results() {
     }
   }
 
+  // ── Derive report language safely ────────────────────────────────────────
+  const reportLang: ReportLanguage = useMemo(() => {
+    const v = assessment?.reportLanguage;
+    if (v === "ar" || v === "en" || v === "both") return v;
+    return "ar";
+  }, [assessment?.reportLanguage]);
+  const reportLangSingle: "ar" | "en" =
+    reportLang === "en" ? "en" : "ar";
+
   if (authLoading) {
-    return <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /></div>;
+    return (
+      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-[#0b0d1f]">
+        <Loader2 className="h-10 w-10 animate-spin text-rose-300" />
+      </div>
+    );
   }
   if (!user) return <Redirect to="/login" />;
 
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] py-12 px-4">
-        <ResultsSkeleton />
-      </div>
+      <PageShell>
+        <div className="py-12 px-4">
+          <ResultsSkeleton />
+        </div>
+      </PageShell>
     );
   }
 
   if (processing) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-card border border-border rounded-3xl p-12 shadow-xl text-center max-w-md w-full"
-        >
-          <div className="relative w-20 h-20 mx-auto mb-6">
-            <div className="absolute inset-0 rounded-full border-4 border-accent/20" />
-            <div className="absolute inset-0 rounded-full border-4 border-accent border-t-transparent animate-spin" />
-            <Brain className="absolute inset-0 m-auto h-8 w-8 text-accent" />
-          </div>
-          <h2 className="text-xl font-bold text-primary mb-2">يجري تحليل ملفك السلوكي</h2>
-          <p className="text-muted-foreground text-sm mb-1">يعمل الذكاء الاصطناعي على توليد تعليماتك المخصصة</p>
-          <p className="text-muted-foreground/60 text-xs">هذا يستغرق عادةً 30–60 ثانية</p>
-          <div className="mt-6 flex justify-center gap-1">
-            {[0, 0.2, 0.4].map((delay, i) => (
-              <span
-                key={i}
-                className="h-2 w-2 rounded-full bg-accent animate-bounce"
-                style={{ animationDelay: `${delay}s` }}
-              />
-            ))}
-          </div>
-        </motion.div>
-      </div>
+      <PageShell>
+        <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-12 shadow-xl text-center max-w-md w-full"
+          >
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 rounded-full border-4 border-rose-300/20" />
+              <div className="absolute inset-0 rounded-full border-4 border-rose-300 border-t-transparent animate-spin" />
+              <Brain className="absolute inset-0 m-auto h-8 w-8 text-rose-200" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">
+              {t("results.status.processingTitle")}
+            </h2>
+            <p className="text-white/70 text-sm mb-1">
+              {t("results.status.processingLine1")}
+            </p>
+            <p className="text-white/45 text-xs">
+              {t("results.status.processingLine2")}
+            </p>
+            <div className="mt-6 flex justify-center gap-1">
+              {[0, 0.2, 0.4].map((delay, i) => (
+                <span
+                  key={i}
+                  className="h-2 w-2 rounded-full bg-rose-300 animate-bounce"
+                  style={{ animationDelay: `${delay}s` }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </PageShell>
     );
   }
 
   if (error || !assessment) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
-        <div className="bg-card rounded-3xl border border-border p-10 shadow-xl text-center max-w-md">
-          <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <p className="text-lg text-foreground mb-6">{error || "التقرير غير موجود"}</p>
-          <button onClick={() => navigate("/my-assessments")} className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold">
-            عودة لتقاريري
-          </button>
+      <PageShell>
+        <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-10 shadow-xl text-center max-w-md">
+            <AlertTriangle className="h-12 w-12 text-rose-300 mx-auto mb-4" />
+            <p className="text-lg text-white mb-6">
+              {error || t("results.status.errorMissing")}
+            </p>
+            <button
+              onClick={() => navigate("/my-assessments")}
+              className="bg-gradient-to-l from-rose-500 to-orange-500 text-white px-6 py-3 rounded-xl font-semibold"
+            >
+              {t("results.status.errorBack")}
+            </button>
+          </div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 
-  // ── Mini assessment: show only Quick Starters + upgrade CTA ───
+  // ── Mini assessment branch — preserved as-is from prior implementation ────
   if (assessment.assessmentType === "mini") {
     return (
       <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
@@ -333,296 +496,652 @@ export default function Results() {
     );
   }
 
+  // ── Full results premium render ───────────────────────────────────────────
+  const Arrow = locale === "ar" ? ArrowLeft : ArrowRight;
+  const dateLocale = t("results.dateLocale");
+  const formattedDate = assessment.createdAt
+    ? new Date(assessment.createdAt).toLocaleDateString(dateLocale, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "";
+
+  const identityTags = [
+    t("results.identity.tagPartner"),
+    t("results.identity.tagReviewer"),
+    t("results.identity.tagContextAware"),
+    t("results.identity.tagOutcomeFocused"),
+  ];
+
+  const platforms: Array<{
+    id: "chatgpt" | "gemini" | "claude";
+    name: string;
+    accent: string;
+    steps: [string, string, string];
+  }> = [
+    {
+      id: "chatgpt",
+      name: t("results.platforms.chatgpt.name"),
+      accent: "from-emerald-500/30 to-teal-500/20",
+      steps: [
+        t("results.platforms.chatgpt.step1"),
+        t("results.platforms.chatgpt.step2"),
+        t("results.platforms.chatgpt.step3"),
+      ],
+    },
+    {
+      id: "gemini",
+      name: t("results.platforms.gemini.name"),
+      accent: "from-sky-500/30 to-indigo-500/20",
+      steps: [
+        t("results.platforms.gemini.step1"),
+        t("results.platforms.gemini.step2"),
+        t("results.platforms.gemini.step3"),
+      ],
+    },
+    {
+      id: "claude",
+      name: t("results.platforms.claude.name"),
+      accent: "from-rose-500/30 to-orange-500/20",
+      steps: [
+        t("results.platforms.claude.step1"),
+        t("results.platforms.claude.step2"),
+        t("results.platforms.claude.step3"),
+      ],
+    },
+  ];
+
+  const profileText = assessment.systemInstruction ?? "";
+
   return (
-    <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-4xl space-y-6"
-      >
-        {/* Header */}
-        <div className="bg-gradient-to-br from-primary to-primary/80 rounded-3xl p-8 text-primary-foreground">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="h-6 w-6 text-green-300" />
-                <span className="text-primary-foreground/80 text-sm">تقرير مكتمل</span>
-              </div>
-              <h1 className="text-2xl md:text-3xl font-display font-bold mb-1">{assessment.projectName}</h1>
-              <p className="text-primary-foreground/70 text-sm">{assessment.projectGoal}</p>
-            </div>
-            <div className="flex flex-col gap-2 shrink-0">
-              <button
-                onClick={() => navigate("/my-assessments")}
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-              >
-                <ChevronRight className="h-4 w-4" /> تقاريري
-              </button>
-              {assessment.pdfUrl ? (
-                <a
-                  href={apiUrl(assessment.pdfUrl)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-                >
-                  <Download className="h-4 w-4" /> تحميل PDF
-                </a>
-              ) : (
-                <button
-                  onClick={handleGeneratePdf}
-                  disabled={generatingPdf}
-                  className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
-                >
-                  {generatingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
-                  {generatingPdf ? "جارٍ التوليد..." : "توليد PDF"}
-                </button>
-              )}
-              {/* Share button */}
-              {assessment.shareEnabled ? (
-                <button
-                  onClick={handleRevokeShare}
-                  disabled={sharingLoading}
-                  className="flex items-center gap-2 bg-white/10 hover:bg-red-400/30 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
-                >
-                  {sharingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                  إلغاء المشاركة
-                </button>
-              ) : (
-                <button
-                  onClick={handleShare}
-                  disabled={sharingLoading}
-                  className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60"
-                >
-                  {sharingLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
-                  مشاركة النتائج
-                </button>
-              )}
-            </div>
+    <PageShell>
+      <div className="container mx-auto max-w-5xl px-4 sm:px-6 py-10 md:py-14 space-y-10 md:space-y-14">
+        {/* ── 1. RESULTS-READY HEADER ─────────────────────────────────── */}
+        <motion.section
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="relative text-center"
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 backdrop-blur border border-white/10 text-[11px] font-medium tracking-widest uppercase text-white/70 mb-6">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            </span>
+            {t("results.status.ready")}
           </div>
-          <div className="mt-4 flex flex-wrap gap-3 text-xs text-primary-foreground/60">
-            <span>نُوِّل بواسطة: {assessment.aiModel ?? assessment.aiProvider ?? "AI"}</span>
-            {assessment.createdAt && (
-              <span>
-                {new Date(assessment.createdAt).toLocaleDateString("ar-SA", {
-                  year: "numeric", month: "long", day: "numeric",
-                })}
+
+          <h1 className="font-display font-black text-3xl sm:text-4xl md:text-5xl leading-[1.25] mb-4 text-white">
+            {t("results.header.titlePrefix")}{" "}
+            <span className="relative inline-block">
+              <span className="bg-gradient-to-l from-rose-300 via-orange-300 to-amber-200 bg-clip-text text-transparent">
+                {t("results.header.titleConnector")}{" "}
+                <span
+                  lang={reportLangSingle}
+                  dir={reportLangSingle === "ar" ? "rtl" : "ltr"}
+                  className="inline"
+                >
+                  {assessment.projectName}
+                </span>
               </span>
+              <span className="absolute -bottom-1 inset-x-0 h-[3px] bg-gradient-to-l from-rose-400/80 to-orange-300/80 rounded-full" />
+            </span>
+          </h1>
+
+          <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-3">
+            {t("results.header.subtitle")}
+          </p>
+
+          {assessment.projectGoal && (
+            <ReportBlock
+              lang={reportLangSingle}
+              className="text-white/55 text-sm max-w-2xl mx-auto mb-6"
+            >
+              <span className="text-white/40">
+                {t("results.projectGoalLabel")}:
+              </span>{" "}
+              {assessment.projectGoal}
+            </ReportBlock>
+          )}
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5">
+            {profileText && (
+              <CopyButton
+                text={profileText}
+                label={t("results.header.ctaPrimary")}
+                successLabel={t("results.header.ctaPrimarySuccess")}
+                variant="primary"
+                size="lg"
+              />
+            )}
+            <a
+              href="#how-to-use"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white/90 text-base font-semibold transition-all active:scale-[0.98]"
+            >
+              {t("results.header.ctaSecondary")}
+              <Arrow className="h-4 w-4" />
+            </a>
+          </div>
+
+          {/* Secondary actions: my reports / pdf / share */}
+          <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+            <button
+              onClick={() => navigate("/my-assessments")}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-colors"
+            >
+              <ChevronRight className="h-4 w-4" />
+              {t("results.header.myAssessments")}
+            </button>
+            {assessment.pdfUrl ? (
+              <a
+                href={apiUrl(assessment.pdfUrl)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-colors"
+              >
+                <Download className="h-4 w-4" /> {t("results.header.downloadPdf")}
+              </a>
+            ) : (
+              <button
+                onClick={handleGeneratePdf}
+                disabled={generatingPdf}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-colors disabled:opacity-60"
+              >
+                {generatingPdf ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4" />
+                )}
+                {generatingPdf
+                  ? t("results.header.generatingPdf")
+                  : t("results.header.generatePdf")}
+              </button>
+            )}
+            {assessment.shareEnabled ? (
+              <button
+                onClick={handleRevokeShare}
+                disabled={sharingLoading}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-rose-400/20 border border-white/10 text-white/80 hover:text-white transition-colors disabled:opacity-60"
+              >
+                {sharingLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+                {sharingLoading
+                  ? t("results.header.revoking")
+                  : t("results.header.revokeShare")}
+              </button>
+            ) : (
+              <button
+                onClick={handleShare}
+                disabled={sharingLoading}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-colors disabled:opacity-60"
+              >
+                {sharingLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Share2 className="h-4 w-4" />
+                )}
+                {sharingLoading
+                  ? t("results.header.sharing")
+                  : t("results.header.share")}
+              </button>
             )}
           </div>
-        </div>
+
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-white/45">
+            {(assessment.aiModel || assessment.aiProvider) && (
+              <span>
+                {t("results.header.generatedBy")}:{" "}
+                {assessment.aiModel ?? assessment.aiProvider}
+              </span>
+            )}
+            {formattedDate && <span>{formattedDate}</span>}
+          </div>
+
+          <div className="mt-5 flex justify-center">
+            <MismatchNotice reportLanguage={reportLang} />
+          </div>
+        </motion.section>
 
         {/* Share message */}
         {shareMsg && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-3 bg-card border border-border rounded-2xl p-4 text-sm text-foreground"
+            className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-4 text-sm text-white/85"
           >
-            <LinkIcon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+            <LinkIcon className="h-4 w-4 text-rose-300 shrink-0 mt-0.5" />
             <span className="break-all">{shareMsg}</span>
           </motion.div>
         )}
 
-        {/* Role Analysis */}
-        {assessment.roleAnalysis && (
-          <div className="bg-card rounded-2xl border border-border p-6">
-            <h2 className="font-display font-bold text-xl text-foreground mb-3 flex items-center gap-2">
-              <Brain className="h-5 w-5 text-accent" /> نمطك السلوكي
-            </h2>
-            <p className="text-foreground leading-relaxed">{assessment.roleAnalysis}</p>
-          </div>
-        )}
+        {/* ── 2. ASSISTANT IDENTITY CARD ──────────────────────────────── */}
+        <motion.section
+          id="identity"
+          initial={{ opacity: 0, y: 24, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="relative"
+        >
+          <div className="relative rounded-[2rem] bg-gradient-to-b from-[#13163a]/95 to-[#0d1030]/95 border border-white/10 backdrop-blur-xl p-7 md:p-10 overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-[260px] rounded-full bg-gradient-to-b from-rose-500/15 to-transparent blur-3xl pointer-events-none" />
 
-        {/* INSPIRE Table */}
-        {Array.isArray(assessment.inspireTable) && assessment.inspireTable.length > 0 && (
-          <div className="bg-card rounded-2xl border border-border p-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="font-display font-bold text-xl text-foreground flex items-center gap-2">
-                <ClipboardList className="h-5 w-5 text-accent" /> مؤشرات INSPIRE السبعة
-              </h2>
-              {assessment.previousInspireTable && (
-                <span className="text-xs text-muted-foreground bg-secondary/60 px-2.5 py-1 rounded-full">
-                  مقارنة بالتقييم السابق
-                </span>
-              )}
+            <div className="relative flex items-start gap-4 mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500/30 to-orange-500/20 border border-white/10 flex items-center justify-center shrink-0 shadow-lg shadow-rose-500/10">
+                <Sparkles className="h-5 w-5 text-rose-200" />
+              </div>
+              <div className="text-start">
+                <p className="text-[11px] uppercase tracking-widest text-white/50 mb-1 font-semibold">
+                  {t("results.identity.eyebrow")}
+                </p>
+                <h2 className="font-display font-bold text-xl md:text-2xl text-white">
+                  {t("results.identity.titlePrefix")}{" "}
+                  <span
+                    lang={reportLangSingle}
+                    dir={reportLangSingle === "ar" ? "rtl" : "ltr"}
+                    className="inline"
+                  >
+                    {assessment.projectName}
+                  </span>
+                </h2>
+              </div>
             </div>
-            <div className="space-y-4">
-              {assessment.inspireTable.map((row, i) => {
-                const prevRow = assessment.previousInspireTable?.find(
-                  (p) => p.axis === row.axis
-                ) ?? null;
-                const delta = prevRow !== null ? row.percentage - prevRow.percentage : null;
-                return (
-                  <div key={i}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm font-semibold text-foreground">{row.axis}</span>
-                      <div className="flex items-center gap-2">
-                        {delta !== null && (
-                          <span
-                            className={`flex items-center gap-0.5 text-xs font-bold ${
-                              delta > 0
-                                ? "text-green-600"
-                                : delta < 0
-                                ? "text-red-500"
-                                : "text-muted-foreground"
-                            }`}
-                          >
-                            {delta > 0 ? (
-                              <TrendingUp className="h-3 w-3" />
-                            ) : delta < 0 ? (
-                              <TrendingDown className="h-3 w-3" />
-                            ) : (
-                              <Minus className="h-3 w-3" />
-                            )}
-                            {delta > 0 ? `+${delta}` : delta}%
-                          </span>
-                        )}
-                        <span className="text-sm font-bold text-accent">{row.percentage}%</span>
-                      </div>
-                    </div>
-                    <div className="w-full h-2.5 bg-secondary rounded-full overflow-hidden mb-1 relative">
-                      {prevRow !== null && (
-                        <div
-                          className="absolute inset-y-0 right-0 bg-muted-foreground/25 rounded-full"
-                          style={{ width: `${prevRow.percentage}%` }}
-                        />
-                      )}
-                      <motion.div
-                        className="absolute inset-y-0 right-0 bg-gradient-to-l from-accent to-primary rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${row.percentage}%` }}
-                        transition={{ duration: 0.8, delay: i * 0.1 }}
-                      />
-                    </div>
-                    {row.note && <p className="text-xs text-muted-foreground">{row.note}</p>}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
-        {/* Strengths & Red Lines */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {Array.isArray(assessment.strengths) && assessment.strengths.length > 0 && (
-            <div className="bg-green-50 dark:bg-green-950/30 rounded-2xl border border-green-100 dark:border-green-900 p-5">
-              <h2 className="font-display font-bold text-lg text-green-900 dark:text-green-300 mb-3 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" /> نقاط القوة
-              </h2>
-              <ul className="space-y-2">
-                {assessment.strengths.map((s: string, i: number) => (
-                  <li key={i} className="flex items-start gap-2 text-green-800 dark:text-green-400 text-sm">
-                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-green-600" />{s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {Array.isArray(assessment.redLines) && assessment.redLines.length > 0 && (
-            <div className="bg-red-50 dark:bg-red-950/30 rounded-2xl border border-red-100 dark:border-red-900 p-5">
-              <h2 className="font-display font-bold text-lg text-red-900 dark:text-red-300 mb-3 flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" /> الخطوط الحمراء
-              </h2>
-              <ul className="space-y-2">
-                {assessment.redLines.map((s: string, i: number) => (
-                  <li key={i} className="flex items-start gap-2 text-red-800 dark:text-red-400 text-sm">
-                    <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-red-500 shrink-0" />{s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+            <ReportBlock
+              lang={reportLangSingle}
+              className="relative text-white/85 text-lg leading-[1.9] font-medium mb-6"
+            >
+              {assessment.roleAnalysis ?? t("results.identity.fallbackParagraph")}
+            </ReportBlock>
 
-        {/* Development Areas */}
-        {Array.isArray(assessment.developmentAreas) && assessment.developmentAreas.length > 0 && (
-          <div className="bg-card rounded-2xl border border-border p-6">
-            <h2 className="font-display font-bold text-xl text-foreground mb-4">مجالات التطوير</h2>
-            <ul className="space-y-2">
-              {assessment.developmentAreas.map((d: string, i: number) => (
-                <li key={i} className="flex items-start gap-2 text-foreground text-sm">
-                  <span className="text-amber-500 mt-0.5 shrink-0">◆</span>{d}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* System Instruction */}
-        {assessment.systemInstruction && (
-          <div className="bg-primary rounded-2xl p-6 text-primary-foreground">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-bold text-xl flex items-center gap-2">
-                <Zap className="h-5 w-5 text-accent" /> تعليمات النظام الشخصية
-              </h2>
-                <button
-                  onClick={() => copyText(assessment.systemInstruction ?? "", "sys")}
-                className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-              >
-                {copied === "sys" ? <><Check className="h-4 w-4" /> تم النسخ</> : <><Copy className="h-4 w-4" /> انسخ</>}
-              </button>
-            </div>
-            <pre className="whitespace-pre-wrap text-sm text-primary-foreground/90 leading-relaxed font-sans">
-              {assessment.systemInstruction}
-            </pre>
-          </div>
-        )}
-
-        {/* Quick Starters */}
-        {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 && (
-          <div className="bg-card rounded-2xl border border-border p-6">
-            <h2 className="font-display font-bold text-xl text-foreground mb-4 flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-accent" /> Quick Starter Prompts
-            </h2>
-            <p className="text-muted-foreground text-sm mb-4">انقر على أي بادئة لنسخها مباشرةً</p>
-            <div className="space-y-3">
-              {assessment.quickStarters.map((qs: string, i: number) => (
-                <div
-                  key={i}
-                  onClick={() => copyText(qs, `qs-${i}`)}
-                  className="flex items-start gap-3 p-3 bg-secondary/50 rounded-xl group cursor-pointer hover:bg-secondary transition-colors"
+            <div className="relative flex flex-wrap gap-2">
+              {identityTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-3 py-1 rounded-full bg-white/8 border border-white/15 text-xs text-white/80"
                 >
-                  <span className="font-bold text-accent shrink-0">{i + 1}.</span>
-                  <p className="text-sm text-foreground leading-relaxed flex-1">{qs}</p>
-                  {copied === `qs-${i}` ? (
-                    <Check className="h-4 w-4 text-green-500 shrink-0" />
-                  ) : (
-                    <Copy className="h-4 w-4 text-muted-foreground shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  )}
-                </div>
+                  {tag}
+                </span>
               ))}
             </div>
           </div>
+        </motion.section>
+
+        {/* ── 3. STRENGTHS ────────────────────────────────────────────── */}
+        {Array.isArray(assessment.strengths) && assessment.strengths.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+          >
+            <SectionHeading
+              eyebrow={t("results.strengths.eyebrow")}
+              title={t("results.strengths.title")}
+              subtitle={t("results.strengths.subtitle")}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+              {assessment.strengths.map((s, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  className="group relative rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/10 p-5 hover:border-emerald-300/30 transition-colors overflow-hidden"
+                >
+                  <div className="absolute -top-12 -end-12 w-32 h-32 rounded-full bg-emerald-500/10 blur-2xl opacity-60 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative inline-flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500/10 border border-white/10 mb-4">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-300" />
+                  </div>
+                  <ReportBlock
+                    lang={reportLangSingle}
+                    className="relative text-[15px] text-white/85 leading-relaxed"
+                  >
+                    {s}
+                  </ReportBlock>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
         )}
 
-        {/* Recommendations */}
+        {/* ── 4. RED LINES ────────────────────────────────────────────── */}
+        {Array.isArray(assessment.redLines) && assessment.redLines.length > 0 && (
+          <motion.section
+            id="redlines"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="relative rounded-2xl overflow-hidden border border-rose-400/25">
+              <div className="absolute inset-0 bg-gradient-to-br from-rose-500/12 via-rose-500/4 to-transparent" />
+              <div className="absolute -top-20 -start-20 w-64 h-64 rounded-full bg-rose-500/15 blur-3xl pointer-events-none" />
+              <div className="relative p-7 md:p-8">
+                <div className="flex items-start gap-4 mb-5">
+                  <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-400/30 flex items-center justify-center shrink-0">
+                    <ShieldAlert className="h-5 w-5 text-rose-300" />
+                  </div>
+                  <div className="text-start">
+                    <p className="text-[11px] uppercase tracking-widest text-rose-300/70 mb-1 font-semibold">
+                      {t("results.redLines.eyebrow")}
+                    </p>
+                    <h2 className="font-display font-bold text-xl md:text-2xl text-white">
+                      {t("results.redLines.title")}
+                    </h2>
+                  </div>
+                </div>
+                <ul className="space-y-2.5">
+                  {assessment.redLines.map((line, i) => (
+                    <motion.li
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: i * 0.06 }}
+                      className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/10 hover:border-rose-300/30 transition-colors"
+                    >
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-rose-400 shrink-0 ring-4 ring-rose-400/20" />
+                      <ReportBlock
+                        lang={reportLangSingle}
+                        className="text-white/85 text-[15px] leading-relaxed flex-1"
+                      >
+                        {line}
+                      </ReportBlock>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {/* ── 5. DEVELOPMENT AREAS (gentle framing) ───────────────────── */}
+        {Array.isArray(assessment.developmentAreas) && assessment.developmentAreas.length > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+          >
+            <SectionHeading
+              eyebrow={t("results.developmentAreas.eyebrow")}
+              title={t("results.developmentAreas.title")}
+              subtitle={t("results.developmentAreas.subtitle")}
+            />
+            <div className="mt-8 rounded-2xl bg-white/[0.03] border border-white/10 p-5 md:p-6 backdrop-blur-md">
+              <ul className="space-y-2.5">
+                {assessment.developmentAreas.map((d, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.025] border border-white/10"
+                  >
+                    <Lightbulb className="h-4 w-4 text-amber-300 mt-0.5 shrink-0" />
+                    <ReportBlock
+                      lang={reportLangSingle}
+                      className="text-white/85 text-[15px] leading-relaxed flex-1"
+                    >
+                      {d}
+                    </ReportBlock>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </motion.section>
+        )}
+
+        {/* ── 6. RECOMMENDATIONS ──────────────────────────────────────── */}
         {Array.isArray(assessment.recommendations) && assessment.recommendations.length > 0 && (
-          <div className="bg-card rounded-2xl border border-border p-6">
-            <h2 className="font-display font-bold text-xl text-foreground mb-4">التوصيات</h2>
-            <ol className="space-y-3">
-              {assessment.recommendations.map((r: string, i: number) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="shrink-0 w-7 h-7 rounded-full bg-accent/10 text-accent font-bold text-sm flex items-center justify-center">
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+          >
+            <SectionHeading
+              eyebrow={t("results.recommendations.eyebrow")}
+              title={t("results.recommendations.title")}
+              subtitle={t("results.recommendations.subtitle")}
+            />
+            <ol className="mt-8 space-y-3">
+              {assessment.recommendations.map((r, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10"
+                >
+                  <span className="shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/30 to-orange-500/20 border border-white/10 flex items-center justify-center text-sm font-bold text-rose-100">
                     {i + 1}
                   </span>
-                  <p className="text-foreground mt-0.5">{r}</p>
+                  <ReportBlock
+                    lang={reportLangSingle}
+                    className="text-white/85 text-[15px] leading-relaxed flex-1 pt-1"
+                  >
+                    {r}
+                  </ReportBlock>
                 </li>
               ))}
             </ol>
-          </div>
+          </motion.section>
         )}
 
-        {/* CTA */}
-        <div className="bg-gradient-to-l from-primary/10 to-accent/10 rounded-2xl p-6 text-center border border-primary/10">
-          <p className="text-foreground font-semibold mb-4">هل تريد تقييماً لمشروع آخر؟</p>
+        {/* ── 7. COPY-READY OPERATING PROFILE (friendly accordion) ────── */}
+        {profileText && (
+          <motion.section
+            id="profile"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+          >
+            <SectionHeading
+              eyebrow={t("results.profile.eyebrow")}
+              title={t("results.profile.title")}
+              subtitle={t("results.profile.subtitle")}
+            />
+
+            <div className="mt-8 rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.02]">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-6 py-4 border-b border-white/10 bg-white/[0.02]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500/25 to-orange-500/15 border border-white/10 flex items-center justify-center">
+                    <BookOpen className="h-4 w-4 text-rose-200" />
+                  </div>
+                  <div className="text-start">
+                    <p className="text-sm font-bold text-white">
+                      {t("results.profile.headerLabel")}
+                    </p>
+                    <p className="text-xs text-white/55">
+                      {t("results.profile.headerHint")}
+                    </p>
+                  </div>
+                </div>
+                <CopyButton
+                  text={profileText}
+                  label={t("results.profile.copyAll")}
+                  successLabel={t("results.profile.copyAllSuccess")}
+                  variant="primary"
+                  size="md"
+                />
+              </div>
+
+              <div className="p-3 sm:p-5">
+                <Accordion
+                  type="single"
+                  collapsible
+                  defaultValue="profile-body"
+                  className="space-y-2"
+                >
+                  <AccordionItem
+                    value="profile-body"
+                    className="rounded-xl border border-white/10 bg-white/[0.025] hover:bg-white/[0.04] transition-colors data-[state=open]:bg-white/[0.05] overflow-hidden"
+                  >
+                    <AccordionTrigger className="px-4 py-3.5 hover:no-underline group">
+                      <div className="flex items-center gap-3 flex-1 text-start">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-white/10 transition-colors">
+                          <Sparkles className="h-4 w-4 text-white/75" />
+                        </div>
+                        <span className="font-bold text-white text-[15px]">
+                          {t("results.profile.headerLabel")}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="px-4 pb-4 pt-1">
+                        <div className="rounded-xl bg-[#0a0c1c]/60 border border-white/10 p-4 mb-3">
+                          <ReportBlock lang={reportLangSingle}>
+                            <p className="text-[15px] text-white/85 leading-[1.95] whitespace-pre-line font-sans">
+                              {profileText}
+                            </p>
+                          </ReportBlock>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {/* ── 8. WHERE TO USE IT ──────────────────────────────────────── */}
+        <motion.section
+          id="how-to-use"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5 }}
+        >
+          <SectionHeading
+            eyebrow={t("results.howToUse.eyebrow")}
+            title={t("results.howToUse.title")}
+            subtitle={t("results.howToUse.subtitle")}
+          />
+          <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md p-2 sm:p-3">
+            <Tabs defaultValue="chatgpt" className="w-full">
+              <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl gap-1 h-auto flex-wrap">
+                {platforms.map((p) => (
+                  <TabsTrigger
+                    key={p.id}
+                    value={p.id}
+                    className="px-5 py-2 rounded-lg text-sm font-semibold text-white/65 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm transition-colors"
+                  >
+                    {p.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {platforms.map((p) => (
+                <TabsContent key={p.id} value={p.id} className="mt-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={`relative rounded-xl p-6 bg-gradient-to-br ${p.accent} border border-white/10`}
+                  >
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center">
+                        <Settings2 className="h-5 w-5 text-white" />
+                      </div>
+                      <h3 className="font-bold text-white text-lg">
+                        {t("results.howToUse.headingPrefix")} {p.name}
+                      </h3>
+                    </div>
+                    <ol className="space-y-3">
+                      {p.steps.map((step, i) => (
+                        <li
+                          key={i}
+                          className="flex items-start gap-3 p-3.5 rounded-xl bg-black/20 border border-white/10"
+                        >
+                          <span className="shrink-0 w-7 h-7 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-sm font-bold text-white">
+                            {i + 1}
+                          </span>
+                          <p className="text-white/85 text-[15px] leading-relaxed pt-0.5">
+                            {step}
+                          </p>
+                        </li>
+                      ))}
+                    </ol>
+                  </motion.div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </div>
+        </motion.section>
+
+        {/* ── 9. STARTER PROMPTS ──────────────────────────────────────── */}
+        {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 && (
+          <motion.section
+            id="starters"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+          >
+            <SectionHeading
+              eyebrow={t("results.starters.eyebrow")}
+              title={t("results.starters.title")}
+              subtitle={t("results.starters.subtitle")}
+            />
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {assessment.quickStarters.map((s, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.45, delay: i * 0.07 }}
+                  className="group relative rounded-2xl bg-gradient-to-b from-white/[0.05] to-white/[0.02] border border-white/10 hover:border-white/25 p-5 transition-all overflow-hidden"
+                >
+                  <div className="absolute -top-10 -end-10 w-32 h-32 rounded-full bg-rose-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative flex items-start gap-3 mb-4">
+                    <span className="shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-rose-500/30 to-orange-500/20 border border-white/10 flex items-center justify-center text-xs font-bold text-rose-100">
+                      {i + 1}
+                    </span>
+                    <ReportBlock
+                      lang={reportLangSingle}
+                      className="text-white/90 text-[15px] leading-relaxed flex-1"
+                    >
+                      {s}
+                    </ReportBlock>
+                  </div>
+                  <div className="relative flex justify-end">
+                    <CopyButton
+                      text={s}
+                      label={t("common.copy.label")}
+                      successLabel={t("common.copy.copied")}
+                      variant="ghost"
+                      size="sm"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {/* ── CTA ─────────────────────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5 }}
+          className="rounded-2xl border border-white/10 bg-gradient-to-l from-rose-500/10 to-orange-500/5 p-6 text-center"
+        >
+          <p className="text-white font-semibold mb-4">
+            {t("results.newCta.line")}
+          </p>
           <button
             onClick={() => navigate("/assess")}
-            className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 bg-gradient-to-l from-rose-500 to-orange-500 text-white px-8 py-3 rounded-xl font-bold hover:from-rose-400 hover:to-orange-400 transition-colors"
           >
-            ابدأ تقييماً جديداً
+            {t("results.newCta.button")}
+            <Arrow className="h-4 w-4" />
           </button>
-        </div>
-      </motion.div>
-    </div>
+        </motion.div>
+      </div>
+    </PageShell>
   );
 }

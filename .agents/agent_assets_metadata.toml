@@ -30,3 +30,27 @@ id = "J4Y3Qfim3SG0AXTGe1WbO"
 uri = "file://screenshots/p0-mismatch-en-ui-ar-report.jpg"
 type = "image"
 title = "P0 — Mismatch state (UI=en, report=ar)"
+
+[[outputs]]
+id = "-o5tX4UkjLPWXGTf1AhWP"
+uri = "file://screenshots/p1-desktop-ar.png"
+type = "image"
+title = "P1 — Desktop · Arabic (RTL)"
+
+[[outputs]]
+id = "acZigj20_Z9vY0JPnjRvD"
+uri = "file://screenshots/p1-desktop-en-mismatch.png"
+type = "image"
+title = "P1 — Desktop · English UI + Arabic report (mismatch notice visible)"
+
+[[outputs]]
+id = "piYS0v3WEo-HUz63Kll1e"
+uri = "file://screenshots/p1-mobile-ar.png"
+type = "image"
+title = "P1 — Mobile · Arabic (RTL)"
+
+[[outputs]]
+id = "9ilTZesNwHiD1qPZzyVCI"
+uri = "file://screenshots/p1-mobile-en.png"
+type = "image"
+title = "P1 — Mobile · English UI + Arabic report"

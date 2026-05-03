@@ -1,0 +1,105 @@
+P0 is accepted.
+
+Decision:
+- Bilingual/i18n foundation: accepted
+- Typecheck clean
+- AR/RTL and EN/LTR verified
+- ReportBlock direction isolation accepted
+- No forbidden backend/API/auth/payment/database/questions/routing/prompt-builder/report-parser/mini/PDF/share/email changes
+- No new dependencies
+- Production Results visual rewrite has not started yet
+
+Proceed to P1 only.
+
+P1 scope:
+Production Results visual upgrade only.
+
+Goal:
+Upgrade the real production results page visually using the approved /results-demo direction, while preserving all existing production behavior and using the P0 bilingual/i18n foundation.
+
+Allowed:
+- Modify production results render layer only
+- Add reusable visual primitives only if used by results page
+- Use existing P0 i18n infrastructure: useT(), locale dictionaries, ReportBlock
+- Add bilingual UI chrome copy for results page
+- Use static UI labels from dictionaries, not hardcoded one-language strings
+- Preserve generated report content as-is using ReportBlock
+- Respect Arabic RTL and English LTR
+- Keep /results-demo as reference
+
+Forbidden:
+- No backend/API changes
+- No auth/payment/database/admin changes
+- No questions/routing/prompt-builder/report-parser changes
+- No mini assessment changes
+- No PDF/share logic changes
+- No assessment submission changes
+- No new dependencies
+- No global theme flip
+- No landing/hero/assess/navbar changes unless absolutely required for results rendering, and if so explain before changing
+- Do not rewrite generated report content
+- Do not translate report content client-side
+- Do not change data fetching or useAuth behavior
+- Do not modify share or generate-pdf behavior
+
+Required production results changes:
+1. Replace dead or misleading v1 visual assumptions:
+   - If inspireTable is null or not meaningful in v2, do not show old score/progress-bar UI as a central element.
+   - Do not introduce fake scoring, fake charts, or percentage language.
+
+2. Add/upgrade result structure:
+   - Results ready header
+   - Assistant Identity premium card
+   - What this profile changes / benefit cards
+   - Dynamic Roles section when available
+   - Thinking & Quality Modes section when available
+   - Red Lines section
+   - Strengths / Risks section with better risk framing
+   - Copy-ready AI Operating Profile / instructions section
+   - Where to use it: ChatGPT / Gemini / Claude
+   - Starter Prompts section if available
+
+3. Human-first instruction presentation:
+   - Do not make instructions look like developer code.
+   - Use friendly labels:
+     - Arabic: تعليمات مساعدك الجاهزة / ملف تشغيل مساعدك
+     - English: Your ready-to-use assistant instructions / AI Operating Profile
+   - Use accordion/sectioned presentation if safe.
+   - Add master copy and section copy only if it does not change existing behavior riskily.
+
+4. Bilingual requirements:
+   - UI chrome must support Arabic and English.
+   - Arabic mode: RTL, Arabic primary.
+   - English mode: LTR, English primary.
+   - Use useT()/dictionary for labels.
+   - Use ReportBlock for generated report content.
+   - If UI language differs from report language, show the approved subtle mismatch notice.
+   - Provide screenshots:
+     - desktop Arabic
+     - mobile Arabic
+     - desktop English
+     - mobile English
+     - mismatch state UI=en/report=ar if possible
+
+5. Preserve existing result behavior:
+   - Existing copy actions must still work.
+   - Existing PDF button behavior must remain unchanged.
+   - Existing share behavior must remain unchanged.
+   - Existing loading/error states must remain functionally unchanged unless only visual wrapper is changed.
+   - Mini results must remain unchanged unless current results page shares unavoidable shell code; if touched, explicitly report.
+
+Acceptance criteria:
+- Typecheck passes.
+- Production results page renders successfully with real existing payload shape.
+- No backend/API/auth/payment/database/questions/routing/prompt-builder/report-parser/mini/PDF/share changes.
+- No new dependencies.
+- Arabic and English UI render correctly.
+- RTL/LTR verified.
+- inspireTable null does not create a visual hole.
+- No fake scoring/charting introduced.
+- Report content direction is correct via ReportBlock.
+- Existing PDF/share/copy behaviors preserved.
+- Provide exact files changed and git diff --stat.
+- Provide screenshots for AR/EN desktop/mobile.
+
+Hold after P1 verification. Do not proceed to P2.
