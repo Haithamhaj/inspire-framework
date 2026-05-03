@@ -1,0 +1,96 @@
+Task #13 is accepted as-is.
+
+Proceed to P3 only.
+
+P3 scope:
+Tiny Landing stale v1 copy cleanup only.
+
+Goal:
+Remove outdated v1 framing from landing copy after Task #13 bilingualization.
+
+Allowed files only:
+- artifacts/inspire-web/src/i18n/locales/ar.ts
+- artifacts/inspire-web/src/i18n/locales/en.ts
+- artifacts/inspire-web/src/pages/landing.tsx
+
+Forbidden:
+- No backend/API/auth/payment/database/admin
+- No questions/routing/prompt-builder/report-parser
+- No assessment/results/mini/PDF/share/Navbar changes
+- No layout redesign
+- No CTA route/action changes
+- No pricing/payment logic changes
+- No new dependencies
+- No visual redesign
+- No section reorder
+
+Clean up these stale v1 references:
+
+1. Replace all “24 questions + 8 AI scenarios” framing in Arabic and English.
+   Use v2-aligned language about selected behavioral signals and AI-use patterns.
+   Do not mention exact question/scenario counts unless dynamically sourced from real v2 data.
+
+2. Replace “scores”, “score sheet”, “7-axis score sheet”, and axes-as-grades framing.
+   Use:
+   - AI Operating Profile
+   - interaction profile
+   - profile map
+   - practical signal map
+   - purpose-specific profile
+   - INSPIRE profile components
+
+3. Replace the SAMPLE constant in landing.tsx.
+   It must not start with “Universal Rules”.
+   It should start with a v2-aligned structure such as:
+   - “## Assistant Identity”
+   - “## Mission & Domain Context”
+   - “## Dynamic Roles”
+   - “## Thinking & Quality Modes”
+   - “## Red Lines”
+   Keep it as a visual sample only, not generated logic.
+
+4. Keep positive Human Interactive AI framing.
+   Do not imply the user is bad at prompting.
+   Do not use shame-based copy.
+   Frame INSPIRE as helping AI work better with the user's selected goal.
+
+Suggested wording direction:
+
+Arabic:
+- بدل “24 سؤالاً + 8 سيناريوهات”:
+  “إجاباتك تكشف إشارات عملية عن هدفك، أسلوبك، وطريقة تفاعلك مع AI.”
+
+- بدل “جدول نتائج 7 محاور”:
+  “خريطة عملية توضّح كيف يجب أن يعمل AI معك في هذا الهدف.”
+
+- بدل “scores / درجات”:
+  “إشارات / مكونات / ملف تشغيل / خريطة تفاعل”
+
+English:
+- Instead of “24 behavioral questions + 8 AI scenarios”:
+  “Your answers reveal practical signals about your goal, working style, and AI interaction preferences.”
+
+- Instead of “7-axis score sheet”:
+  “A practical profile map showing how AI should work with you for this goal.”
+
+- Instead of “scores”:
+  “signals / profile components / operating profile / interaction map”
+
+Acceptance:
+- Typecheck passes.
+- Exact files changed.
+- git diff stat.
+- Confirm only the 3 allowed files changed.
+- Confirm no forbidden files touched.
+- Confirm no CTA hrefs/routes changed.
+- Confirm pricing/payment logic unchanged.
+- Confirm no layout redesign or section reorder.
+- Provide before/after list of stale strings removed.
+- Provide AR and EN screenshots for changed sections:
+  - how-it-works
+  - axes/features
+  - pricing
+  - FAQ
+  - sample output
+
+Hold after P3 verification.
