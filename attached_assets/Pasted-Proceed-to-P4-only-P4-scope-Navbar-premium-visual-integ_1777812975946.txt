@@ -1,0 +1,80 @@
+Proceed to P4 only.
+
+P4 scope:
+Navbar premium visual integration only.
+
+Goal:
+Add a route/page-scoped premium visual variant for the Navbar so it visually matches the upgraded Landing and Results pages, while preserving all existing Navbar behavior.
+
+Current accepted state:
+- P0 i18n foundation accepted
+- P1 Results visual upgrade accepted
+- P2 Landing Hero + Landing bilingualization/copy cleanup accepted
+- Task #14 Navbar bilingualization accepted
+- No P5 started
+
+P4 objective:
+The Navbar should support two visual modes:
+1. default — unchanged look for normal app pages
+2. premium — dark/glass/premium surface for Landing and Results only
+
+Allowed:
+- Modify Navbar visual rendering only
+- Add a variant prop if the app structure supports passing it safely
+- Or use a minimal route-aware selection if that is already the safer pattern in the repo
+- Apply premium variant only to Landing and Results routes
+- Keep all nav labels through existing i18n/useT
+- Preserve existing links, auth state, logout behavior, profile/reports links, start assessment CTA
+- Use existing Tailwind/Framer/lucide stack only
+- Keep AR/RTL and EN/LTR behavior correct
+
+Preferred implementation:
+- Add `variant?: "default" | "premium"` to Navbar if feasible.
+- Default remains current behavior.
+- Premium variant changes only surface/styling:
+  - transparent/dark glass background
+  - subtle border
+  - premium contrast against dark hero/results surfaces
+  - clean CTA visibility
+  - no layout disruption
+- If route-based wiring is cleaner, explain the file-level reason before applying.
+
+Forbidden:
+- No backend/API/auth/payment/database/admin changes
+- No questions/routing/prompt-builder/report-parser changes
+- No assessment/results logic changes
+- No mini/PDF/share changes
+- No new dependencies
+- No language architecture changes
+- No CTA href/route changes
+- No Navbar behavior changes
+- No full shell redesign
+- No global theme flip
+
+Acceptance criteria:
+1. Typecheck passes.
+2. Exact files changed listed.
+3. git diff --stat provided.
+4. No forbidden files touched.
+5. Navbar links are unchanged:
+   - reports
+   - profile
+   - login
+   - logout
+   - start assessment CTA
+6. Auth/logout behavior unchanged.
+7. Premium Navbar appears only on Landing and Results.
+8. Default Navbar remains unchanged on other pages.
+9. Arabic RTL screenshot:
+   - Landing premium Navbar
+   - Results premium Navbar
+   - one non-premium page default Navbar
+10. English LTR screenshot:
+   - Landing premium Navbar
+   - Results premium Navbar
+   - one non-premium page default Navbar
+11. Mobile screenshots for premium Navbar in AR and EN.
+12. Confirm no P5/Assess work started.
+
+Hold after P4 verification.
+Do not proceed to P5.

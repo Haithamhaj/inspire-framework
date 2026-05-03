@@ -1,4 +1,4 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,9 +27,12 @@ import NotFound from "@/pages/not-found";
 const queryClient = new QueryClient();
 
 function Router() {
+  const [location] = useLocation();
+  const isPremium = location === "/" || /^\/results\/[^/]+/.test(location);
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <Navbar variant={isPremium ? "premium" : "default"} />
       <main className="flex-1">
         <Switch>
           <Route path="/" component={Landing} />

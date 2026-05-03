@@ -366,3 +366,51 @@ id = "KHCSbreXhhKMIodDTWuN3"
 uri = "file://screenshots/p3-en-faq.png"
 type = "image"
 title = "P3 — EN · FAQ"
+
+[[outputs]]
+id = "gBRngNeY1IOYRrUfF2M91"
+uri = "file://screenshots/p4-ar-landing-nav.jpg"
+type = "image"
+title = "P4 — AR Desktop · Landing (premium Navbar)"
+
+[[outputs]]
+id = "5AqWIPDUM-BEY5BzLVz3d"
+uri = "file://screenshots/p4-en-landing-nav.jpg"
+type = "image"
+title = "P4 — EN Desktop · Landing (premium Navbar)"
+
+[[outputs]]
+id = "10TgSMg4X33EQDHZCDTQi"
+uri = "file://screenshots/p4-results-ar.png"
+type = "image"
+title = "P4 — AR Desktop · Results (premium Navbar)"
+
+[[outputs]]
+id = "y4yrX6N1ymemgoLK77KU8"
+uri = "file://screenshots/p4-results-en.png"
+type = "image"
+title = "P4 — EN Desktop · Results (premium Navbar)"
+
+[[outputs]]
+id = "IRsPnZCglGms_L6DMjUpJ"
+uri = "file://screenshots/p4-ar-login-nav.jpg"
+type = "image"
+title = "P4 — AR Desktop · Login (default Navbar — non-premium)"
+
+[[outputs]]
+id = "wRGSnjADeyi5ct_nmO2kF"
+uri = "file://screenshots/p4-en-login-nav.jpg"
+type = "image"
+title = "P4 — EN Desktop · Login (default Navbar — non-premium)"
+
+[[outputs]]
+id = "iULvG_DNbBPUrwXPP1JuS"
+uri = "file://screenshots/p4-mob-ar-landing-nav.jpg"
+type = "image"
+title = "P4 — AR Mobile · Landing (premium Navbar)"
+
+[[outputs]]
+id = "6J2av9dLYqkHhhhmii56V"
+uri = "file://screenshots/p4-mob-en-landing-nav.jpg"
+type = "image"
+title = "P4 — EN Mobile · Landing (premium Navbar)"
