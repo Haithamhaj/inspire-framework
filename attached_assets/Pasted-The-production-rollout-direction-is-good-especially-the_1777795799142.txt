@@ -1,0 +1,67 @@
+The production rollout direction is good, especially the Results-first scope and render-layer-only discipline.
+
+However, do not start P1 yet.
+
+The plan is missing a required bilingual/i18n strategy.
+
+Important correction:
+“Arabic first, English secondary” is not enough for production.
+
+Production INSPIRE v2 must support:
+- Arabic mode: Arabic primary + RTL
+- English mode: English primary + LTR
+
+English should not be visually secondary when the user is in English mode.
+
+Before approving P1, provide a PLANNING-ONLY bilingual addendum to:
+.local/plans/inspire-production-rollout.md
+
+No production code changes.
+No commits to product files.
+Planning only.
+
+The addendum must answer:
+
+1. Current language infrastructure audit
+   - Does the app currently have a language switcher, locale state, or translation structure?
+   - Where is user language stored or inferred?
+   - Do landing/results/assessment currently support Arabic/English, or are they hardcoded?
+
+2. Copy architecture
+   - Where should bilingual UI strings live?
+   - Should we create a copy map/dictionary for the new visual components?
+   - How do demo-derived components receive Arabic/English text without hardcoding production copy?
+
+3. RTL/LTR behavior
+   - How will components switch between RTL and LTR?
+   - Which layout elements need direction-aware ordering?
+   - How will CTA groups, cards, tabs, chips, accordions, and platform guidance behave in English mode?
+
+4. Results content language
+   - Does the production result payload already contain Arabic or English content?
+   - Is the generated report language based on assessment language, user preference, or something else?
+   - If result fields are generated in only one language, what is the safe display-layer strategy?
+   - Do not change prompt-builder/report-parser/backend yet; just audit and plan.
+
+5. Platform guidance and starter prompts
+   - How will ChatGPT/Gemini/Claude usage guidance be localized?
+   - How will starter prompts be shown in Arabic vs English?
+   - Should starter prompts match the selected result language?
+
+6. Updated phase order
+   - Add P0: bilingual/i18n audit and copy architecture.
+   - Clarify whether P1 Results visual upgrade can proceed immediately after P0 or needs copy-map setup first.
+
+7. Acceptance criteria
+   Include acceptance checks for both Arabic and English:
+   - desktop Arabic screenshot
+   - mobile Arabic screenshot
+   - desktop English screenshot
+   - mobile English screenshot
+   - RTL/LTR verified
+   - no hardcoded one-language production strings in new components
+   - no backend/API/auth/payment/database/questions/routing/prompt-builder/report-parser/mini/PDF changes
+
+Keep the existing Results-first plan, but update it so bilingual support is a first-class production requirement, not a later polish task.
+
+Hold after delivering the bilingual addendum.
