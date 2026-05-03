@@ -174,3 +174,27 @@ id = "vtajtcNYO81Xw-wuG6IRM"
 uri = "file://screenshots/p1-mismatch-close.png"
 type = "image"
 title = "Mismatch close-up — EN UI + AR project name + notice"
+
+[[outputs]]
+id = "LDZDTf0GHW_VqoxmfcYWR"
+uri = "file://screenshots/p2-hero-desk-ar.png"
+type = "image"
+title = "P2 Hero — Desktop AR (RTL)"
+
+[[outputs]]
+id = "_BEn9-0lWYMA8_S3sMAhA"
+uri = "file://screenshots/p2-hero-desk-en.png"
+type = "image"
+title = "P2 Hero — Desktop EN (LTR)"
+
+[[outputs]]
+id = "qBlK_JC8yheBXTKJ53aQC"
+uri = "file://screenshots/p2-hero-mob-ar.png"
+type = "image"
+title = "P2 Hero — Mobile AR (RTL)"
+
+[[outputs]]
+id = "tNvHf2kwI4UFO7NEG2i3i"
+uri = "file://screenshots/p2-hero-mob-en.png"
+type = "image"
+title = "P2 Hero — Mobile EN (LTR)"
