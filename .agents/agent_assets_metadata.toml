@@ -1,0 +1,32 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "ihU36Go2HeCkpgVe8AIAZ"
+uri = "file://screenshots/p0-desktop-ar.jpg"
+type = "image"
+title = "P0 — Desktop Arabic (RTL)"
+
+[[outputs]]
+id = "qs--FZvwQeZU_own0P6Ld"
+uri = "file://screenshots/p0-desktop-en.jpg"
+type = "image"
+title = "P0 — Desktop English (LTR)"
+
+[[outputs]]
+id = "oa2rzw--OgOfgvSVOeniq"
+uri = "file://screenshots/p0-mobile-ar.jpg"
+type = "image"
+title = "P0 — Mobile Arabic (RTL)"
+
+[[outputs]]
+id = "2Hg42fmUwoju44QxQwhZo"
+uri = "file://screenshots/p0-mobile-en.jpg"
+type = "image"
+title = "P0 — Mobile English (LTR)"
+
+[[outputs]]
+id = "J4Y3Qfim3SG0AXTGe1WbO"
+uri = "file://screenshots/p0-mismatch-en-ui-ar-report.jpg"
+type = "image"
+title = "P0 — Mismatch state (UI=en, report=ar)"

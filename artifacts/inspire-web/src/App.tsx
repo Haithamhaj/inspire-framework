@@ -1,9 +1,9 @@
-import { useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
+import { I18nProvider } from "@/i18n";
 import { Navbar } from "@/components/layout/Navbar";
 
 // Pages
@@ -21,6 +21,7 @@ import Admin from "@/pages/admin";
 import BillingSuccess from "@/pages/billing-success";
 import ResultsDemo from "@/pages/results-demo";
 import HeroDemo from "@/pages/hero-demo";
+import I18nDemo from "@/pages/i18n-demo";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ function Router() {
           <Route path="/billing/success" component={BillingSuccess} />
           <Route path="/results-demo" component={ResultsDemo} />
           <Route path="/hero-demo" component={HeroDemo} />
+          <Route path="/i18n-demo" component={I18nDemo} />
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
@@ -53,22 +55,18 @@ function Router() {
 }
 
 function App() {
-  useEffect(() => {
-    // Critical: Apply RTL and Arabic language attributes to root document
-    document.documentElement.lang = "ar";
-    document.documentElement.dir = "rtl";
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <AuthProvider>
-            <Router />
-          </AuthProvider>
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
+      <I18nProvider>
+        <TooltipProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <AuthProvider>
+              <Router />
+            </AuthProvider>
+          </WouterRouter>
+          <Toaster />
+        </TooltipProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

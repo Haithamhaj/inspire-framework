@@ -1,0 +1,75 @@
+Bilingual Addendum A is approved as direction.
+
+Decision:
+P0 may proceed as a small i18n foundation slice only.
+P1/P2 production visual work remains blocked until P0 is implemented and verified.
+
+Approved decisions:
+
+1. Language fallback order:
+?lang= → localStorage → navigator.language → ar
+
+2. users.preferredLanguage:
+Defer. No user migration now.
+
+3. UI/report language mismatch notice:
+Use this copy:
+
+Arabic:
+لغة الواجهة تختلف عن لغة التقرير. نعرض التقرير بلغته الأصلية حتى لا يتغير محتواه.
+
+English:
+The interface language differs from the report language. The report is shown in its original language to preserve its content.
+
+Make it a small inline notice, not a modal and not an alarming warning.
+Dismissible only if there is already a safe lightweight local dismiss pattern; otherwise keep it visible and subtle.
+
+4. reportLanguage = both:
+Approved as stacked vertical display, especially for mobile.
+
+5. useT():
+Approved as a lightweight typed adapter, as long as:
+- en structurally matches typeof ar
+- it is replaceable later
+- new i18n-aware components do not hardcode one-language production strings
+
+P0 allowed scope:
+- Add src/i18n/ structure
+- Add I18nProvider / useT()
+- Add Arabic and English locale dictionaries for Results seed UI copy
+- Replace forced document lang="ar" / dir="rtl" with language-aware document settings
+- Add <ReportBlock lang={...}> for mixed-direction report content
+- Add language detection using the approved fallback order
+- Add only what is necessary for bilingual foundation
+
+P0 forbidden scope:
+- No backend changes
+- No DB/user migration
+- No email localization
+- No Navbar language switcher yet
+- No production Results visual rewrite beyond what is necessary for i18n foundation
+- No prompt-builder/report-parser changes
+- No auth/payment/PDF/share/questions/routing/mini changes
+- No new dependencies
+
+P0 acceptance criteria:
+1. Typecheck passes.
+2. ?lang=ar renders Arabic RTL.
+3. ?lang=en renders English LTR.
+4. Default fallback preserves Arabic if no preference exists.
+5. localStorage language preference works.
+6. <ReportBlock> correctly handles:
+   - Arabic report inside English UI
+   - English report inside Arabic UI
+7. reportLanguage="both" renders stacked content safely.
+8. No one-language hardcoded strings in new i18n-aware Results primitives.
+9. No forbidden files touched.
+10. Provide screenshots:
+   - desktop Arabic
+   - mobile Arabic
+   - desktop English
+   - mobile English
+   - mismatch state: UI=en, report=ar
+
+Proceed with P0 only.
+Hold after verification.
