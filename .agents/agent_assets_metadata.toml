@@ -54,3 +54,123 @@ id = "9ilTZesNwHiD1qPZzyVCI"
 uri = "file://screenshots/p1-mobile-en.png"
 type = "image"
 title = "P1 — Mobile · English UI + Arabic report"
+
+[[outputs]]
+id = "wzloElWusSWHRyi54qu2f"
+uri = "file://screenshots/p1-desk-ar-01-header-identity.png"
+type = "image"
+title = "Desktop AR — Results-ready header + Assistant Identity"
+
+[[outputs]]
+id = "CQsBtTFZ-A2lanwMVjsqN"
+uri = "file://screenshots/p1-desk-ar-02-strengths-redlines.png"
+type = "image"
+title = "Desktop AR — Strengths grid + Red Lines / risks panel"
+
+[[outputs]]
+id = "Q9X8x7u_sHfHvw_C-Gjm9"
+uri = "file://screenshots/p1-desk-ar-03-profile-accordion.png"
+type = "image"
+title = "Desktop AR — Operating Profile accordion (open)"
+
+[[outputs]]
+id = "4ygIL3zCbI5khNLYJ6WRq"
+uri = "file://screenshots/p1-desk-ar-04-where-to-use.png"
+type = "image"
+title = "Desktop AR — Where-to-use tabs (ChatGPT active, 3 steps)"
+
+[[outputs]]
+id = "m2BRfJLce1pD_L6Awr8Fs"
+uri = "file://screenshots/p1-desk-ar-04b-gemini-tab.png"
+type = "image"
+title = "Desktop AR — Where-to-use tabs (Gemini tab swap)"
+
+[[outputs]]
+id = "hD4dS7Tuyz21dtjyhJ1oq"
+uri = "file://screenshots/p1-desk-ar-05-starters.png"
+type = "image"
+title = "Desktop AR — Starter prompts grid"
+
+[[outputs]]
+id = "MWWQk0U_DSHT_anJybR4j"
+uri = "file://screenshots/p1-desk-en-01-header-identity.png"
+type = "image"
+title = "Desktop EN — Header + Identity (mismatch notice visible)"
+
+[[outputs]]
+id = "tegokRPhwF1RsbSzzQrrz"
+uri = "file://screenshots/p1-desk-en-02-strengths-redlines.png"
+type = "image"
+title = "Desktop EN — Strengths + Red Lines"
+
+[[outputs]]
+id = "kPm5eWpLnG6BW2s-MoeSj"
+uri = "file://screenshots/p1-desk-en-03-profile-accordion.png"
+type = "image"
+title = "Desktop EN — Operating Profile accordion (open)"
+
+[[outputs]]
+id = "bTaYQ5RUkChb-bOu_M9z5"
+uri = "file://screenshots/p1-desk-en-04-where-to-use.png"
+type = "image"
+title = "Desktop EN — Where-to-use tabs"
+
+[[outputs]]
+id = "-yhx8YfV9SdhTNs7leO86"
+uri = "file://screenshots/p1-desk-en-05-starters.png"
+type = "image"
+title = "Desktop EN — Starter prompts grid"
+
+[[outputs]]
+id = "gnIp1lIYK2HZoJLBTF_OQ"
+uri = "file://screenshots/p1-mob-ar-01-top.png"
+type = "image"
+title = "Mobile AR — Top of page"
+
+[[outputs]]
+id = "6OOedfblnAgW1Y6HGJdT_"
+uri = "file://screenshots/p1-mob-ar-02-accordion.png"
+type = "image"
+title = "Mobile AR — Operating Profile accordion (open)"
+
+[[outputs]]
+id = "OW27JFsMvYlTzYmUoz0ak"
+uri = "file://screenshots/p1-mob-ar-03-tabs.png"
+type = "image"
+title = "Mobile AR — Platform tabs"
+
+[[outputs]]
+id = "ATxlfOsQFF4cFOBWVFYJ8"
+uri = "file://screenshots/p1-mob-ar-04-starters.png"
+type = "image"
+title = "Mobile AR — Starter prompts"
+
+[[outputs]]
+id = "XQITY7_NOY1CQWFQAMplk"
+uri = "file://screenshots/p1-mob-en-01-top.png"
+type = "image"
+title = "Mobile EN — Top of page (mismatch notice visible)"
+
+[[outputs]]
+id = "uwR-VixTp9r7Rcd-F-r44"
+uri = "file://screenshots/p1-mob-en-02-accordion.png"
+type = "image"
+title = "Mobile EN — Operating Profile accordion (open)"
+
+[[outputs]]
+id = "gSV0i2hLxhTCc8KKXu0vM"
+uri = "file://screenshots/p1-mob-en-03-tabs.png"
+type = "image"
+title = "Mobile EN — Platform tabs"
+
+[[outputs]]
+id = "JJ0Is7HK3vAFtWVhWaWDV"
+uri = "file://screenshots/p1-mob-en-04-starters.png"
+type = "image"
+title = "Mobile EN — Starter prompts"
+
+[[outputs]]
+id = "vtajtcNYO81Xw-wuG6IRM"
+uri = "file://screenshots/p1-mismatch-close.png"
+type = "image"
+title = "Mismatch close-up — EN UI + AR project name + notice"
