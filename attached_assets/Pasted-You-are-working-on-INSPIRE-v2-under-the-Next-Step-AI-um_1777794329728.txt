@@ -1,0 +1,239 @@
+You are working on INSPIRE v2 under the Next Step AI umbrella.
+
+Task type: VISUAL CAPABILITY DEMO ONLY.
+Do not modify backend, API, auth, payment, database, question bank, routing, prompt-builder, report-parser, mini assessment, PDF, or submission logic.
+Do not commit production logic.
+
+Build a frontend-only mock/demo hero experience using static mock data.
+
+Implementation boundary:
+- Create one new standalone demo page under:
+  artifacts/inspire-web/src/pages/hero-demo.tsx
+- Register one new route only:
+  /hero-demo
+- App.tsx may be touched only for route registration.
+- Do not modify existing landing.tsx, results.tsx, assess.tsx, Navbar.tsx, production routes, or shared business logic.
+- Static mock data only.
+- No API calls.
+- No auth context.
+- No React Query.
+- No localStorage.
+- No backend or production behavior changes.
+
+Goal:
+Create a premium homepage Hero demo that explains INSPIRE visually within a few seconds.
+
+Product philosophy:
+Next Step AI represents the user’s next step with AI.
+
+AI is already part of the present and future. The next step is not simply using AI more; it is learning how to work with AI more intentionally and more personally.
+
+INSPIRE is the first concrete step:
+It builds a purpose-specific AI Operating Profile that helps AI understand how to work with the user for a selected goal.
+
+Core positioning:
+INSPIRE is not a prompt course.
+INSPIRE is not a generic personality test.
+INSPIRE is not a developer tool.
+INSPIRE is a Human Interactive AI product that turns the user’s goal, style, and preferences into instructions that inspire AI to give better, clearer, more aligned results.
+
+Core meaning:
+INSPIRE = structured inspiration for AI.
+Arabic meaning layer:
+إلهام AI بتعليمات تجعله يعمل معك بشكل أفضل.
+
+Slogan direction:
+كل هدف له إلهامه الخاص
+
+Tone:
+Positive, empowering, human-first.
+Do NOT shame the user.
+Do NOT say the user does not know how to prompt.
+Do NOT position the product as fixing the user.
+Position it as helping the user get more value from AI.
+
+Hero message direction:
+Use or improve this idea:
+
+“خطوتك التالية مع AI تبدأ عندما يفهم كيف يعمل معك.”
+
+Supporting message direction:
+
+“INSPIRE يبني ملف تشغيل مخصصًا يساعد ChatGPT وGemini وClaude على تقديم إجابات أقرب لهدفك، أسلوبك، وسياقك.”
+
+Required hero structure:
+
+1. Left side content
+   - Small eyebrow:
+     Next Step AI / Human Interactive AI
+   - Main Arabic headline
+   - Supporting Arabic paragraph
+   - Primary CTA:
+     ابنِ ملف تشغيل مساعدك
+   - Secondary CTA:
+     شاهد كيف يعمل
+   - Trust/value microline:
+     يعمل مع ChatGPT وGemini وClaude
+
+2. Right side animated visual
+   Build an animated product preview that shows:
+   - signal chips flowing into an AI Operating Profile card
+   - chips such as:
+     - الهدف
+     - أسلوب العمل
+     - الأدوار
+     - طريقة التفكير
+     - الخطوط الحمراء
+     - نوع المخرجات
+   - these signals align into a profile preview with sections:
+     - Assistant Identity
+     - Dynamic Roles
+     - Thinking Modes
+     - Output Rules
+     - Starter Prompts
+
+3. Mini “Every goal has its INSPIRE” selector
+   Show 5 small selectable/use-case chips or cards:
+   - إدارة مشاريع
+   - كتابة
+   - تعليم وتدريب
+   - إبداع
+   - قرارات أعمال
+
+   When one is active, the animated preview should adapt slightly to that goal.
+   This can be mock animation only.
+
+   Example behavior:
+   - If “إدارة مشاريع” is active, preview emphasizes planning, risks, priorities.
+   - If “كتابة” is active, preview emphasizes voice, editing, drafts.
+   - If “تعليم وتدريب” is active, preview emphasizes explanation, examples, exercises.
+   - If “إبداع” is active, preview emphasizes ideas, alternatives, critique.
+   - If “قرارات أعمال” is active, preview emphasizes comparison, trade-offs, recommendation.
+
+4. Before / With INSPIRE micro-demo
+   Include a compact visual comparison, either below the hero or inside the preview:
+
+   Without INSPIRE:
+   - Generic AI response
+   - General advice
+   - Less connected to user goal
+
+   With INSPIRE:
+   - More contextual
+   - Role-aware
+   - Better structured
+   - More actionable
+   - Aligned with the selected goal
+
+   Keep the copy short and visual.
+   Do not make it negative or insulting.
+   Frame it as improvement, not correction.
+
+Visual direction:
+Premium AI relationship layer.
+
+Use:
+- dark navy depth
+- warm rose/orange energy
+- violet/teal intelligence accents
+- glass cards
+- soft signal lines
+- subtle glow
+- layered surfaces
+- precise Arabic typography
+- clean CTA hierarchy
+- premium but non-technical feeling
+
+The visual should feel:
+- modern
+- calm
+- intelligent
+- premium
+- AI-native
+- human-first
+- visually clear
+
+Motion direction:
+The animation should communicate:
+- signals aligning
+- profile forming
+- AI adapting to the selected goal
+- better response emerging
+
+Use Framer Motion for:
+- staggered text reveal
+- floating signal chips
+- smooth profile card formation
+- active use-case transition
+- CTA hover/tap interactions
+- subtle glow pulse
+- before/with transition
+
+Avoid:
+- robots
+- childish illustrations
+- unrelated mascots
+- heavy sci-fi cliché
+- terminal/code editor feeling
+- random particles with no meaning
+- too much bounce
+- generic SaaS visuals
+- negative prompt-failure messaging
+- fake charts or fake scoring
+- excessive animation noise
+
+Important visual learning from Prompt 1:
+- Keep the direction premium and Arabic-first.
+- Avoid excessive English clutter.
+- Avoid unrelated overlay/mascot elements.
+- Make the main value immediately visible.
+- Make the page feel like Next Step AI / INSPIRE, not a generic SaaS hero.
+
+Technical constraints:
+Use existing frontend stack where possible:
+- React
+- Tailwind
+- Framer Motion
+- Radix UI if needed
+- lucide-react
+- SVG/CSS visuals
+
+Do not add:
+- heavy 3D
+- WebGL
+- Three.js
+- video dependency
+- backend dependency
+- new production architecture
+
+Responsive requirements:
+- Desktop hero must look polished at 1280px+.
+- Mobile hero must stack cleanly at ~390px width.
+- CTAs must remain clear on mobile.
+- Animated preview must not overflow mobile viewport.
+- RTL layout must be respected.
+
+Evaluation criteria:
+1. Does the hero communicate the product idea before reading long text?
+2. Does it feel like Next Step AI / Human Interactive AI?
+3. Does it make “كل هدف له إلهامه الخاص” visually clear?
+4. Does it show INSPIRE as a purpose-specific AI profile, not a generic personality?
+5. Is the CTA attractive and clear?
+6. Is the animation meaningful, smooth, and not noisy?
+7. Does it feel positive and empowering?
+8. Does it avoid developer/code-heavy aesthetics?
+9. Does the mobile version preserve the message and premium feel?
+
+Deliverables:
+- A working frontend mock/demo hero at:
+  /hero-demo
+- Brief note explaining exact files touched.
+- Brief note explaining which visual ideas were used.
+- Typecheck command and result.
+- Confirmation that no backend/API/auth/payment/database/question/routing/prompt-builder/report-parser/mini/PDF files were touched.
+- Confirmation that static mock data only was used.
+- Desktop screenshot.
+- Mobile screenshot.
+
+Do not proceed beyond this demo.
+Hold for review after delivery.
