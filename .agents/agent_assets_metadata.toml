@@ -198,3 +198,123 @@ id = "tNvHf2kwI4UFO7NEG2i3i"
 uri = "file://screenshots/p2-hero-mob-en.png"
 type = "image"
 title = "P2 Hero — Mobile EN (LTR)"
+
+[[outputs]]
+id = "25u_GPXIX89SpyIwY-nTj"
+uri = "file://screenshots/p13-ar-2-philosophy.png"
+type = "image"
+title = "Task #13 — Desktop AR · Philosophy / Before-After"
+
+[[outputs]]
+id = "M6F2YljmQ9WIsIooVZryU"
+uri = "file://screenshots/p13-ar-3-axes.png"
+type = "image"
+title = "Task #13 — Desktop AR · 7 Axes grid"
+
+[[outputs]]
+id = "Rx9_nV_LxExYPxoI1tIVU"
+uri = "file://screenshots/p13-ar-4-sample.png"
+type = "image"
+title = "Task #13 — Desktop AR · Sample output"
+
+[[outputs]]
+id = "CW0yt1Xqa0WFJczTTL1Tl"
+uri = "file://screenshots/p13-ar-5-how.png"
+type = "image"
+title = "Task #13 — Desktop AR · How it works"
+
+[[outputs]]
+id = "z3zJ2AoCBEllmKrXnhV1z"
+uri = "file://screenshots/p13-ar-6-pricing.png"
+type = "image"
+title = "Task #13 — Desktop AR · Pricing"
+
+[[outputs]]
+id = "g5W_xAZybk11T1fyHhYfD"
+uri = "file://screenshots/p13-ar-7-faq.png"
+type = "image"
+title = "Task #13 — Desktop AR · FAQ"
+
+[[outputs]]
+id = "4PpdZE9zvOM9FCpyPfxZZ"
+uri = "file://screenshots/p13-ar-8-finalcta.png"
+type = "image"
+title = "Task #13 — Desktop AR · Final CTA"
+
+[[outputs]]
+id = "V3NP6BlM_xu7hDMUAEQiv"
+uri = "file://screenshots/p13-en-2-philosophy.png"
+type = "image"
+title = "Task #13 — Desktop EN · Philosophy / Before-After"
+
+[[outputs]]
+id = "IDtrM-nkE98HufxMzm89j"
+uri = "file://screenshots/p13-en-3-axes.png"
+type = "image"
+title = "Task #13 — Desktop EN · 7 Axes grid"
+
+[[outputs]]
+id = "YeTqKKmQXxaqIDGum_fUX"
+uri = "file://screenshots/p13-en-4-sample.png"
+type = "image"
+title = "Task #13 — Desktop EN · Sample output"
+
+[[outputs]]
+id = "JmEzZdP5Lm9HtPTHKdfoT"
+uri = "file://screenshots/p13-en-5-how.png"
+type = "image"
+title = "Task #13 — Desktop EN · How it works"
+
+[[outputs]]
+id = "r0BufLxzuW4dt5MAJEADk"
+uri = "file://screenshots/p13-en-6-pricing.png"
+type = "image"
+title = "Task #13 — Desktop EN · Pricing"
+
+[[outputs]]
+id = "bLwLmVkO1KUb3kijOrxQR"
+uri = "file://screenshots/p13-en-7-faq.png"
+type = "image"
+title = "Task #13 — Desktop EN · FAQ"
+
+[[outputs]]
+id = "RvQkO98Nnc2T-0pBXKgfM"
+uri = "file://screenshots/p13-en-8-finalcta.png"
+type = "image"
+title = "Task #13 — Desktop EN · Final CTA"
+
+[[outputs]]
+id = "tYnY6eOKXoytidx8NxYmg"
+uri = "file://screenshots/p13-mob-ar-2-axes.png"
+type = "image"
+title = "Task #13 — Mobile AR · 7 Axes"
+
+[[outputs]]
+id = "FVS44tib_R1oGwNUOVlTZ"
+uri = "file://screenshots/p13-mob-ar-4-pricing.png"
+type = "image"
+title = "Task #13 — Mobile AR · Pricing"
+
+[[outputs]]
+id = "47CL9dT90Tm2qQ_dy6dYg"
+uri = "file://screenshots/p13-mob-ar-5-faq.png"
+type = "image"
+title = "Task #13 — Mobile AR · FAQ"
+
+[[outputs]]
+id = "eGxEUwcFcAY_8SZeqf8Qh"
+uri = "file://screenshots/p13-mob-en-2-axes.png"
+type = "image"
+title = "Task #13 — Mobile EN · 7 Axes"
+
+[[outputs]]
+id = "7J85ODjQKrcuze0CoFT-K"
+uri = "file://screenshots/p13-mob-en-4-pricing.png"
+type = "image"
+title = "Task #13 — Mobile EN · Pricing"
+
+[[outputs]]
+id = "ZbpeGLHYP1tDCWlRMXG5V"
+uri = "file://screenshots/p13-mob-en-5-faq.png"
+type = "image"
+title = "Task #13 — Mobile EN · FAQ"
