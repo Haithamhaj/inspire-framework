@@ -2,7 +2,6 @@ import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import {
   usersTable,
-  refreshTokensTable,
   adminSessionsTable,
 } from "@workspace/db/schema";
 import { eq, and, gt } from "drizzle-orm";
@@ -13,7 +12,6 @@ import {
   createRefreshToken,
   rotateRefreshToken,
   revokeRefreshToken,
-  generateVerifyToken,
   getAuthUser,
 } from "../lib/auth";
 import { RegisterSchema, LoginSchema, ProfileUpdateSchema } from "../lib/validators";

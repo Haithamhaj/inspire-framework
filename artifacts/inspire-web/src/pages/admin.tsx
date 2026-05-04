@@ -179,6 +179,7 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (authed && password) loadDiscountCodes(password);
   }, [authed, password, loadDiscountCodes]);
 

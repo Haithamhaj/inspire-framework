@@ -8,7 +8,6 @@ import {
   MessageSquare,
   Copy,
   Check,
-  Loader2,
   TrendingUp,
   AlertTriangle,
   Lock,

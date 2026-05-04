@@ -4,7 +4,6 @@ import { Redirect, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   ClipboardList,
-  CheckCircle2,
   Clock,
   AlertTriangle,
   Loader2,
@@ -13,7 +12,6 @@ import {
   Download,
   ChevronLeft,
   RotateCcw,
-  Share2,
   Link2Off,
   RefreshCw,
   CreditCard,

@@ -16,7 +16,7 @@ import { VALID_OPTION_IDS_BY_QUESTION } from "../data/option-routing";
 
 const router: IRouter = Router();
 
-async function requireUser(req: Request, res: Response) {
+async function requireUser(req: Request, _res: Response) {
   const authHeader = req.headers["authorization"] as string | undefined;
   const auth = await getAuthUser(authHeader);
   if (!auth) return null;
@@ -73,7 +73,7 @@ router.post(
           eq(assessmentsTable.status, "completed")
         )
       );
-    const completedCount = Number(completedRow?.total ?? 0);
+    const _completedCount = Number(completedRow?.total ?? 0);
 
     // Mini assessments are always free; all full assessments require payment
     let validatedPaymentId: string | null = null;

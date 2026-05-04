@@ -5,7 +5,7 @@ import {
   paymentsTable,
   discountCodesTable,
 } from "@workspace/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 
 const router: IRouter = Router();
@@ -47,7 +47,7 @@ async function getPayPalAccessToken(): Promise<string> {
   return data.access_token;
 }
 
-async function requireUser(req: Request, res: Response) {
+async function requireUser(req: Request, _res: Response) {
   const authHeader = req.headers["authorization"] as string | undefined;
   const auth = await getAuthUser(authHeader);
   if (!auth) return null;

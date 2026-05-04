@@ -252,6 +252,7 @@ export default function Assess() {
   const [paymentError, setPaymentError] = useState("");
   const [processingFree, setProcessingFree] = useState(false);
 
+  // eslint-disable-next-line react-hooks/purity
   const startTime = useRef(Date.now());
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

@@ -1,7 +1,6 @@
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, User, ClipboardList, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
 import { useI18n } from "@/i18n";
 
 type NavbarProps = {

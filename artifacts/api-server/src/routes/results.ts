@@ -4,14 +4,13 @@ import { assessmentsTable, usersTable } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import { generateAndSavePDF } from "../lib/pdf";
-import { logger } from "../lib/logger";
 import path from "path";
 import fs from "fs";
 import { randomBytes } from "crypto";
 
 const router: IRouter = Router();
 
-async function requireUser(req: Request, res: Response) {
+async function requireUser(req: Request, _res: Response) {
   const authHeader = req.headers["authorization"] as string | undefined;
   const auth = await getAuthUser(authHeader);
   if (!auth) return null;

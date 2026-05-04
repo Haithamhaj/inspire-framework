@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { assessmentsTable, usersTable, discountCodesTable, paymentsTable } from "@workspace/db/schema";
-import { eq, and, gte, lte, like, or, sql, desc, count, avg } from "drizzle-orm";
+import { eq, and, gte, lte, or, desc, count, avg } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendResultsEmail } from "../lib/email";
 
