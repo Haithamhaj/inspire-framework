@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Brain, FileText, Zap, CheckCircle2, ChevronDown,
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import LandingHero from "@/components/landing-hero/landing-hero";
+import { InspireExplainerSection } from "@/components/inspire-explainer/InspireExplainerSection";
 import { useI18n } from "@/i18n";
 import { ar } from "@/i18n/locales/ar";
 import { en } from "@/i18n/locales/en";
@@ -72,6 +73,38 @@ export default function Landing() {
 
       {/* ─── HERO ─────────────────────────────────────────── */}
       <LandingHero primaryHref="/assess/mini" secondaryAnchorId="how-it-works" />
+
+      {/* ─── EXPLAINER DEMO ───────────────────────────────── */}
+      <section className="py-20 px-6">
+        <div className="container max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">
+              {locale === "ar" ? "شاهد كيف يعمل" : "See It In Action"}
+            </span>
+            <h2 className="text-4xl font-display font-bold text-foreground mb-4">
+              {locale === "ar" ? "الفرق الذي يصنعه ملف التشغيل" : "The Difference a Profile Makes"}
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              {locale === "ar"
+                ? "بدون ملف تشغيل، الذكاء الاصطناعي يجيب بشكل عام. بعده، يعرف تمامًا كيف تفكر وما تحتاجه."
+                : "Without a profile, AI responds generically. With one, it knows exactly how you think and what you need."}
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.15 }}
+          >
+            <InspireExplainerSection />
+          </motion.div>
+        </div>
+      </section>
 
       {/* ─── PHILOSOPHY (THE PROBLEM) ─────────────────────── */}
       <section className="py-24 px-6 bg-foreground text-background">
