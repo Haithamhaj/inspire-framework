@@ -439,6 +439,9 @@ export function buildPromptV2(data: PromptDataV2): string {
 
   const calculatedPrimaryRole = computedProfile.primaryOperatingArchetype;
   const calculatedSecondaryRole = computedProfile.secondaryOperatingMode ?? "None";
+  const secondaryRoleInstructionTrigger = computedProfile.secondaryRole
+    ? `Activate ${computedProfile.secondaryRole} only when the task clearly needs that mode; do not expose score thresholds or selection logic.`
+    : "No secondary role was computed.";
 
   const roleByLabel = Object.fromEntries(
     ROLE_HINTS.map((role) => [ROLE_LABELS[role], role])
@@ -515,6 +518,17 @@ export function buildPromptV2(data: PromptDataV2): string {
       return role ? `${label}: ${roleContextByRole[role]}` : `${label}: Calculated by role score.`;
     });
 
+  const thinkingModesForPrompt = computedProfile.thinkingModeProfile.selectedModes.map((mode) => ({
+    modeId: mode.modeId,
+    displayName: mode.displayName,
+    category: mode.category,
+    priorityLevel: mode.priorityLevel,
+    trigger: mode.trigger,
+    whenToUse: mode.whenToUse,
+    howToApply: mode.howToApply,
+    whenNotToUse: mode.whenNotToUse,
+  }));
+
   const computedProfileForPrompt = {
     inspireSectionScores: computedProfile.inspireSectionScores,
     inspireSectionPercentages: computedProfile.inspireSectionPercentages,
@@ -540,6 +554,10 @@ export function buildPromptV2(data: PromptDataV2): string {
     selectedOutputRules: computedProfile.selectedOutputRules,
     selectedRedLines: computedProfile.selectedRedLines,
     selectedRiskGuards: computedProfile.selectedRiskGuards,
+    thinkingModeProfile: {
+      selectedModes: thinkingModesForPrompt,
+      summary: computedProfile.thinkingModeProfile.summary,
+    },
     openAnswerOverlay: computedProfile.openAnswerOverlay,
   };
 
@@ -547,13 +565,15 @@ export function buildPromptV2(data: PromptDataV2): string {
 
 You are not analyzing the user from scratch.
 The profile has already been computed by the INSPIRE decision engine.
-Your task is only to write a clear user-facing report and a copy-ready system instruction using the computed profile.
+Your most important task is to write a copy-ready assistant instruction using the computed profile.
+Keep the existing user-facing report marker blocks compatible, but do not redesign them in this task.
 Do not change the computed roles, scores, contradictions, selected rules, or risk guards.
 Do not re-score answers.
 Do not re-analyze raw answers.
 Do not choose a new domainRole, primaryOperatingArchetype, secondaryOperatingMode, primaryRole, or secondaryRole.
+Do not choose thinking modes. The decision engine has already selected them in computedProfile.thinkingModeProfile.selectedModes.
 Do not invent unsupported personality traits.
-Do not add generic advice that is not backed by selectedInstructionRules, selectedOutputRules, selectedRedLines, selectedRiskGuards, topEvidenceLabels, or the open-answer overlay.
+Do not add generic advice that is not backed by selectedInstructionRules, selectedOutputRules, selectedRedLines, selectedRiskGuards, contradictionRulesGenerated, domainRole, projectContext, thinkingModeProfile.selectedModes, topEvidenceLabels, or the open-answer overlay.
 
 ## Subject Profile
 - Name: ${data.name}
@@ -608,42 +628,85 @@ Create two clearly separated outputs:
 The report may explain what the computed profile means, but it must remain conservative and evidence-backed.
 The system instruction must be operational text addressed to an AI assistant.
 
-Output EXACTLY these 8 sections using the markers shown. Do not add or omit any section.
+Output EXACTLY these 8 marker blocks using the markers shown. Do not add or omit any marker block.
 
 ===FULL_INSTRUCTION_START===
-Write a complete, standalone AI system instruction this person can paste directly into any AI tool as their permanent system prompt.
+Write ONLY the complete, standalone INSPIRE assistant instruction this person can paste directly into ChatGPT, Gemini, Claude, or another AI assistant.
 
 MANDATORY:
 - This section is model-facing, not user-facing analysis.
-- Start directly with section 1 below.
+- Address the client's AI assistant directly.
+- Start directly with "# INSPIRE Assistant Instructions".
 - Do not include report explanation inside this section.
-- Do not add sections outside the seven fixed INSPIRE sections.
+- Do not explain why the profile, role, rules, or thinking modes were selected.
+- Do not expose raw scores, priority scores, evidence labels, selectionSignals, matrix logic, JSON, or computedProfile terminology.
+- Do not write phrases like "this user", "the client tends to", "selected because", "based on the score", "computedProfile", or "matrix".
 - Use Domain Role exactly unless translation requires natural wording: ${computedProfile.domainRole}.
 - Use the calculated Primary Operating Archetype exactly unless translation requires natural wording: ${calculatedPrimaryRole}.
 - Include Secondary Dynamic Mode only if computedProfile.secondaryOperatingMode is not null: ${calculatedSecondaryRole}.
-- Use selectedInstructionRules, selectedOutputRules, selectedRedLines, selectedRiskGuards, contradictionRulesGenerated, and openAnswerOverlay as the only behavioral sources.
+- Use selectedInstructionRules, selectedOutputRules, selectedRedLines, selectedRiskGuards, contradictionRulesGenerated, domainRole, projectContext, openAnswerOverlay, and thinkingModeProfile.selectedModes as the behavioral sources.
+- Use ONLY computedProfile.thinkingModeProfile.selectedModes for section 8. Do not invent, add, remove, or rename thinking modes.
+- Fixed general INSPIRE rules: this is not a personality report, not generic prompt advice, and not an explanation of the assessment; it is operational custom-instruction text for an AI assistant.
 
-Use this exact seven-section INSPIRE format and order:
-1. Identity & Role
-   - Define who the AI is for ${data.name}.
+Use this exact nine-section INSPIRE format and order:
+
+# INSPIRE Assistant Instructions
+
+## 1. Assistant Identity & Role
+   - Write direct instructions to the AI assistant.
+   - If report language is Arabic, start naturally like: "أنت مساعد مخصص لـ ${data.name} في سياق ${data.projectName}..."
+   - If report language is English, start naturally like: "You are a custom assistant for ${data.name} in the context of ${data.projectName}..."
+   - Include client name: ${data.name}.
+   - Include project name: ${data.projectName}.
    - Domain Role: Act as ${computedProfile.domainRole} within the selected domain ${computedProfile.domain}.
    - Project Context: ${computedProfile.projectContext ? `Use this as background and use-case context: ${computedProfile.projectContext}` : "No project context was provided; keep examples relevant to the selected domain only."}
-   - If no specialization is provided, stay at the general domain level and do not pretend to have a specific sub-specialization.
-   - Primary Operating Archetype: Operate primarily as ${calculatedPrimaryRole}.
-   - Secondary Dynamic Mode: Activate ${calculatedSecondaryRole} only when the trigger condition appears.
+   - Primary Role: Operate primarily as ${calculatedPrimaryRole}.
+   - Secondary Role: Include ${calculatedSecondaryRole} only if it is not "None"; activate it only when this trigger applies: ${secondaryRoleInstructionTrigger}
    - Boundary: Domain/domainSpecialization define expertise. ProjectContext defines the use case and background. The operating archetype defines delivery behavior. Do not turn projectContext into a professional specialization unless explicitly stated. Do not infer specialization from behavioral answers alone.
-2. Norms & Boundaries
-   - Convert selectedInstructionRules, selectedRedLines, selectedRiskGuards, and contradictionRulesGenerated into operating boundaries.
-3. Style & Tone
-   - Define communication style only from computed evidence and open-answer overlay.
-4. Precision & Self-Check
-   - Define verification, assumptions, gap handling, and self-check behavior from computed rules.
-5. Internal Evaluation
-   - Define how the assistant should evaluate alternatives, risks, quality, and trade-offs without revealing hidden chain-of-thought.
-6. Response Structure
-   - Define answer order, depth, examples, options, and copy-ready behavior from selectedOutputRules.
-7. Enhancement & Adaptation
-   - Define how the assistant should learn from corrections, refine outputs, and adapt without weakening stable preferences.
+
+## 2. Operating Mission
+   - Tell the AI assistant what it is supposed to help ${data.name} do in ${data.projectName}.
+   - Use projectContext, domainRole, selectedInstructionRules, and selectedOutputRules.
+   - Write direct operating behavior, not analysis.
+
+## 3. Norms & Boundaries
+   - Convert selectedRedLines, selectedRiskGuards, contradictionRulesGenerated, and fixed general INSPIRE rules into direct rules.
+   - Include rules in the form: do this, avoid this, stop or clarify when this happens.
+   - Do not include reasons, scores, evidence, or selection logic.
+
+## 4. Style & Tone
+   - Use StyleTone signals from the computed profile, selectedInstructionRules, selectedOutputRules, and the open-answer overlay if available.
+   - Define tone, length, directness, level of detail, and language behavior.
+   - Keep it direct and usable; avoid decorative language.
+
+## 5. Precision & Self-Check
+   - Use PrecisionSelfCheck, selectedRiskGuards, contradictionRulesGenerated, and selected modes such as Fact Verification / Evidence Check or Self-Consistency / Quality Gate if they are present.
+   - Tell the assistant how to check uncertainty, avoid generic output, separate fact / inference / recommendation when needed, and avoid inventing information.
+   - Do not ask the assistant to reveal hidden chain-of-thought.
+
+## 6. Response Structure
+   - Use ResponseStructure, selectedOutputRules, and selected thinking modes related to structure, action, review, or execution.
+   - Define answer-first behavior, sections, bullets, steps, tables only when useful, and copy-ready outputs.
+
+## 7. Adaptation & Feedback
+   - Use EnhancementAdaptation, secondaryRoleTrigger, and selected modes such as Clarification Gate, Scope Control / Anti-Sprawl, Recovery / Revert Reasoning, or Consistency Check if present.
+   - Tell the assistant how to adapt to corrections, preserve stable rules, ask only one focused question when needed, and avoid scope sprawl.
+
+## 8. Thinking Modes Manual
+   - Use ONLY computedProfile.thinkingModeProfile.selectedModes.
+   - For every selected mode, write one concise operational instruction containing:
+     1. when to use it
+     2. how to apply it
+     3. when not to use it
+   - Use each mode's displayName, whenToUse, howToApply, and whenNotToUse.
+   - Do not include modeId, category, priorityLevel, priorityScore, trigger labels, why it was selected, evidence labels, selectionSignals, scores, JSON, or matrix logic.
+   - Example style in Arabic: "استخدم Devil’s Advocate عند مراجعة قرار، خطة، أو منطق قبل اعتماده. طبّقه عبر كشف الافتراضات الضعيفة، الثغرات، والمخاطر المحتملة، ثم قدّم توصية عملية واضحة. لا تستخدمه عند طلب تنفيذ بسيط ومباشر لا يحتاج مراجعة نقدية."
+   - Example style in English: "Use Devil’s Advocate when reviewing a decision, plan, or logic before approval. Apply it by exposing weak assumptions, gaps, and risks, then give a clear practical recommendation. Do not use it for simple direct execution requests that do not need critique."
+
+## 9. Starter Usage Commands
+   - Write 3 to 5 short starter commands ${data.name} can send after pasting this instruction.
+   - These must be commands to the AI assistant, not report analysis.
+   - Tailor them to the selected thinking modes, projectContext, selectedInstructionRules, and selectedOutputRules.
 
 Do NOT write any Universal Quality Rules, Universal Rules, Performance Rules, honesty protocol, source protocol, or confidence protocol in this section. Those rules are appended by the system after parsing and must remain fixed across all analyses.
 
@@ -651,12 +714,14 @@ Write in second person addressing the AI. Sound authoritative and natural, not m
 Do not paste raw matrix internals. Use only the computed profile fields.
 
 Before finalizing this section, silently check that it:
-- uses exactly the seven INSPIRE sections above
+- uses exactly the nine INSPIRE sections above
 - is copy-ready and model-facing
 - does not contain user-facing explanation
 - is not generic
 - does not override computed roles
 - does not infer domain specialization from behavioral answers
+- includes every selected thinking mode as a when/how/when-not-to-use manual
+- exposes no selection reasons, scores, evidence labels, selectionSignals, JSON, or matrix logic
 - does not start with Universal Quality Rules
 - does not include any universal rules generated by AI
 - is concise and not bloated

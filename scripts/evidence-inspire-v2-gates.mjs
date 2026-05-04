@@ -166,6 +166,42 @@ const promptTemplate = buildPromptV2({
   openAnswer: proofProfiles[0].openAnswer,
 });
 
+const computedProfileJsonBlock = promptTemplate.match(/```json\n([\s\S]*?)\n```/)?.[1] ?? "";
+
+const promptContractProof = {
+  thinkingModeProfilePresent: promptTemplate.includes('"thinkingModeProfile"'),
+  selectedModesPassed: promptTemplate.includes('"selectedModes"'),
+  modeManualContractPresent: promptTemplate.includes("## 8. Thinking Modes Manual"),
+  whenHowWhenNotRequired:
+    promptTemplate.includes("whenToUse") &&
+    promptTemplate.includes("howToApply") &&
+    promptTemplate.includes("whenNotToUse") &&
+    promptTemplate.includes("when/how/when-not-to-use"),
+  instructionOnlyCopyReadyContract: promptTemplate.includes(
+    "Write ONLY the complete, standalone INSPIRE assistant instruction"
+  ),
+  aiWriterCannotChooseModes: promptTemplate.includes(
+    "Do not choose thinking modes"
+  ),
+  forbidsSelectionReasonsScoresAndMatrix:
+    promptTemplate.includes("Do not explain why") &&
+    promptTemplate.includes("Do not expose raw scores") &&
+    promptTemplate.includes("selectionSignals") &&
+    promptTemplate.includes("matrix logic"),
+  noSelectionSignalsInSelectedModePayload: !computedProfileJsonBlock.includes("selectionSignals"),
+  noPriorityScoresInSelectedModePayload: !computedProfileJsonBlock.includes("priorityScore"),
+};
+
+const failedPromptContractChecks = Object.entries(promptContractProof)
+  .filter(([, passed]) => !passed)
+  .map(([name]) => name);
+
+if (failedPromptContractChecks.length > 0) {
+  throw new Error(
+    `INSPIRE v2 writer prompt contract failed: ${failedPromptContractChecks.join(", ")}`
+  );
+}
+
 function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -433,6 +469,7 @@ const evidence = {
   generatedAt: new Date().toISOString(),
   proofProfiles: proofProfileJson,
   finalPromptTemplateAsSentFromBuildPromptV2: promptTemplate,
+  promptContractProof,
   realCsvSmoke: {
     sourceFile: csvPath.replace(/\/[^/]+$/, "/[masked file]"),
     mappingNote:
@@ -464,6 +501,7 @@ console.log(JSON.stringify({
   promptPath,
   smokePath,
   proofProfileNames: Object.keys(proofProfileJson),
+  promptContractProof,
   realCsvRows: realRowSmoke,
   validationCases,
   migrationRequirement: evidence.migrationRequirement,
