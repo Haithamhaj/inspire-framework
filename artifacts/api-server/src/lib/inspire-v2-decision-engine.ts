@@ -4,6 +4,10 @@ import {
   type InspireInstructionSection,
   type RoleHint,
 } from "../data/option-routing";
+import {
+  selectThinkingModes,
+  type ThinkingModeProfile,
+} from "./inspire-v2-thinking-modes";
 
 export interface V2SelectedAnswer {
   questionId: string;
@@ -56,6 +60,7 @@ export interface InspireV2ComputedProfile {
     affects: string[];
     note: string;
   };
+  thinkingModeProfile: ThinkingModeProfile;
 }
 
 export const FINAL_INSPIRE_SECTIONS: InspireInstructionSection[] = [
@@ -345,6 +350,24 @@ export function computeInspireV2Profile(params: {
       .map(({ route }) => route.riskGuard)
   ).slice(0, 10);
 
+  const topEvidenceLabels = evidenceRows.slice(0, 8).map((row) => row.label);
+  const thinkingModeProfile = selectThinkingModes({
+    roleScores,
+    inspireSectionScores,
+    inspireSectionPercentages,
+    contradictionTags,
+    selectedInstructionRules,
+    selectedOutputRules,
+    selectedRedLines,
+    selectedRiskGuards,
+    topEvidenceLabels,
+    domain: domainProfile.domain,
+    domainRole: domainProfile.domainRole,
+    domainSpecialization: domainProfile.domainSpecialization,
+    projectContext: domainProfile.projectContext,
+    openAnswer: params.openAnswer,
+  });
+
   return {
     selectedAnswers: weightedRoutes.map(({ route, weightedScore }) => ({
       questionId: route.questionId,
@@ -371,7 +394,7 @@ export function computeInspireV2Profile(params: {
       score: roundScore(confidenceScore),
       label: confidenceLabel,
     },
-    topEvidenceLabels: evidenceRows.slice(0, 8).map((row) => row.label),
+    topEvidenceLabels,
     selectedInstructionRules,
     selectedOutputRules,
     selectedRedLines,
@@ -383,5 +406,6 @@ export function computeInspireV2Profile(params: {
       note:
         "The open-ended answer is passed to the AI writer as qualitative context only. It must not change INSPIRE section scores or role scores directly.",
     },
+    thinkingModeProfile,
   };
 }

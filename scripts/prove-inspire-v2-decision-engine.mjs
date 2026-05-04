@@ -62,6 +62,10 @@ const testProfiles = [
     name: "fast executor",
     expectedPrimaryRole: "Executor / Builder",
     expectedDominantSections: ["ResponseStructure", "NormsBoundaries", "EnhancementAdaptation"],
+    expectedThinkingModes: [
+      "react_action_oriented_reasoning",
+      "self_consistency_quality_gate",
+    ],
     openAnswer:
       "I want the assistant to move quickly, draft usable versions, and avoid long theory unless I ask.",
     choices: {
@@ -92,6 +96,11 @@ const testProfiles = [
     name: "analytical critical reviewer",
     expectedPrimaryRole: "Critical Reviewer",
     expectedDominantSections: ["PrecisionSelfCheck", "NormsBoundaries", "InternalEvaluation"],
+    expectedThinkingModes: [
+      "devils_advocate_weakness_detection",
+      "counterexample_testing",
+      "self_consistency_quality_gate",
+    ],
     openAnswer:
       "I need the assistant to expose assumptions, weak logic, missing evidence, and quality risks before execution.",
     choices: {
@@ -152,6 +161,7 @@ const testProfiles = [
     name: "strategic organizer",
     expectedPrimaryRole: "Strategic Organizer",
     expectedDominantSections: ["ResponseStructure", "NormsBoundaries", "IdentityRole"],
+    expectedThinkingModes: ["decision_review", "step_back_reasoning"],
     openAnswer:
       "I want organized thinking, priorities, sequencing, clear outcomes, and context-aware planning.",
     choices: {
@@ -182,6 +192,11 @@ const testProfiles = [
     name: "thinking partner / conversational explorer",
     expectedPrimaryRole: "Thinking Partner",
     expectedDominantSections: ["IdentityRole", "InternalEvaluation", "PrecisionSelfCheck"],
+    expectedThinkingModes: [
+      "step_back_reasoning",
+      "scenario_testing",
+      "tree_of_thoughts_alternatives_exploration",
+    ],
     openAnswer:
       "I like exploring possibilities with the assistant, asking good questions, and comparing paths before deciding.",
     choices: {
@@ -256,8 +271,14 @@ for (const testProfile of testProfiles) {
   });
 
   const dominantSections = topSections(computedProfile, 3);
+  const selectedThinkingModeIds = computedProfile.thinkingModeProfile.selectedModes.map(
+    (mode) => mode.modeId
+  );
   const matchedDominantSections = testProfile.expectedDominantSections.filter((section) =>
     dominantSections.includes(section)
+  );
+  const matchedThinkingModes = (testProfile.expectedThinkingModes ?? []).filter((modeId) =>
+    selectedThinkingModeIds.includes(modeId)
   );
   const coveredOrNotedSections = Object.entries(computedProfile.inspireSectionScores).filter(
     ([section, score]) => score > 0 || computedProfile.lowCoverageNotes[section]
@@ -290,6 +311,36 @@ for (const testProfile of testProfiles) {
       coveredOrNotedSections.length === 7,
       `${testProfile.name}: not all INSPIRE sections have coverage or low-coverage notes`
     );
+    assert(
+      computedProfile.thinkingModeProfile.selectedModes.length >= 4,
+      `${testProfile.name}: expected at least 4 thinking modes, got ${computedProfile.thinkingModeProfile.selectedModes.length}`
+    );
+    assert(
+      computedProfile.thinkingModeProfile.selectedModes.length <= 7,
+      `${testProfile.name}: expected no more than 7 thinking modes, got ${computedProfile.thinkingModeProfile.selectedModes.length}`
+    );
+    assert(
+      matchedThinkingModes.length >= Math.min(2, testProfile.expectedThinkingModes?.length ?? 0),
+      `${testProfile.name}: expected thinking modes from ${(testProfile.expectedThinkingModes ?? []).join(
+        ", "
+      )}, got ${selectedThinkingModeIds.join(", ")}`
+    );
+    for (const mode of computedProfile.thinkingModeProfile.selectedModes) {
+      assert(mode.modeId, `${testProfile.name}: selected thinking mode missing modeId`);
+      assert(mode.category, `${testProfile.name}: selected thinking mode missing category`);
+      assert(
+        typeof mode.priorityScore === "number",
+        `${testProfile.name}: selected thinking mode missing priorityScore`
+      );
+      assert(mode.trigger, `${testProfile.name}: selected thinking mode missing trigger`);
+      assert(mode.whenToUse, `${testProfile.name}: selected thinking mode missing whenToUse`);
+      assert(mode.howToApply, `${testProfile.name}: selected thinking mode missing howToApply`);
+      assert(mode.whenNotToUse, `${testProfile.name}: selected thinking mode missing whenNotToUse`);
+      assert(
+        mode.selectionSignals && Object.keys(mode.selectionSignals).length > 0,
+        `${testProfile.name}: selected thinking mode missing selectionSignals`
+      );
+    }
   } catch (error) {
     failures.push(error.message);
   }
@@ -299,6 +350,8 @@ for (const testProfile of testProfiles) {
     expectedPrimaryRole: testProfile.expectedPrimaryRole,
     dominantSections,
     matchedDominantSections,
+    selectedThinkingModeIds,
+    matchedThinkingModes,
     computedProfile,
   });
 }

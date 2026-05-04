@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T20:10:54.773Z",
+  "generatedAt": "2026-05-04T22:02:40.422Z",
   "proofProfiles": {
     "fast executor": {
       "selectedAnswers": [
@@ -289,6 +289,538 @@
           "adaptation rules"
         ],
         "note": "The open-ended answer is passed to the AI writer as qualitative context only. It must not change INSPIRE section scores or role scores directly."
+      },
+      "thinkingModeProfile": {
+        "selectedModes": [
+          {
+            "modeId": "self_consistency_quality_gate",
+            "displayName": "Self-Consistency / Quality Gate",
+            "category": "core",
+            "trigger": "Use before important final outputs to check coherence, gaps, contradictions, and usability.",
+            "whenToUse": "Use before important final outputs, handoffs, reports, instructions, or recommendations.",
+            "howToApply": "Check coherence, missing pieces, contradictions, usability, and whether the output matches the stated goal.",
+            "whenNotToUse": "Do not add a visible quality gate to trivial answers unless the user asks for verification.",
+            "priorityScore": 91.5,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:57.5",
+                "CriticalReviewer:34"
+              ],
+              "inspireSectionSignals": [
+                "PrecisionSelfCheck:15%",
+                "InternalEvaluation:15%"
+              ],
+              "selectedRuleSignals": [
+                "Turn initial intuition into a testable hypothesis instead of treating it as final truth.:execution",
+                "Suggest templates, tools, or shortcuts to reduce friction and increase execution.:execution"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:8"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "intuition tested decision (Q03_unfamiliar_decision:intuition_tested):execution"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "react_action_oriented_reasoning",
+            "displayName": "ReAct / Action-Oriented Reasoning",
+            "category": "core",
+            "trigger": "Use for execution, testing, debugging, implementation steps, and result verification.",
+            "whenToUse": "Use when the task requires implementation, debugging, testing, execution, or stepwise verification.",
+            "howToApply": "Take the next practical action, observe the result, adjust the plan, and verify the outcome.",
+            "whenNotToUse": "Do not use action loops for purely reflective or explanatory requests.",
+            "priorityScore": 84.25,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:57.5"
+              ],
+              "inspireSectionSignals": [
+                "ResponseStructure:15%"
+              ],
+              "selectedRuleSignals": [
+                "Turn initial intuition into a testable hypothesis instead of treating it as final truth.:execution",
+                "Suggest templates, tools, or shortcuts to reduce friction and increase execution.:execution",
+                "Lower the starting friction with a very small first step when focus or energy is the blocker.:structure-sequence",
+                "Turn ideas and analysis into steps, examples, or usable drafts.:structure-sequence"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:8",
+                "autonomy_vs_guidance:3"
+              ],
+              "riskGuardSignals": [
+                "Apply conditionally; do not force heavy structure on simple requests.:structure-sequence",
+                "Do not force heavy structure on very small direct answers.:structure-sequence"
+              ],
+              "evidenceLabelSignals": [
+                "intuition tested decision (Q03_unfamiliar_decision:intuition_tested):execution"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "decision_review",
+            "displayName": "Decision Review",
+            "category": "conditional",
+            "trigger": "Use when choosing a path, accepting/rejecting a change, or approving a recommendation.",
+            "whenToUse": "Use when the user needs to choose, accept, reject, approve, or prioritize a path.",
+            "howToApply": "Compare decision criteria, trade-offs, risks, and expected value, then recommend one path.",
+            "whenNotToUse": "Do not perform a decision review when no decision is being made.",
+            "priorityScore": 65.65,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:57.5",
+                "StrategicOrganizer:24"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:11%",
+                "InternalEvaluation:15%",
+                "ResponseStructure:15%"
+              ],
+              "selectedRuleSignals": [
+                "Suggest alternative routes quickly after failure without over-diagnosing when time matters.:alternatives-comparison",
+                "Suggest a small safe experiment before full commitment when the path is unclear.:alternatives-comparison",
+                "If the same fix fails repeatedly, propose different alternatives rather than only a refined repeat.:alternatives-comparison",
+                "Use the goal and decision impact as the deciding standard when opinions conflict.:decision"
+              ],
+              "contradictionSignals": [
+                "autonomy_vs_guidance:3"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "intuition tested decision (Q03_unfamiliar_decision:intuition_tested):decision"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "step_back_reasoning",
+            "displayName": "Step-Back Reasoning",
+            "category": "core",
+            "trigger": "Use when the problem is unclear, messy, or the apparent question may not be the real problem.",
+            "whenToUse": "Use when the request is unclear, broad, messy, or likely needs reframing before execution.",
+            "howToApply": "Briefly restate the real goal, name the missing or hidden frame, then proceed with the most useful interpretation.",
+            "whenNotToUse": "Do not use for simple direct execution where the goal and output are already clear.",
+            "priorityScore": 50.95,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "StrategicOrganizer:24",
+                "ThinkingPartner:33.5",
+                "TeacherSimplifier:14"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:11%"
+              ],
+              "selectedRuleSignals": [
+                "Start with what is clear when gaps do not block progress, then improve iteratively.:gap-or-assumption",
+                "Start with what is clear when gaps do not block progress, then improve iteratively.:gap-or-assumption"
+              ],
+              "contradictionSignals": [
+                "brevity_vs_depth:2"
+              ],
+              "riskGuardSignals": [
+                "No paralysis from missing context:gap-or-assumption"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "fact_verification_evidence_check",
+            "displayName": "Fact Verification / Evidence Check",
+            "category": "conditional",
+            "trigger": "Use when information may be outdated, uncertain, disputed, factual, legal, technical, financial, or high-impact.",
+            "whenToUse": "Use when factual accuracy, evidence, freshness, or high-impact correctness matters.",
+            "howToApply": "Separate fact from inference and recommendation, verify unstable claims, and flag uncertainty clearly.",
+            "whenNotToUse": "Do not over-verify stable facts or subjective creative preferences.",
+            "priorityScore": 50.8,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:34"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:24%",
+                "PrecisionSelfCheck:15%"
+              ],
+              "selectedRuleSignals": [],
+              "contradictionSignals": [
+                "speed_vs_precision:8"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "scenario_testing",
+            "displayName": "Scenario Testing",
+            "category": "conditional",
+            "trigger": "Use when a decision has multiple possible outcomes or paths.",
+            "whenToUse": "Use when outcomes vary by stakeholder, path, condition, or future scenario.",
+            "howToApply": "Compare a small set of likely scenarios, describe consequences, and identify the safest or highest-value path.",
+            "whenNotToUse": "Do not create scenarios when the task has one obvious path or the user asked for a single direct output.",
+            "priorityScore": 48.85,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "StrategicOrganizer:24",
+                "ThinkingPartner:33.5"
+              ],
+              "inspireSectionSignals": [
+                "ResponseStructure:15%"
+              ],
+              "selectedRuleSignals": [
+                "Suggest alternative routes quickly after failure without over-diagnosing when time matters.:alternatives-comparison",
+                "Suggest a small safe experiment before full commitment when the path is unclear.:alternatives-comparison",
+                "If the same fix fails repeatedly, propose different alternatives rather than only a refined repeat.:alternatives-comparison"
+              ],
+              "contradictionSignals": [
+                "creativity_vs_structure:4"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "scope_control_anti_sprawl",
+            "displayName": "Scope Control / Anti-Sprawl",
+            "category": "guard",
+            "trigger": "Use when the task starts expanding beyond the agreed goal.",
+            "whenToUse": "Use when the work starts expanding, adding unrelated fixes, or drifting from the agreed goal.",
+            "howToApply": "Restate the agreed scope, separate out-of-scope items, and keep the next action focused.",
+            "whenNotToUse": "Do not reject useful adjacent work when the user explicitly broadens scope.",
+            "priorityScore": 43.35,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:57.5"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:24%",
+                "EnhancementAdaptation:8%"
+              ],
+              "selectedRuleSignals": [],
+              "contradictionSignals": [
+                "adaptation_vs_stability:3"
+              ],
+              "riskGuardSignals": [
+                "Apply conditionally; do not force heavy structure on simple requests.:scope-control",
+                "Use only when the task is meaningful; avoid overcomplicating simple answers.:scope-control",
+                "Do not force heavy structure on very small direct answers.:scope-control"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "coreModes": [
+          {
+            "modeId": "self_consistency_quality_gate",
+            "displayName": "Self-Consistency / Quality Gate",
+            "category": "core",
+            "trigger": "Use before important final outputs to check coherence, gaps, contradictions, and usability.",
+            "whenToUse": "Use before important final outputs, handoffs, reports, instructions, or recommendations.",
+            "howToApply": "Check coherence, missing pieces, contradictions, usability, and whether the output matches the stated goal.",
+            "whenNotToUse": "Do not add a visible quality gate to trivial answers unless the user asks for verification.",
+            "priorityScore": 91.5,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:57.5",
+                "CriticalReviewer:34"
+              ],
+              "inspireSectionSignals": [
+                "PrecisionSelfCheck:15%",
+                "InternalEvaluation:15%"
+              ],
+              "selectedRuleSignals": [
+                "Turn initial intuition into a testable hypothesis instead of treating it as final truth.:execution",
+                "Suggest templates, tools, or shortcuts to reduce friction and increase execution.:execution"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:8"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "intuition tested decision (Q03_unfamiliar_decision:intuition_tested):execution"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "react_action_oriented_reasoning",
+            "displayName": "ReAct / Action-Oriented Reasoning",
+            "category": "core",
+            "trigger": "Use for execution, testing, debugging, implementation steps, and result verification.",
+            "whenToUse": "Use when the task requires implementation, debugging, testing, execution, or stepwise verification.",
+            "howToApply": "Take the next practical action, observe the result, adjust the plan, and verify the outcome.",
+            "whenNotToUse": "Do not use action loops for purely reflective or explanatory requests.",
+            "priorityScore": 84.25,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:57.5"
+              ],
+              "inspireSectionSignals": [
+                "ResponseStructure:15%"
+              ],
+              "selectedRuleSignals": [
+                "Turn initial intuition into a testable hypothesis instead of treating it as final truth.:execution",
+                "Suggest templates, tools, or shortcuts to reduce friction and increase execution.:execution",
+                "Lower the starting friction with a very small first step when focus or energy is the blocker.:structure-sequence",
+                "Turn ideas and analysis into steps, examples, or usable drafts.:structure-sequence"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:8",
+                "autonomy_vs_guidance:3"
+              ],
+              "riskGuardSignals": [
+                "Apply conditionally; do not force heavy structure on simple requests.:structure-sequence",
+                "Do not force heavy structure on very small direct answers.:structure-sequence"
+              ],
+              "evidenceLabelSignals": [
+                "intuition tested decision (Q03_unfamiliar_decision:intuition_tested):execution"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "step_back_reasoning",
+            "displayName": "Step-Back Reasoning",
+            "category": "core",
+            "trigger": "Use when the problem is unclear, messy, or the apparent question may not be the real problem.",
+            "whenToUse": "Use when the request is unclear, broad, messy, or likely needs reframing before execution.",
+            "howToApply": "Briefly restate the real goal, name the missing or hidden frame, then proceed with the most useful interpretation.",
+            "whenNotToUse": "Do not use for simple direct execution where the goal and output are already clear.",
+            "priorityScore": 50.95,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "StrategicOrganizer:24",
+                "ThinkingPartner:33.5",
+                "TeacherSimplifier:14"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:11%"
+              ],
+              "selectedRuleSignals": [
+                "Start with what is clear when gaps do not block progress, then improve iteratively.:gap-or-assumption",
+                "Start with what is clear when gaps do not block progress, then improve iteratively.:gap-or-assumption"
+              ],
+              "contradictionSignals": [
+                "brevity_vs_depth:2"
+              ],
+              "riskGuardSignals": [
+                "No paralysis from missing context:gap-or-assumption"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "conditionalModes": [
+          {
+            "modeId": "decision_review",
+            "displayName": "Decision Review",
+            "category": "conditional",
+            "trigger": "Use when choosing a path, accepting/rejecting a change, or approving a recommendation.",
+            "whenToUse": "Use when the user needs to choose, accept, reject, approve, or prioritize a path.",
+            "howToApply": "Compare decision criteria, trade-offs, risks, and expected value, then recommend one path.",
+            "whenNotToUse": "Do not perform a decision review when no decision is being made.",
+            "priorityScore": 65.65,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:57.5",
+                "StrategicOrganizer:24"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:11%",
+                "InternalEvaluation:15%",
+                "ResponseStructure:15%"
+              ],
+              "selectedRuleSignals": [
+                "Suggest alternative routes quickly after failure without over-diagnosing when time matters.:alternatives-comparison",
+                "Suggest a small safe experiment before full commitment when the path is unclear.:alternatives-comparison",
+                "If the same fix fails repeatedly, propose different alternatives rather than only a refined repeat.:alternatives-comparison",
+                "Use the goal and decision impact as the deciding standard when opinions conflict.:decision"
+              ],
+              "contradictionSignals": [
+                "autonomy_vs_guidance:3"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "intuition tested decision (Q03_unfamiliar_decision:intuition_tested):decision"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "fact_verification_evidence_check",
+            "displayName": "Fact Verification / Evidence Check",
+            "category": "conditional",
+            "trigger": "Use when information may be outdated, uncertain, disputed, factual, legal, technical, financial, or high-impact.",
+            "whenToUse": "Use when factual accuracy, evidence, freshness, or high-impact correctness matters.",
+            "howToApply": "Separate fact from inference and recommendation, verify unstable claims, and flag uncertainty clearly.",
+            "whenNotToUse": "Do not over-verify stable facts or subjective creative preferences.",
+            "priorityScore": 50.8,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:34"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:24%",
+                "PrecisionSelfCheck:15%"
+              ],
+              "selectedRuleSignals": [],
+              "contradictionSignals": [
+                "speed_vs_precision:8"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "scenario_testing",
+            "displayName": "Scenario Testing",
+            "category": "conditional",
+            "trigger": "Use when a decision has multiple possible outcomes or paths.",
+            "whenToUse": "Use when outcomes vary by stakeholder, path, condition, or future scenario.",
+            "howToApply": "Compare a small set of likely scenarios, describe consequences, and identify the safest or highest-value path.",
+            "whenNotToUse": "Do not create scenarios when the task has one obvious path or the user asked for a single direct output.",
+            "priorityScore": 48.85,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "StrategicOrganizer:24",
+                "ThinkingPartner:33.5"
+              ],
+              "inspireSectionSignals": [
+                "ResponseStructure:15%"
+              ],
+              "selectedRuleSignals": [
+                "Suggest alternative routes quickly after failure without over-diagnosing when time matters.:alternatives-comparison",
+                "Suggest a small safe experiment before full commitment when the path is unclear.:alternatives-comparison",
+                "If the same fix fails repeatedly, propose different alternatives rather than only a refined repeat.:alternatives-comparison"
+              ],
+              "contradictionSignals": [
+                "creativity_vs_structure:4"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "guardModes": [
+          {
+            "modeId": "scope_control_anti_sprawl",
+            "displayName": "Scope Control / Anti-Sprawl",
+            "category": "guard",
+            "trigger": "Use when the task starts expanding beyond the agreed goal.",
+            "whenToUse": "Use when the work starts expanding, adding unrelated fixes, or drifting from the agreed goal.",
+            "howToApply": "Restate the agreed scope, separate out-of-scope items, and keep the next action focused.",
+            "whenNotToUse": "Do not reject useful adjacent work when the user explicitly broadens scope.",
+            "priorityScore": 43.35,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:57.5"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:24%",
+                "EnhancementAdaptation:8%"
+              ],
+              "selectedRuleSignals": [],
+              "contradictionSignals": [
+                "adaptation_vs_stability:3"
+              ],
+              "riskGuardSignals": [
+                "Apply conditionally; do not force heavy structure on simple requests.:scope-control",
+                "Use only when the task is meaningful; avoid overcomplicating simple answers.:scope-control",
+                "Do not force heavy structure on very small direct answers.:scope-control"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "rejectedModes": [
+          {
+            "modeId": "tree_of_thoughts_alternatives_exploration",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "structured_reasoning",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "clarification_gate",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "devils_advocate_weakness_detection",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "risk_guard_reasoning",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "consistency_check",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "counterexample_testing",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "readiness_gate",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          }
+        ],
+        "summary": {
+          "primaryThinkingStyle": "Self-Consistency / Quality Gate + ReAct / Action-Oriented Reasoning",
+          "instructionSummary": "Operate primarily through Self-Consistency / Quality Gate and ReAct / Action-Oriented Reasoning. Apply guardrails through Scope Control / Anti-Sprawl when risk appears. Use conditional modes only when the task context triggers them."
+        }
       }
     },
     "analytical critical reviewer": {
@@ -577,6 +1109,574 @@
           "adaptation rules"
         ],
         "note": "The open-ended answer is passed to the AI writer as qualitative context only. It must not change INSPIRE section scores or role scores directly."
+      },
+      "thinkingModeProfile": {
+        "selectedModes": [
+          {
+            "modeId": "self_consistency_quality_gate",
+            "displayName": "Self-Consistency / Quality Gate",
+            "category": "core",
+            "trigger": "Use before important final outputs to check coherence, gaps, contradictions, and usability.",
+            "whenToUse": "Use before important final outputs, handoffs, reports, instructions, or recommendations.",
+            "howToApply": "Check coherence, missing pieces, contradictions, usability, and whether the output matches the stated goal.",
+            "whenNotToUse": "Do not add a visible quality gate to trivial answers unless the user asks for verification.",
+            "priorityScore": 112.9,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:23.5",
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [
+                "PrecisionSelfCheck:15%",
+                "InternalEvaluation:15%"
+              ],
+              "selectedRuleSignals": [
+                "Review available resources, constraints, and inputs before building the solution.:execution",
+                "Review available resources, constraints, and inputs before building the solution.:execution",
+                "Clarify requirements and success criteria before execution when ambiguity causes delay.:execution"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:11"
+              ],
+              "riskGuardSignals": [
+                "No untestable output:execution"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:execution"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "devils_advocate_weakness_detection",
+            "displayName": "Devil's Advocate / Weakness Detection",
+            "category": "core",
+            "trigger": "Use when reviewing logic, decisions, readiness, plans, reports, launch quality, or weak assumptions.",
+            "whenToUse": "Use when reviewing a decision, plan, launch, report, argument, or important recommendation.",
+            "howToApply": "Identify weak assumptions, gaps, contradictions, and likely failure points, then give a practical improvement path.",
+            "whenNotToUse": "Do not use harsh critique for a simple execution request that does not require review.",
+            "priorityScore": 101,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [],
+              "selectedRuleSignals": [
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:risk-quality-readiness",
+                "When a plan fails, diagnose the root cause, not only the visible symptom.:risk-quality-readiness",
+                "Start with risk and assumption scan before proposing a plan for new challenges.:risk-quality-readiness",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:risk-quality-readiness",
+                "For important outputs, add a quality criterion or short check to evaluate the answer.:risk-quality-readiness"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:7"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "root cause analysis (Q04_plan_failure:root_cause):risk-quality-readiness",
+                "risk first (Q08_new_challenge:risk_first):risk-quality-readiness"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:risk-quality-readiness"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "fact_verification_evidence_check",
+            "displayName": "Fact Verification / Evidence Check",
+            "category": "conditional",
+            "trigger": "Use when information may be outdated, uncertain, disputed, factual, legal, technical, financial, or high-impact.",
+            "whenToUse": "Use when factual accuracy, evidence, freshness, or high-impact correctness matters.",
+            "howToApply": "Separate fact from inference and recommendation, verify unstable claims, and flag uncertainty clearly.",
+            "whenNotToUse": "Do not over-verify stable facts or subjective creative preferences.",
+            "priorityScore": 89.5,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:25%",
+                "PrecisionSelfCheck:15%"
+              ],
+              "selectedRuleSignals": [
+                "Review available resources, constraints, and inputs before building the solution.:source-evidence",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:source-evidence",
+                "Review available resources, constraints, and inputs before building the solution.:source-evidence"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:11"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "resource oriented (Q01_starting_orientation:resource_oriented):source-evidence"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:source-evidence"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "risk_guard_reasoning",
+            "displayName": "Risk Guard Reasoning",
+            "category": "guard",
+            "trigger": "Use when the action may create loss, broken UX, wrong launch, wrong merge, wasted effort, or operational risk.",
+            "whenToUse": "Use when the task could create operational, launch, quality, UX, merge, cost, or trust risk.",
+            "howToApply": "Identify the likely failure mode, reduce the risk, and propose the safest next step.",
+            "whenNotToUse": "Do not block low-risk work with unnecessary warnings.",
+            "priorityScore": 83,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:25%"
+              ],
+              "selectedRuleSignals": [
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:risk-quality-readiness",
+                "When a plan fails, diagnose the root cause, not only the visible symptom.:risk-quality-readiness",
+                "Start with risk and assumption scan before proposing a plan for new challenges.:risk-quality-readiness",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:risk-quality-readiness",
+                "For important outputs, add a quality criterion or short check to evaluate the answer.:risk-quality-readiness"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:7"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "root cause analysis (Q04_plan_failure:root_cause):risk-quality-readiness",
+                "risk first (Q08_new_challenge:risk_first):risk-quality-readiness"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:risk-quality-readiness"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "react_action_oriented_reasoning",
+            "displayName": "ReAct / Action-Oriented Reasoning",
+            "category": "core",
+            "trigger": "Use for execution, testing, debugging, implementation steps, and result verification.",
+            "whenToUse": "Use when the task requires implementation, debugging, testing, execution, or stepwise verification.",
+            "howToApply": "Take the next practical action, observe the result, adjust the plan, and verify the outcome.",
+            "whenNotToUse": "Do not use action loops for purely reflective or explanatory requests.",
+            "priorityScore": 69.65,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:23.5"
+              ],
+              "inspireSectionSignals": [
+                "ResponseStructure:14%"
+              ],
+              "selectedRuleSignals": [
+                "Review available resources, constraints, and inputs before building the solution.:execution",
+                "When stuck, diagnose whether the blocker is goal, information, sequence, confidence, or complexity.:structure-sequence",
+                "Explain complex concepts through organized steps and a clear reasoning summary.:structure-sequence",
+                "Review available resources, constraints, and inputs before building the solution.:execution",
+                "When stuck, diagnose whether the blocker is goal, information, sequence, confidence, or complexity.:structure-sequence",
+                "Explain complex concepts through organized steps and a clear reasoning summary.:structure-sequence",
+                "Clarify requirements and success criteria before execution when ambiguity causes delay.:execution"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:11",
+                "autonomy_vs_guidance:1"
+              ],
+              "riskGuardSignals": [
+                "No untestable output:execution",
+                "Apply conditionally; do not force heavy structure on simple requests.:structure-sequence"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:execution"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "decision_review",
+            "displayName": "Decision Review",
+            "category": "conditional",
+            "trigger": "Use when choosing a path, accepting/rejecting a change, or approving a recommendation.",
+            "whenToUse": "Use when the user needs to choose, accept, reject, approve, or prioritize a path.",
+            "howToApply": "Compare decision criteria, trade-offs, risks, and expected value, then recommend one path.",
+            "whenNotToUse": "Do not perform a decision review when no decision is being made.",
+            "priorityScore": 60.15,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:23.5",
+                "StrategicOrganizer:16.5"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:12%",
+                "InternalEvaluation:15%",
+                "ResponseStructure:14%"
+              ],
+              "selectedRuleSignals": [
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:alternatives-comparison",
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:decision"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:7",
+                "autonomy_vs_guidance:1"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "evaluation first (Q03_unfamiliar_decision:evaluation_first):decision"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "counterexample_testing",
+            "displayName": "Counterexample Testing",
+            "category": "conditional",
+            "trigger": "Use when a rule, conclusion, or assumption needs to be tested against exceptions.",
+            "whenToUse": "Use when a conclusion, rule, plan, or assumption may fail under edge cases or exceptions.",
+            "howToApply": "Test the claim against likely counterexamples and revise the recommendation if it breaks.",
+            "whenNotToUse": "Do not search for edge cases when the task is low-risk and already bounded.",
+            "priorityScore": 44.5,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [
+                "PrecisionSelfCheck:15%"
+              ],
+              "selectedRuleSignals": [
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:decision"
+              ],
+              "contradictionSignals": [],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "evaluation first (Q03_unfamiliar_decision:evaluation_first):decision"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "coreModes": [
+          {
+            "modeId": "self_consistency_quality_gate",
+            "displayName": "Self-Consistency / Quality Gate",
+            "category": "core",
+            "trigger": "Use before important final outputs to check coherence, gaps, contradictions, and usability.",
+            "whenToUse": "Use before important final outputs, handoffs, reports, instructions, or recommendations.",
+            "howToApply": "Check coherence, missing pieces, contradictions, usability, and whether the output matches the stated goal.",
+            "whenNotToUse": "Do not add a visible quality gate to trivial answers unless the user asks for verification.",
+            "priorityScore": 112.9,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:23.5",
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [
+                "PrecisionSelfCheck:15%",
+                "InternalEvaluation:15%"
+              ],
+              "selectedRuleSignals": [
+                "Review available resources, constraints, and inputs before building the solution.:execution",
+                "Review available resources, constraints, and inputs before building the solution.:execution",
+                "Clarify requirements and success criteria before execution when ambiguity causes delay.:execution"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:11"
+              ],
+              "riskGuardSignals": [
+                "No untestable output:execution"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:execution"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "devils_advocate_weakness_detection",
+            "displayName": "Devil's Advocate / Weakness Detection",
+            "category": "core",
+            "trigger": "Use when reviewing logic, decisions, readiness, plans, reports, launch quality, or weak assumptions.",
+            "whenToUse": "Use when reviewing a decision, plan, launch, report, argument, or important recommendation.",
+            "howToApply": "Identify weak assumptions, gaps, contradictions, and likely failure points, then give a practical improvement path.",
+            "whenNotToUse": "Do not use harsh critique for a simple execution request that does not require review.",
+            "priorityScore": 101,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [],
+              "selectedRuleSignals": [
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:risk-quality-readiness",
+                "When a plan fails, diagnose the root cause, not only the visible symptom.:risk-quality-readiness",
+                "Start with risk and assumption scan before proposing a plan for new challenges.:risk-quality-readiness",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:risk-quality-readiness",
+                "For important outputs, add a quality criterion or short check to evaluate the answer.:risk-quality-readiness"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:7"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "root cause analysis (Q04_plan_failure:root_cause):risk-quality-readiness",
+                "risk first (Q08_new_challenge:risk_first):risk-quality-readiness"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:risk-quality-readiness"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "react_action_oriented_reasoning",
+            "displayName": "ReAct / Action-Oriented Reasoning",
+            "category": "core",
+            "trigger": "Use for execution, testing, debugging, implementation steps, and result verification.",
+            "whenToUse": "Use when the task requires implementation, debugging, testing, execution, or stepwise verification.",
+            "howToApply": "Take the next practical action, observe the result, adjust the plan, and verify the outcome.",
+            "whenNotToUse": "Do not use action loops for purely reflective or explanatory requests.",
+            "priorityScore": 69.65,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:23.5"
+              ],
+              "inspireSectionSignals": [
+                "ResponseStructure:14%"
+              ],
+              "selectedRuleSignals": [
+                "Review available resources, constraints, and inputs before building the solution.:execution",
+                "When stuck, diagnose whether the blocker is goal, information, sequence, confidence, or complexity.:structure-sequence",
+                "Explain complex concepts through organized steps and a clear reasoning summary.:structure-sequence",
+                "Review available resources, constraints, and inputs before building the solution.:execution",
+                "When stuck, diagnose whether the blocker is goal, information, sequence, confidence, or complexity.:structure-sequence",
+                "Explain complex concepts through organized steps and a clear reasoning summary.:structure-sequence",
+                "Clarify requirements and success criteria before execution when ambiguity causes delay.:execution"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:11",
+                "autonomy_vs_guidance:1"
+              ],
+              "riskGuardSignals": [
+                "No untestable output:execution",
+                "Apply conditionally; do not force heavy structure on simple requests.:structure-sequence"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:execution"
+              ],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "conditionalModes": [
+          {
+            "modeId": "fact_verification_evidence_check",
+            "displayName": "Fact Verification / Evidence Check",
+            "category": "conditional",
+            "trigger": "Use when information may be outdated, uncertain, disputed, factual, legal, technical, financial, or high-impact.",
+            "whenToUse": "Use when factual accuracy, evidence, freshness, or high-impact correctness matters.",
+            "howToApply": "Separate fact from inference and recommendation, verify unstable claims, and flag uncertainty clearly.",
+            "whenNotToUse": "Do not over-verify stable facts or subjective creative preferences.",
+            "priorityScore": 89.5,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:25%",
+                "PrecisionSelfCheck:15%"
+              ],
+              "selectedRuleSignals": [
+                "Review available resources, constraints, and inputs before building the solution.:source-evidence",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:source-evidence",
+                "Review available resources, constraints, and inputs before building the solution.:source-evidence"
+              ],
+              "contradictionSignals": [
+                "speed_vs_precision:11"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "resource oriented (Q01_starting_orientation:resource_oriented):source-evidence"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:source-evidence"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "decision_review",
+            "displayName": "Decision Review",
+            "category": "conditional",
+            "trigger": "Use when choosing a path, accepting/rejecting a change, or approving a recommendation.",
+            "whenToUse": "Use when the user needs to choose, accept, reject, approve, or prioritize a path.",
+            "howToApply": "Compare decision criteria, trade-offs, risks, and expected value, then recommend one path.",
+            "whenNotToUse": "Do not perform a decision review when no decision is being made.",
+            "priorityScore": 60.15,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:23.5",
+                "StrategicOrganizer:16.5"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:12%",
+                "InternalEvaluation:15%",
+                "ResponseStructure:14%"
+              ],
+              "selectedRuleSignals": [
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:alternatives-comparison",
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:decision"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:7",
+                "autonomy_vs_guidance:1"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "evaluation first (Q03_unfamiliar_decision:evaluation_first):decision"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "counterexample_testing",
+            "displayName": "Counterexample Testing",
+            "category": "conditional",
+            "trigger": "Use when a rule, conclusion, or assumption needs to be tested against exceptions.",
+            "whenToUse": "Use when a conclusion, rule, plan, or assumption may fail under edge cases or exceptions.",
+            "howToApply": "Test the claim against likely counterexamples and revise the recommendation if it breaks.",
+            "whenNotToUse": "Do not search for edge cases when the task is low-risk and already bounded.",
+            "priorityScore": 44.5,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [
+                "PrecisionSelfCheck:15%"
+              ],
+              "selectedRuleSignals": [
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:decision"
+              ],
+              "contradictionSignals": [],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "evaluation first (Q03_unfamiliar_decision:evaluation_first):decision"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "guardModes": [
+          {
+            "modeId": "risk_guard_reasoning",
+            "displayName": "Risk Guard Reasoning",
+            "category": "guard",
+            "trigger": "Use when the action may create loss, broken UX, wrong launch, wrong merge, wasted effort, or operational risk.",
+            "whenToUse": "Use when the task could create operational, launch, quality, UX, merge, cost, or trust risk.",
+            "howToApply": "Identify the likely failure mode, reduce the risk, and propose the safest next step.",
+            "whenNotToUse": "Do not block low-risk work with unnecessary warnings.",
+            "priorityScore": 83,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:80"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:25%"
+              ],
+              "selectedRuleSignals": [
+                "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.:risk-quality-readiness",
+                "When a plan fails, diagnose the root cause, not only the visible symptom.:risk-quality-readiness",
+                "Start with risk and assumption scan before proposing a plan for new challenges.:risk-quality-readiness",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:risk-quality-readiness",
+                "For important outputs, add a quality criterion or short check to evaluate the answer.:risk-quality-readiness"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:7"
+              ],
+              "riskGuardSignals": [],
+              "evidenceLabelSignals": [
+                "root cause analysis (Q04_plan_failure:root_cause):risk-quality-readiness",
+                "risk first (Q08_new_challenge:risk_first):risk-quality-readiness"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:risk-quality-readiness"
+              ],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "rejectedModes": [
+          {
+            "modeId": "step_back_reasoning",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "structured_reasoning",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "readiness_gate",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "clarification_gate",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "assumption_check",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "scope_control_anti_sprawl",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "scenario_testing",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "tree_of_thoughts_alternatives_exploration",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          }
+        ],
+        "summary": {
+          "primaryThinkingStyle": "Self-Consistency / Quality Gate + Devil's Advocate / Weakness Detection",
+          "instructionSummary": "Operate primarily through Self-Consistency / Quality Gate and Devil's Advocate / Weakness Detection. Apply guardrails through Risk Guard Reasoning when risk appears. Use conditional modes only when the task context triggers them."
+        }
       }
     },
     "thinking partner / conversational explorer": {
@@ -869,6 +1969,576 @@
           "adaptation rules"
         ],
         "note": "The open-ended answer is passed to the AI writer as qualitative context only. It must not change INSPIRE section scores or role scores directly."
+      },
+      "thinkingModeProfile": {
+        "selectedModes": [
+          {
+            "modeId": "decision_review",
+            "displayName": "Decision Review",
+            "category": "conditional",
+            "trigger": "Use when choosing a path, accepting/rejecting a change, or approving a recommendation.",
+            "whenToUse": "Use when the user needs to choose, accept, reject, approve, or prioritize a path.",
+            "howToApply": "Compare decision criteria, trade-offs, risks, and expected value, then recommend one path.",
+            "whenNotToUse": "Do not perform a decision review when no decision is being made.",
+            "priorityScore": 87.35,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:25",
+                "StrategicOrganizer:19"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:11%",
+                "InternalEvaluation:15%",
+                "ResponseStructure:14%"
+              ],
+              "selectedRuleSignals": [
+                "Surface alternative viewpoints and stakeholder impact before deciding.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:8",
+                "autonomy_vs_guidance:6"
+              ],
+              "riskGuardSignals": [
+                "Avoid single-path certainty too early:alternatives-comparison",
+                "Do not overload the user with options when the request is already specific.:alternatives-comparison"
+              ],
+              "evidenceLabelSignals": [
+                "collaborative decision (Q03_unfamiliar_decision:collaborative_decision):decision",
+                "multi path exploration (Q06_success_clarity:multi_path):alternatives-comparison"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:alternatives-comparison"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "devils_advocate_weakness_detection",
+            "displayName": "Devil's Advocate / Weakness Detection",
+            "category": "core",
+            "trigger": "Use when reviewing logic, decisions, readiness, plans, reports, launch quality, or weak assumptions.",
+            "whenToUse": "Use when reviewing a decision, plan, launch, report, argument, or important recommendation.",
+            "howToApply": "Identify weak assumptions, gaps, contradictions, and likely failure points, then give a practical improvement path.",
+            "whenNotToUse": "Do not use harsh critique for a simple execution request that does not require review.",
+            "priorityScore": 75,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:40"
+              ],
+              "inspireSectionSignals": [],
+              "selectedRuleSignals": [
+                "Ask one high-impact question when missing information would change answer quality.:risk-quality-readiness",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:risk-quality-readiness",
+                "Ask one high-impact question when missing information would change answer quality.:risk-quality-readiness"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:8"
+              ],
+              "riskGuardSignals": [
+                "Do not overload the user with options when the request is already specific.:risk-quality-readiness"
+              ],
+              "evidenceLabelSignals": [
+                "support or second opinion (Q04_plan_failure:second_opinion):risk-quality-readiness"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "scenario_testing",
+            "displayName": "Scenario Testing",
+            "category": "conditional",
+            "trigger": "Use when a decision has multiple possible outcomes or paths.",
+            "whenToUse": "Use when outcomes vary by stakeholder, path, condition, or future scenario.",
+            "howToApply": "Compare a small set of likely scenarios, describe consequences, and identify the safest or highest-value path.",
+            "whenNotToUse": "Do not create scenarios when the task has one obvious path or the user asked for a single direct output.",
+            "priorityScore": 70.1,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "StrategicOrganizer:19",
+                "ThinkingPartner:61",
+                "AudienceTranslator:9"
+              ],
+              "inspireSectionSignals": [
+                "ResponseStructure:14%"
+              ],
+              "selectedRuleSignals": [
+                "Surface alternative viewpoints and stakeholder impact before deciding.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison"
+              ],
+              "contradictionSignals": [
+                "creativity_vs_structure:3"
+              ],
+              "riskGuardSignals": [
+                "Avoid single-path certainty too early:alternatives-comparison",
+                "Do not overload the user with options when the request is already specific.:alternatives-comparison"
+              ],
+              "evidenceLabelSignals": [
+                "multi path exploration (Q06_success_clarity:multi_path):alternatives-comparison"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:alternatives-comparison"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "tree_of_thoughts_alternatives_exploration",
+            "displayName": "Tree of Thoughts / Alternatives Exploration",
+            "category": "conditional",
+            "trigger": "Use when several solution paths exist and need comparison before choosing.",
+            "whenToUse": "Use when there are several plausible solution paths and choosing too early could reduce quality.",
+            "howToApply": "Present two or three viable paths, compare trade-offs, then recommend the strongest path.",
+            "whenNotToUse": "Do not overload the user with alternatives when the request is already specific.",
+            "priorityScore": 69.2,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ThinkingPartner:61"
+              ],
+              "inspireSectionSignals": [],
+              "selectedRuleSignals": [
+                "Surface alternative viewpoints and stakeholder impact before deciding.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison"
+              ],
+              "contradictionSignals": [
+                "creativity_vs_structure:3"
+              ],
+              "riskGuardSignals": [
+                "Avoid single-path certainty too early:alternatives-comparison",
+                "Do not overload the user with options when the request is already specific.:alternatives-comparison"
+              ],
+              "evidenceLabelSignals": [
+                "multi path exploration (Q06_success_clarity:multi_path):alternatives-comparison"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:alternatives-comparison"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "risk_guard_reasoning",
+            "displayName": "Risk Guard Reasoning",
+            "category": "guard",
+            "trigger": "Use when the action may create loss, broken UX, wrong launch, wrong merge, wasted effort, or operational risk.",
+            "whenToUse": "Use when the task could create operational, launch, quality, UX, merge, cost, or trust risk.",
+            "howToApply": "Identify the likely failure mode, reduce the risk, and propose the safest next step.",
+            "whenNotToUse": "Do not block low-risk work with unnecessary warnings.",
+            "priorityScore": 64.2,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:40"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:23%"
+              ],
+              "selectedRuleSignals": [
+                "Ask one high-impact question when missing information would change answer quality.:risk-quality-readiness",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:risk-quality-readiness",
+                "Ask one high-impact question when missing information would change answer quality.:risk-quality-readiness"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:8"
+              ],
+              "riskGuardSignals": [
+                "Do not overload the user with options when the request is already specific.:risk-quality-readiness"
+              ],
+              "evidenceLabelSignals": [
+                "support or second opinion (Q04_plan_failure:second_opinion):risk-quality-readiness"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "step_back_reasoning",
+            "displayName": "Step-Back Reasoning",
+            "category": "core",
+            "trigger": "Use when the problem is unclear, messy, or the apparent question may not be the real problem.",
+            "whenToUse": "Use when the request is unclear, broad, messy, or likely needs reframing before execution.",
+            "howToApply": "Briefly restate the real goal, name the missing or hidden frame, then proceed with the most useful interpretation.",
+            "whenNotToUse": "Do not use for simple direct execution where the goal and output are already clear.",
+            "priorityScore": 60.55,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "StrategicOrganizer:19",
+                "ThinkingPartner:61",
+                "TeacherSimplifier:6"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:11%"
+              ],
+              "selectedRuleSignals": [
+                "Ask one high-impact question when missing information would change answer quality.:gap-or-assumption",
+                "Ask one high-impact question when missing information would change answer quality.:gap-or-assumption"
+              ],
+              "contradictionSignals": [
+                "brevity_vs_depth:1"
+              ],
+              "riskGuardSignals": [
+                "Avoid fixed-audience assumptions:gap-or-assumption"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "clarification_gate",
+            "displayName": "Clarification Gate",
+            "category": "conditional",
+            "trigger": "Use when a missing detail blocks quality, but ask only one focused question if truly needed.",
+            "whenToUse": "Use when one missing detail would materially change quality or direction.",
+            "howToApply": "Ask one focused question, or state a clear assumption and proceed when the missing detail is not blocking.",
+            "whenNotToUse": "Do not ask clarification questions that only delay usable progress.",
+            "priorityScore": 56.4,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ThinkingPartner:61",
+                "TeacherSimplifier:6"
+              ],
+              "inspireSectionSignals": [
+                "EnhancementAdaptation:7%"
+              ],
+              "selectedRuleSignals": [],
+              "contradictionSignals": [
+                "autonomy_vs_guidance:6",
+                "brevity_vs_depth:1"
+              ],
+              "riskGuardSignals": [
+                "Apply conditionally; do not force heavy structure on simple requests.:scope-control",
+                "Use only when the task is meaningful; avoid overcomplicating simple answers.:scope-control",
+                "Do not overload the user with options when the request is already specific.:scope-control"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "coreModes": [
+          {
+            "modeId": "devils_advocate_weakness_detection",
+            "displayName": "Devil's Advocate / Weakness Detection",
+            "category": "core",
+            "trigger": "Use when reviewing logic, decisions, readiness, plans, reports, launch quality, or weak assumptions.",
+            "whenToUse": "Use when reviewing a decision, plan, launch, report, argument, or important recommendation.",
+            "howToApply": "Identify weak assumptions, gaps, contradictions, and likely failure points, then give a practical improvement path.",
+            "whenNotToUse": "Do not use harsh critique for a simple execution request that does not require review.",
+            "priorityScore": 75,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:40"
+              ],
+              "inspireSectionSignals": [],
+              "selectedRuleSignals": [
+                "Ask one high-impact question when missing information would change answer quality.:risk-quality-readiness",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:risk-quality-readiness",
+                "Ask one high-impact question when missing information would change answer quality.:risk-quality-readiness"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:8"
+              ],
+              "riskGuardSignals": [
+                "Do not overload the user with options when the request is already specific.:risk-quality-readiness"
+              ],
+              "evidenceLabelSignals": [
+                "support or second opinion (Q04_plan_failure:second_opinion):risk-quality-readiness"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "step_back_reasoning",
+            "displayName": "Step-Back Reasoning",
+            "category": "core",
+            "trigger": "Use when the problem is unclear, messy, or the apparent question may not be the real problem.",
+            "whenToUse": "Use when the request is unclear, broad, messy, or likely needs reframing before execution.",
+            "howToApply": "Briefly restate the real goal, name the missing or hidden frame, then proceed with the most useful interpretation.",
+            "whenNotToUse": "Do not use for simple direct execution where the goal and output are already clear.",
+            "priorityScore": 60.55,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "StrategicOrganizer:19",
+                "ThinkingPartner:61",
+                "TeacherSimplifier:6"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:11%"
+              ],
+              "selectedRuleSignals": [
+                "Ask one high-impact question when missing information would change answer quality.:gap-or-assumption",
+                "Ask one high-impact question when missing information would change answer quality.:gap-or-assumption"
+              ],
+              "contradictionSignals": [
+                "brevity_vs_depth:1"
+              ],
+              "riskGuardSignals": [
+                "Avoid fixed-audience assumptions:gap-or-assumption"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "conditionalModes": [
+          {
+            "modeId": "decision_review",
+            "displayName": "Decision Review",
+            "category": "conditional",
+            "trigger": "Use when choosing a path, accepting/rejecting a change, or approving a recommendation.",
+            "whenToUse": "Use when the user needs to choose, accept, reject, approve, or prioritize a path.",
+            "howToApply": "Compare decision criteria, trade-offs, risks, and expected value, then recommend one path.",
+            "whenNotToUse": "Do not perform a decision review when no decision is being made.",
+            "priorityScore": 87.35,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ExecutorBuilder:25",
+                "StrategicOrganizer:19"
+              ],
+              "inspireSectionSignals": [
+                "IdentityRole:11%",
+                "InternalEvaluation:15%",
+                "ResponseStructure:14%"
+              ],
+              "selectedRuleSignals": [
+                "Surface alternative viewpoints and stakeholder impact before deciding.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:8",
+                "autonomy_vs_guidance:6"
+              ],
+              "riskGuardSignals": [
+                "Avoid single-path certainty too early:alternatives-comparison",
+                "Do not overload the user with options when the request is already specific.:alternatives-comparison"
+              ],
+              "evidenceLabelSignals": [
+                "collaborative decision (Q03_unfamiliar_decision:collaborative_decision):decision",
+                "multi path exploration (Q06_success_clarity:multi_path):alternatives-comparison"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:alternatives-comparison"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "scenario_testing",
+            "displayName": "Scenario Testing",
+            "category": "conditional",
+            "trigger": "Use when a decision has multiple possible outcomes or paths.",
+            "whenToUse": "Use when outcomes vary by stakeholder, path, condition, or future scenario.",
+            "howToApply": "Compare a small set of likely scenarios, describe consequences, and identify the safest or highest-value path.",
+            "whenNotToUse": "Do not create scenarios when the task has one obvious path or the user asked for a single direct output.",
+            "priorityScore": 70.1,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "StrategicOrganizer:19",
+                "ThinkingPartner:61",
+                "AudienceTranslator:9"
+              ],
+              "inspireSectionSignals": [
+                "ResponseStructure:14%"
+              ],
+              "selectedRuleSignals": [
+                "Surface alternative viewpoints and stakeholder impact before deciding.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison"
+              ],
+              "contradictionSignals": [
+                "creativity_vs_structure:3"
+              ],
+              "riskGuardSignals": [
+                "Avoid single-path certainty too early:alternatives-comparison",
+                "Do not overload the user with options when the request is already specific.:alternatives-comparison"
+              ],
+              "evidenceLabelSignals": [
+                "multi path exploration (Q06_success_clarity:multi_path):alternatives-comparison"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:alternatives-comparison"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "tree_of_thoughts_alternatives_exploration",
+            "displayName": "Tree of Thoughts / Alternatives Exploration",
+            "category": "conditional",
+            "trigger": "Use when several solution paths exist and need comparison before choosing.",
+            "whenToUse": "Use when there are several plausible solution paths and choosing too early could reduce quality.",
+            "howToApply": "Present two or three viable paths, compare trade-offs, then recommend the strongest path.",
+            "whenNotToUse": "Do not overload the user with alternatives when the request is already specific.",
+            "priorityScore": 69.2,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ThinkingPartner:61"
+              ],
+              "inspireSectionSignals": [],
+              "selectedRuleSignals": [
+                "Surface alternative viewpoints and stakeholder impact before deciding.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison",
+                "Offer multiple paths when the choice is unclear before locking into one.:alternatives-comparison"
+              ],
+              "contradictionSignals": [
+                "creativity_vs_structure:3"
+              ],
+              "riskGuardSignals": [
+                "Avoid single-path certainty too early:alternatives-comparison",
+                "Do not overload the user with options when the request is already specific.:alternatives-comparison"
+              ],
+              "evidenceLabelSignals": [
+                "multi path exploration (Q06_success_clarity:multi_path):alternatives-comparison"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [
+                "openAnswer:alternatives-comparison"
+              ],
+              "exclusionSignals": []
+            }
+          },
+          {
+            "modeId": "clarification_gate",
+            "displayName": "Clarification Gate",
+            "category": "conditional",
+            "trigger": "Use when a missing detail blocks quality, but ask only one focused question if truly needed.",
+            "whenToUse": "Use when one missing detail would materially change quality or direction.",
+            "howToApply": "Ask one focused question, or state a clear assumption and proceed when the missing detail is not blocking.",
+            "whenNotToUse": "Do not ask clarification questions that only delay usable progress.",
+            "priorityScore": 56.4,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "ThinkingPartner:61",
+                "TeacherSimplifier:6"
+              ],
+              "inspireSectionSignals": [
+                "EnhancementAdaptation:7%"
+              ],
+              "selectedRuleSignals": [],
+              "contradictionSignals": [
+                "autonomy_vs_guidance:6",
+                "brevity_vs_depth:1"
+              ],
+              "riskGuardSignals": [
+                "Apply conditionally; do not force heavy structure on simple requests.:scope-control",
+                "Use only when the task is meaningful; avoid overcomplicating simple answers.:scope-control",
+                "Do not overload the user with options when the request is already specific.:scope-control"
+              ],
+              "evidenceLabelSignals": [],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "guardModes": [
+          {
+            "modeId": "risk_guard_reasoning",
+            "displayName": "Risk Guard Reasoning",
+            "category": "guard",
+            "trigger": "Use when the action may create loss, broken UX, wrong launch, wrong merge, wasted effort, or operational risk.",
+            "whenToUse": "Use when the task could create operational, launch, quality, UX, merge, cost, or trust risk.",
+            "howToApply": "Identify the likely failure mode, reduce the risk, and propose the safest next step.",
+            "whenNotToUse": "Do not block low-risk work with unnecessary warnings.",
+            "priorityScore": 64.2,
+            "priorityLevel": "high",
+            "selectionSignals": {
+              "roleSignals": [
+                "CriticalReviewer:40"
+              ],
+              "inspireSectionSignals": [
+                "NormsBoundaries:23%"
+              ],
+              "selectedRuleSignals": [
+                "Ask one high-impact question when missing information would change answer quality.:risk-quality-readiness",
+                "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.:risk-quality-readiness",
+                "Ask one high-impact question when missing information would change answer quality.:risk-quality-readiness"
+              ],
+              "contradictionSignals": [
+                "critique_vs_support:8"
+              ],
+              "riskGuardSignals": [
+                "Do not overload the user with options when the request is already specific.:risk-quality-readiness"
+              ],
+              "evidenceLabelSignals": [
+                "support or second opinion (Q04_plan_failure:second_opinion):risk-quality-readiness"
+              ],
+              "domainSignals": [],
+              "openAnswerSignals": [],
+              "exclusionSignals": []
+            }
+          }
+        ],
+        "rejectedModes": [
+          {
+            "modeId": "self_consistency_quality_gate",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "react_action_oriented_reasoning",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "assumption_check",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "fact_verification_evidence_check",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "scope_control_anti_sprawl",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "readiness_gate",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "structured_reasoning",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          },
+          {
+            "modeId": "counterexample_testing",
+            "reason": "Dropped by max-count or overlap control to avoid bloated instructions."
+          }
+        ],
+        "summary": {
+          "primaryThinkingStyle": "Devil's Advocate / Weakness Detection + Step-Back Reasoning",
+          "instructionSummary": "Operate primarily through Devil's Advocate / Weakness Detection and Step-Back Reasoning. Apply guardrails through Risk Guard Reasoning when risk appears. Use conditional modes only when the task context triggers them."
+        }
       }
     }
   },
