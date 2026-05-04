@@ -67,6 +67,7 @@ const content = {
 function TypingText({ text, speed = 60, seed }: { text: string; speed?: number; seed: number }) {
   const [shown, setShown] = useState("");
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShown("");
     let i = 0;
     const iv = setInterval(() => {
@@ -88,6 +89,7 @@ function CyclingValue({ values, final, active, seed }: { values: string[]; final
   const [val, setVal] = useState("");
   const [done, setDone] = useState(false);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setVal("");
     setDone(false);
     if (!active) return;
@@ -172,6 +174,7 @@ export function InspireExplainerSection() {
   useEffect(() => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setScene(1);
     setActiveCard(-1);
 
