@@ -23,10 +23,6 @@ export const assessmentsTable = pgTable("assessments", {
     .references(() => usersTable.id, { onDelete: "cascade" }),
   projectName: text("project_name").notNull(),
   projectGoal: text("project_goal").notNull(),
-  domain: text("domain"),
-  customDomain: text("custom_domain"),
-  domainSpecialization: text("domain_specialization"),
-  projectContext: text("project_context"),
   reportLanguage: text("report_language").default("ar").notNull(),
   assessmentType: text("assessment_type").default("full").notNull(),
 

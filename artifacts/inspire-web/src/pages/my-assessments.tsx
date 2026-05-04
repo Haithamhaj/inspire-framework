@@ -15,16 +15,7 @@ import {
   Link2Off,
   RefreshCw,
   CreditCard,
-  Sparkles,
-  ShieldCheck,
-  UserRound,
 } from "lucide-react";
-import { useI18n } from "@/i18n";
-import {
-  JourneyPanel,
-  JourneyPrimaryButton,
-  JourneyShell,
-} from "@/components/journey";
 
 function apiUrl(path: string) {
   return `/api${path}`;
@@ -32,11 +23,11 @@ function apiUrl(path: string) {
 
 function statusLabel(status: string) {
   switch (status) {
-    case "completed": return { label: "مكتمل", color: "text-teal-200 bg-teal-500/[0.08] border-teal-300/20" };
-    case "processing": return { label: "قيد المعالجة", color: "text-sky-200 bg-sky-500/[0.08] border-sky-300/20" };
-    case "pending_retry": return { label: "قيد الإعادة", color: "text-amber-200 bg-amber-500/[0.08] border-amber-300/20" };
-    case "failed": return { label: "فشل", color: "text-rose-200 bg-rose-500/[0.08] border-rose-300/20" };
-    default: return { label: "مسودة", color: "text-slate-300 bg-slate-900/60 border-slate-400/10" };
+    case "completed": return { label: "مكتمل", color: "text-green-600 bg-green-50 border-green-100" };
+    case "processing": return { label: "قيد المعالجة", color: "text-blue-600 bg-blue-50 border-blue-100" };
+    case "pending_retry": return { label: "قيد الإعادة", color: "text-amber-600 bg-amber-50 border-amber-100" };
+    case "failed": return { label: "فشل", color: "text-red-600 bg-red-50 border-red-100" };
+    default: return { label: "مسودة", color: "text-gray-600 bg-gray-50 border-gray-100" };
   }
 }
 
@@ -69,163 +60,9 @@ interface CompareResult {
   comparison: CompareRow[];
 }
 
-function ReportsLoadingState() {
-  return (
-    <div className="space-y-4">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="overflow-hidden rounded-3xl border border-slate-400/10 bg-slate-950/55 shadow-xl shadow-black/10"
-        >
-          <div className="animate-pulse p-6">
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div className="space-y-3">
-                <div className="h-4 w-48 rounded-lg bg-slate-800" />
-                <div className="h-3 w-72 max-w-full rounded-lg bg-slate-800/60" />
-              </div>
-              <div className="h-7 w-24 rounded-full bg-slate-800" />
-            </div>
-            <div className="grid grid-cols-7 gap-1.5 border-t border-slate-400/10 pt-5">
-              {Array.from({ length: 7 }).map((_, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="h-1 rounded-full bg-slate-800" />
-                  <div className="mx-auto h-2 w-2 rounded-full bg-slate-800/70" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ReportsErrorState({ message }: { message: string }) {
-  return (
-    <JourneyPanel className="mb-6 overflow-hidden border-rose-300/20 bg-rose-500/[0.07] p-0">
-      <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-rose-300/25 bg-rose-500/[0.12] text-rose-200">
-          <AlertTriangle className="h-6 w-6" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-base font-black text-rose-100">تعذّر تحميل التقارير</p>
-          <p className="mt-1 text-sm leading-6 text-rose-100/75">{message}</p>
-        </div>
-      </div>
-    </JourneyPanel>
-  );
-}
-
-function ReportsEmptyState({ onStart }: { onStart: () => void }) {
-  return (
-    <JourneyPanel className="relative overflow-hidden py-20 text-center">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_50%_0%,rgba(244,63,94,0.16),transparent_55%)]" />
-      <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[1.75rem] border border-rose-300/20 bg-rose-500/[0.08] text-rose-200 shadow-2xl shadow-rose-950/25">
-        <ClipboardList className="h-10 w-10" />
-      </div>
-      <p className="relative mx-auto mb-3 inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-500/[0.08] px-3 py-1 text-xs font-bold text-rose-100">
-        <Sparkles className="h-3.5 w-3.5" />
-        INSPIRE
-      </p>
-      <h2 className="relative mb-3 text-2xl font-black text-slate-50">
-        لا توجد تقارير بعد
-      </h2>
-      <p className="relative mx-auto mb-8 max-w-md text-sm leading-7 text-slate-400">
-        ابدأ تقييمك الكامل، وبعد اكتماله ستظهر هنا كل تقاريرك مع روابط المشاركة وملفات PDF والمقارنة بين النتائج.
-      </p>
-      <div className="relative mb-8 grid gap-3 sm:grid-cols-3">
-        {[
-          { icon: ClipboardList, label: "21 سؤالاً مركزاً" },
-          { icon: ShieldCheck, label: "ملف تشغيل جاهز" },
-          { icon: GitCompare, label: "مقارنة بين النتائج" },
-        ].map((item) => (
-          <div key={item.label} className="rounded-2xl border border-slate-400/10 bg-slate-900/40 p-3">
-            <item.icon className="mx-auto mb-2 h-4 w-4 text-rose-200" />
-            <p className="text-xs font-bold text-slate-300">{item.label}</p>
-          </div>
-        ))}
-      </div>
-      <JourneyPrimaryButton onClick={onStart}>
-        ابدأ التقييم الكامل
-      </JourneyPrimaryButton>
-    </JourneyPanel>
-  );
-}
-
-function WelcomeNextStep({
-  userName,
-  totalCount,
-  completedCount,
-  loading,
-  onStart,
-}: {
-  userName: string;
-  totalCount: number;
-  completedCount: number;
-  loading: boolean;
-  onStart: () => void;
-}) {
-  return (
-    <JourneyPanel className="mb-8 overflow-hidden p-0">
-      <div className="relative p-5 md:p-6">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_0%,rgba(244,63,94,0.13),transparent_42%)]" />
-        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200 shadow-lg shadow-rose-950/25">
-              <UserRound className="h-7 w-7" />
-            </div>
-            <div>
-              <p className="mb-1 text-xs font-black uppercase tracking-[0.18em] text-rose-200/75">
-                INSPIRE Journey
-              </p>
-              <h2 className="text-2xl font-black leading-tight text-slate-50">
-                {userName ? `أهلاً ${userName}` : "أهلاً بك"}
-              </h2>
-              <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-400">
-                هذه مساحة رحلتك داخل INSPIRE. ابدأ تقييم جديد، راجع تقاريرك السابقة، أو قارن بين النتائج عندما يصبح لديك أكثر من تقرير.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid gap-2 sm:grid-cols-3 lg:w-[24rem]">
-            {[
-              { label: "كل التقارير", value: loading ? "..." : String(totalCount) },
-              { label: "مكتملة", value: loading ? "..." : String(completedCount) },
-              { label: "الخطوة التالية", value: totalCount > 0 ? "تقييم جديد" : "ابدأ الآن" },
-            ].map((item) => (
-              <div key={item.label} className="rounded-2xl border border-slate-400/10 bg-slate-900/45 p-3">
-                <p className="text-[11px] font-bold text-slate-500">{item.label}</p>
-                <p className="mt-1 text-sm font-black text-slate-100">{item.value}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="relative mt-5 flex flex-col gap-3 border-t border-slate-400/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {[
-              "تقييم كامل",
-              "تقرير قابل للنسخ",
-              "PDF ومشاركة",
-            ].map((label) => (
-              <span key={label} className="rounded-full border border-slate-400/10 bg-slate-950/45 px-3 py-1 text-xs font-bold text-slate-300">
-                {label}
-              </span>
-            ))}
-          </div>
-          <JourneyPrimaryButton onClick={onStart} icon={<Plus className="h-4 w-4" />}>
-            {totalCount > 0 ? "ابدأ تقييماً جديداً" : "ابدأ تقييمك الأول"}
-          </JourneyPrimaryButton>
-        </div>
-      </div>
-    </JourneyPanel>
-  );
-}
-
 export default function MyAssessments() {
   const { user, isLoading: authLoading } = useAuth();
   const [, navigate] = useLocation();
-  const { dir } = useI18n();
 
   const [assessments, setAssessments] = useState<AssessmentSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -289,57 +126,78 @@ export default function MyAssessments() {
 
   if (authLoading) {
     return (
-      <JourneyShell dir={dir} eyebrow="INSPIRE" title="تقاريري">
-        <JourneyPanel className="mx-auto flex min-h-[18rem] max-w-xl items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-rose-200" />
-        </JourneyPanel>
-      </JourneyShell>
+      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      </div>
     );
   }
   if (!user) return <Redirect to="/login" />;
 
   const completedCount = assessments.filter((a) => a.status === "completed").length;
-  const userName = String((user as { name?: unknown }).name ?? "").trim();
 
   return (
-    <JourneyShell
-      dir={dir}
-      eyebrow="INSPIRE"
-      title="تقاريري"
-      subtitle={assessments.length === 0 ? "لا توجد تقارير بعد" : `${assessments.length} تقرير`}
-    >
-      <div className="w-full max-w-5xl">
+    <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
+      <div className="w-full max-w-4xl">
         {/* Header */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-black text-slate-50 mb-1">
+            <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
               تقاريري
             </h1>
-            <p className="text-slate-400 text-sm">
+            <p className="text-muted-foreground text-sm">
               {assessments.length === 0 ? "لا توجد تقارير بعد" : `${assessments.length} تقرير`}
             </p>
           </div>
-          <JourneyPrimaryButton onClick={() => navigate("/assess")} icon={<Plus className="h-4 w-4" />} className="w-full sm:w-auto">
-            تقييم جديد
-          </JourneyPrimaryButton>
+          <button
+            onClick={() => navigate("/assess")}
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-semibold hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="h-4 w-4" /> تقييم جديد
+          </button>
         </div>
 
-        <WelcomeNextStep
-          userName={userName}
-          totalCount={assessments.length}
-          completedCount={completedCount}
-          loading={loading}
-          onStart={() => navigate("/assess")}
-        />
-
         {/* Error */}
-        {error && <ReportsErrorState message={error} />}
+        {error && (
+          <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-6 text-red-700 text-sm">
+            {error}
+          </div>
+        )}
 
         {/* Loading Skeletons */}
         {loading ? (
-          <ReportsLoadingState />
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse bg-card border border-border rounded-2xl p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="space-y-2">
+                    <div className="h-4 w-48 bg-secondary rounded-lg" />
+                    <div className="h-3 w-64 bg-secondary/60 rounded-lg" />
+                  </div>
+                  <div className="h-6 w-20 bg-secondary rounded-full" />
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <div className="h-9 w-24 bg-secondary rounded-xl" />
+                  <div className="h-9 w-24 bg-secondary rounded-xl" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : assessments.length === 0 ? (
-          <ReportsEmptyState onStart={() => navigate("/assess")} />
+          <div className="text-center py-24 bg-card rounded-3xl border border-border">
+            <ClipboardList className="h-16 w-16 text-muted-foreground/30 mx-auto mb-6" />
+            <h2 className="text-xl font-display font-semibold text-foreground mb-2">
+              لا توجد تقارير بعد
+            </h2>
+            <p className="text-muted-foreground mb-8">
+              ابدأ تقييمك الأول لتوليد تعليمات الذكاء الاصطناعي الشخصية
+            </p>
+            <button
+              onClick={() => navigate("/assess")}
+              className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"
+            >
+              ابدأ التقييم المجاني
+            </button>
+          </div>
         ) : (
           <>
             {/* Pay-per-assessment info banner */}
@@ -347,20 +205,20 @@ export default function MyAssessments() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 flex flex-col gap-4 rounded-3xl border border-sky-300/20 bg-sky-500/[0.08] p-5 sm:flex-row sm:items-center sm:justify-between"
+                className="mb-6 bg-blue-50 border border-blue-100 rounded-2xl p-5 flex items-center justify-between gap-4"
               >
                 <div>
-                  <p className="font-bold text-sky-100 text-sm mb-1 flex items-center gap-2">
+                  <p className="font-bold text-blue-800 text-sm mb-1 flex items-center gap-2">
                     <CreditCard className="h-4 w-4" />
                     لقد أكملت {completedCount} تقييم
                   </p>
-                  <p className="text-xs text-sky-200/75">
+                  <p className="text-xs text-blue-700">
                     كل تقييم إضافي بـ $10 فقط — PDF والمشاركة متاحة مجاناً لجميع تقاريرك
                   </p>
                 </div>
                 <button
                   onClick={() => navigate("/assess")}
-                  className="flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-rose-500 to-orange-500 px-4 py-2 text-sm font-black text-slate-950 transition-colors hover:from-rose-400 hover:to-orange-400 sm:w-auto"
+                  className="flex items-center gap-2 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-xl text-sm font-bold transition-colors"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   تقييم جديد
@@ -373,17 +231,17 @@ export default function MyAssessments() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 flex flex-col gap-4 rounded-3xl border border-rose-300/20 bg-rose-500/[0.08] p-4 sm:flex-row sm:items-center sm:justify-between"
+                className="mb-6 bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-center justify-between gap-4"
               >
-                <p className="text-sm text-slate-100">
+                <p className="text-sm text-foreground">
                   {selectedIds.length === 1
                     ? "اختر تقريراً آخر للمقارنة"
                     : "جاهز للمقارنة بين تقييمين"}
                 </p>
-                <div className="flex w-full gap-2 sm:w-auto">
+                <div className="flex gap-2">
                   <button
                     onClick={() => { setSelectedIds([]); setCompareResult(null); }}
-                    className="flex-1 rounded-lg px-3 py-1.5 text-sm text-slate-400 transition-colors hover:text-slate-100 sm:flex-none"
+                    className="text-sm text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg transition-colors"
                   >
                     إلغاء
                   </button>
@@ -391,7 +249,7 @@ export default function MyAssessments() {
                     <button
                       onClick={handleCompare}
                       disabled={comparing}
-                      className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-rose-500 to-orange-500 px-4 py-1.5 text-sm font-black text-slate-950 disabled:opacity-60 sm:flex-none"
+                      className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-1.5 rounded-lg text-sm font-semibold disabled:opacity-60"
                     >
                       {comparing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <GitCompare className="h-3.5 w-3.5" />}
                       قارن
@@ -412,20 +270,20 @@ export default function MyAssessments() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className={`bg-slate-950/55 rounded-3xl border p-5 transition-all shadow-xl shadow-black/10 ${
-                      isSelected ? "border-rose-300/35 ring-2 ring-rose-500/10" : "border-slate-400/10 hover:border-rose-300/25"
+                    className={`bg-card rounded-2xl border-2 p-5 transition-all ${
+                      isSelected ? "border-primary shadow-md" : "border-border hover:border-primary/30"
                     }`}
                   >
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h3 className="font-bold text-slate-50">{a.projectName}</h3>
+                          <h3 className="font-display font-bold text-foreground">{a.projectName}</h3>
                           <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full border ${status.color}`}>
                             {status.label}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-400 mb-3 line-clamp-1">{a.projectGoal}</p>
-                        <div className="flex items-center gap-4 text-xs text-slate-500 flex-wrap">
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-1">{a.projectGoal}</p>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
                           <span className="flex items-center gap-1">
                             <Clock className="h-3.5 w-3.5" />
                             {new Date(a.createdAt).toLocaleDateString("ar-SA", {
@@ -436,27 +294,27 @@ export default function MyAssessments() {
                         </div>
                       </div>
 
-                      <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:flex-col">
+                      <div className="flex flex-col gap-2 shrink-0">
                         {a.status === "completed" && (
                           <>
                             <button
                               onClick={() => navigate(`/results/${a.id}`)}
-                              className="flex items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-l from-rose-500 to-orange-500 px-4 py-2 text-sm font-black text-slate-950 transition-colors hover:from-rose-400 hover:to-orange-400"
+                              className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors"
                             >
                               عرض <ChevronLeft className="h-3.5 w-3.5" />
                             </button>
                             <button
                               onClick={() => navigate(`/assess?prev=${a.id}`)}
-                              className="flex items-center justify-center gap-1.5 rounded-2xl border border-rose-300/25 px-4 py-2 text-sm font-bold text-rose-200 transition-colors hover:border-rose-300/45 hover:bg-rose-500/[0.08]"
+                              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border-2 border-accent/40 text-accent hover:border-accent hover:bg-accent/5 transition-colors"
                             >
                               <RefreshCw className="h-3.5 w-3.5" /> إعادة تقييم
                             </button>
                             <button
                               onClick={() => toggleSelect(a.id)}
-                              className={`flex items-center justify-center gap-1.5 rounded-xl border-2 px-4 py-2 text-sm font-medium transition-colors ${
+                              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border-2 transition-colors ${
                                 isSelected
-                                  ? "bg-rose-500/[0.08] border-rose-300/35 text-rose-100"
-                                  : "border-slate-400/10 text-slate-200 hover:border-rose-300/30"
+                                  ? "bg-primary/10 border-primary text-primary"
+                                  : "border-border text-foreground hover:border-primary/40"
                               }`}
                             >
                               <GitCompare className="h-3.5 w-3.5" />
@@ -467,7 +325,7 @@ export default function MyAssessments() {
                                 href={apiUrl(a.pdfUrl)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-1.5 rounded-2xl border border-slate-400/10 px-4 py-2 text-sm font-bold text-slate-200 transition-colors hover:border-rose-300/30"
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border-2 border-border text-foreground hover:border-primary/40 transition-colors"
                               >
                                 <Download className="h-3.5 w-3.5" /> PDF
                               </a>
@@ -475,7 +333,7 @@ export default function MyAssessments() {
                             {a.shareEnabled && (
                               <button
                                 onClick={() => handleRevokeShare(a.id)}
-                                className="col-span-2 flex items-center justify-center gap-1.5 rounded-2xl border border-rose-300/25 px-4 py-2 text-sm font-bold text-rose-200 transition-colors hover:border-rose-300/45 hover:bg-rose-500/[0.08] sm:col-span-1"
+                                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium border-2 border-red-200 text-red-600 hover:border-red-400 hover:bg-red-50 transition-colors"
                               >
                                 <Link2Off className="h-3.5 w-3.5" /> إلغاء الرابط
                               </button>
@@ -483,17 +341,17 @@ export default function MyAssessments() {
                           </>
                         )}
                         {a.status === "processing" && (
-                          <div className="col-span-2 flex items-center justify-center gap-2 rounded-2xl border border-sky-300/20 bg-sky-500/[0.08] px-4 py-2 text-sm font-bold text-sky-200 sm:col-span-1">
+                          <div className="flex items-center gap-2 text-blue-600 text-sm">
                             <Loader2 className="h-4 w-4 animate-spin" /> معالجة...
                           </div>
                         )}
                         {a.status === "failed" && (
-                          <div className="col-span-2 flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] px-4 py-2 text-sm font-bold text-rose-200 sm:col-span-1">
+                          <div className="flex items-center gap-2 text-red-600 text-sm">
                             <AlertTriangle className="h-4 w-4" /> فشل
                           </div>
                         )}
                         {a.status === "pending_retry" && (
-                          <div className="col-span-2 flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-500/[0.08] px-4 py-2 text-sm font-bold text-amber-200 sm:col-span-1">
+                          <div className="flex items-center gap-2 text-amber-600 text-sm">
                             <RotateCcw className="h-4 w-4" /> إعادة محاولة
                           </div>
                         )}
@@ -502,16 +360,16 @@ export default function MyAssessments() {
 
                     {/* INSPIRE mini-bar */}
                     {Array.isArray(a.inspireTable) && a.inspireTable.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-slate-400/10 grid grid-cols-7 gap-1">
+                      <div className="mt-4 pt-4 border-t border-border grid grid-cols-7 gap-1">
                         {a.inspireTable.slice(0, 7).map((row, j) => (
                           <div key={j} className="flex flex-col items-center gap-1">
-                            <div className="w-full bg-slate-800 rounded-full overflow-hidden" style={{ height: "4px" }}>
+                            <div className="w-full bg-secondary rounded-full overflow-hidden" style={{ height: "4px" }}>
                               <div
-                                className="h-full bg-gradient-to-r from-rose-500 to-orange-400 rounded-full"
+                                className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
                                 style={{ width: `${row.percentage}%` }}
                               />
                             </div>
-                            <span className="text-[9px] text-slate-500 font-bold">
+                            <span className="text-[9px] text-muted-foreground font-bold">
                               {row.axis?.charAt(0) ?? ""}
                             </span>
                           </div>
@@ -528,36 +386,36 @@ export default function MyAssessments() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-slate-950/55 rounded-3xl border border-slate-400/10 p-6 shadow-xl shadow-black/10"
+                className="bg-card rounded-2xl border border-border p-6"
               >
-                <h2 className="font-black text-xl text-slate-50 mb-2 flex items-center gap-2">
-                  <GitCompare className="h-5 w-5 text-rose-200" /> نتائج المقارنة
+                <h2 className="font-display font-bold text-xl text-foreground mb-2 flex items-center gap-2">
+                  <GitCompare className="h-5 w-5 text-accent" /> نتائج المقارنة
                 </h2>
                 <div className="grid grid-cols-2 gap-2 mb-4 text-sm text-center">
-                  <div className="bg-rose-500/[0.08] rounded-2xl p-3 font-semibold text-slate-100">
+                  <div className="bg-primary/10 rounded-xl p-3 font-semibold text-foreground">
                     {compareResult.a.projectName}
                   </div>
-                  <div className="bg-orange-500/[0.08] rounded-2xl p-3 font-semibold text-slate-100">
+                  <div className="bg-accent/10 rounded-xl p-3 font-semibold text-foreground">
                     {compareResult.b.projectName}
                   </div>
                 </div>
-                <div className="space-y-3 overflow-x-auto pb-1">
+                <div className="space-y-3">
                   {compareResult.comparison.map((row, i) => (
-                    <div key={i} className="flex min-w-[34rem] items-center gap-3">
-                      <span className="text-sm font-medium text-slate-200 w-28 shrink-0">{row.axis}</span>
-                      <span className="text-sm font-bold text-rose-200 w-12 text-center">{row.a?.percentage ?? 0}%</span>
-                      <div className="flex-1 relative h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div key={i} className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-foreground w-28 shrink-0">{row.axis}</span>
+                      <span className="text-sm font-bold text-primary w-12 text-center">{row.a?.percentage ?? 0}%</span>
+                      <div className="flex-1 relative h-2.5 bg-secondary rounded-full overflow-hidden">
                         <div
-                          className="absolute inset-y-0 right-0 bg-rose-400/40 rounded-full"
+                          className="absolute inset-y-0 right-0 bg-primary/40 rounded-full"
                           style={{ width: `${row.a?.percentage ?? 0}%` }}
                         />
                         <div
-                          className="absolute inset-y-0 right-0 bg-orange-400/60 rounded-full"
+                          className="absolute inset-y-0 right-0 bg-accent/60 rounded-full"
                           style={{ width: `${row.b?.percentage ?? 0}%`, opacity: 0.7 }}
                         />
                       </div>
-                      <span className="text-sm font-bold text-orange-200 w-12 text-center">{row.b?.percentage ?? 0}%</span>
-                      <span className={`text-xs w-12 text-center font-semibold ${row.delta > 0 ? "text-teal-200" : row.delta < 0 ? "text-rose-300" : "text-slate-500"}`}>
+                      <span className="text-sm font-bold text-accent w-12 text-center">{row.b?.percentage ?? 0}%</span>
+                      <span className={`text-xs w-12 text-center font-semibold ${row.delta > 0 ? "text-green-600" : row.delta < 0 ? "text-red-500" : "text-muted-foreground"}`}>
                         {row.delta > 0 ? `+${row.delta}` : row.delta}
                       </span>
                     </div>
@@ -568,6 +426,6 @@ export default function MyAssessments() {
           </>
         )}
       </div>
-    </JourneyShell>
+    </div>
   );
 }

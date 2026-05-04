@@ -19,16 +19,9 @@ import {
   Target,
   Layers3,
   Check,
-  UserRound,
 } from "lucide-react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useI18n } from "@/i18n";
-import {
-  JourneyPanel,
-  JourneyPrimaryButton,
-  JourneyShell,
-  JourneyStepIndicator,
-} from "@/components/journey";
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -60,121 +53,42 @@ function apiUrl(path: string) {
   return `/api${path}`;
 }
 
-const DOMAIN_OPTIONS = [
-  { value: "Coding / Software Development", labelKey: "assessment.wizard.domainOptions.coding" },
-  { value: "IT / Systems & Support", labelKey: "assessment.wizard.domainOptions.it" },
-  { value: "Marketing", labelKey: "assessment.wizard.domainOptions.marketing" },
-  { value: "Education", labelKey: "assessment.wizard.domainOptions.education" },
-  { value: "Finance", labelKey: "assessment.wizard.domainOptions.finance" },
-  { value: "Operations", labelKey: "assessment.wizard.domainOptions.operations" },
-  { value: "Sales / Customer Service", labelKey: "assessment.wizard.domainOptions.sales" },
-  { value: "HR", labelKey: "assessment.wizard.domainOptions.hr" },
-  { value: "Healthcare", labelKey: "assessment.wizard.domainOptions.healthcare" },
-  { value: "Legal", labelKey: "assessment.wizard.domainOptions.legal" },
-  { value: "Other", labelKey: "assessment.wizard.domainOptions.other" },
-] as const;
-
 function ProgressBar({
   step,
   totalSteps,
-  answeredCount,
-  totalQuestions,
   progressLabel,
   openStepLabel,
-  timelineLabels,
 }: {
   step: number;
   totalSteps: number;
-  answeredCount: number;
-  totalQuestions: number;
   progressLabel: (page: number, total: number) => string;
   openStepLabel: string;
-  timelineLabels: {
-    setup: string;
-    questions: string;
-    open: string;
-    report: string;
-    answered: string;
-  };
 }) {
   const pct = Math.round((step / totalSteps) * 100);
-  const answerPct = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
-  const isOpenStep = step >= totalSteps;
-  const stages = [
-    { label: timelineLabels.setup, state: "complete" },
-    { label: timelineLabels.questions, state: isOpenStep ? "complete" : "current" },
-    { label: timelineLabels.open, state: isOpenStep ? "current" : "upcoming" },
-    { label: timelineLabels.report, state: "upcoming" },
-  ] as const;
-
   return (
-    <div className="w-full overflow-hidden rounded-[24px] border border-slate-400/10 bg-slate-950/55 shadow-xl shadow-black/20 backdrop-blur-xl">
-      <div className="border-b border-slate-400/10 p-4 md:p-5">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <span className="text-sm font-black text-slate-100">
-              {step <= totalSteps - 1
-                ? progressLabel(step, totalSteps - 1)
-                : openStepLabel}
-            </span>
-            <p className="mt-1 text-xs font-semibold text-slate-500">
-              {timelineLabels.answered
-                .replace("{answered}", String(answeredCount))
-                .replace("{total}", String(totalQuestions))}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-full border border-slate-400/10 bg-slate-900/70 px-3 py-1 text-xs font-black text-slate-300">
-              {answerPct}%
-            </span>
-            <span className="rounded-full bg-gradient-to-l from-rose-500 to-orange-500 px-3 py-1 text-xs font-black text-slate-950">
-              {pct}%
-            </span>
-          </div>
-        </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
-          <motion.div
-            className="h-full rounded-full bg-gradient-to-l from-rose-400 to-orange-400"
-            initial={false}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          />
-        </div>
+    <div className="w-full rounded-2xl border border-border/70 bg-card/95 p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-4 text-sm">
+        <span className="font-semibold text-foreground">
+          {step <= totalSteps - 1
+            ? progressLabel(step, totalSteps - 1)
+            : openStepLabel}
+        </span>
+        <span className="shrink-0 rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">{pct}%</span>
       </div>
-
-      <div className="grid gap-2 p-3 sm:grid-cols-4 md:p-4">
-        {stages.map((stage, index) => (
+      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+        <motion.div
+          className="h-full rounded-full bg-gradient-to-l from-accent to-primary"
+          initial={false}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        />
+      </div>
+      <div className="mt-3 grid grid-cols-4 gap-1.5" aria-hidden="true">
+        {Array.from({ length: 4 }).map((_, i) => (
           <div
-            key={stage.label}
-            className={`relative rounded-2xl border px-3 py-3 transition-colors ${
-              stage.state === "complete"
-                ? "border-teal-300/20 bg-teal-500/[0.07]"
-                : stage.state === "current"
-                  ? "border-rose-300/30 bg-rose-500/[0.1] shadow-lg shadow-rose-950/15"
-                  : "border-slate-400/10 bg-slate-900/35"
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <span
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border text-xs font-black ${
-                  stage.state === "complete"
-                    ? "border-teal-300/30 bg-teal-400/15 text-teal-100"
-                    : stage.state === "current"
-                      ? "border-rose-300/40 bg-rose-400/15 text-rose-100"
-                      : "border-slate-500/20 bg-slate-800/60 text-slate-500"
-                }`}
-              >
-                {stage.state === "complete" ? <Check className="h-3.5 w-3.5" /> : index + 1}
-              </span>
-              <span
-                className={`min-w-0 text-xs font-black leading-5 ${
-                  stage.state === "upcoming" ? "text-slate-500" : "text-slate-100"
-                }`}
-              >
-                {stage.label}
-              </span>
-            </div>
-          </div>
+            key={i}
+            className={`h-1 rounded-full ${pct >= (i + 1) * 25 ? "bg-accent" : "bg-secondary"}`}
+          />
         ))}
       </div>
     </div>
@@ -190,7 +104,7 @@ function StepCard({ children, stepKey }: { children: React.ReactNode; stepKey: s
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.25 }}
-        className="rounded-[28px] border border-slate-400/10 bg-slate-950/55 p-5 shadow-2xl shadow-black/30 ring-1 ring-slate-300/[0.04] backdrop-blur-2xl md:p-8"
+        className="rounded-2xl border border-border/80 bg-card p-6 shadow-xl shadow-primary/5 md:p-8"
       >
         {children}
       </motion.div>
@@ -202,272 +116,90 @@ function AssessmentShell({
   children,
   step,
   totalSteps,
-  answeredCount,
-  totalQuestions,
 }: {
   children: React.ReactNode;
   step: number;
   totalSteps: number;
-  answeredCount: number;
-  totalQuestions: number;
 }) {
   const showProgress = step > 0;
   const { dir, t } = useI18n();
 
   return (
-    <JourneyShell
-      dir={dir}
-      eyebrow={t("assessment.shell.badge")}
-      title={t("assessment.shell.title")}
-      subtitle={t("assessment.shell.subtitle")}
-      aside={
-        <div className="space-y-5">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
-              <Brain className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-200/70">INSPIRE v2</p>
-              <h2 className="mt-1 text-lg font-black leading-tight text-slate-100">{t("assessment.shell.sidebarTitle")}</h2>
-              <p className="mt-2 text-sm leading-7 text-slate-400">
+    <div dir={dir} className="min-h-[calc(100vh-5rem)] bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_42%,hsl(var(--background))_100%)] px-4 py-6 md:py-10">
+      <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+        <aside className="order-2 lg:order-1">
+          <div className="sticky top-28 space-y-4">
+            <div className="rounded-2xl border border-border/80 bg-primary p-6 text-primary-foreground shadow-xl shadow-primary/10">
+              <div className="mb-5 flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
+                  <Brain className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/55">INSPIRE v2</p>
+                  <h2 className="text-lg font-black leading-tight">{t("assessment.shell.sidebarTitle")}</h2>
+                </div>
+              </div>
+              <p className="text-sm leading-7 text-white/72">
                 {t("assessment.shell.sidebarDescription")}
               </p>
             </div>
-          </div>
 
-          <JourneyStepIndicator
-            steps={[
-              { label: t("privacyConsent.title"), state: "complete" },
-              { label: t("register.title"), state: "complete" },
-              { label: t("assessment.payment.eyebrow"), state: "complete" },
-              { label: t("assessment.wizard.setupTitle"), state: "complete" },
-              { label: t("assessment.shell.questionsLabel"), state: "current" },
-            ]}
-          />
-
-          <div className="grid gap-3">
-            {[
-              { icon: Target, label: t("assessment.shell.contextLabel"), value: t("assessment.shell.contextValue") },
-              { icon: Layers3, label: t("assessment.shell.questionsLabel"), value: t("assessment.shell.questionsValue") },
-              { icon: ShieldCheck, label: t("assessment.shell.privacyLabel"), value: t("assessment.shell.privacyValue") },
-            ].map((item) => (
-              <div key={item.label} className="flex items-start gap-3 rounded-2xl border border-slate-400/10 bg-slate-900/45 p-3">
-                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-400/10 bg-slate-950/70 text-rose-200">
-                  <item.icon className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-100">{item.label}</p>
-                  <p className="text-xs leading-5 text-slate-400">{item.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      }
-    >
-      <section className="min-w-0 space-y-5">
-        <div className="rounded-[24px] border border-slate-400/10 bg-slate-950/45 p-5 shadow-xl shadow-black/20 backdrop-blur-xl md:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-500/[0.08] px-3 py-1 text-xs font-bold text-rose-100">
-                <Sparkles className="h-3.5 w-3.5" />
-                {t("assessment.shell.badge")}
-              </p>
-              <h1 className="text-2xl font-black leading-tight text-slate-50 md:text-3xl">
-                {t("assessment.shell.title")}
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-                {t("assessment.shell.subtitle")}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 rounded-2xl border border-slate-400/10 bg-slate-900/60 px-3 py-2 text-xs font-semibold text-slate-300">
-              <Check className="h-4 w-4 text-rose-200" />
-              {t("assessment.shell.noScores")}
-            </div>
-          </div>
-        </div>
-
-        {showProgress && (
-          <ProgressBar
-            step={step}
-            totalSteps={totalSteps}
-            answeredCount={answeredCount}
-            totalQuestions={totalQuestions}
-            progressLabel={(page, total) => t("assessment.progress.questions")
-              .replace("{page}", String(page))
-              .replace("{total}", String(total))}
-            openStepLabel={t("assessment.progress.openStep")}
-            timelineLabels={{
-              setup: t("assessment.progress.setupStage"),
-              questions: t("assessment.progress.questionsStage"),
-              open: t("assessment.progress.openStage"),
-              report: t("assessment.progress.reportStage"),
-              answered: t("assessment.progress.answered"),
-            }}
-          />
-        )}
-        {children}
-      </section>
-    </JourneyShell>
-  );
-}
-
-function ProcessingExperience() {
-  const { dir, t } = useI18n();
-  const [elapsed, setElapsed] = useState(0);
-  const steps = [
-    {
-      icon: Brain,
-      title: t("assessment.status.processingStepAnswersTitle"),
-      description: t("assessment.status.processingStepAnswersDescription"),
-    },
-    {
-      icon: Target,
-      title: t("assessment.status.processingStepPatternTitle"),
-      description: t("assessment.status.processingStepPatternDescription"),
-    },
-    {
-      icon: Layers3,
-      title: t("assessment.status.processingStepInstructionsTitle"),
-      description: t("assessment.status.processingStepInstructionsDescription"),
-    },
-    {
-      icon: ClipboardList,
-      title: t("assessment.status.processingStepReportTitle"),
-      description: t("assessment.status.processingStepReportDescription"),
-    },
-  ];
-  const activeStep = Math.min(steps.length - 1, Math.floor(elapsed / 9));
-  const progress = Math.min(96, 18 + elapsed * 2.4);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setElapsed((value) => value + 1);
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  return (
-    <JourneyShell
-      dir={dir}
-      eyebrow="INSPIRE"
-      title={t("assessment.status.processingTitle")}
-      subtitle={t("assessment.status.processingSubtitle")}
-      aside={
-        <div className="space-y-5">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
-              <Brain className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-sm font-black text-slate-100">{t("assessment.status.processingAsideTitle")}</p>
-              <p className="mt-1 text-sm leading-6 text-slate-400">
-                {t("assessment.status.processingAsideDescription")}
-              </p>
-            </div>
-          </div>
-
-          <JourneyStepIndicator
-            steps={[
-              { label: t("assessment.progress.setupStage"), state: "complete" },
-              { label: t("assessment.progress.questionsStage"), state: "complete" },
-              { label: t("assessment.progress.openStage"), state: "complete" },
-              { label: t("assessment.progress.reportStage"), state: "current" },
-            ]}
-          />
-        </div>
-      }
-    >
-      <JourneyPanel className="mx-auto max-w-4xl overflow-hidden p-0">
-        <div className="relative border-b border-slate-400/10 p-6 md:p-8">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(244,63,94,0.14),transparent_42%)]" />
-          <div className="relative flex flex-col items-center text-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-              className="mb-7 flex h-24 w-24 items-center justify-center rounded-[1.75rem] border border-rose-300/20 bg-rose-500/[0.08] shadow-2xl shadow-rose-950/30 ring-1 ring-rose-300/10 sm:h-28 sm:w-28 sm:rounded-[2rem]"
-            >
-              <div className="flex h-16 w-16 items-center justify-center rounded-[1.25rem] border border-slate-400/10 bg-slate-950/80 text-rose-200 sm:h-20 sm:w-20 sm:rounded-[1.5rem]">
-                <Brain className="h-8 w-8 sm:h-10 sm:w-10" />
-              </div>
-            </motion.div>
-
-            <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-500/[0.08] px-3 py-1 text-xs font-bold text-rose-100">
-              <Sparkles className="h-3.5 w-3.5" />
-              {t("assessment.status.processingLiveLabel")}
-            </p>
-            <h2 className="max-w-2xl text-2xl font-black leading-tight text-slate-50 md:text-4xl">
-              {t("assessment.status.processingTitle")}
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400 md:text-base">
-              {t("assessment.status.processingSubtitle")}
-            </p>
-
-            <div className="mt-7 w-full max-w-xl">
-              <div className="mb-3 flex items-center justify-between text-xs font-bold text-slate-400">
-                <span>{t("assessment.status.processingProgressLabel")}</span>
-                <span>{Math.round(progress)}%</span>
-              </div>
-              <div className="h-2.5 overflow-hidden rounded-full bg-slate-800">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-l from-rose-400 via-orange-400 to-teal-300"
-                  initial={false}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.7, ease: "easeOut" }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-3 p-4 md:grid-cols-2 md:p-6">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            const state = index < activeStep ? "complete" : index === activeStep ? "current" : "upcoming";
-            return (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25, delay: index * 0.05 }}
-                className={`rounded-3xl border p-4 transition-colors ${
-                  state === "complete"
-                    ? "border-teal-300/20 bg-teal-500/[0.06]"
-                    : state === "current"
-                      ? "border-rose-300/30 bg-rose-500/[0.09] shadow-lg shadow-rose-950/15"
-                      : "border-slate-400/10 bg-slate-900/35"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border ${
-                      state === "complete"
-                        ? "border-teal-300/30 bg-teal-400/15 text-teal-100"
-                        : state === "current"
-                          ? "border-rose-300/35 bg-rose-400/15 text-rose-100"
-                          : "border-slate-500/20 bg-slate-800/60 text-slate-500"
-                    }`}
-                  >
-                    {state === "complete" ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
+            <div className="grid gap-3 rounded-2xl border border-border/80 bg-card p-4 shadow-sm">
+              {[
+                { icon: Target, label: t("assessment.shell.contextLabel"), value: t("assessment.shell.contextValue") },
+                { icon: Layers3, label: t("assessment.shell.questionsLabel"), value: t("assessment.shell.questionsValue") },
+                { icon: ShieldCheck, label: t("assessment.shell.privacyLabel"), value: t("assessment.shell.privacyValue") },
+              ].map((item) => (
+                <div key={item.label} className="flex items-start gap-3 rounded-xl bg-secondary/60 p-3">
+                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-background text-primary">
+                    <item.icon className="h-4 w-4" />
                   </div>
                   <div>
-                    <h3 className={`text-sm font-black ${state === "upcoming" ? "text-slate-500" : "text-slate-100"}`}>
-                      {step.title}
-                    </h3>
-                    <p className="mt-1 text-xs leading-6 text-slate-400">{step.description}</p>
+                    <p className="text-sm font-bold text-foreground">{item.label}</p>
+                    <p className="text-xs leading-5 text-muted-foreground">{item.value}</p>
                   </div>
                 </div>
-              </motion.div>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          </div>
+        </aside>
 
-        <div className="flex items-center justify-center gap-2 border-t border-slate-400/10 bg-slate-950/35 px-6 py-4 text-sm text-slate-400">
-          <Clock className="h-4 w-4" />
-          <span>{t("assessment.status.processingTime")}</span>
-        </div>
-      </JourneyPanel>
-    </JourneyShell>
+        <section className="order-1 min-w-0 space-y-5 lg:order-2">
+          <div className="rounded-2xl border border-border/80 bg-card/95 p-5 shadow-sm md:p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="mb-2 inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-xs font-bold text-accent">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {t("assessment.shell.badge")}
+                </p>
+                <h1 className="text-2xl font-black leading-tight text-foreground md:text-3xl">
+                  {t("assessment.shell.title")}
+                </h1>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+                  {t("assessment.shell.subtitle")}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border border-border bg-secondary/50 px-3 py-2 text-xs font-semibold text-muted-foreground">
+                <Check className="h-4 w-4 text-accent" />
+                {t("assessment.shell.noScores")}
+              </div>
+            </div>
+          </div>
+
+          {showProgress && (
+            <ProgressBar
+              step={step}
+              totalSteps={totalSteps}
+              progressLabel={(page, total) => t("assessment.progress.questions")
+                .replace("{page}", String(page))
+                .replace("{total}", String(total))}
+              openStepLabel={t("assessment.progress.openStep")}
+            />
+          )}
+          {children}
+        </section>
+      </div>
+    </div>
   );
 }
 
@@ -491,11 +223,9 @@ export default function Assess() {
   const previousAssessmentId = new URLSearchParams(window.location.search).get("prev");
 
   const [step, setStep] = useState(0);
-  const [domainChoice, setDomainChoice] = useState("");
-  const [customDomain, setCustomDomain] = useState("");
-  const [domainSpecialization, setDomainSpecialization] = useState("");
-  const [projectContext, setProjectContext] = useState("");
-  const [reportLanguage, setReportLanguage] = useState<"ar" | "en" | "both">(() => locale);
+  const [projectName, setProjectName] = useState("");
+  const [projectGoal, setProjectGoal] = useState("");
+  const [reportLanguage, setReportLanguage] = useState<"ar" | "en" | "both">("ar");
 
   // v2 question bank (fetched from API)
   const [questions, setQuestions] = useState<V2Question[]>([]);
@@ -575,11 +305,11 @@ export default function Assess() {
         body: JSON.stringify({ discountCode: code }),
       });
       const d = await res.json() as { success: boolean; paymentId?: string; error?: string };
-      if (!d.success || !d.paymentId) throw new Error(d.error ?? t("assessment.payment.freeOrderError"));
+      if (!d.success || !d.paymentId) throw new Error(d.error ?? "فشل تفعيل الطلب المجاني");
       setPaymentId(d.paymentId);
       setPaymentStatus("paid");
     } catch (err: unknown) {
-      setPaymentError(err instanceof Error ? err.message : t("assessment.payment.freeOrderFallback"));
+      setPaymentError(err instanceof Error ? err.message : "حدث خطأ، حاول مجدداً");
     } finally {
       setProcessingFree(false);
     }
@@ -616,13 +346,13 @@ export default function Assess() {
 
   if (isLoading || (!!user && paymentStatus === "loading")) {
     return (
-      <JourneyShell dir={dir} eyebrow="INSPIRE" title={t("assessment.status.preparingTitle")} subtitle={t("assessment.status.preparingSubtitle")}>
-        <JourneyPanel className="mx-auto flex min-h-[22rem] max-w-xl flex-col items-center justify-center text-center">
-          <Loader2 className="mb-4 h-10 w-10 animate-spin text-rose-200" />
-          <p className="text-lg font-black text-slate-50">{t("assessment.status.preparingTitle")}</p>
-          <p className="mt-2 text-sm leading-6 text-slate-400">{t("assessment.status.preparingSubtitle")}</p>
-        </JourneyPanel>
-      </JourneyShell>
+      <div dir={dir} className="min-h-[calc(100vh-5rem)] bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_70%)] px-4 py-10">
+        <div className="mx-auto flex min-h-[22rem] max-w-xl flex-col items-center justify-center rounded-2xl border border-border/80 bg-card p-8 text-center shadow-xl shadow-primary/5">
+          <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
+          <p className="text-lg font-bold text-foreground">{t("assessment.status.preparingTitle")}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("assessment.status.preparingSubtitle")}</p>
+        </div>
+      </div>
     );
   }
   if (!user) return <Redirect to="/login" />;
@@ -633,83 +363,60 @@ export default function Assess() {
     const originalPrice = paypalConfig?.price ?? 10;
 
     return (
-      <JourneyShell
-        dir={dir}
-        eyebrow={t("assessment.payment.eyebrow")}
-        title={previousAssessmentId ? t("assessment.payment.titleRetry") : t("assessment.payment.titleNew")}
-        subtitle={previousAssessmentId ? t("assessment.payment.subtitleRetry") : t("assessment.payment.subtitleNew")}
-        aside={
-          <div className="space-y-5">
-            <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
-                <CreditCard className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-slate-100">{t("assessment.payment.sidebarTitle")}</p>
-                <p className="mt-1 text-sm leading-6 text-slate-400">
-                  {t("assessment.payment.sidebarText")}
-                </p>
-              </div>
-            </div>
-
-            <JourneyStepIndicator
-              steps={[
-                { label: t("privacyConsent.title"), state: "complete" },
-                { label: t("register.title"), state: "complete" },
-                { label: t("assessment.payment.eyebrow"), state: "current" },
-                { label: t("assessment.shell.questionsLabel"), state: "upcoming" },
-              ]}
-            />
-          </div>
-        }
-      >
-        <div className="grid max-w-5xl gap-6">
-          <JourneyPanel>
-            <div className="mx-auto max-w-2xl">
-              <div className="mb-7 text-center">
-                <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-3xl border border-rose-300/20 bg-rose-500/[0.1] text-rose-200 shadow-xl shadow-rose-950/25">
-                  <CreditCard className="h-8 w-8" />
+      <div className="min-h-[calc(100vh-5rem)] py-10 px-4 flex justify-center">
+        <div className="w-full max-w-4xl space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-card rounded-3xl border border-border p-8 md:p-10 shadow-xl text-right"
+          >
+            <div className="max-w-2xl mx-auto">
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <CreditCard className="h-8 w-8 text-primary" />
                 </div>
-                <p className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-500/[0.08] px-3 py-1 text-xs font-bold text-rose-100">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {t("assessment.payment.eyebrow")}
+              </div>
+              <div className="text-center mb-7">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/70 border border-border text-xs font-semibold text-muted-foreground mb-4">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  انطباع أول قوي · ترقية واضحة · تجربة سريعة
+                </div>
+                <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
+                  {previousAssessmentId ? "إعادة تقييم" : "تقييم جديد"}
                 </p>
-                <h2 className="text-3xl font-black leading-tight text-slate-50 md:text-4xl">
-                  {previousAssessmentId ? t("assessment.payment.titleRetry") : t("assessment.payment.titleNew")}
-                </h2>
-                <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-400">
-                  {previousAssessmentId ? t("assessment.payment.subtitleRetry") : t("assessment.payment.subtitleNew")}
+                <h1 className="text-3xl md:text-4xl font-display font-black text-foreground mb-3 leading-tight">
+                  {previousAssessmentId ? "ارجع لتقييمك السابق وطور نتيجتك" : "ابدأ تقييمك الكامل واحصل على نظامك الشخصي"}
+                </h1>
+                <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                  {previousAssessmentId
+                    ? "ستُنشئ نسخة محسّنة مرتبطة بتقييمك السابق، مع مقارنة واضحة ونتيجة أكثر عمقاً."
+                    : "ستحصل على تعليمات نظام شخصية كاملة مبنية على 21 سؤالاً تحليلياً، جاهزة للنسخ إلى أي نموذج ذكاء اصطناعي."}
                 </p>
               </div>
 
-              <div className="mb-5 rounded-[28px] border border-slate-400/10 bg-slate-950/55 p-6 text-center shadow-xl shadow-black/20">
+              {/* Price display */}
+              <div className="bg-secondary/50 rounded-3xl p-6 mb-5 text-center border border-border/60">
                 {discountInfo?.valid ? (
                   <div>
-                    <div className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                      {t("assessment.payment.priceAfterDiscount")}
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">السعر بعد الخصم</div>
+                    <div className="flex items-end justify-center gap-3 mb-2">
+                      <div className="text-sm text-muted-foreground line-through pb-1">${originalPrice.toFixed(2)}</div>
+                      <div className="text-4xl font-display font-black text-primary">${displayPrice.toFixed(2)}</div>
                     </div>
-                    <div className="mb-2 flex items-end justify-center gap-3">
-                      <div className="pb-1 text-sm text-slate-500 line-through">${originalPrice.toFixed(2)}</div>
-                      <div className="text-4xl font-black text-rose-200">${displayPrice.toFixed(2)}</div>
-                    </div>
-                    <div className="text-sm font-semibold text-teal-200">
-                      {t("assessment.payment.discountApplied").replace("{percent}", String(discountInfo.discountPercent))}
-                    </div>
+                    <div className="text-sm text-green-600 font-semibold">تم تطبيق خصم {discountInfo.discountPercent}%</div>
                   </div>
                 ) : (
                   <div>
-                    <div className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                      {t("assessment.payment.oneTime")}
-                    </div>
-                    <div className="text-4xl font-black text-rose-200">${originalPrice.toFixed(2)}</div>
-                    <div className="mt-2 text-sm text-slate-400">{t("assessment.payment.noSubscription")}</div>
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">دفعة واحدة</div>
+                    <div className="text-4xl font-display font-black text-primary">${originalPrice.toFixed(2)}</div>
+                    <div className="text-sm text-muted-foreground mt-2">بدون اشتراك · تقرير PDF والمشاركة مشمولان</div>
                   </div>
                 )}
               </div>
 
               <div className="mb-6">
-                <label className="mb-2 block text-sm font-bold text-slate-200">{t("assessment.payment.discountCodeLabel")}</label>
-                <div className="flex flex-col gap-2 sm:flex-row">
+                <label className="block text-sm font-semibold text-foreground mb-2">كود الخصم</label>
+                <div className="flex gap-2">
                   <input
                     type="text"
                     value={discountCode}
@@ -718,159 +425,145 @@ export default function Assess() {
                       setDiscountInfo(null);
                     }}
                     onKeyDown={(e) => { if (e.key === "Enter") checkDiscount(); }}
-                    placeholder={t("assessment.payment.discountPlaceholder")}
-                    className="input-ltr min-h-12 flex-1 rounded-2xl border border-slate-400/10 bg-slate-950/65 px-4 py-3 text-sm font-mono text-slate-100 outline-none transition-all placeholder:text-slate-600 focus:border-rose-300/35 focus:ring-4 focus:ring-rose-500/10"
+                    placeholder="INSPIRE10"
+                    className="flex-1 bg-background border border-border rounded-2xl px-4 py-3 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
                     dir="ltr"
                   />
                   <button
-                    type="button"
                     onClick={checkDiscount}
                     disabled={checkingDiscount || !discountCode.trim()}
-                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-slate-400/15 bg-slate-900/70 px-5 py-3 text-sm font-black text-slate-100 transition-all hover:border-rose-300/30 hover:bg-slate-800/75 disabled:cursor-not-allowed disabled:opacity-45"
+                    className="px-5 py-3 bg-secondary border border-border rounded-2xl text-sm font-semibold hover:bg-secondary/80 disabled:opacity-50 transition-colors"
                   >
-                    {checkingDiscount ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        {t("assessment.payment.checkingDiscount")}
-                      </>
-                    ) : (
-                      t("assessment.payment.checkDiscount")
-                    )}
+                    {checkingDiscount ? <Loader2 className="h-4 w-4 animate-spin" /> : "تحقق"}
                   </button>
                 </div>
                 {discountInfo !== null && (
-                  <p className={`mt-2 text-xs ${discountInfo.valid ? "text-teal-200" : "text-rose-300"}`}>
+                  <p className={`text-xs mt-2 ${discountInfo.valid ? "text-green-600" : "text-red-500"}`}>
                     {discountInfo.valid
-                      ? t("assessment.payment.discountValid").replace("{percent}", String(discountInfo.discountPercent))
-                      : t("assessment.payment.discountInvalid")}
+                      ? `✓ كود صالح — خصم ${discountInfo.discountPercent}%`
+                      : "✗ الكود غير صالح أو منتهي الصلاحية"}
                   </p>
                 )}
               </div>
 
+              {/* Free button (100% discount) or PayPal */}
               {discountInfo?.valid && displayPrice === 0 ? (
-                <JourneyPrimaryButton
+                <button
                   onClick={handleFreeOrder}
                   disabled={processingFree}
-                  className="w-full"
-                  icon={processingFree ? <Loader2 className="h-5 w-5 animate-spin" /> : undefined}
+                  className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-green-600/20 transition-all disabled:opacity-70"
                 >
-                  {processingFree
-                    ? t("assessment.payment.activating")
-                    : previousAssessmentId
-                      ? t("assessment.payment.freeActivateRetry")
-                      : t("assessment.payment.freeActivate")}
-                </JourneyPrimaryButton>
+                  {processingFree ? (
+                    <><Loader2 className="h-5 w-5 animate-spin" /> جارٍ التفعيل...</>
+                  ) : (
+                    previousAssessmentId ? "ابدأ إعادة التقييم مجاناً ←" : "ابدأ التقييم مجاناً ←"
+                  )}
+                </button>
               ) : paypalConfig ? (
-                <div className="rounded-3xl border border-slate-400/10 bg-slate-950/45 p-3">
-                  <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
-                    <PayPalButtons
-                      style={{ layout: "vertical", shape: "rect", label: "pay" }}
-                      createOrder={async () => {
-                        setPaymentError("");
-                        const res = await fetch(apiUrl("/billing/create-order"), {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            discountCode: (discountInfo?.valid && discountCode.trim()) ? discountCode.trim() : undefined,
-                          }),
-                        });
-                        const d = await res.json() as { success: boolean; orderId?: string; error?: string };
-                        if (!d.success || !d.orderId) throw new Error(d.error ?? t("assessment.payment.createOrderError"));
-                        return d.orderId;
-                      }}
-                      onApprove={async (data) => {
-                        const res = await fetch(apiUrl("/billing/capture-order"), {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ orderId: data.orderID }),
-                        });
-                        const d = await res.json() as { success: boolean; paymentId?: string; error?: string };
-                        if (!d.success || !d.paymentId) throw new Error(d.error ?? t("assessment.payment.captureOrderError"));
-                        setPaymentId(d.paymentId);
-                        setPaymentStatus("paid");
-                      }}
-                      onError={(err) => {
-                        setPaymentError(t("assessment.payment.paypalError"));
-                        console.error("PayPal error:", err);
-                      }}
-                    />
-                  </PayPalScriptProvider>
-                </div>
+                <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
+                  <PayPalButtons
+                    style={{ layout: "vertical", shape: "rect", label: "pay" }}
+                    createOrder={async () => {
+                      setPaymentError("");
+                      const res = await fetch(apiUrl("/billing/create-order"), {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          discountCode: (discountInfo?.valid && discountCode.trim()) ? discountCode.trim() : undefined,
+                        }),
+                      });
+                      const d = await res.json() as { success: boolean; orderId?: string; error?: string };
+                      if (!d.success || !d.orderId) throw new Error(d.error ?? "فشل إنشاء الطلب");
+                      return d.orderId;
+                    }}
+                    onApprove={async (data) => {
+                      const res = await fetch(apiUrl("/billing/capture-order"), {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ orderId: data.orderID }),
+                      });
+                      const d = await res.json() as { success: boolean; paymentId?: string; error?: string };
+                      if (!d.success || !d.paymentId) throw new Error(d.error ?? "فشل تأكيد الدفع");
+                      setPaymentId(d.paymentId);
+                      setPaymentStatus("paid");
+                    }}
+                    onError={(err) => {
+                      setPaymentError("حدث خطأ في الدفع. يُرجى المحاولة مجدداً.");
+                      console.error("PayPal error:", err);
+                    }}
+                  />
+                </PayPalScriptProvider>
               ) : (
-                <div className="flex items-center justify-center gap-2 py-4 text-sm text-slate-400">
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-4">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {t("assessment.payment.paypalLoading")}
+                  جارٍ تحميل بوابة الدفع...
                 </div>
               )}
 
               {paymentError && (
-                <p className="mt-3 text-center text-sm text-rose-300">{paymentError}</p>
+                <p className="text-sm text-red-500 text-center mt-3">{paymentError}</p>
               )}
             </div>
-          </JourneyPanel>
+          </motion.div>
 
-          <JourneyPanel delay={0.12} className="overflow-hidden p-0">
-            <div className="flex flex-col gap-3 border-b border-slate-400/10 bg-slate-950/35 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          {/* ── Static Example Preview ──────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="bg-card rounded-3xl border border-border overflow-hidden shadow-sm"
+          >
+            <div className="px-6 py-4 border-b border-border bg-secondary/30 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
-                  <Brain className="h-4 w-4" />
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Brain className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="text-sm font-black text-slate-100">{t("assessment.payment.previewTitle")}</p>
-                  <p className="text-xs text-slate-500">{t("assessment.payment.previewSubtitle")}</p>
+                  <p className="text-sm font-semibold text-foreground">مثال سريع على النتيجة الكاملة</p>
+                  <p className="text-xs text-muted-foreground">لتعرف بالضبط ماذا ستحصل عليه قبل الدفع</p>
                 </div>
               </div>
-              <div className="hidden items-center gap-2 text-xs text-slate-400 sm:flex">
-                {[
-                  t("assessment.payment.previewTagQuestions"),
-                  t("assessment.payment.previewTagPdf"),
-                  t("assessment.payment.previewTagShare"),
-                ].map((tag) => (
-                  <span key={tag} className="rounded-full border border-slate-400/10 bg-slate-900/70 px-2.5 py-1">
-                    {tag}
-                  </span>
-                ))}
+              <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="px-2.5 py-1 rounded-full bg-secondary">21 سؤالاً</span>
+                <span className="px-2.5 py-1 rounded-full bg-secondary">PDF</span>
+                <span className="px-2.5 py-1 rounded-full bg-secondary">مشاركة</span>
               </div>
             </div>
             <div className="relative">
-              <div className="pointer-events-none select-none space-y-4 p-6 opacity-65 blur-[2.5px]">
+              <div className="p-6 space-y-4 select-none pointer-events-none" style={{ filter: "blur(2.5px)", opacity: 0.65 }}>
                 <div>
-                  <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                    {t("assessment.payment.previewBehaviorTitle")}
-                  </p>
-                  <p className="text-sm leading-7 text-slate-300">
-                    {t("assessment.payment.previewBehaviorText")}
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">نمطك السلوكي</p>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    أنت تميل إلى التخطيط الواضح قبل التنفيذ، وتحتاج من الذكاء الاصطناعي أن يشرح المنطق أولاً ثم يقترح الحلول العملية بشكل منظم.
                   </p>
                 </div>
-                <div className="rounded-2xl border border-rose-300/15 bg-rose-500/[0.08] p-4">
-                  <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-rose-200/70">
-                    {t("assessment.payment.previewPromptTitle")}
-                  </p>
-                  <p className="whitespace-pre-line font-mono text-xs leading-6 text-slate-200">
-                    {t("assessment.payment.previewPromptText")}
+                <div className="bg-primary rounded-2xl p-4">
+                  <p className="text-xs font-bold text-primary-foreground/70 uppercase tracking-widest mb-2">تعليمات النظام — جاهزة للنسخ</p>
+                  <p className="text-xs text-primary-foreground/90 leading-relaxed font-mono">
+                    {"أنت مساعد ذكاء اصطناعي شخصي متخصص في دعم أهدافي المهنية.\n\n• قدّم الإجابات مباشرةً ثم وضّح المنطق.\n• تحدّ أفكاري وأكشف نقاط ضعفها.\n• اعمل خطوة بخطوة مع سياق كامل.\n• لا تطوّل بلا داعٍ — الإيجاز مع العمق."}
                   </p>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-xl border border-slate-400/10 bg-slate-950/55 p-3">
-                    <p className="mb-1 text-xs font-black text-slate-100">{t("assessment.payment.previewStrengthsTitle")}</p>
-                    <p className="whitespace-pre-line text-xs leading-6 text-slate-400">{t("assessment.payment.previewStrengths")}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-secondary/50 rounded-xl p-3">
+                    <p className="text-xs font-bold text-foreground mb-1">نقاط القوة</p>
+                    <p className="text-xs text-muted-foreground">• التحليل المعمّق<br/>• التخطيط الاستراتيجي<br/>• وضوح التنفيذ</p>
                   </div>
-                  <div className="rounded-xl border border-slate-400/10 bg-slate-950/55 p-3">
-                    <p className="mb-1 text-xs font-black text-slate-100">{t("assessment.payment.previewGrowthTitle")}</p>
-                    <p className="whitespace-pre-line text-xs leading-6 text-slate-400">{t("assessment.payment.previewGrowth")}</p>
+                  <div className="bg-secondary/50 rounded-xl p-3">
+                    <p className="text-xs font-bold text-foreground mb-1">مناطق التطوير</p>
+                    <p className="text-xs text-muted-foreground">• الاستجابة السريعة<br/>• المرونة في التغيير<br/>• تقليل التردد</p>
                   </div>
                 </div>
               </div>
-              <div className="absolute inset-0 flex items-center justify-center p-4">
-                <div className="max-w-xs rounded-3xl border border-rose-300/20 bg-slate-950/90 px-6 py-4 text-center shadow-2xl shadow-black/40 backdrop-blur-xl">
-                  <p className="mb-1 text-sm font-black text-slate-50">{t("assessment.payment.previewOverlayTitle")}</p>
-                  <p className="text-xs text-slate-400">{t("assessment.payment.previewOverlaySubtitle")}</p>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-background/95 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border shadow-lg text-center max-w-xs">
+                  <p className="text-sm font-bold text-foreground mb-1">ادفع مرة واحدة واحصل على النسخة الكاملة</p>
+                  <p className="text-xs text-muted-foreground">تعليمات شخصية + PDF + مشاركة</p>
                 </div>
               </div>
             </div>
-          </JourneyPanel>
+          </motion.div>
         </div>
-      </JourneyShell>
+      </div>
     );
   }
 
@@ -902,20 +595,15 @@ export default function Assess() {
 
   async function handleSetupSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!domainChoice || (domainChoice === "Other" && !customDomain.trim())) return;
-    const context = projectContext.trim();
+    if (!projectName.trim() || !projectGoal.trim()) return;
     setSetupError("");
     try {
       const res = await fetch(apiUrl("/assessments/start"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          project_name: context ? context.slice(0, 120) : `${domainChoice === "Other" ? customDomain.trim() : domainChoice} project`,
-          project_goal: context || `Use AI support within ${domainChoice === "Other" ? customDomain.trim() : domainChoice}.`,
-          domain: domainChoice,
-          ...(domainChoice === "Other" ? { custom_domain: customDomain.trim() } : {}),
-          ...(domainSpecialization.trim() ? { domain_specialization: domainSpecialization.trim() } : {}),
-          ...(context ? { project_context: context } : {}),
+          project_name: projectName.trim(),
+          project_goal: projectGoal.trim(),
           report_language: reportLanguage,
           assessment_type: "full",
           ...(previousAssessmentId ? { previous_assessment_id: previousAssessmentId } : {}),
@@ -974,21 +662,38 @@ export default function Assess() {
   // ── Processing screen ──────────────────────────────────
 
   if (phase === "processing") {
-    return <ProcessingExperience />;
+    return (
+      <div dir={dir} className="min-h-[calc(100vh-5rem)] bg-primary px-4 py-10 text-primary-foreground">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="mx-auto flex min-h-[30rem] max-w-lg flex-col items-center justify-center text-center">
+          <div className="relative w-28 h-28 mx-auto mb-8">
+            <div className="absolute inset-0 rounded-2xl bg-white/15 animate-ping" />
+            <div className="relative flex h-28 w-28 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
+              <Brain className="h-14 w-14 text-white" />
+            </div>
+          </div>
+          <h2 className="text-3xl font-display font-bold mb-4">{t("assessment.status.processingTitle")}</h2>
+          <p className="text-white/70 text-lg mb-6">{t("assessment.status.processingSubtitle")}</p>
+          <div className="flex items-center justify-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white/70">
+            <Clock className="h-4 w-4" />
+            <span>{t("assessment.status.processingTime")}</span>
+          </div>
+        </motion.div>
+      </div>
+    );
   }
 
   // ── Error screen ───────────────────────────────────────
 
   if (phase === "error") {
     return (
-      <JourneyShell dir={dir} eyebrow="INSPIRE" title={t("assessment.status.errorTitle")}>
-        <JourneyPanel className="mx-auto max-w-lg text-center">
-          <p className="mb-6 text-xl text-rose-200">{t("assessment.status.errorTitle")}</p>
-          <button onClick={() => { setPhase("wizard"); setSubmitting(false); }} className="mx-auto flex items-center gap-2 rounded-2xl border border-slate-400/15 bg-slate-900/70 px-6 py-3 font-bold text-slate-100 transition-colors hover:border-rose-300/30 hover:bg-slate-800/75">
+      <div dir={dir} className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_70%)] px-4">
+        <div className="text-center max-w-lg bg-card rounded-2xl border border-border p-10 shadow-xl">
+          <p className="text-xl text-destructive mb-6">{t("assessment.status.errorTitle")}</p>
+          <button onClick={() => { setPhase("wizard"); setSubmitting(false); }} className="flex items-center gap-2 mx-auto bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold">
             <RotateCcw className="h-4 w-4" /> {t("assessment.status.errorRetry")}
           </button>
-        </JourneyPanel>
-      </JourneyShell>
+        </div>
+      </div>
     );
   }
 
@@ -996,220 +701,111 @@ export default function Assess() {
 
   if (questionsLoading) {
     return (
-      <JourneyShell dir={dir} eyebrow="INSPIRE" title={t("assessment.status.loadingQuestionsTitle")} subtitle={t("assessment.status.loadingQuestionsSubtitle")}>
-        <JourneyPanel className="mx-auto flex min-h-[22rem] max-w-xl flex-col items-center justify-center text-center">
-          <Loader2 className="mb-4 h-10 w-10 animate-spin text-rose-200" />
-          <p className="text-lg font-black text-slate-50">{t("assessment.status.loadingQuestionsTitle")}</p>
-          <p className="mt-2 text-sm leading-6 text-slate-400">{t("assessment.status.loadingQuestionsSubtitle")}</p>
-        </JourneyPanel>
-      </JourneyShell>
+      <div dir={dir} className="min-h-[calc(100vh-5rem)] bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_70%)] px-4 py-10">
+        <div className="mx-auto flex min-h-[22rem] max-w-xl flex-col items-center justify-center rounded-2xl border border-border/80 bg-card p-8 text-center shadow-xl shadow-primary/5">
+          <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
+          <p className="text-lg font-bold text-foreground">{t("assessment.status.loadingQuestionsTitle")}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("assessment.status.loadingQuestionsSubtitle")}</p>
+        </div>
+      </div>
     );
   }
 
   if (questionsError) {
     return (
-      <JourneyShell dir={dir} eyebrow="INSPIRE" title={t("assessment.status.questionsError")}>
-        <JourneyPanel className="mx-auto flex max-w-xl flex-col items-center justify-center gap-4 text-center">
-        <p className="text-lg font-medium text-slate-100">{t("assessment.status.questionsError")}</p>
+      <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center gap-4 bg-[linear-gradient(180deg,hsl(var(--secondary))_0%,hsl(var(--background))_70%)] px-4 text-center" dir={dir}>
+        <p className="text-lg font-medium text-foreground">{t("assessment.status.questionsError")}</p>
         <button
           onClick={() => window.location.reload()}
-          className="rounded-2xl bg-gradient-to-l from-rose-500 to-orange-500 px-6 py-3 text-sm font-black text-slate-950 transition-colors hover:from-rose-400 hover:to-orange-400"
+          className="px-6 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
         >
           {t("assessment.status.questionsRetry")}
         </button>
-        </JourneyPanel>
-      </JourneyShell>
-    );
-  }
-
-  if (step === 0) {
-    const userName = String((user as { name?: unknown }).name ?? "").trim();
-
-    return (
-      <JourneyShell
-        dir={dir}
-        eyebrow={t("assessment.shell.badge")}
-        title={t("assessment.wizard.setupTitle")}
-        subtitle={t("assessment.wizard.setupSubtitle")}
-        aside={
-          <div className="space-y-5">
-            <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
-                <Brain className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-slate-100">INSPIRE v2</p>
-                <p className="mt-1 text-sm leading-6 text-slate-400">
-                  {t("assessment.shell.sidebarDescription")}
-                </p>
-              </div>
-            </div>
-
-            <JourneyStepIndicator
-              steps={[
-                { label: t("privacyConsent.title"), state: "complete" },
-                { label: t("register.title"), state: "complete" },
-                { label: t("assessment.payment.eyebrow"), state: "complete" },
-                { label: t("assessment.wizard.setupTitle"), state: "current" },
-                { label: t("assessment.shell.questionsLabel"), state: "upcoming" },
-              ]}
-            />
-          </div>
-        }
-      >
-        <JourneyPanel className="max-w-3xl">
-          <div className="mb-8 flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.1] text-rose-200 shadow-lg shadow-rose-950/25">
-              <ClipboardList className="h-7 w-7" />
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-rose-200/80">
-                {t("assessment.shell.badge")}
-              </p>
-              <h2 className="mt-2 text-2xl font-black text-slate-50">{t("assessment.wizard.setupTitle")}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-400">{t("assessment.wizard.setupSubtitle")}</p>
-            </div>
-          </div>
-
-          <div className="mb-7 rounded-3xl border border-slate-400/10 bg-slate-900/40 p-4">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
-                <UserRound className="h-5 w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-black text-slate-100">
-                  {userName ? `جاهز نبدأ يا ${userName}؟` : "جاهز نبدأ؟"}
-                </p>
-                <p className="mt-1 text-sm leading-6 text-slate-400">
-                  أدخل اسم المشروع وهدفك الرئيسي، وسنستخدمهما فقط لتوجيه الأسئلة والتقرير حول سياقك الحقيقي.
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {[
-                    t("assessment.shell.contextLabel"),
-                    t("assessment.shell.questionsLabel"),
-                    t("assessment.shell.privacyLabel"),
-                  ].map((label) => (
-                    <span key={label} className="rounded-full border border-slate-400/10 bg-slate-950/45 px-3 py-1 text-xs font-bold text-slate-300">
-                      {label}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {setupError && (
-            <div className="mb-6 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] p-3 text-sm text-rose-200">
-              {setupError}
-            </div>
-          )}
-
-          <form onSubmit={handleSetupSubmit} className="space-y-5">
-            <div>
-              <label className="mb-2 block text-sm font-bold text-slate-200">{t("assessment.wizard.domainLabel")}</label>
-              <select
-                value={domainChoice}
-                onChange={(e) => {
-                  setDomainChoice(e.target.value);
-                  if (e.target.value !== "Other") setCustomDomain("");
-                }}
-                className="w-full rounded-2xl border border-slate-400/10 bg-slate-950/65 px-4 py-3.5 text-slate-100 outline-none transition-all placeholder:text-slate-600 focus:border-rose-300/35 focus:ring-4 focus:ring-rose-500/10"
-                required
-              >
-                <option value="">{t("assessment.wizard.domainPlaceholder")}</option>
-                {DOMAIN_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {t(option.labelKey)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {domainChoice === "Other" && (
-              <div>
-                <label className="mb-2 block text-sm font-bold text-slate-200">{t("assessment.wizard.customDomainLabel")}</label>
-                <input
-                  type="text"
-                  value={customDomain}
-                  onChange={(e) => setCustomDomain(e.target.value)}
-                  placeholder={t("assessment.wizard.customDomainPlaceholder")}
-                  className="w-full rounded-2xl border border-slate-400/10 bg-slate-950/65 px-4 py-3.5 text-slate-100 outline-none transition-all placeholder:text-slate-600 focus:border-rose-300/35 focus:ring-4 focus:ring-rose-500/10"
-                  required
-                  minLength={2}
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="mb-2 block text-sm font-bold text-slate-200">{t("assessment.wizard.domainSpecializationLabel")}</label>
-              <input
-                type="text"
-                value={domainSpecialization}
-                onChange={(e) => setDomainSpecialization(e.target.value)}
-                placeholder={t("assessment.wizard.domainSpecializationPlaceholder")}
-                className="w-full rounded-2xl border border-slate-400/10 bg-slate-950/65 px-4 py-3.5 text-slate-100 outline-none transition-all placeholder:text-slate-600 focus:border-rose-300/35 focus:ring-4 focus:ring-rose-500/10"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-bold text-slate-200">{t("assessment.wizard.projectContextLabel")}</label>
-              <textarea
-                value={projectContext}
-                onChange={(e) => setProjectContext(e.target.value)}
-                placeholder={t("assessment.wizard.projectContextPlaceholder")}
-                className="min-h-[120px] w-full resize-none rounded-2xl border border-slate-400/10 bg-slate-950/65 px-4 py-3.5 text-slate-100 outline-none transition-all placeholder:text-slate-600 focus:border-rose-300/35 focus:ring-4 focus:ring-rose-500/10"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-bold text-slate-200">{t("assessment.wizard.reportLanguageLabel")}</label>
-              <select
-                value={reportLanguage}
-                onChange={(e) => setReportLanguage(e.target.value as "ar" | "en" | "both")}
-                className="w-full rounded-2xl border border-slate-400/10 bg-slate-950/65 px-4 py-3.5 text-slate-100 outline-none transition-all focus:border-rose-300/35 focus:ring-4 focus:ring-rose-500/10"
-              >
-                <option value="ar">{t("assessment.wizard.reportLanguageArabic")}</option>
-                <option value="en">{t("assessment.wizard.reportLanguageEnglish")}</option>
-                <option value="both">{t("assessment.wizard.reportLanguageBoth")}</option>
-              </select>
-            </div>
-
-            <div className="pt-3">
-              <JourneyPrimaryButton type="submit" className="w-full">
-                {t("assessment.wizard.startButton")}
-              </JourneyPrimaryButton>
-            </div>
-          </form>
-        </JourneyPanel>
-      </JourneyShell>
+      </div>
     );
   }
 
   // ── WIZARD ─────────────────────────────────────────────
 
   return (
-    <AssessmentShell
-      step={step}
-      totalSteps={TOTAL_WIZARD_STEPS}
-      answeredCount={answers.length}
-      totalQuestions={questions.length}
-    >
+    <AssessmentShell step={step} totalSteps={TOTAL_WIZARD_STEPS}>
+        {/* Step 0 — Project Setup */}
+        {step === 0 && (
+          <StepCard stepKey="setup">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <ClipboardList className="h-8 w-8 text-primary" />
+              </div>
+              <h1 className="text-2xl font-display font-bold text-foreground mb-2">{t("assessment.wizard.setupTitle")}</h1>
+              <p className="text-muted-foreground">{t("assessment.wizard.setupSubtitle")}</p>
+            </div>
+
+            {setupError && (
+              <div className="bg-red-50 border border-red-100 rounded-xl p-3 mb-6 text-red-700 text-sm">{setupError}</div>
+            )}
+
+            <form onSubmit={handleSetupSubmit} className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("assessment.wizard.projectNameLabel")}</label>
+                <input
+                  type="text"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder={t("assessment.wizard.projectNamePlaceholder")}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  required
+                  minLength={2}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("assessment.wizard.projectGoalLabel")}</label>
+                <textarea
+                  value={projectGoal}
+                  onChange={(e) => setProjectGoal(e.target.value)}
+                  placeholder={t("assessment.wizard.projectGoalPlaceholder")}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[100px] resize-none"
+                  required
+                  minLength={10}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("assessment.wizard.reportLanguageLabel")}</label>
+                <select
+                  value={reportLanguage}
+                  onChange={(e) => setReportLanguage(e.target.value as "ar" | "en" | "both")}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                >
+                  <option value="ar">{t("assessment.wizard.reportLanguageArabic")}</option>
+                  <option value="en">English</option>
+                  <option value="both">{t("assessment.wizard.reportLanguageBoth")}</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+              >
+                {t("assessment.wizard.startButton")} <ChevronLeft className="h-5 w-5" />
+              </button>
+            </form>
+          </StepCard>
+        )}
+
         {/* Question Pages */}
         {step >= 1 && step <= totalQPages && (
           <StepCard stepKey={`q-${step}`}>
-            <div className="mb-7 rounded-3xl border border-slate-400/10 bg-slate-900/45 p-4 md:p-5">
+            <div className="mb-7 rounded-2xl border border-border/70 bg-secondary/40 p-4 md:p-5">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+                  <p className="mb-1 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                     {t("assessment.wizard.questionRange")
                       .replace("{start}", String((step - 1) * Q_PER_PAGE + 1))
                       .replace("{end}", String(Math.min(step * Q_PER_PAGE, questions.length)))}
                   </p>
-                  <h2 className="text-xl font-black leading-tight text-slate-50">
+                  <h2 className="text-xl font-display font-bold leading-tight text-foreground">
                     {questions[(step - 1) * Q_PER_PAGE]?.block ?? t("assessment.wizard.fallbackBlock")}
                   </h2>
                 </div>
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.1] text-sm font-black text-rose-100 shadow-sm">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background text-sm font-black text-primary shadow-sm">
                   {step}
                 </div>
               </div>
@@ -1225,23 +821,13 @@ export default function Assess() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.22, delay: i * 0.04 }}
-                    className={`rounded-3xl border p-4 shadow-xl transition-all md:p-5 ${
-                      selected
-                        ? "border-teal-300/15 bg-teal-500/[0.04] shadow-teal-950/10 ring-1 ring-teal-300/[0.04]"
-                        : "border-slate-400/10 bg-slate-900/35 shadow-black/10"
-                    }`}
+                    className="rounded-2xl border border-border/70 bg-background/70 p-4 shadow-sm md:p-5"
                   >
                     <div className="mb-4 flex items-start gap-3">
-                      <span
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border text-sm font-black transition-colors ${
-                          selected
-                            ? "border-teal-300/30 bg-teal-400/15 text-teal-100"
-                            : "border-rose-300/20 bg-rose-500/[0.1] text-rose-100"
-                        }`}
-                      >
-                        {selected ? <Check className="h-4 w-4" /> : globalIdx + 1}
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-sm font-black text-primary-foreground">
+                        {globalIdx + 1}
                       </span>
-                      <p className="pt-1 text-base font-bold leading-7 text-slate-100">
+                      <p className="pt-1 text-base font-bold leading-7 text-foreground">
                         {locale === "ar" ? q.questionAr : q.questionEn}
                       </p>
                     </div>
@@ -1254,16 +840,16 @@ export default function Assess() {
                           whileTap={{ scale: 0.995 }}
                           className={`group flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3.5 text-start text-sm font-semibold leading-6 transition-all md:px-5 ${
                             selected === opt.optionId
-                              ? "border-rose-300/35 bg-rose-500/[0.1] text-rose-100 shadow-lg shadow-rose-950/15 ring-2 ring-rose-500/10"
-                              : "border-slate-400/10 bg-slate-950/55 text-slate-200 hover:border-rose-300/25 hover:bg-slate-900/70"
+                              ? "border-primary bg-primary/10 text-primary shadow-sm ring-2 ring-primary/10"
+                              : "border-border/80 bg-card text-foreground hover:border-primary/35 hover:bg-secondary/50"
                           }`}
                         >
                           <span className="min-w-0 flex-1">{locale === "ar" ? opt.textAr : opt.textEn}</span>
                           <span
                             className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all ${
                               selected === opt.optionId
-                                ? "border-rose-300 bg-rose-500 text-slate-950"
-                                : "border-slate-500/30 bg-slate-950/70 text-transparent group-hover:border-rose-300/40"
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border bg-background text-transparent group-hover:border-primary/40"
                             }`}
                             aria-hidden="true"
                           >
@@ -1280,14 +866,14 @@ export default function Assess() {
             <div className="mt-7 flex flex-col-reverse justify-between gap-3 sm:flex-row sm:gap-4">
               <button
                 onClick={() => setStep((s) => s - 1)}
-                className="flex items-center justify-center gap-2 rounded-2xl border border-slate-400/15 bg-slate-900/50 px-6 py-3 font-bold text-slate-200 transition-colors hover:border-rose-300/30 hover:bg-slate-800/70"
+                className="flex items-center justify-center gap-2 rounded-xl border-2 border-border px-6 py-3 font-medium text-foreground transition-colors hover:border-primary/30"
               >
                 <ChevronRight className="h-4 w-4" /> {t("common.actions.back")}
               </button>
               <button
                 onClick={() => setStep((s) => s + 1)}
                 disabled={!pageComplete(step)}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-rose-500 to-orange-500 px-6 py-3 font-black text-slate-950 transition-all hover:from-rose-400 hover:to-orange-400 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground transition-all hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {step === totalQPages ? t("assessment.wizard.goToFinalStep") : t("common.actions.next")} <ChevronLeft className="h-4 w-4" />
               </button>
@@ -1299,20 +885,20 @@ export default function Assess() {
         {step === OPEN_STEP && (
           <StepCard stepKey="open">
             <div className="flex items-center gap-4 mb-6">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.1] text-rose-200">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-white shrink-0">
                 <MessageSquare className="h-7 w-7" />
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-[0.18em] mb-0.5">{t("assessment.wizard.finalStepEyebrow")}</p>
-                <h2 className="text-xl font-black text-slate-50">{t("assessment.wizard.openTitle")}</h2>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-0.5">{t("assessment.wizard.finalStepEyebrow")}</p>
+                <h2 className="text-xl font-display font-bold text-foreground">{t("assessment.wizard.openTitle")}</h2>
               </div>
             </div>
 
-            <p className="text-slate-400 mb-2 leading-relaxed">
+            <p className="text-muted-foreground mb-2 leading-relaxed">
               {t("assessment.wizard.openDescription")}
             </p>
-            <p className="text-xs text-slate-500 mb-6 flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5 text-teal-200" />
+            <p className="text-xs text-muted-foreground mb-6 flex items-center gap-1">
+              <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
               {t("assessment.wizard.openOptional")}
             </p>
 
@@ -1320,27 +906,27 @@ export default function Assess() {
               value={openAnswer}
               onChange={(e) => setOpenAnswer(e.target.value)}
               placeholder={t("assessment.wizard.openPlaceholder")}
-              className="w-full min-h-[160px] resize-none rounded-2xl border border-slate-400/10 bg-slate-950/65 px-4 py-4 text-slate-100 outline-none transition-all placeholder:text-slate-600 focus:border-rose-300/35 focus:ring-4 focus:ring-rose-500/10 mb-2"
+              className="w-full bg-background border border-border rounded-xl px-4 py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 min-h-[160px] resize-none mb-2"
             />
-            <div className="flex justify-end text-xs text-slate-500 mb-8">
+            <div className="flex justify-end text-xs text-muted-foreground mb-8">
               <span>{openAnswer.length}/2000</span>
             </div>
 
             {setupError && (
-              <div className="rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] p-3 mb-4 text-rose-200 text-sm">{setupError}</div>
+              <div className="bg-red-50 border border-red-100 rounded-xl p-3 mb-4 text-red-700 text-sm">{setupError}</div>
             )}
 
-            <div className="flex flex-col-reverse justify-between gap-3 sm:flex-row sm:gap-4">
+            <div className="flex justify-between gap-4">
               <button
                 onClick={() => setStep(OPEN_STEP - 1)}
-                className="flex items-center justify-center gap-2 rounded-2xl border border-slate-400/15 bg-slate-900/50 px-6 py-3 font-bold text-slate-200 transition-colors hover:border-rose-300/30 hover:bg-slate-800/70"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-border text-foreground font-medium hover:border-primary/30 transition-colors"
               >
                 <ChevronRight className="h-4 w-4" /> {t("common.actions.back")}
               </button>
               <button
                 onClick={handleFinalSubmit}
                 disabled={submitting}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-rose-500 to-orange-500 px-6 py-3 font-black text-slate-950 transition-all hover:from-rose-400 hover:to-orange-400 disabled:cursor-not-allowed disabled:opacity-40 sm:px-8"
+                className="flex items-center gap-2 bg-gradient-to-l from-accent to-red-500 text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-1 justify-center"
               >
                 {submitting
                   ? <><Loader2 className="h-4 w-4 animate-spin" /> {t("assessment.wizard.submitting")}</>

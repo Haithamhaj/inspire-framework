@@ -1,19 +1,5 @@
 import { z } from "zod";
 
-const DOMAIN_OPTIONS = [
-  "Coding / Software Development",
-  "IT / Systems & Support",
-  "Marketing",
-  "Education",
-  "Finance",
-  "Operations",
-  "Sales / Customer Service",
-  "HR",
-  "Healthcare",
-  "Legal",
-  "Other",
-] as const;
-
 export const RegisterSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
@@ -34,24 +20,12 @@ export const LoginSchema = z.object({
 });
 
 export const AssessmentStartSchema = z.object({
-  project_name: z.string().min(2).max(500).optional(),
-  project_goal: z.string().min(10).max(2000).optional(),
-  domain: z.enum(DOMAIN_OPTIONS),
-  custom_domain: z.string().max(200).optional().nullable(),
-  domain_specialization: z.string().max(300).optional().nullable(),
-  project_context: z.string().max(2000).optional().nullable(),
+  project_name: z.string().min(2).max(500),
+  project_goal: z.string().min(10).max(2000),
   report_language: z.enum(["ar", "en", "both"]),
   assessment_type: z.enum(["full", "mini"]),
   previous_assessment_id: z.string().uuid().optional(),
   payment_id: z.string().uuid().optional(),
-}).superRefine((data, ctx) => {
-  if (data.domain === "Other" && !data.custom_domain?.trim()) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["custom_domain"],
-      message: "custom_domain is required when domain is Other",
-    });
-  }
 });
 
 // ─── Mini path (snake_case, unchanged) ───────────────────────────────────────

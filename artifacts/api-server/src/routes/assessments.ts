@@ -57,10 +57,6 @@ router.post(
     const {
       project_name,
       project_goal,
-      domain,
-      custom_domain,
-      domain_specialization,
-      project_context,
       report_language,
       assessment_type,
       previous_assessment_id,
@@ -86,7 +82,7 @@ router.post(
         res.status(403).json({
           success: false,
           error: "payment_required",
-          message: "المسار الكامل يتطلب دفعًا مكتملًا قبل بدء التقييم.",
+          message: "التقييم الأول مجاني. كل تقييم إضافي يتطلب دفع $10.",
         });
         return;
       }
@@ -135,28 +131,12 @@ router.post(
       }
     }
 
-    const resolvedDomain = domain === "Other" ? custom_domain!.trim() : domain;
-    const normalizedProjectContext = project_context?.trim() || null;
-    const compatibilityProjectName =
-      project_name?.trim() ||
-      (normalizedProjectContext
-        ? normalizedProjectContext.slice(0, 120)
-        : `${resolvedDomain} project`);
-    const compatibilityProjectGoal =
-      project_goal?.trim() ||
-      normalizedProjectContext ||
-      `Use AI support within ${resolvedDomain}.`;
-
     const [assessment] = await db
       .insert(assessmentsTable)
       .values({
         userId: user.id,
-        projectName: compatibilityProjectName,
-        projectGoal: compatibilityProjectGoal,
-        domain,
-        customDomain: custom_domain?.trim() || null,
-        domainSpecialization: domain_specialization?.trim() || null,
-        projectContext: normalizedProjectContext,
+        projectName: project_name,
+        projectGoal: project_goal,
         reportLanguage: report_language,
         assessmentType: assessment_type,
         status: "draft",
@@ -326,10 +306,6 @@ router.post(
           jobTitle: user.jobTitle ?? undefined,
           projectName: existing.projectName,
           projectGoal: existing.projectGoal,
-          domain: existing.domain ?? existing.projectName,
-          customDomain: existing.customDomain ?? undefined,
-          domainSpecialization: existing.domainSpecialization ?? undefined,
-          projectContext: existing.projectContext ?? existing.projectGoal,
           reportLanguage: existing.reportLanguage as "ar" | "en" | "both",
           answers,
           openAnswer: open_answer ?? undefined,
