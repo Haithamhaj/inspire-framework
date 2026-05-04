@@ -9,8 +9,8 @@ export const RegisterSchema = z.object({
     .regex(/[a-zA-Z]/, "Password must contain at least one letter")
     .regex(/[0-9]/, "Password must contain at least one number"),
   job_title: z.string().max(200).optional(),
-  consent_given: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the privacy policy" }),
+  consent_given: z.boolean().refine((v) => v === true, {
+    message: "You must accept the privacy policy",
   }),
 });
 

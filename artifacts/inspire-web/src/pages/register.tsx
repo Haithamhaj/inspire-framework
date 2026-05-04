@@ -3,7 +3,7 @@ import { useLocation, Link } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRegister } from "@workspace/api-client-react";
+import { useRegister, ApiError } from "@workspace/api-client-react";
 import { UserPlus, Mail, Lock, User, Briefcase, Loader2, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -59,8 +59,20 @@ export default function Register() {
         setTimeout(() => setLocation("/login"), 2500);
       }
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى.";
+      let message = "حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى.";
+      if (err instanceof ApiError) {
+        const data = err.data as { error?: string; details?: { fieldErrors?: Record<string, string[]> } } | null;
+        const fieldErrors = data?.details?.fieldErrors;
+        if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+          message = Object.values(fieldErrors).flat().join(" • ");
+        } else if (data?.error) {
+          message = data.error;
+        } else {
+          message = err.message;
+        }
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
       toast({
         variant: "destructive",
         title: "فشل التسجيل",

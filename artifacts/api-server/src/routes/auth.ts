@@ -34,6 +34,7 @@ router.post(
 
     const parsed = RegisterSchema.safeParse(req.body);
     if (!parsed.success) {
+      req.log.warn({ validationErrors: parsed.error.flatten() }, "Registration validation failed");
       res.status(400).json({
         success: false,
         error: "Validation failed",
