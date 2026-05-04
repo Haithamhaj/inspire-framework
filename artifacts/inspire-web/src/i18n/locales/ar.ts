@@ -235,6 +235,21 @@ export const ar = {
     },
     projectGoalLabel: "هدف المشروع",
   },
+  login: {
+    title: "تسجيل الدخول",
+    subtitle: "أهلاً بك في منصة INSPIRE للتقييم",
+    emailLabel: "البريد الإلكتروني",
+    passwordLabel: "كلمة المرور",
+    submitButton: "دخول",
+    submitting: "جارٍ الدخول...",
+    emailInvalid: "البريد الإلكتروني غير صالح",
+    passwordRequired: "كلمة المرور مطلوبة",
+    successToast: "مرحباً بك مجدداً!",
+    errorToastTitle: "فشل تسجيل الدخول",
+    errorFallback: "بيانات الدخول غير صحيحة",
+    noAccount: "ليس لديك حساب؟",
+    createAccount: "حساب جديد",
+  },
   landing: {
     hero: {
       eyebrow: "خطوتك التالية مع AI · ذكاء اصطناعي تفاعلي مع الإنسان",

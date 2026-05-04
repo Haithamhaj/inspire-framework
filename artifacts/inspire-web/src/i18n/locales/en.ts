@@ -238,6 +238,21 @@ export const en: Dictionary = {
     },
     projectGoalLabel: "Project goal",
   },
+  login: {
+    title: "Log in",
+    subtitle: "Welcome to INSPIRE",
+    emailLabel: "Email",
+    passwordLabel: "Password",
+    submitButton: "Log in",
+    submitting: "Logging in...",
+    emailInvalid: "Invalid email address",
+    passwordRequired: "Password is required",
+    successToast: "Welcome back!",
+    errorToastTitle: "Login failed",
+    errorFallback: "Incorrect credentials",
+    noAccount: "Don't have an account?",
+    createAccount: "Create account",
+  },
   landing: {
     hero: {
       eyebrow: "Next Step AI · Human Interactive AI",

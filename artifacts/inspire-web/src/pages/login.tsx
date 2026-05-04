@@ -4,22 +4,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useLogin } from "@workspace/api-client-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useI18n } from "@/i18n";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
-const loginSchema = z.object({
-  email: z.string().email("البريد الإلكتروني غير صالح"),
-  password: z.string().min(1, "كلمة المرور مطلوبة"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = { email: string; password: string };
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { login: setAuthToken } = useAuth();
   const { mutateAsync: performLogin, isPending } = useLogin();
+  const { t, dir } = useI18n();
+
+  const loginSchema = z.object({
+    email: z.string().email(t("login.emailInvalid")),
+    password: z.string().min(1, t("login.passwordRequired")),
+  });
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -30,15 +32,15 @@ export default function Login() {
       const result = await performLogin({ data });
       if (result.success && result.access_token) {
         setAuthToken(result.access_token);
-        toast({ title: "مرحباً بك مجدداً!" });
+        toast({ title: t("login.successToast") });
         setLocation("/assess");
       }
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "بيانات الدخول غير صحيحة";
+        err instanceof Error ? err.message : t("login.errorFallback");
       toast({
         variant: "destructive",
-        title: "فشل تسجيل الدخول",
+        title: t("login.errorToastTitle"),
         description: message,
       });
     }
@@ -46,26 +48,26 @@ export default function Login() {
 
   return (
     <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center items-center bg-gray-50/50">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-card rounded-3xl shadow-xl shadow-primary/5 border border-border overflow-hidden"
       >
-        <div className="p-8 sm:p-12">
+        <div className="p-8 sm:p-12" dir={dir}>
           <div className="flex justify-center mb-8">
             <div className="p-4 bg-accent/10 rounded-2xl">
               <LogIn className="h-10 w-10 text-accent" />
             </div>
           </div>
-          
+
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-display font-bold text-foreground mb-3">تسجيل الدخول</h1>
-            <p className="text-muted-foreground">أهلاً بك في منصة INSPIRE للتقييم</p>
+            <h1 className="text-3xl font-display font-bold text-foreground mb-3">{t("login.title")}</h1>
+            <p className="text-muted-foreground">{t("login.subtitle")}</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <label className="block text-sm font-bold text-foreground mb-2">البريد الإلكتروني</label>
+              <label className="block text-sm font-bold text-foreground mb-2">{t("login.emailLabel")}</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                 <input
@@ -80,7 +82,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-foreground mb-2">كلمة المرور</label>
+              <label className="block text-sm font-bold text-foreground mb-2">{t("login.passwordLabel")}</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                 <input
@@ -101,16 +103,19 @@ export default function Login() {
                 className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/25 hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:translate-y-0"
               >
                 {isPending ? (
-                  <><Loader2 className="h-5 w-5 animate-spin" /> جاري الدخول...</>
+                  <><Loader2 className="h-5 w-5 animate-spin" /> {t("login.submitting")}</>
                 ) : (
-                  "دخول"
+                  t("login.submitButton")
                 )}
               </button>
             </div>
           </form>
 
           <p className="text-center mt-8 text-muted-foreground font-medium">
-            ليس لديك حساب؟ <Link href="/privacy-consent" className="text-accent hover:underline font-bold">حساب جديد</Link>
+            {t("login.noAccount")}{" "}
+            <Link href="/privacy-consent" className="text-accent hover:underline font-bold">
+              {t("login.createAccount")}
+            </Link>
           </p>
         </div>
       </motion.div>
