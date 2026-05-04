@@ -25,7 +25,16 @@ const queryClient = new QueryClient();
 
 function Router() {
   const [location] = useLocation();
-  const isPremium = location === "/" || /^\/results\/[^/]+/.test(location);
+  const premiumNavPaths = new Set([
+    "/",
+    "/privacy-consent",
+    "/register",
+    "/login",
+    "/assess",
+    "/assess/mini",
+    "/billing/success",
+  ]);
+  const isPremium = premiumNavPaths.has(location) || /^\/results\/[^/]+/.test(location);
 
   return (
     <div className="flex flex-col min-h-screen">

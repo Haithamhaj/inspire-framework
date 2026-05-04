@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, Brain, FileText, Zap, CheckCircle2, ChevronDown,
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import LandingHero from "@/components/landing-hero/landing-hero";
+import { LandingAtmosphere } from "@/components/landing/LandingAtmosphere";
 import { InspireExplainerSection } from "@/components/inspire-explainer/InspireExplainerSection";
 import { useI18n } from "@/i18n";
 import { ar } from "@/i18n/locales/ar";
@@ -69,13 +70,16 @@ export default function Landing() {
   }
 
   return (
-    <div className="overflow-x-hidden" dir={dir}>
+    <div className="relative isolate overflow-x-hidden bg-[#070817] text-slate-100" dir={dir}>
+      <LandingAtmosphere />
+
+      <div className="relative z-10">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <LandingHero primaryHref="/assess/mini" secondaryAnchorId="how-it-works" />
+      <LandingHero primaryHref="/privacy-consent" secondaryAnchorId="how-it-works" />
 
       {/* ─── EXPLAINER DEMO ───────────────────────────────── */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-transparent">
         <div className="container max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -86,10 +90,10 @@ export default function Landing() {
             <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">
               {locale === "ar" ? "شاهد كيف يعمل" : "See It In Action"}
             </span>
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">
+            <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">
               {locale === "ar" ? "الفرق الذي يصنعه ملف التشغيل" : "The Difference a Profile Makes"}
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
+            <p className="text-slate-400 max-w-xl mx-auto">
               {locale === "ar"
                 ? "بدون ملف تشغيل، الذكاء الاصطناعي يجيب بشكل عام. بعده، يعرف تمامًا كيف تفكر وما تحتاجه."
                 : "Without a profile, AI responds generically. With one, it knows exactly how you think and what you need."}
@@ -107,7 +111,7 @@ export default function Landing() {
       </section>
 
       {/* ─── PHILOSOPHY (THE PROBLEM) ─────────────────────── */}
-      <section className="py-24 px-6 bg-foreground text-background">
+      <section className="py-24 px-6 bg-slate-950/20 text-slate-100 backdrop-blur-[1px]">
         <div className="container max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -116,10 +120,10 @@ export default function Landing() {
             className="text-center mb-16"
           >
             <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.philosophy.eyebrow}</span>
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-background mb-6">
+            <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-50 mb-6">
               {copy.philosophy.title}
             </h2>
-            <p className="text-background/60 max-w-2xl mx-auto text-lg leading-relaxed">
+            <p className="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
               {copy.philosophy.subtitle}
             </p>
           </motion.div>
@@ -130,13 +134,13 @@ export default function Landing() {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-white/5 border border-white/10 rounded-3xl p-8"
+              className="bg-slate-950/55 border border-slate-400/10 rounded-3xl p-8 shadow-2xl shadow-black/20"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center">
                   <span className="text-red-400 text-lg font-black">✕</span>
                 </div>
-                <h3 className="text-xl font-bold text-background/90">{copy.philosophy.withoutTitle}</h3>
+                <h3 className="text-xl font-bold text-slate-100">{copy.philosophy.withoutTitle}</h3>
               </div>
               <ul className="space-y-4">
                 {copy.philosophy.before.map((item, i) => (
@@ -146,7 +150,7 @@ export default function Landing() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.07 }}
-                    className="flex items-start gap-3 text-background/60 text-sm leading-relaxed"
+                    className="flex items-start gap-3 text-slate-400 text-sm leading-relaxed"
                   >
                     <span className="mt-1 w-5 h-5 rounded-full border border-red-500/40 flex items-center justify-center shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-500/60" />
@@ -162,13 +166,13 @@ export default function Landing() {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-accent/20 to-rose-900/20 border border-accent/30 rounded-3xl p-8"
+              className="bg-gradient-to-br from-accent/20 to-rose-900/20 border border-accent/30 rounded-3xl p-8 shadow-2xl shadow-accent/10"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                   <span className="text-accent text-lg font-black">✓</span>
                 </div>
-                <h3 className="text-xl font-bold text-background/90">{copy.philosophy.withTitle}</h3>
+                <h3 className="text-xl font-bold text-slate-100">{copy.philosophy.withTitle}</h3>
               </div>
               <ul className="space-y-4">
                 {copy.philosophy.after.map((item, i) => (
@@ -178,7 +182,7 @@ export default function Landing() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.07 }}
-                    className="flex items-start gap-3 text-background/80 text-sm leading-relaxed"
+                    className="flex items-start gap-3 text-slate-300 text-sm leading-relaxed"
                   >
                     <CheckCircle2 className="mt-0.5 h-5 w-5 text-accent shrink-0" />
                     {item}
@@ -191,7 +195,7 @@ export default function Landing() {
       </section>
 
       {/* ─── THE 7 AXES ───────────────────────────────────── */}
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-transparent">
         <div className="container max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -200,10 +204,10 @@ export default function Landing() {
             className="text-center mb-16"
           >
             <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.axes.eyebrow}</span>
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
+            <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-50 mb-4">
               <span className="text-transparent bg-clip-text bg-gradient-to-l from-accent to-orange-400" dir="ltr">INSPIRE</span> {copy.axes.titleSuffix}
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">{copy.axes.subtitle}</p>
+            <p className="text-slate-400 max-w-xl mx-auto">{copy.axes.subtitle}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -217,7 +221,7 @@ export default function Landing() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className={`relative bg-card border ${axis.border} rounded-2xl p-6 hover:-translate-y-1 transition-all group overflow-hidden`}
+                  className={`relative bg-slate-950/55 border ${axis.border} rounded-2xl p-6 hover:-translate-y-1 transition-all group overflow-hidden shadow-xl shadow-black/10`}
                 >
                   {/* large letter background */}
                   <div className={`absolute -top-4 -left-2 text-[90px] font-display font-black leading-none opacity-[0.06] ${axis.text} select-none pointer-events-none`} dir="ltr">
@@ -230,12 +234,12 @@ export default function Landing() {
 
                   <div className="flex items-baseline gap-2 mb-2">
                     <span className={`text-2xl font-display font-black ${axis.text}`} dir="ltr">{axis.letter}</span>
-                    <span className="text-sm font-bold text-foreground">{item.name}</span>
+                    <span className="text-sm font-bold text-slate-100">{item.name}</span>
                   </div>
                   {locale === "ar" && (
-                    <div className="text-xs text-muted-foreground/70 mb-3 italic" dir="ltr">{axis.latin}</div>
+                    <div className="text-xs text-slate-500 mb-3 italic" dir="ltr">{axis.latin}</div>
                   )}
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                  <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
                 </motion.div>
               );
             })}
@@ -246,15 +250,15 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: AXES.length * 0.08 }}
-              className="bg-gradient-to-br from-accent/10 to-rose-500/5 border-2 border-accent/30 rounded-2xl p-6 flex flex-col items-center justify-center text-center sm:col-span-2 lg:col-span-1"
+              className="bg-gradient-to-br from-accent/15 to-rose-500/10 border-2 border-accent/30 rounded-2xl p-6 flex flex-col items-center justify-center text-center sm:col-span-2 lg:col-span-1 shadow-xl shadow-accent/10"
             >
               <div className="w-12 h-12 rounded-2xl bg-accent/15 flex items-center justify-center mb-4">
                 <Sparkles className="h-6 w-6 text-accent" />
               </div>
-              <p className="font-bold text-foreground mb-2">{copy.axes.ctaTitle}</p>
-              <p className="text-xs text-muted-foreground mb-5 leading-relaxed">{copy.axes.ctaSubtitle}</p>
+              <p className="font-bold text-slate-50 mb-2">{copy.axes.ctaTitle}</p>
+              <p className="text-xs text-slate-400 mb-5 leading-relaxed">{copy.axes.ctaSubtitle}</p>
               <Link
-                href="/assess/mini"
+                href="/privacy-consent"
                 className="px-5 py-2.5 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent/90 transition-colors shadow-lg shadow-accent/20"
               >
                 {copy.axes.ctaButton}
@@ -265,7 +269,7 @@ export default function Landing() {
       </section>
 
       {/* ─── SAMPLE OUTPUT ────────────────────────────────── */}
-      <section className="py-24 px-6 bg-secondary/40">
+      <section className="py-24 px-6 bg-slate-950/20 backdrop-blur-[1px]">
         <div className="container max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -274,8 +278,8 @@ export default function Landing() {
             className="text-center mb-14"
           >
             <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.sample.eyebrow}</span>
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">{copy.sample.title}</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">{copy.sample.subtitle}</p>
+            <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">{copy.sample.title}</h2>
+            <p className="text-slate-400 max-w-xl mx-auto">{copy.sample.subtitle}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
@@ -288,12 +292,12 @@ export default function Landing() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.07 }}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/25 transition-all"
+                  className="flex items-center gap-4 p-4 rounded-xl bg-slate-950/55 border border-slate-400/10 hover:border-accent/30 transition-all shadow-lg shadow-black/10"
                 >
                   <span className="text-2xl shrink-0">{SAMPLE_FEATURE_ICONS[i]}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-foreground text-sm">{item.title}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5">{item.desc}</div>
+                    <div className="font-semibold text-slate-100 text-sm">{item.title}</div>
+                    <div className="text-xs text-slate-400 mt-0.5">{item.desc}</div>
                   </div>
                   <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                 </motion.div>
@@ -307,8 +311,8 @@ export default function Landing() {
               viewport={{ once: true }}
               className="lg:col-span-3 sticky top-24"
             >
-              <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xl" dir="ltr">
-                <div className="bg-foreground px-5 py-3 border-b border-white/10 flex items-center justify-between">
+              <div className="bg-slate-950/80 border border-slate-400/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/30" dir="ltr">
+                <div className="bg-slate-950 px-5 py-3 border-b border-slate-400/10 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1.5">
                       <span className="w-3 h-3 rounded-full bg-red-500/70" />
@@ -319,18 +323,18 @@ export default function Landing() {
                   </div>
                   <button
                     onClick={copySample}
-                    className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-white/10"
+                    className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-slate-800/70"
                   >
                     <Copy className="h-3.5 w-3.5" />
                     {copied ? copy.sample.copiedLabel : copy.sample.copyLabel}
                   </button>
                 </div>
-                <div className="p-6 bg-foreground/98">
+                <div className="p-6 bg-slate-950/98">
                   <pre className="text-xs text-emerald-400/90 leading-relaxed whitespace-pre-wrap font-mono" dir="ltr">
                     {SAMPLE}
                   </pre>
                 </div>
-                <div className="bg-foreground/95 px-5 py-3 border-t border-white/10 flex items-center justify-between text-xs text-white/40" dir={dir}>
+                <div className="bg-slate-950/95 px-5 py-3 border-t border-slate-400/10 flex items-center justify-between text-xs text-white/40" dir={dir}>
                   <span>{copy.sample.footerHint}</span>
                   <span className="px-2 py-0.5 bg-accent/20 text-accent rounded-full">{copy.sample.badge}</span>
                 </div>
@@ -341,7 +345,7 @@ export default function Landing() {
       </section>
 
       {/* ─── HOW IT WORKS ─────────────────────────────────── */}
-      <section id="how-it-works" className="py-24 px-6">
+      <section id="how-it-works" className="py-24 px-6 bg-transparent">
         <div className="container max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -350,13 +354,13 @@ export default function Landing() {
             className="text-center mb-16"
           >
             <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.how.eyebrow}</span>
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">{copy.how.title}</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">{copy.how.subtitle}</p>
+            <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">{copy.how.title}</h2>
+            <p className="text-slate-400 max-w-xl mx-auto">{copy.how.subtitle}</p>
           </motion.div>
 
           <div className="relative">
             {/* connecting line */}
-            <div className="hidden md:block absolute top-14 right-[16.67%] left-[16.67%] h-px border-t-2 border-dashed border-border z-0" />
+            <div className="hidden md:block absolute top-14 right-[16.67%] left-[16.67%] h-px border-t-2 border-dashed border-slate-400/15 z-0" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {copy.how.steps.map((step, i) => {
                 const Icon = STEP_ICONS[i];
@@ -372,9 +376,9 @@ export default function Landing() {
                     <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${STEP_COLORS[i]} mb-5 shadow-lg`}>
                       <Icon className="h-7 w-7 text-white" />
                     </div>
-                    <div className="text-5xl font-display font-black text-foreground/8 mb-2 -mt-2">{step.n}</div>
-                    <h3 className="text-lg font-bold text-foreground mb-3">{step.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed max-w-[220px] mx-auto">{step.desc}</p>
+                    <div className="text-5xl font-display font-black text-white/[0.08] mb-2 -mt-2">{step.n}</div>
+                    <h3 className="text-lg font-bold text-slate-100 mb-3">{step.title}</h3>
+                    <p className="text-sm text-slate-400 leading-relaxed max-w-[220px] mx-auto">{step.desc}</p>
                   </motion.div>
                 );
               })}
@@ -384,7 +388,7 @@ export default function Landing() {
       </section>
 
       {/* ─── PRICING ──────────────────────────────────────── */}
-      <section className="py-24 px-6 bg-secondary/40">
+      <section id="pricing" className="py-24 px-6 bg-slate-950/20 backdrop-blur-[1px]">
         <div className="container max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -393,8 +397,8 @@ export default function Landing() {
             className="text-center mb-16"
           >
             <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.pricing.eyebrow}</span>
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">{copy.pricing.title}</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">{copy.pricing.subtitle}</p>
+            <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">{copy.pricing.title}</h2>
+            <p className="text-slate-400 max-w-xl mx-auto">{copy.pricing.subtitle}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
@@ -403,19 +407,19 @@ export default function Landing() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-card border-2 border-border rounded-3xl p-8 flex flex-col"
+              className="bg-slate-950/55 border-2 border-slate-400/10 rounded-3xl p-8 flex flex-col shadow-2xl shadow-black/20"
             >
               <div className="mb-6">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-xs font-semibold text-muted-foreground mb-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/70 text-xs font-semibold text-slate-300 mb-3">
                   <Zap className="h-3.5 w-3.5" />
                   {copy.pricing.free.badge}
                 </div>
-                <div className="text-5xl font-display font-black text-foreground mb-1">{copy.pricing.free.price}</div>
-                <div className="text-sm text-muted-foreground">{copy.pricing.free.period}</div>
+                <div className="text-5xl font-display font-black text-slate-50 mb-1">{copy.pricing.free.price}</div>
+                <div className="text-sm text-slate-400">{copy.pricing.free.period}</div>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
                 {copy.pricing.free.features.map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <li key={i} className="flex items-center gap-3 text-sm text-slate-400">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                     {f}
                   </li>
@@ -423,7 +427,7 @@ export default function Landing() {
               </ul>
               <Link
                 href="/assess/mini"
-                className="flex items-center justify-center gap-2 border-2 border-border text-foreground px-6 py-3 rounded-xl font-semibold hover:border-accent/40 hover:text-accent transition-all"
+                className="flex items-center justify-center gap-2 border-2 border-slate-400/15 text-slate-100 px-6 py-3 rounded-xl font-semibold hover:border-accent/40 hover:text-accent transition-all"
               >
                 <Zap className="h-4 w-4" />
                 {copy.pricing.free.cta}
@@ -436,7 +440,7 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="relative bg-foreground border-2 border-foreground rounded-3xl p-8 flex flex-col shadow-2xl shadow-foreground/20"
+              className="relative bg-slate-950 border-2 border-accent/30 rounded-3xl p-8 flex flex-col shadow-2xl shadow-accent/20"
             >
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                 <span className="bg-accent text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-accent/30 flex items-center gap-1.5 whitespace-nowrap">
@@ -444,7 +448,7 @@ export default function Landing() {
                 </span>
               </div>
               <div className="mb-6">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold text-white/60 mb-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/70 text-xs font-semibold text-slate-300 mb-3">
                   <Brain className="h-3.5 w-3.5" />
                   {copy.pricing.paid.badge}
                 </div>
@@ -475,7 +479,7 @@ export default function Landing() {
       </section>
 
       {/* ─── FAQ ──────────────────────────────────────────── */}
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-transparent">
         <div className="container max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -484,7 +488,7 @@ export default function Landing() {
             className="text-center mb-14"
           >
             <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.faq.eyebrow}</span>
-            <h2 className="text-4xl font-display font-bold text-foreground mb-4">{copy.faq.title}</h2>
+            <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">{copy.faq.title}</h2>
           </motion.div>
 
           <div className="space-y-3">
@@ -495,17 +499,17 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.06 }}
-                className="bg-card border border-border rounded-2xl overflow-hidden"
+                className="bg-slate-950/55 border border-slate-400/10 rounded-2xl overflow-hidden shadow-lg shadow-black/10"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className={`w-full flex items-center justify-between px-6 py-5 ${isRtl ? "text-right" : "text-left"} hover:bg-secondary/40 transition-colors`}
+                  className={`w-full flex items-center justify-between px-6 py-5 ${isRtl ? "text-right" : "text-left"} hover:bg-slate-900/55 transition-colors`}
                 >
-                  <span className="font-semibold text-foreground text-sm leading-relaxed">{item.q}</span>
+                  <span className="font-semibold text-slate-100 text-sm leading-relaxed">{item.q}</span>
                   {openFaq === i ? (
-                    <ChevronUp className={`h-5 w-5 text-muted-foreground shrink-0 ${isRtl ? "mr-3" : "ml-3"}`} />
+                    <ChevronUp className={`h-5 w-5 text-slate-400 shrink-0 ${isRtl ? "mr-3" : "ml-3"}`} />
                   ) : (
-                    <ChevronDown className={`h-5 w-5 text-muted-foreground shrink-0 ${isRtl ? "mr-3" : "ml-3"}`} />
+                    <ChevronDown className={`h-5 w-5 text-slate-400 shrink-0 ${isRtl ? "mr-3" : "ml-3"}`} />
                   )}
                 </button>
                 <AnimatePresence>
@@ -517,7 +521,7 @@ export default function Landing() {
                       transition={{ duration: 0.25 }}
                       className="overflow-hidden"
                     >
-                      <p className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border pt-4">{item.a}</p>
+                      <p className="px-6 pb-5 text-sm text-slate-400 leading-relaxed border-t border-slate-400/10 pt-4">{item.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -528,7 +532,7 @@ export default function Landing() {
       </section>
 
       {/* ─── FINAL CTA ────────────────────────────────────── */}
-      <section className="py-20 px-6 bg-foreground">
+      <section className="py-20 px-6 bg-slate-950/50 backdrop-blur-[1px]">
         <div className="container max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
@@ -548,15 +552,14 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/assess/mini"
+                href="/privacy-consent"
                 className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl shadow-accent/30 transition-all hover:-translate-y-1 w-full sm:w-auto justify-center"
               >
-                <Zap className="h-5 w-5" />
                 {copy.finalCta.primary}
               </Link>
               <Link
-                href="/privacy-consent"
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/20 text-white px-6 py-4 rounded-2xl font-semibold text-base transition-all w-full sm:w-auto justify-center"
+                href="#pricing"
+                className="flex items-center gap-2 bg-slate-900/70 hover:bg-slate-800/80 border border-slate-400/15 text-white px-6 py-4 rounded-2xl font-semibold text-base transition-all w-full sm:w-auto justify-center"
               >
                 {copy.finalCta.secondary}
               </Link>
@@ -565,6 +568,7 @@ export default function Landing() {
         </div>
       </section>
 
+      </div>
     </div>
   );
 }

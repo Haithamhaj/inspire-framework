@@ -37,6 +37,11 @@ import {
   MismatchNotice,
   type ReportLanguage,
 } from "@/components/premium/ReportBlock";
+import {
+  JourneyPanel,
+  JourneyPrimaryButton,
+  JourneyShell,
+} from "@/components/journey";
 
 function apiUrl(path: string) {
   return `/api${path}`;
@@ -85,16 +90,114 @@ function Skeleton({ className }: { className?: string }) {
 
 function ResultsSkeleton() {
   return (
-    <div className="w-full max-w-4xl space-y-6 mx-auto">
-      <Skeleton className="h-44 rounded-3xl" />
-      <Skeleton className="h-32 rounded-2xl" />
-      <Skeleton className="h-48 rounded-2xl" />
-      <div className="grid md:grid-cols-2 gap-4">
+    <div className="mx-auto w-full max-w-5xl space-y-6">
+      <div className="text-center">
+        <div className="mx-auto mb-5 h-8 w-48 animate-pulse rounded-full bg-white/5" />
+        <div className="mx-auto mb-3 h-10 w-full max-w-xl animate-pulse rounded-2xl bg-white/5" />
+        <div className="mx-auto h-5 w-full max-w-lg animate-pulse rounded-xl bg-white/[0.035]" />
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Skeleton key={index} className="h-24 rounded-2xl" />
+        ))}
+      </div>
+      <Skeleton className="h-56 rounded-[2rem]" />
+      <div className="grid gap-4 md:grid-cols-3">
+        <Skeleton className="h-40 rounded-2xl" />
         <Skeleton className="h-40 rounded-2xl" />
         <Skeleton className="h-40 rounded-2xl" />
       </div>
       <Skeleton className="h-64 rounded-2xl" />
     </div>
+  );
+}
+
+function ResultsProcessingState() {
+  const t = useT();
+
+  return (
+    <PageShell>
+      <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 18, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] text-center shadow-2xl shadow-black/30 backdrop-blur-xl"
+        >
+          <div className="relative p-8 md:p-10">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(244,63,94,0.16),transparent_48%)]" />
+            <div className="relative mx-auto mb-7 flex h-24 w-24 items-center justify-center rounded-[1.75rem] border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
+              <div className="absolute inset-0 rounded-[1.75rem] border border-rose-300/20 animate-ping" />
+              <Brain className="relative h-11 w-11" />
+            </div>
+            <p className="relative mx-auto mb-3 inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-500/[0.08] px-3 py-1 text-xs font-bold text-rose-100">
+              <Sparkles className="h-3.5 w-3.5" />
+              INSPIRE
+            </p>
+            <h2 className="relative mb-3 text-2xl font-black text-white">
+              {t("results.status.processingTitle")}
+            </h2>
+            <p className="relative mx-auto max-w-md text-sm leading-7 text-white/65">
+              {t("results.status.processingLine1")}
+            </p>
+          </div>
+          <div className="border-t border-white/10 bg-black/15 px-6 py-4">
+            <div className="mb-3 h-2 overflow-hidden rounded-full bg-white/10">
+              <motion.div
+                className="h-full rounded-full bg-gradient-to-l from-rose-400 via-orange-400 to-teal-300"
+                initial={{ width: "20%" }}
+                animate={{ width: ["20%", "74%", "42%", "88%"] }}
+                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </div>
+            <p className="text-xs font-semibold text-white/45">
+              {t("results.status.processingLine2")}
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    </PageShell>
+  );
+}
+
+function ResultsErrorState({
+  message,
+  onBack,
+}: {
+  message: string;
+  onBack: () => void;
+}) {
+  const t = useT();
+
+  return (
+    <PageShell>
+      <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="w-full max-w-lg overflow-hidden rounded-[2rem] border border-rose-300/20 bg-rose-500/[0.07] text-center shadow-2xl shadow-black/30 backdrop-blur-xl"
+        >
+          <div className="p-8">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl border border-rose-300/25 bg-rose-500/[0.12] text-rose-200">
+              <AlertTriangle className="h-8 w-8" />
+            </div>
+            <h2 className="mb-2 text-2xl font-black text-white">
+              {t("results.status.errorTitle")}
+            </h2>
+            <p className="mx-auto mb-7 max-w-sm text-sm leading-7 text-rose-100/75">
+              {message}
+            </p>
+            <button
+              onClick={onBack}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-rose-500 to-orange-500 px-6 py-3 text-sm font-black text-slate-950 transition-colors hover:from-rose-400 hover:to-orange-400"
+            >
+              {t("results.status.errorBack")}
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </PageShell>
   );
 }
 
@@ -136,6 +239,95 @@ function SectionHeading({
         </p>
       )}
     </div>
+  );
+}
+
+function ReportRevealMap({
+  items,
+}: {
+  items: Array<{
+    href: string;
+    label: string;
+    icon: React.ElementType;
+    available: boolean;
+  }>;
+}) {
+  const visibleItems = items.filter((item) => item.available);
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+      className="rounded-[2rem] border border-white/10 bg-white/[0.035] p-3 shadow-2xl shadow-black/20 backdrop-blur-xl"
+    >
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {visibleItems.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <a
+              key={item.href}
+              href={item.href}
+              className="group rounded-2xl border border-white/10 bg-[#0a0c1c]/55 p-4 transition-all hover:-translate-y-0.5 hover:border-rose-300/30 hover:bg-white/[0.055]"
+            >
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200 transition-colors group-hover:bg-rose-500/[0.14]">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[10px] font-black uppercase tracking-[0.18em] text-white/35">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="mt-1 block text-sm font-black leading-5 text-white/90">
+                    {item.label}
+                  </span>
+                </span>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </motion.section>
+  );
+}
+
+function RevealSection({
+  id,
+  index,
+  label,
+  icon: Icon,
+  children,
+  className,
+}: {
+  id: string;
+  index: number;
+  label: string;
+  icon: React.ElementType;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.section
+      id={id}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={className}
+    >
+      <div className="mb-5 flex items-center gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200 shadow-lg shadow-rose-950/20">
+          <Icon className="h-5 w-5" />
+        </span>
+        <div className="text-start">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/35">
+            {String(index).padStart(2, "0")}
+          </p>
+          <p className="text-sm font-black text-white/80">{label}</p>
+        </div>
+      </div>
+      {children}
+    </motion.section>
   );
 }
 
@@ -356,143 +548,100 @@ export default function Results() {
   }
 
   if (processing) {
-    return (
-      <PageShell>
-        <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-12 shadow-xl text-center max-w-md w-full"
-          >
-            <div className="relative w-20 h-20 mx-auto mb-6">
-              <div className="absolute inset-0 rounded-full border-4 border-rose-300/20" />
-              <div className="absolute inset-0 rounded-full border-4 border-rose-300 border-t-transparent animate-spin" />
-              <Brain className="absolute inset-0 m-auto h-8 w-8 text-rose-200" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">
-              {t("results.status.processingTitle")}
-            </h2>
-            <p className="text-white/70 text-sm mb-1">
-              {t("results.status.processingLine1")}
-            </p>
-            <p className="text-white/45 text-xs">
-              {t("results.status.processingLine2")}
-            </p>
-            <div className="mt-6 flex justify-center gap-1">
-              {[0, 0.2, 0.4].map((delay, i) => (
-                <span
-                  key={i}
-                  className="h-2 w-2 rounded-full bg-rose-300 animate-bounce"
-                  style={{ animationDelay: `${delay}s` }}
-                />
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </PageShell>
-    );
+    return <ResultsProcessingState />;
   }
 
   if (error || !assessment) {
     return (
-      <PageShell>
-        <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-10 shadow-xl text-center max-w-md">
-            <AlertTriangle className="h-12 w-12 text-rose-300 mx-auto mb-4" />
-            <p className="text-lg text-white mb-6">
-              {error || t("results.status.errorMissing")}
-            </p>
-            <button
-              onClick={() => navigate("/my-assessments")}
-              className="bg-gradient-to-l from-rose-500 to-orange-500 text-white px-6 py-3 rounded-xl font-semibold"
-            >
-              {t("results.status.errorBack")}
-            </button>
-          </div>
-        </div>
-      </PageShell>
+      <ResultsErrorState
+        message={error || t("results.status.errorMissing")}
+        onBack={() => navigate("/my-assessments")}
+      />
     );
   }
 
   // ── Mini assessment branch — preserved as-is from prior implementation ────
   if (assessment.assessmentType === "mini") {
     return (
-      <div className="min-h-[calc(100vh-5rem)] py-12 px-4 flex justify-center">
+      <JourneyShell
+        dir={locale === "ar" ? "rtl" : "ltr"}
+        eyebrow={t("miniAssessment.badge")}
+        title={assessment.projectName}
+        subtitle={assessment.projectGoal}
+      >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-2xl space-y-6"
+          className="w-full max-w-3xl space-y-6"
         >
-          {/* Mini Header */}
-          <div className="bg-gradient-to-br from-accent/80 to-accent rounded-3xl p-8 text-accent-foreground">
-            <div className="flex items-center gap-2 mb-2">
-              <Zap className="h-5 w-5 text-white/80" />
-              <span className="text-white/80 text-sm">تقرير البداية السريعة</span>
-            </div>
-            <h1 className="text-2xl font-display font-bold mb-1">{assessment.projectName}</h1>
-            <p className="text-white/70 text-sm">{assessment.projectGoal}</p>
-            <div className="mt-4">
+          <JourneyPanel>
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex items-start gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.1] text-rose-200">
+                  <Zap className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-rose-200/80">{t("miniAssessment.badge")}</p>
+                  <h1 className="mt-2 text-2xl font-black text-slate-50">{assessment.projectName}</h1>
+                  <p className="mt-2 text-sm leading-6 text-slate-400">{assessment.projectGoal}</p>
+                </div>
+              </div>
               <button
                 onClick={() => navigate("/my-assessments")}
-                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-400/15 bg-slate-900/70 px-4 py-2 text-sm font-bold text-slate-100 transition-colors hover:border-rose-300/30 hover:bg-slate-800/75"
               >
-                <ChevronRight className="h-4 w-4" /> تقاريري
+                <ChevronRight className="h-4 w-4" /> {t("results.header.myAssessments")}
               </button>
             </div>
-          </div>
 
-          {/* Quick Starters */}
-          {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 ? (
-            <div className="bg-card rounded-2xl border border-border p-6">
-              <h2 className="font-display font-bold text-xl text-foreground mb-2 flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-accent" /> نقاط انطلاقك مع الذكاء الاصطناعي
-              </h2>
-              <p className="text-muted-foreground text-sm mb-5">
-                انسخ أي بادئة وأرسلها مباشرةً إلى ChatGPT أو أي نموذج ذكاء اصطناعي
-              </p>
-              <div className="space-y-3">
-                {assessment.quickStarters.map((qs: string, i: number) => (
-                  <div
-                    key={i}
-                    onClick={() => copyText(qs, `qs-${i}`)}
-                    className="flex items-start gap-3 p-4 bg-secondary/50 rounded-xl group cursor-pointer hover:bg-secondary transition-colors"
-                  >
-                    <span className="font-bold text-accent shrink-0 text-lg">{i + 1}.</span>
-                    <p className="text-sm text-foreground leading-relaxed flex-1">{qs}</p>
-                    {copied === `qs-${i}` ? (
-                      <Check className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
-                    ) : (
-                      <Copy className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    )}
-                  </div>
-                ))}
+            {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 ? (
+              <div>
+                <h2 className="mb-2 flex items-center gap-2 text-xl font-black text-slate-50">
+                  <MessageSquare className="h-5 w-5 text-rose-200" /> {t("results.mini.quickTitle")}
+                </h2>
+                <p className="mb-5 text-sm leading-6 text-slate-400">
+                  {t("results.mini.quickSubtitle")}
+                </p>
+                <div className="space-y-3">
+                  {assessment.quickStarters.map((qs: string, i: number) => (
+                    <button
+                      type="button"
+                      key={i}
+                      onClick={() => copyText(qs, `qs-${i}`)}
+                      className="group flex w-full items-start gap-3 rounded-2xl border border-slate-400/10 bg-slate-950/55 p-4 text-start transition-colors hover:border-rose-300/25 hover:bg-slate-900/70"
+                    >
+                      <span className="shrink-0 text-lg font-black text-rose-200">{i + 1}.</span>
+                      <p className="flex-1 text-sm leading-7 text-slate-200">{qs}</p>
+                      {copied === `qs-${i}` ? (
+                        <Check className="mt-1 h-4 w-4 shrink-0 text-teal-200" />
+                      ) : (
+                        <Copy className="mt-1 h-4 w-4 shrink-0 text-slate-500 opacity-0 transition-opacity group-hover:opacity-100" />
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ) : null}
+            ) : null}
+          </JourneyPanel>
 
-          {/* Upgrade CTA */}
-          <div className="bg-gradient-to-l from-primary/10 to-primary/5 rounded-2xl border border-primary/20 p-6 text-right">
+          <JourneyPanel>
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                <Brain className="h-6 w-6 text-primary" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.1] text-rose-200">
+                <Brain className="h-6 w-6" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg text-foreground mb-1">احصل على تعليمات النظام الكاملة</h3>
-                <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-                  التقييم الكامل يُحلّل 7 محاور سلوكية بعمق ويولّد تعليمات نظام شخصية جاهزة للنسخ مباشرةً إلى أي نموذج ذكاء اصطناعي — مع تقرير PDF قابل للمشاركة.
+                <h3 className="mb-1 text-lg font-black text-slate-50">{t("results.mini.upgradeTitle")}</h3>
+                <p className="mb-4 text-sm leading-7 text-slate-400">
+                  {t("results.mini.upgradeDescription")}
                 </p>
-                <button
-                  onClick={() => navigate("/assess")}
-                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
-                >
-                  ابدأ التقييم الكامل — $10
-                  <ChevronRight className="h-4 w-4" />
-                </button>
+                <JourneyPrimaryButton onClick={() => navigate("/assess")}>
+                  {t("results.mini.upgradeCta")}
+                </JourneyPrimaryButton>
               </div>
             </div>
-          </div>
+          </JourneyPanel>
         </motion.div>
-      </div>
+      </JourneyShell>
     );
   }
 
@@ -553,10 +702,60 @@ export default function Results() {
   ];
 
   const profileText = assessment.systemInstruction ?? "";
+  const revealItems = [
+    {
+      href: "#identity",
+      label: t("results.sections.identity"),
+      icon: Sparkles,
+      available: true,
+    },
+    {
+      href: "#strengths",
+      label: t("results.strengths.title"),
+      icon: CheckCircle2,
+      available: Array.isArray(assessment.strengths) && assessment.strengths.length > 0,
+    },
+    {
+      href: "#redlines",
+      label: t("results.sections.redLines"),
+      icon: ShieldAlert,
+      available: Array.isArray(assessment.redLines) && assessment.redLines.length > 0,
+    },
+    {
+      href: "#development",
+      label: t("results.developmentAreas.title"),
+      icon: Lightbulb,
+      available: Array.isArray(assessment.developmentAreas) && assessment.developmentAreas.length > 0,
+    },
+    {
+      href: "#recommendations",
+      label: t("results.recommendations.title"),
+      icon: Zap,
+      available: Array.isArray(assessment.recommendations) && assessment.recommendations.length > 0,
+    },
+    {
+      href: "#profile",
+      label: t("results.sections.profile"),
+      icon: BookOpen,
+      available: !!profileText,
+    },
+    {
+      href: "#how-to-use",
+      label: t("results.sections.howToUse"),
+      icon: Settings2,
+      available: true,
+    },
+    {
+      href: "#starters",
+      label: t("results.sections.starters"),
+      icon: MessageSquare,
+      available: Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0,
+    },
+  ];
 
   return (
     <PageShell>
-      <div className="container mx-auto max-w-5xl px-4 sm:px-6 py-10 md:py-14 space-y-10 md:space-y-14">
+      <div className="container mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6 md:space-y-14 md:py-14">
         {/* ── 1. RESULTS-READY HEADER ─────────────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: 14 }}
@@ -572,7 +771,7 @@ export default function Results() {
             {t("results.status.ready")}
           </div>
 
-          <h1 className="font-display font-black text-3xl sm:text-4xl md:text-5xl leading-[1.25] mb-4 text-white">
+          <h1 className="mb-4 font-display text-2xl font-black leading-[1.25] text-white sm:text-4xl md:text-5xl">
             {t("results.header.titlePrefix")}{" "}
             <span className="relative inline-block">
               <span className="bg-gradient-to-l from-rose-300 via-orange-300 to-amber-200 bg-clip-text text-transparent">
@@ -605,7 +804,7 @@ export default function Results() {
             </ReportBlock>
           )}
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5">
+          <div className="mb-5 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             {profileText && (
               <CopyButton
                 text={profileText}
@@ -617,7 +816,7 @@ export default function Results() {
             )}
             <a
               href="#how-to-use"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white/90 text-base font-semibold transition-all active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-base font-semibold text-white/90 transition-all hover:bg-white/10 active:scale-[0.98]"
             >
               {t("results.header.ctaSecondary")}
               <Arrow className="h-4 w-4" />
@@ -625,10 +824,10 @@ export default function Results() {
           </div>
 
           {/* Secondary actions: my reports / pdf / share */}
-          <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+          <div className="grid grid-cols-1 gap-2 text-sm sm:flex sm:flex-wrap sm:items-center sm:justify-center">
             <button
               onClick={() => navigate("/my-assessments")}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               <ChevronRight className="h-4 w-4" />
               {t("results.header.myAssessments")}
@@ -638,7 +837,7 @@ export default function Results() {
                 href={apiUrl(assessment.pdfUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               >
                 <Download className="h-4 w-4" /> {t("results.header.downloadPdf")}
               </a>
@@ -646,7 +845,7 @@ export default function Results() {
               <button
                 onClick={handleGeneratePdf}
                 disabled={generatingPdf}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-colors disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-60"
               >
                 {generatingPdf ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -662,7 +861,7 @@ export default function Results() {
               <button
                 onClick={handleRevokeShare}
                 disabled={sharingLoading}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-rose-400/20 border border-white/10 text-white/80 hover:text-white transition-colors disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-rose-400/20 hover:text-white disabled:opacity-60"
               >
                 {sharingLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -677,7 +876,7 @@ export default function Results() {
               <button
                 onClick={handleShare}
                 disabled={sharingLoading}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-colors disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-60"
               >
                 {sharingLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -718,15 +917,17 @@ export default function Results() {
           </motion.div>
         )}
 
+        <ReportRevealMap items={revealItems} />
+
         {/* ── 2. ASSISTANT IDENTITY CARD ──────────────────────────────── */}
-        <motion.section
+        <RevealSection
           id="identity"
-          initial={{ opacity: 0, y: 24, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          index={1}
+          label={t("results.sections.identity")}
+          icon={Sparkles}
           className="relative"
         >
-          <div className="relative rounded-[2rem] bg-gradient-to-b from-[#13163a]/95 to-[#0d1030]/95 border border-white/10 backdrop-blur-xl p-7 md:p-10 overflow-hidden">
+          <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-gradient-to-b from-[#13163a]/95 to-[#0d1030]/95 p-5 backdrop-blur-xl md:rounded-[2rem] md:p-10">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
             <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-[260px] rounded-full bg-gradient-to-b from-rose-500/15 to-transparent blur-3xl pointer-events-none" />
 
@@ -769,15 +970,15 @@ export default function Results() {
               ))}
             </div>
           </div>
-        </motion.section>
+        </RevealSection>
 
         {/* ── 3. STRENGTHS ────────────────────────────────────────────── */}
         {Array.isArray(assessment.strengths) && assessment.strengths.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5 }}
+          <RevealSection
+            id="strengths"
+            index={2}
+            label={t("results.strengths.title")}
+            icon={CheckCircle2}
           >
             <SectionHeading
               eyebrow={t("results.strengths.eyebrow")}
@@ -807,17 +1008,16 @@ export default function Results() {
                 </motion.div>
               ))}
             </div>
-          </motion.section>
+          </RevealSection>
         )}
 
         {/* ── 4. RED LINES ────────────────────────────────────────────── */}
         {Array.isArray(assessment.redLines) && assessment.redLines.length > 0 && (
-          <motion.section
+          <RevealSection
             id="redlines"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5 }}
+            index={3}
+            label={t("results.sections.redLines")}
+            icon={ShieldAlert}
           >
             <div className="relative rounded-2xl overflow-hidden border border-rose-400/25">
               <div className="absolute inset-0 bg-gradient-to-br from-rose-500/12 via-rose-500/4 to-transparent" />
@@ -858,16 +1058,16 @@ export default function Results() {
                 </ul>
               </div>
             </div>
-          </motion.section>
+          </RevealSection>
         )}
 
         {/* ── 5. DEVELOPMENT AREAS (gentle framing) ───────────────────── */}
         {Array.isArray(assessment.developmentAreas) && assessment.developmentAreas.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5 }}
+          <RevealSection
+            id="development"
+            index={4}
+            label={t("results.developmentAreas.title")}
+            icon={Lightbulb}
           >
             <SectionHeading
               eyebrow={t("results.developmentAreas.eyebrow")}
@@ -892,16 +1092,16 @@ export default function Results() {
                 ))}
               </ul>
             </div>
-          </motion.section>
+          </RevealSection>
         )}
 
         {/* ── 6. RECOMMENDATIONS ──────────────────────────────────────── */}
         {Array.isArray(assessment.recommendations) && assessment.recommendations.length > 0 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5 }}
+          <RevealSection
+            id="recommendations"
+            index={5}
+            label={t("results.recommendations.title")}
+            icon={Zap}
           >
             <SectionHeading
               eyebrow={t("results.recommendations.eyebrow")}
@@ -926,17 +1126,16 @@ export default function Results() {
                 </li>
               ))}
             </ol>
-          </motion.section>
+          </RevealSection>
         )}
 
         {/* ── 7. COPY-READY OPERATING PROFILE (friendly accordion) ────── */}
         {profileText && (
-          <motion.section
+          <RevealSection
             id="profile"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5 }}
+            index={6}
+            label={t("results.sections.profile")}
+            icon={BookOpen}
           >
             <SectionHeading
               eyebrow={t("results.profile.eyebrow")}
@@ -1004,16 +1203,15 @@ export default function Results() {
                 </Accordion>
               </div>
             </div>
-          </motion.section>
+          </RevealSection>
         )}
 
         {/* ── 8. WHERE TO USE IT ──────────────────────────────────────── */}
-        <motion.section
+        <RevealSection
           id="how-to-use"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5 }}
+          index={7}
+          label={t("results.sections.howToUse")}
+          icon={Settings2}
         >
           <SectionHeading
             eyebrow={t("results.howToUse.eyebrow")}
@@ -1069,16 +1267,15 @@ export default function Results() {
               ))}
             </Tabs>
           </div>
-        </motion.section>
+        </RevealSection>
 
         {/* ── 9. STARTER PROMPTS ──────────────────────────────────────── */}
         {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 && (
-          <motion.section
+          <RevealSection
             id="starters"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5 }}
+            index={8}
+            label={t("results.sections.starters")}
+            icon={MessageSquare}
           >
             <SectionHeading
               eyebrow={t("results.starters.eyebrow")}
@@ -1119,7 +1316,7 @@ export default function Results() {
                 </motion.div>
               ))}
             </div>
-          </motion.section>
+          </RevealSection>
         )}
 
         {/* ── CTA ─────────────────────────────────────────────────────── */}
@@ -1128,14 +1325,14 @@ export default function Results() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5 }}
-          className="rounded-2xl border border-white/10 bg-gradient-to-l from-rose-500/10 to-orange-500/5 p-6 text-center"
+          className="rounded-2xl border border-white/10 bg-gradient-to-l from-rose-500/10 to-orange-500/5 p-5 text-center md:p-6"
         >
           <p className="text-white font-semibold mb-4">
             {t("results.newCta.line")}
           </p>
           <button
             onClick={() => navigate("/assess")}
-            className="inline-flex items-center gap-2 bg-gradient-to-l from-rose-500 to-orange-500 text-white px-8 py-3 rounded-xl font-bold hover:from-rose-400 hover:to-orange-400 transition-colors"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-rose-500 to-orange-500 px-8 py-3 font-bold text-white transition-colors hover:from-rose-400 hover:to-orange-400 sm:w-auto"
           >
             {t("results.newCta.button")}
             <Arrow className="h-4 w-4" />

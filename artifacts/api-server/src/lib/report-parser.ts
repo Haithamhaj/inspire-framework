@@ -140,7 +140,7 @@ export function parseFullReportV2(text: string): {
   );
 
   return {
-    systemInstruction: rawInstruction,
+    systemInstruction: UNIVERSAL_RULES + "\n\n" + rawInstruction,
     quickStarters: quickStarters.length > 0 ? quickStarters : rawStarters.split("\n").filter(Boolean).slice(0, 3),
     redLines: parseBulletSection(rawRedLines, 5),
     recommendations: parseNumberedSection(rawRecommendations, 5),

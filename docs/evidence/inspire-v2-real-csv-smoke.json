@@ -1,0 +1,209 @@
+{
+  "realCsvSmoke": {
+    "sourceFile": "/Users/haitham/Downloads/[masked file]",
+    "mappingNote": "Old CSV has no v2 question ids or domain fields. For smoke only, old Arabic answer text is mapped semantically to the nearest v2 option ids without changing the v2 questions or routing matrix.",
+    "rows": [
+      {
+        "maskedParticipantId": "participant_001",
+        "selectedAnswerCount": 21,
+        "domainUsed": "Coding / Software Development",
+        "domainRoleUsed": "software development assistant",
+        "domainFallbackReason": "old CSV has no v2 domain fields; used Coding / Software Development fallback for smoke only",
+        "primaryOperatingArchetype": "Thinking Partner",
+        "secondaryOperatingMode": "Critical Reviewer",
+        "topINSPIRESections": [
+          {
+            "section": "NormsBoundaries",
+            "score": 13.66
+          },
+          {
+            "section": "ResponseStructure",
+            "score": 8.65
+          },
+          {
+            "section": "PrecisionSelfCheck",
+            "score": 8.41
+          }
+        ],
+        "confidenceIndex": {
+          "score": 51,
+          "label": "High behavioral clarity"
+        },
+        "selectedInstructionRulesCount": 10,
+        "selectedRedLinesCount": 7,
+        "selectedRiskGuardsCount": 4,
+        "contradictionRulesGenerated": [
+          "Provide a quick actionable first version, then apply a concise verification step before finalizing.",
+          "Offer creative options inside a structured comparison.",
+          "Proceed independently on clear tasks, but ask one focused question when requirements are missing.",
+          "Adapt to repeated corrections, but preserve stable rules unless the user explicitly changes them.",
+          "Challenge weak logic without using harsh or motivational language.",
+          "Start concise, then offer expandable detail if the task is complex."
+        ],
+        "diagnostic": "distinct profile"
+      },
+      {
+        "maskedParticipantId": "participant_002",
+        "selectedAnswerCount": 21,
+        "domainUsed": "Coding / Software Development",
+        "domainRoleUsed": "software development assistant",
+        "domainFallbackReason": "old CSV has no v2 domain fields; used Coding / Software Development fallback for smoke only",
+        "primaryOperatingArchetype": "Critical Reviewer",
+        "secondaryOperatingMode": "Executor / Builder",
+        "topINSPIRESections": [
+          {
+            "section": "NormsBoundaries",
+            "score": 13.24
+          },
+          {
+            "section": "PrecisionSelfCheck",
+            "score": 8.66
+          },
+          {
+            "section": "ResponseStructure",
+            "score": 8.65
+          }
+        ],
+        "confidenceIndex": {
+          "score": 40.5,
+          "label": "High behavioral clarity"
+        },
+        "selectedInstructionRulesCount": 10,
+        "selectedRedLinesCount": 7,
+        "selectedRiskGuardsCount": 4,
+        "contradictionRulesGenerated": [
+          "Provide a quick actionable first version, then apply a concise verification step before finalizing.",
+          "Challenge weak logic without using harsh or motivational language.",
+          "Offer creative options inside a structured comparison.",
+          "Proceed independently on clear tasks, but ask one focused question when requirements are missing.",
+          "Adapt to repeated corrections, but preserve stable rules unless the user explicitly changes them.",
+          "Start concise, then offer expandable detail if the task is complex."
+        ],
+        "diagnostic": "distinct profile"
+      },
+      {
+        "maskedParticipantId": "participant_003",
+        "selectedAnswerCount": 21,
+        "domainUsed": "Coding / Software Development",
+        "domainRoleUsed": "software development assistant",
+        "domainFallbackReason": "old CSV has no v2 domain fields; used Coding / Software Development fallback for smoke only",
+        "primaryOperatingArchetype": "Critical Reviewer",
+        "secondaryOperatingMode": "Thinking Partner",
+        "topINSPIRESections": [
+          {
+            "section": "NormsBoundaries",
+            "score": 13.24
+          },
+          {
+            "section": "PrecisionSelfCheck",
+            "score": 8.66
+          },
+          {
+            "section": "ResponseStructure",
+            "score": 8.65
+          }
+        ],
+        "confidenceIndex": {
+          "score": 28.5,
+          "label": "High behavioral clarity"
+        },
+        "selectedInstructionRulesCount": 10,
+        "selectedRedLinesCount": 7,
+        "selectedRiskGuardsCount": 4,
+        "contradictionRulesGenerated": [
+          "Challenge weak logic without using harsh or motivational language.",
+          "Proceed independently on clear tasks, but ask one focused question when requirements are missing.",
+          "Adapt to repeated corrections, but preserve stable rules unless the user explicitly changes them.",
+          "Provide a quick actionable first version, then apply a concise verification step before finalizing.",
+          "Start concise, then offer expandable detail if the task is complex.",
+          "Offer creative options inside a structured comparison."
+        ],
+        "diagnostic": "distinct profile"
+      },
+      {
+        "maskedParticipantId": "participant_004",
+        "selectedAnswerCount": 21,
+        "domainUsed": "Coding / Software Development",
+        "domainRoleUsed": "software development assistant",
+        "domainFallbackReason": "old CSV has no v2 domain fields; used Coding / Software Development fallback for smoke only",
+        "primaryOperatingArchetype": "Critical Reviewer",
+        "secondaryOperatingMode": "Thinking Partner",
+        "topINSPIRESections": [
+          {
+            "section": "NormsBoundaries",
+            "score": 13.61
+          },
+          {
+            "section": "PrecisionSelfCheck",
+            "score": 8.66
+          },
+          {
+            "section": "InternalEvaluation",
+            "score": 8.34
+          }
+        ],
+        "confidenceIndex": {
+          "score": 47.4,
+          "label": "High behavioral clarity"
+        },
+        "selectedInstructionRulesCount": 10,
+        "selectedRedLinesCount": 7,
+        "selectedRiskGuardsCount": 4,
+        "contradictionRulesGenerated": [
+          "Challenge weak logic without using harsh or motivational language.",
+          "Provide a quick actionable first version, then apply a concise verification step before finalizing.",
+          "Adapt to repeated corrections, but preserve stable rules unless the user explicitly changes them.",
+          "Start concise, then offer expandable detail if the task is complex.",
+          "Proceed independently on clear tasks, but ask one focused question when requirements are missing.",
+          "Offer creative options inside a structured comparison."
+        ],
+        "diagnostic": "distinct profile"
+      },
+      {
+        "maskedParticipantId": "participant_006",
+        "selectedAnswerCount": 21,
+        "domainUsed": "Coding / Software Development",
+        "domainRoleUsed": "software development assistant",
+        "domainFallbackReason": "old CSV has no v2 domain fields; used Coding / Software Development fallback for smoke only",
+        "primaryOperatingArchetype": "Critical Reviewer",
+        "secondaryOperatingMode": null,
+        "topINSPIRESections": [
+          {
+            "section": "NormsBoundaries",
+            "score": 13.66
+          },
+          {
+            "section": "ResponseStructure",
+            "score": 8.65
+          },
+          {
+            "section": "PrecisionSelfCheck",
+            "score": 8.41
+          }
+        ],
+        "confidenceIndex": {
+          "score": 54,
+          "label": "High behavioral clarity"
+        },
+        "selectedInstructionRulesCount": 10,
+        "selectedRedLinesCount": 7,
+        "selectedRiskGuardsCount": 4,
+        "contradictionRulesGenerated": [
+          "Provide a quick actionable first version, then apply a concise verification step before finalizing.",
+          "Challenge weak logic without using harsh or motivational language.",
+          "Adapt to repeated corrections, but preserve stable rules unless the user explicitly changes them.",
+          "Offer creative options inside a structured comparison.",
+          "Start concise, then offer expandable detail if the task is complex.",
+          "Proceed independently on clear tasks, but ask one focused question when requirements are missing."
+        ],
+        "diagnostic": "distinct profile"
+      }
+    ]
+  },
+  "validationCases": {
+    "otherWithCustomDomainProvided": true,
+    "otherWithEmptyCustomDomain": false,
+    "nonOtherWithEmptyCustomDomain": true
+  },
+  "migrationRequirement": "Production/Replit must apply lib/db/migrations/0001_add_assessment_domain.sql before running new assessment creation."
+}

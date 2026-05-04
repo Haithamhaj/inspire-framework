@@ -1,6 +1,11 @@
 import { BEHAVIORAL_QUESTIONS } from "../data/questions";
 import { SCENARIOS } from "../data/scenarios";
-import { getOptionRoute, type InstructionSection } from "../data/option-routing";
+import { getOptionRoute, type InstructionSection, type RoleHint } from "../data/option-routing";
+import {
+  computeInspireV2Profile,
+  ROLE_HINTS,
+  ROLE_LABELS,
+} from "./inspire-v2-decision-engine";
 
 // ─── Universal Rules ───────────────────────────────────────
 // These 6 rules are appended to EVERY generated system instruction
@@ -68,6 +73,10 @@ export interface PromptDataV2 {
   jobTitle?: string;
   projectName: string;
   projectGoal: string;
+  domain: string;
+  customDomain?: string;
+  domainSpecialization?: string;
+  projectContext?: string;
   reportLanguage: "ar" | "en" | "both";
   answers: Array<{ questionId: string; optionId: string }>;
   openAnswer?: string;
@@ -362,9 +371,20 @@ export function buildPromptV2(data: PromptDataV2): string {
     behavioralSignal: string;
     instructionSections: InstructionSection[];
     strength: "primary" | "secondary";
+    questionWeight: number;
+    optionStrengthWeight: 1.0 | 0.6 | 0.3;
     redLineEffect: string | null;
     thinkingModeEffect: string;
   };
+
+  const computedProfile = computeInspireV2Profile({
+    answers: data.answers,
+    domain: data.domain,
+    customDomain: data.customDomain,
+    domainSpecialization: data.domainSpecialization,
+    projectContext: data.projectContext,
+    openAnswer: data.openAnswer,
+  });
 
   const signalEntries: SignalEntry[] = [];
   for (const answer of data.answers) {
@@ -376,10 +396,53 @@ export function buildPromptV2(data: PromptDataV2): string {
       behavioralSignal: route.behavioralSignal,
       instructionSections: route.instructionSections,
       strength: route.strength,
+      questionWeight: route.questionWeight,
+      optionStrengthWeight: route.optionStrengthWeight,
       redLineEffect: route.redLineEffect,
       thinkingModeEffect: route.thinkingModeEffect,
     });
   }
+
+  const weightedEntries = signalEntries.map((entry) => ({
+    ...entry,
+    weightedScore: Math.round(entry.questionWeight * entry.optionStrengthWeight * 100) / 100,
+  }));
+
+  const allocationRows = Object.entries(computedProfile.inspireSectionScores).map(
+    ([section, score]) => ({
+      section,
+      score,
+      percentage:
+        computedProfile.inspireSectionPercentages[
+          section as keyof typeof computedProfile.inspireSectionPercentages
+        ],
+    })
+  ).sort((a, b) => b.score - a.score);
+
+  const roleRows = ROLE_HINTS.map((role) => ({
+    role,
+    label: ROLE_LABELS[role],
+    score: computedProfile.roleScores[role],
+  })).sort((a, b) => b.score - a.score);
+
+  const contradictionSummary = Object.entries(computedProfile.contradictionTags)
+    .sort((a, b) => b[1] - a[1])
+    .map(([tag, count]) => `${tag}: ${count}`);
+
+  const allocationSummaryLines = allocationRows.map(
+    (row) => `• ${row.section}: score ${row.score}, share ${row.percentage}%`
+  );
+
+  const roleScoreLines = roleRows
+    .filter((row) => row.score > 0)
+    .map((row) => `• ${row.label}: ${row.score}`);
+
+  const calculatedPrimaryRole = computedProfile.primaryOperatingArchetype;
+  const calculatedSecondaryRole = computedProfile.secondaryOperatingMode ?? "None";
+
+  const roleByLabel = Object.fromEntries(
+    ROLE_HINTS.map((role) => [ROLE_LABELS[role], role])
+  ) as Record<string, RoleHint>;
 
   // Step 2: Cluster signals by instruction section bucket
   const sectionBuckets = new Map<InstructionSection, SignalEntry[]>();
@@ -414,13 +477,12 @@ export function buildPromptV2(data: PromptDataV2): string {
   // Step 4: Identify 3–5 dominant patterns across all buckets
   // Count signal frequency and pick top signals by strength weight
   const signalFrequency = new Map<string, { count: number; strength: number }>();
-  for (const entry of signalEntries) {
+  for (const entry of weightedEntries) {
     const sig = entry.behavioralSignal;
-    const strengthWeight = entry.strength === "primary" ? 2 : 1;
     if (!signalFrequency.has(sig)) signalFrequency.set(sig, { count: 0, strength: 0 });
     const curr = signalFrequency.get(sig)!;
     curr.count += 1;
-    curr.strength += strengthWeight;
+    curr.strength += entry.weightedScore;
   }
 
   const dominantPatterns = [...signalFrequency.entries()]
@@ -428,130 +490,175 @@ export function buildPromptV2(data: PromptDataV2): string {
     .slice(0, 5)
     .map(([sig]) => sig.replace(/_/g, " "));
 
-  // Collect red line effects from primary signals.
-  const redLineEffects = signalEntries
-    .filter((e) => e.strength === "primary" && e.redLineEffect)
-    .slice(0, 5)
-    .map((e) => `• ${e.redLineEffect!.replace(/_/g, " ")}`);
-
-  // Collect thinking mode effects from primary signals.
-  const thinkingModes = signalEntries
-    .filter((e) => e.strength === "primary" && e.thinkingModeEffect)
-    .map((e) => e.thinkingModeEffect.replace(/_/g, " "))
-    .filter((v, i, a) => a.indexOf(v) === i)
-    .slice(0, 4);
-
-  // Step 5: Build section context lines (compact, never pasting raw ruleText)
-  const sectionContextLines: string[] = [];
-  for (const [section, entries] of sectionBuckets.entries()) {
-    const descriptor = mergeBucket(entries);
-    if (descriptor) {
-      sectionContextLines.push(`• ${section}: ${descriptor}`);
-    }
-  }
-
   const sectionDescriptor = (section: InstructionSection): string => {
     const entries = sectionBuckets.get(section);
     if (!entries || entries.length === 0) return "No dominant signal; infer lightly from project context.";
     return mergeBucket(entries);
   };
 
-  const dynamicRoleSignals = [
-    `Strategic Thinking Partner when planning, structuring, prioritizing, or turning messy input into a path: ${sectionDescriptor("mission_domain_context")}`,
-    `Critic / Weakness Reviewer when evaluating ideas, risks, assumptions, plans, or quality gates: ${sectionDescriptor("red_lines_failure_triggers")}`,
-    `Editor / Organizer when improving drafts, wording, structure, or copy-ready outputs: ${sectionDescriptor("output_rules")}`,
-    `Teacher / Simplifier when explaining unfamiliar concepts or reducing complexity: ${sectionDescriptor("thinking_quality_modes")}`,
-    `Audience Proxy when preparing public-facing, stakeholder-facing, or non-technical content: ${sectionDescriptor("relationship_with_user")}`,
-  ];
+  const roleContextByRole: Record<RoleHint, string> = {
+    ExecutorBuilder: sectionDescriptor("core_behavior_rules"),
+    StrategicOrganizer: sectionDescriptor("mission_domain_context"),
+    CriticalReviewer: sectionDescriptor("red_lines_failure_triggers"),
+    ThinkingPartner: sectionDescriptor("dynamic_roles"),
+    TeacherSimplifier: sectionDescriptor("thinking_quality_modes"),
+    AudienceTranslator: sectionDescriptor("relationship_with_user"),
+  };
 
-  return `You are an expert behavioral analyst specializing in the INSPIRE Framework — a personalized AI interaction profiling system.
+  const calculatedRoleSignals = [
+    computedProfile.primaryOperatingArchetype,
+    computedProfile.secondaryOperatingMode,
+  ]
+    .filter((label): label is string => Boolean(label))
+    .map((label) => {
+      const role = roleByLabel[label];
+      return role ? `${label}: ${roleContextByRole[role]}` : `${label}: Calculated by role score.`;
+    });
+
+  const computedProfileForPrompt = {
+    inspireSectionScores: computedProfile.inspireSectionScores,
+    inspireSectionPercentages: computedProfile.inspireSectionPercentages,
+    roleScores: computedProfile.roleScores,
+    domain: computedProfile.domain,
+    customDomain: computedProfile.customDomain,
+    domainSpecialization: computedProfile.domainSpecialization,
+    projectContext: computedProfile.projectContext,
+    domainRole: computedProfile.domainRole,
+    domainSource: computedProfile.domainSource,
+    domainConfidence: computedProfile.domainConfidence,
+    primaryOperatingArchetype: computedProfile.primaryOperatingArchetype,
+    secondaryOperatingMode: computedProfile.secondaryOperatingMode,
+    operatingModeTriggers: computedProfile.operatingModeTriggers,
+    primaryRole: computedProfile.primaryRole,
+    secondaryRole: computedProfile.secondaryRole,
+    secondaryRoleTrigger: computedProfile.secondaryRoleTrigger,
+    contradictionTags: computedProfile.contradictionTags,
+    contradictionRulesGenerated: computedProfile.contradictionRulesGenerated,
+    confidenceIndex: computedProfile.confidenceIndex,
+    topEvidenceLabels: computedProfile.topEvidenceLabels,
+    selectedInstructionRules: computedProfile.selectedInstructionRules,
+    selectedOutputRules: computedProfile.selectedOutputRules,
+    selectedRedLines: computedProfile.selectedRedLines,
+    selectedRiskGuards: computedProfile.selectedRiskGuards,
+    openAnswerOverlay: computedProfile.openAnswerOverlay,
+  };
+
+  return `You are an INSPIRE report writer, not a behavioral scorer.
+
+You are not analyzing the user from scratch.
+The profile has already been computed by the INSPIRE decision engine.
+Your task is only to write a clear user-facing report and a copy-ready system instruction using the computed profile.
+Do not change the computed roles, scores, contradictions, selected rules, or risk guards.
+Do not re-score answers.
+Do not re-analyze raw answers.
+Do not choose a new domainRole, primaryOperatingArchetype, secondaryOperatingMode, primaryRole, or secondaryRole.
+Do not invent unsupported personality traits.
+Do not add generic advice that is not backed by selectedInstructionRules, selectedOutputRules, selectedRedLines, selectedRiskGuards, topEvidenceLabels, or the open-answer overlay.
 
 ## Subject Profile
 - Name: ${data.name}
 - Job Title: ${data.jobTitle ?? "Not specified"}
 - Project: ${data.projectName}
-- Project Goal: ${data.projectGoal}
+- Project Context: ${computedProfile.projectContext ?? data.projectGoal}
+- Selected Domain: ${computedProfile.domain}
+- Custom Domain: ${computedProfile.customDomain ?? "Not applicable"}
+- Domain Specialization: ${computedProfile.domainSpecialization ?? "Not provided"}
+- Domain Role: ${computedProfile.domainRole}
 - Report Language: ${lang}
 
 ## Behavioral Analysis Summary (from 21-question v2 assessment)
 
-### Dominant Behavioral Patterns (ranked by signal strength)
+### Authoritative Computed Profile
+This JSON is the source of truth. Use it as fixed input. Evidence labels are supporting labels only; they are not raw answers and must not be used to reinterpret the profile.
+
+\`\`\`json
+${JSON.stringify(computedProfileForPrompt, null, 2)}
+\`\`\`
+
+INSPIRE Allocation Scores:
+${allocationSummaryLines.join("\n")}
+
+Role Scores:
+${roleScoreLines.join("\n")}
+
+Domain Role: ${computedProfile.domainRole}
+Primary Operating Archetype: ${calculatedPrimaryRole}
+Secondary Dynamic Mode: ${calculatedSecondaryRole}
+Confidence Index: ${computedProfile.confidenceIndex.label} (${computedProfile.confidenceIndex.score})
+Contradiction Tags: ${contradictionSummary.length ? contradictionSummary.join(", ") : "None"}
+
+### Supporting Evidence Labels
 ${dominantPatterns.map((p, i) => `${i + 1}. ${p}`).join("\n")}
 
-### Behavioral Signals by Instruction Domain
-${sectionContextLines.join("\n")}
+### Calculated Role Trigger Inputs
+${calculatedRoleSignals.map((r) => `• ${r}`).join("\n")}
 
-### Thinking Mode Profile
-${thinkingModes.map((m) => `• ${m}`).join("\n")}
-
-### Dynamic Role Trigger Inputs
-${dynamicRoleSignals.map((r) => `• ${r}`).join("\n")}
-
-### Key Red Lines (things this person will not tolerate)
-${redLineEffects.join("\n")}
-
-${data.openAnswer ? `## Personal Reflection (in their own words)\n${data.openAnswer}` : ""}
+${data.openAnswer ? `## Open-Answer Overlay\nUse this only for tone, examples/domain, red lines, and adaptation wording. Do not use it to change numeric scores or roles.\n${data.openAnswer}` : ""}
 
 ---
 
 ## Your Task
 
-Based on this behavioral profile, generate a comprehensive, highly personalized AI interaction report. Write everything in ${lang}.
+Write everything in ${lang}.
+
+Create two clearly separated outputs:
+1. A user-facing analysis report.
+2. A model-facing, copy-ready system instruction.
+
+The report may explain what the computed profile means, but it must remain conservative and evidence-backed.
+The system instruction must be operational text addressed to an AI assistant.
 
 Output EXACTLY these 8 sections using the markers shown. Do not add or omit any section.
 
 ===FULL_INSTRUCTION_START===
-Write a complete, standalone AI system instruction (600-900 words) this person can paste directly into any AI tool as their permanent system prompt.
+Write a complete, standalone AI system instruction this person can paste directly into any AI tool as their permanent system prompt.
 
-MANDATORY: the first visible lines of this final instruction must start with Assistant Identity, not Universal Rules, not caveats, and not a generic preamble.
+MANDATORY:
+- This section is model-facing, not user-facing analysis.
+- Start directly with section 1 below.
+- Do not include report explanation inside this section.
+- Do not add sections outside the seven fixed INSPIRE sections.
+- Use Domain Role exactly unless translation requires natural wording: ${computedProfile.domainRole}.
+- Use the calculated Primary Operating Archetype exactly unless translation requires natural wording: ${calculatedPrimaryRole}.
+- Include Secondary Dynamic Mode only if computedProfile.secondaryOperatingMode is not null: ${calculatedSecondaryRole}.
+- Use selectedInstructionRules, selectedOutputRules, selectedRedLines, selectedRiskGuards, contradictionRulesGenerated, and openAnswerOverlay as the only behavioral sources.
 
-Use this exact top-level order inside the final instruction:
-1. Assistant Identity
+Use this exact seven-section INSPIRE format and order:
+1. Identity & Role
    - Define who the AI is for ${data.name}.
-   - Name the user's project/domain: ${data.projectName}.
-   - State the assistant's default role.
-   - Explain why this assistant is different from a generic AI assistant.
-2. Mission & Domain Context
-   - Tie the assistant's purpose to the project goal and domain context.
-3. Relationship With the User
-   - Define the interaction style, collaboration level, directness, and support pattern.
-4. Dynamic Roles
-   - Make roles conditional and trigger-based; do not force all roles at once.
-   - Use only roles that fit the behavioral profile and project:
-     • Strategic Thinking Partner when planning, structuring, prioritizing, or turning messy input into a path.
-     • Critic / Weakness Reviewer when evaluating ideas, risks, assumptions, plans, or quality gates.
-     • Editor / Organizer when improving drafts, wording, structure, or copy-ready outputs.
-     • Teacher / Simplifier when explaining unfamiliar concepts or reducing complexity.
-     • Audience Proxy when preparing public-facing, stakeholder-facing, or non-technical content.
-5. Core Behavior Rules
-   - Write 6-8 direct behavioral rules derived from the dominant patterns and section buckets.
-6. Thinking & Quality Modes
-   - Choose only relevant modes from the profile; do not list every possible mode.
-   - Possible modes include Step-Back Reframing, Devil's Advocate / Weakness Detection, Self-Check / Quality Gate, Comparative Reasoning, Scenario Simulation, Audience Proxy, Iterative Improvement, and Verification / Accuracy Check.
-   - Do not reveal hidden chain-of-thought.
-   - Provide concise reasoning summaries, assumptions, trade-offs, risks, and self-check results when useful.
-7. Output Rules
-   - Define preferred format, depth, examples, options, and copy-ready behavior.
-8. Red Lines & Failure Triggers
-   - List explicit "never do" behaviors based on red line effects.
-9. Universal Quality Rules
-   - Include universal rules here only, after Red Lines: honesty when uncertain, no fabricated sources, clear fact/inference/recommendation separation, one clarifying question when needed, answer-first structure, context-shift detection, and confidence labels only when useful.
-10. Adaptation / Improvement Loop
-   - Define how the assistant should learn from corrections, refine drafts, and improve across turns.
-11. Platform Use Note
-   - State that these instructions apply across AI tools and should be adapted to each platform's constraints without weakening the user's preferences.
+   - Domain Role: Act as ${computedProfile.domainRole} within the selected domain ${computedProfile.domain}.
+   - Project Context: ${computedProfile.projectContext ? `Use this as background and use-case context: ${computedProfile.projectContext}` : "No project context was provided; keep examples relevant to the selected domain only."}
+   - If no specialization is provided, stay at the general domain level and do not pretend to have a specific sub-specialization.
+   - Primary Operating Archetype: Operate primarily as ${calculatedPrimaryRole}.
+   - Secondary Dynamic Mode: Activate ${calculatedSecondaryRole} only when the trigger condition appears.
+   - Boundary: Domain/domainSpecialization define expertise. ProjectContext defines the use case and background. The operating archetype defines delivery behavior. Do not turn projectContext into a professional specialization unless explicitly stated. Do not infer specialization from behavioral answers alone.
+2. Norms & Boundaries
+   - Convert selectedInstructionRules, selectedRedLines, selectedRiskGuards, and contradictionRulesGenerated into operating boundaries.
+3. Style & Tone
+   - Define communication style only from computed evidence and open-answer overlay.
+4. Precision & Self-Check
+   - Define verification, assumptions, gap handling, and self-check behavior from computed rules.
+5. Internal Evaluation
+   - Define how the assistant should evaluate alternatives, risks, quality, and trade-offs without revealing hidden chain-of-thought.
+6. Response Structure
+   - Define answer order, depth, examples, options, and copy-ready behavior from selectedOutputRules.
+7. Enhancement & Adaptation
+   - Define how the assistant should learn from corrections, refine outputs, and adapt without weakening stable preferences.
+
+Do NOT write any Universal Quality Rules, Universal Rules, Performance Rules, honesty protocol, source protocol, or confidence protocol in this section. Those rules are appended by the system after parsing and must remain fixed across all analyses.
 
 Write in second person addressing the AI. Sound authoritative and natural, not mechanical.
-Do not paste all route rules, raw matrix rules, or every behavioral signal. Use the compact clusters above.
+Do not paste raw matrix internals. Use only the computed profile fields.
 
 Before finalizing this section, silently check that it:
-- starts with Assistant Identity
-- is domain-aware and copy-ready
+- uses exactly the seven INSPIRE sections above
+- is copy-ready and model-facing
+- does not contain user-facing explanation
 - is not generic
+- does not override computed roles
+- does not infer domain specialization from behavioral answers
 - does not start with Universal Quality Rules
-- includes trigger-based Dynamic Roles
-- includes only relevant Thinking & Quality Modes
-- separates Thinking & Quality Modes from Universal Quality Rules
+- does not include any universal rules generated by AI
 - is concise and not bloated
 ===FULL_INSTRUCTION_END===
 
@@ -563,30 +670,32 @@ Write EXACTLY 3 ready-to-use prompt starters tailored to this person's behaviora
 ===STARTERS_END===
 
 ===RED_LINES_START===
-List 4-5 specific behaviors this person absolutely cannot tolerate in AI interactions, derived from their red line signals and behavioral profile. Each on its own line starting with •
+List 4-5 specific behaviors this person absolutely cannot tolerate in AI interactions. Use selectedRedLines and selectedRiskGuards only. Each on its own line starting with •
 • [red line]
 ===RED_LINES_END===
 
 ===STRENGTHS_START===
-List 4-5 behavioral and cognitive strengths revealed by this profile. Each on its own line starting with •
+List 4-5 strengths conservatively supported by roleScores, topEvidenceLabels, and selectedInstructionRules. Each on its own line starting with •
 • [strength]
 ===STRENGTHS_END===
 
 ===RISKS_START===
-List 3-4 growth areas or blind spots this profile reveals. Each on its own line starting with •
+List 3-4 growth areas or blind spots conservatively supported by contradictionRulesGenerated, selectedRiskGuards, and selectedRedLines. Each on its own line starting with •
 • [risk or blind spot]
 ===RISKS_END===
 
 ===ROLE_ANALYSIS_START===
 Write 4-6 sentences covering:
-1. This person's behavioral archetype and dominant cognitive style
-2. How they naturally operate in professional settings
-3. Their ideal AI interaction style (from the ai_interaction_style, recommended_identity, and domain_operating_mode signals)
-4. What makes their AI partnership uniquely effective or challenging
+1. The calculated domainRole, primaryOperatingArchetype, and optional secondaryOperatingMode
+2. The top two or three INSPIRE section scores
+3. What the selected rules imply for AI interaction
+4. What contradictions need to be handled
+
+Do not name an unsupported archetype. Do not infer traits beyond the computedProfile.
 ===ROLE_ANALYSIS_END===
 
 ===RECOMMENDATIONS_START===
-List 4-5 specific, actionable recommendations for how this person should use AI tools to maximize value. Numbered list.
+List 4-5 specific, actionable recommendations for how this person should use AI tools to maximize value. Each recommendation must be backed by selectedInstructionRules, selectedOutputRules, contradictionRulesGenerated, or selectedRiskGuards. Numbered list.
 1. [recommendation]
 2. [recommendation]
 3. [recommendation]
@@ -594,6 +703,6 @@ List 4-5 specific, actionable recommendations for how this person should use AI 
 ===RECOMMENDATIONS_END===
 
 ===SIGNAL_MAP_START===
-If you can represent the behavioral signal clusters in a structured table format (signal name | section | strength), do so. Otherwise write "null".
+Represent the computed evidence in a compact table format: evidence label | related INSPIRE section | support source. Use topEvidenceLabels and the top INSPIRE sections only. If evidence is insufficient, write "null".
 ===SIGNAL_MAP_END===`;
 }
