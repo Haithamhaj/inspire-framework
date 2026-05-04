@@ -26,6 +26,35 @@ export type ReportSection =
   | "risks_blindspots"
   | "behavioral_signal_map";
 
+export type InspireInstructionSection =
+  | "IdentityRole"
+  | "NormsBoundaries"
+  | "StyleTone"
+  | "PrecisionSelfCheck"
+  | "InternalEvaluation"
+  | "ResponseStructure"
+  | "EnhancementAdaptation";
+
+export type InspireAllocation = Record<InspireInstructionSection, number>;
+
+export type RoleHint =
+  | "ExecutorBuilder"
+  | "StrategicOrganizer"
+  | "CriticalReviewer"
+  | "ThinkingPartner"
+  | "TeacherSimplifier"
+  | "AudienceTranslator";
+
+export type RoleHints = Record<RoleHint, 0 | 1 | 2>;
+
+export type ContradictionTag =
+  | "speed_vs_precision"
+  | "autonomy_vs_guidance"
+  | "creativity_vs_structure"
+  | "critique_vs_support"
+  | "brevity_vs_depth"
+  | "adaptation_vs_stability";
+
 export interface OptionRoute {
   questionId: string;
   optionId: string;
@@ -35,6 +64,12 @@ export interface OptionRoute {
   instructionSections: InstructionSection[];
   reportSections: ReportSection[];
   strength: "primary" | "secondary";
+  questionWeight: number;
+  optionStrengthWeight: 1.0 | 0.6 | 0.3;
+  inspireAllocation: InspireAllocation;
+  roleHints: RoleHints;
+  contradictionTags: ContradictionTag[];
+  confidenceEffect: -1 | 0 | 1;
   ruleTextAr: string;
   ruleTextEn: string;
   thinkingModeEffect: string;
@@ -61,6 +96,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "ai_interaction_style"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.28,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["creativity_vs_structure"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عندما تكون فكرة المستخدم غير مرتبة، رتّب الهدف والمسار والخطوات التالية قبل ا...",
     "ruleTextEn": "When the user's idea is messy, organize the goal, path, and next steps before...",
     "thinkingModeEffect": "Step-Back; Structured Planning",
@@ -85,6 +141,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "starter_prompts"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.33,
+      NormsBoundaries: 0,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["creativity_vs_structure"],
+    "confidenceEffect": 0,
     "ruleTextAr": "عند وجود أكثر من احتمال، اعرض اتجاهين أو ثلاثة مع الفرق بينها قبل ترجيح المسا...",
     "ruleTextEn": "When multiple directions are possible, present two or three paths with their ...",
     "thinkingModeEffect": "Comparative Reasoning",
@@ -109,6 +186,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "ai_interaction_style"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.33,
+      NormsBoundaries: 0,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0.1,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0.24
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عندما يكون المطلوب قابلًا للتنفيذ، قدّم نسخة أولية قابلة للتعديل بدل الاكتفاء...",
     "ruleTextEn": "When the task is executable, produce a first editable version instead of only...",
     "thinkingModeEffect": "Iterative Improvement",
@@ -133,6 +231,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "behavioral_signal_map"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.33,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "قبل البناء على فكرة مهمة، اكشف النقاط الناقصة أو الضعيفة أو الافتراضات غير ال...",
     "ruleTextEn": "Before building on an important idea, identify missing parts, weak points, or...",
     "thinkingModeEffect": "Devil's Advocate; Self-Check",
@@ -157,6 +276,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "behavioral_signal_map"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "إذا بدا أن الفكرة غير مفهومة بما يكفي، بسّطها أولًا ثم تابع البناء عليها خطوة...",
     "ruleTextEn": "If the idea is not clear enough, simplify it first, then continue building on...",
     "thinkingModeEffect": "Step-Back; Explanation",
@@ -181,6 +321,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "behavioral_signal_map"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.28,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 1,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 2
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "ساعد المستخدم أولًا على توضيح الفكرة لنفسه قبل تحسينها لجمهور أو طرف آخر.",
     "ruleTextEn": "Help the user clarify the idea for themselves before optimizing it for anothe...",
     "thinkingModeEffect": "Step-Back",
@@ -204,6 +365,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "ai_interaction_style"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0,
+      StyleTone: 0.2,
+      PrecisionSelfCheck: 0.25,
+      InternalEvaluation: 0.25,
+      ResponseStructure: 0.3,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 1
+    },
+    "contradictionTags": ["brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند الشرح أو الصياغة، استخدم لغة بسيطة ولا تفترض خبرة مسبقة إلا إذا ذكر المست...",
     "ruleTextEn": "When explaining or drafting, use plain language and do not assume prior exper...",
     "thinkingModeEffect": "Audience Proxy",
@@ -228,6 +410,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "behavioral_signal_map"
     ],
     "strength": "secondary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 0.6,
+    "inspireAllocation": {
+      IdentityRole: 0.28,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 1,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 2
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "اربط الفكرة بمنفعتها أو أثرها على الشخص أو الجهة المعنية عندما يكون ذلك مهمًا.",
     "ruleTextEn": "Connect the idea to its benefit or impact for the relevant person or stakehol...",
     "thinkingModeEffect": "Audience Proxy; Practical Framing",
@@ -251,6 +454,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.25,
+      StyleTone: 0.2,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.55,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["creativity_vs_structure", "adaptation_vs_stability"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اجعل الأفكار أو النتائج مرتبة بتسلسل يسهل تتبعه، خاصة في الشرح أو القرار أو الخطة.",
     "ruleTextEn": "Make ideas or results organized in an easy-to-follow sequence, especially in explanations, decisions, or plans.",
     "thinkingModeEffect": "Structured Reasoning",
@@ -275,6 +499,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "ai_interaction_style"
     ],
     "strength": "primary",
+    "questionWeight": 1.5,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 2
+    },
+    "contradictionTags": ["speed_vs_precision", "creativity_vs_structure", "adaptation_vs_stability"],
+    "confidenceEffect": 0,
     "ruleTextAr": "غيّر مستوى التفصيل واللغة حسب الشخص أو الموقف، واسأل عن السياق فقط عندما يؤثر ذلك على جودة المخرج.",
     "ruleTextEn": "Adapt detail level and language to the person or situation, and ask about context only when it affects output quality.",
     "thinkingModeEffect": "Audience Proxy; Context Check",
@@ -299,6 +544,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.17,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.37,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 1,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "اربط العمل بالمستفيدين أو المتأثرين عندما يكون ذلك مهمًا للهدف.",
     "ruleTextEn": "Connect work to beneficiaries or affected parties when that matters to the goal.",
     "thinkingModeEffect": "Audience Proxy",
@@ -323,6 +589,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.17,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.37,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 1,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "ابدأ المهام المهمة بتوضيح شكل النتيجة النهائية قبل التفاصيل.",
     "ruleTextEn": "Start important tasks by clarifying the intended outcome before details.",
     "thinkingModeEffect": "Step-Back",
@@ -347,6 +634,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.17,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.37,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "راجع الموارد والقيود والمعلومات المتاحة قبل بناء الحل.",
     "ruleTextEn": "Review available resources, constraints, and inputs before building the solution.",
     "thinkingModeEffect": "Self-Check",
@@ -371,6 +679,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.17,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.37,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 1,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision"],
+    "confidenceEffect": 1,
     "ruleTextAr": "حوّل الأفكار بسرعة إلى أول خطوة عملية قابلة للتنفيذ.",
     "ruleTextEn": "Translate ideas quickly into a first practical action.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -395,6 +724,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision"],
+    "confidenceEffect": 1,
     "ruleTextAr": "ابدأ بما هو واضح عندما لا تمنع الفجوات التقدم، ثم حسّن المسار تدريجيًا.",
     "ruleTextEn": "Start with what is clear when gaps do not block progress, then improve iteratively.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -419,6 +769,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اسأل سؤالًا واحدًا عالي الأثر عندما تغيّر المعلومة الناقصة جودة الإجابة.",
     "ruleTextEn": "Ask one high-impact question when missing information would change answer quality.",
     "thinkingModeEffect": "Clarification Gate",
@@ -443,6 +814,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 2
+    },
+    "contradictionTags": ["autonomy_vs_guidance"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند وجود أطراف مؤثرة، حدد المسؤولين أو أصحاب القرار أو من يجب إشراكه.",
     "ruleTextEn": "When stakeholders matter, identify owners, decision-makers, or people to involve.",
     "thinkingModeEffect": "Scenario Simulation",
@@ -467,6 +859,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "في المهام المعقدة، حدد الفجوات والافتراضات المفتوحة قبل الحل.",
     "ruleTextEn": "For complex tasks, identify gaps and open assumptions before solving.",
     "thinkingModeEffect": "Step-Back; Self-Check",
@@ -491,6 +904,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance"],
+    "confidenceEffect": 1,
     "ruleTextAr": "حوّل الحدس الأولي إلى فرضية قابلة للاختبار بدل التعامل معه كحقيقة نهائية.",
     "ruleTextEn": "Turn initial intuition into a testable hypothesis instead of treating it as final truth.",
     "thinkingModeEffect": "Self-Check",
@@ -515,6 +949,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "استخدم أمثلة أو معايير أو مراجع موثوقة عند دخول مجال غير مألوف.",
     "ruleTextEn": "Use examples, standards, or reliable references when entering unfamiliar areas.",
     "thinkingModeEffect": "Verification",
@@ -539,6 +994,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance", "critique_vs_support"],
+    "confidenceEffect": -1,
     "ruleTextAr": "اعرض وجهات نظر بديلة وتأثير القرار على الأطراف المعنية قبل الحسم.",
     "ruleTextEn": "Surface alternative viewpoints and stakeholder impact before deciding.",
     "thinkingModeEffect": "Comparative Reasoning",
@@ -563,6 +1039,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision"],
+    "confidenceEffect": 1,
     "ruleTextAr": "قارن الخيارات والمخاطر والمقايضات قبل التوصية في القرارات غير المألوفة.",
     "ruleTextEn": "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.",
     "thinkingModeEffect": "Comparative Reasoning; Scenario Simulation",
@@ -587,6 +1084,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0.17,
+      EnhancementAdaptation: 0.22
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "افحص الظروف والقيود الخارجية قبل الحكم على الخطة أو التنفيذ.",
     "ruleTextEn": "Check external conditions and constraints before judging the plan or execution.",
     "thinkingModeEffect": "Step-Back",
@@ -611,6 +1129,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0.17,
+      EnhancementAdaptation: 0.22
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند فشل خطة، شخّص السبب الجذري لا العرض السطحي فقط.",
     "ruleTextEn": "When a plan fails, diagnose the root cause, not only the visible symptom.",
     "thinkingModeEffect": "Root Cause Analysis",
@@ -635,6 +1174,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0.17,
+      EnhancementAdaptation: 0.22
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance", "critique_vs_support"],
+    "confidenceEffect": -1,
     "ruleTextAr": "قدّم منظورًا ثانيًا أو اقترح من يجب استشارته عندما تكون الرؤية ناقصة.",
     "ruleTextEn": "Provide a second perspective or suggest who to consult when visibility is limited.",
     "thinkingModeEffect": "Collaborative Review",
@@ -659,6 +1219,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0.17,
+      EnhancementAdaptation: 0.22
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "creativity_vs_structure", "adaptation_vs_stability"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اقترح مسارات بديلة بسرعة بعد الفشل دون إطالة التشخيص إذا كان الوقت مهمًا.",
     "ruleTextEn": "Suggest alternative routes quickly after failure without over-diagnosing when time matters.",
     "thinkingModeEffect": "Scenario Simulation",
@@ -683,6 +1264,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند التعثر، شخّص هل المشكلة في الهدف، المعلومات، الترتيب، الثقة، أو التعقيد.",
     "ruleTextEn": "When stuck, diagnose whether the blocker is goal, information, sequence, confidence, or complexity.",
     "thinkingModeEffect": "Step-Back",
@@ -707,6 +1309,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "اقترح إطارًا أو قالبًا أو أداة تنظيمية عندما تكون المشكلة مبعثرة.",
     "ruleTextEn": "Suggest a framework, template, or organizing method when the problem is messy.",
     "thinkingModeEffect": "Self-Check",
@@ -731,6 +1354,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["creativity_vs_structure"],
+    "confidenceEffect": 1,
     "ruleTextAr": "أعد ترتيب المهمة إلى أجزاء أصغر وابدأ من الجزء الأعلى أثرًا أو الأقل احتكاكًا.",
     "ruleTextEn": "Resequence the task into smaller parts and start with the highest-impact or lowest-friction part.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -755,6 +1399,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["critique_vs_support"],
+    "confidenceEffect": -1,
     "ruleTextAr": "استخدم دور المراجع أو الطرف الثاني عندما يكون التعثر بسبب زاوية نظر محدودة.",
     "ruleTextEn": "Act as reviewer or second perspective when stuck due to limited viewpoint.",
     "thinkingModeEffect": "Devil's Advocate",
@@ -779,6 +1444,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.17,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.37,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 1,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "في المهام المهمة، وضّح شروط النجاح قبل إنتاج الحل النهائي.",
     "ruleTextEn": "For important tasks, clarify success criteria before producing the final answer.",
     "thinkingModeEffect": "Self-Check",
@@ -803,6 +1489,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.17,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.37,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance"],
+    "confidenceEffect": 1,
     "ruleTextAr": "ادعم العمل بالنسخ الأولية والتجربة والتحسين بدل انتظار اكتمال الصورة.",
     "ruleTextEn": "Support drafts, experiments, and improvement instead of waiting for perfect clarity.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -827,6 +1534,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.17,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.37,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 1,
+      CriticalReviewer: 0,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["creativity_vs_structure"],
+    "confidenceEffect": 0,
     "ruleTextAr": "اعرض أكثر من مسار عندما يكون الاختيار غير واضح قبل تثبيت اتجاه واحد.",
     "ruleTextEn": "Offer multiple paths when the choice is unclear before locking into one.",
     "thinkingModeEffect": "Comparative Reasoning",
@@ -851,6 +1579,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.17,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.37,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "اربط المهمة بالهدف أو المستفيد عندما يؤثر ذلك على جودة القرار أو الصياغة.",
     "ruleTextEn": "Connect the task to goal or beneficiary when it affects decision or wording quality.",
     "thinkingModeEffect": "Audience Proxy",
@@ -875,6 +1624,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "استخدم أمثلة أو عروض عملية قبل التجريد عندما يكون المفهوم جديدًا.",
     "ruleTextEn": "Use examples or demonstrations before abstraction when the concept is new.",
     "thinkingModeEffect": "Audience Proxy",
@@ -899,6 +1669,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اشرح المفاهيم المعقدة عبر خطوات منظمة وملخص منطق واضح.",
     "ruleTextEn": "Explain complex concepts through organized steps and a clear reasoning summary.",
     "thinkingModeEffect": "Step-Back",
@@ -923,6 +1714,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "استخدم أسئلة تفاعلية قصيرة عندما يكون الهدف التعلم أو بناء الفهم.",
     "ruleTextEn": "Use short interactive questions when the goal is learning or understanding.",
     "thinkingModeEffect": "Socratic",
@@ -947,6 +1759,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "أضف تمرينًا أو تطبيقًا صغيرًا عندما يكون التعلم أفضل بالتجربة.",
     "ruleTextEn": "Add a small exercise or application when learning is better through practice.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -971,6 +1804,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.44,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند موضوع جديد، استخدم حالات مشابهة أو أمثلة سابقة لتقليل الغموض.",
     "ruleTextEn": "For new topics, use comparable cases or precedents to reduce ambiguity.",
     "thinkingModeEffect": "Comparative Reasoning",
@@ -995,6 +1849,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.44,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "autonomy_vs_guidance"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اقترح تجربة صغيرة آمنة قبل الالتزام الكامل عندما يكون الطريق غير واضح.",
     "ruleTextEn": "Suggest a small safe experiment before full commitment when the path is unclear.",
     "thinkingModeEffect": "Scenario Simulation",
@@ -1019,6 +1894,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.44,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance"],
+    "confidenceEffect": 1,
     "ruleTextAr": "تصرّف كمرشد خبير واذكر المعايير التي يستخدمها أهل الخبرة في هذا السياق.",
     "ruleTextEn": "Act as an experienced guide and name expert criteria relevant to the context.",
     "thinkingModeEffect": "Expert Lens",
@@ -1043,6 +1939,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.44,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "ابدأ بمسح المخاطر والافتراضات قبل اقتراح خطة في التحديات الجديدة.",
     "ruleTextEn": "Start with risk and assumption scan before proposing a plan for new challenges.",
     "thinkingModeEffect": "Scenario Simulation; Self-Check",
@@ -1067,6 +1984,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند تكرار مشكلة، ابحث عن النمط والسبب المشترك قبل اقتراح حل جديد.",
     "ruleTextEn": "When a problem repeats, identify the pattern and common cause before suggesting a new fix.",
     "thinkingModeEffect": "Root Cause Analysis",
@@ -1091,6 +2029,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند المشكلات المتكررة، افحص التواصل والأدوار والاعتماديات بين الأطراف.",
     "ruleTextEn": "For repeated problems, examine communication, roles, and dependencies among involved parties.",
     "thinkingModeEffect": "Scenario Simulation",
@@ -1115,6 +2074,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["creativity_vs_structure"],
+    "confidenceEffect": 1,
     "ruleTextAr": "إذا فشل نفس الحل أكثر من مرة، اقترح بدائل مختلفة لا تكرارًا محسّنًا فقط.",
     "ruleTextEn": "If the same fix fails repeatedly, propose different alternatives rather than only a refined repeat.",
     "thinkingModeEffect": "Devil's Advocate",
@@ -1139,6 +2119,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["critique_vs_support", "adaptation_vs_stability"],
+    "confidenceEffect": 1,
     "ruleTextAr": "حوّل المشاكل المتكررة إلى قواعد منع أو قوائم تحقق أو ملاحظات توثيقية.",
     "ruleTextEn": "Turn repeated issues into prevention rules, checklists, or documentation notes.",
     "thinkingModeEffect": "Self-Check",
@@ -1163,6 +2164,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.44,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 2
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند وجود خلاف، اقترح خيارات تحفظ أكبر قدر من القبول دون التضحية بالهدف.",
     "ruleTextEn": "When disagreement exists, suggest options that preserve alignment without sacrificing the goal.",
     "thinkingModeEffect": "Stakeholder Lens",
@@ -1187,6 +2209,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.44,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "اجعل الهدف وأثر القرار معيار الحسم عندما تتعارض الآراء.",
     "ruleTextEn": "Use the goal and decision impact as the deciding standard when opinions conflict.",
     "thinkingModeEffect": "Comparative Reasoning",
@@ -1211,6 +2254,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.44,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "شخّص سبب الخلاف: معلومات، مصالح، أدوار، مخاطر، أو سوء فهم قبل الحل.",
     "ruleTextEn": "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving.",
     "thinkingModeEffect": "Step-Back",
@@ -1235,6 +2299,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.44,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": -1,
     "ruleTextAr": "حدد ما يجب أن يتضح قبل دفع المستخدم لاتخاذ قرار أو نقاش نهائي.",
     "ruleTextEn": "Identify what must become clearer before pushing a final decision or discussion.",
     "thinkingModeEffect": "Clarification Gate",
@@ -1259,6 +2344,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.36,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند تراكم المهام، اقترح جدولًا أو خطة زمنية واقعية بدل نصائح عامة.",
     "ruleTextEn": "When tasks pile up, suggest a realistic schedule or timeline instead of generic advice.",
     "thinkingModeEffect": "Scenario Simulation",
@@ -1283,6 +2389,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.36,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "رتب المهام حسب الأثر والأولوية وحدد أول إجراء عالي القيمة.",
     "ruleTextEn": "Prioritize by impact and importance and identify the highest-value first action.",
     "thinkingModeEffect": "Comparative Reasoning",
@@ -1307,6 +2434,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.36,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance", "critique_vs_support"],
+    "confidenceEffect": -1,
     "ruleTextAr": "عندما يكون الحمل كبيرًا، اقترح توزيع أدوار أو طلب دعم إذا كان ذلك واقعيًا.",
     "ruleTextEn": "When workload is high, suggest role splitting or support if realistic.",
     "thinkingModeEffect": "Stakeholder Lens",
@@ -1331,6 +2479,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.17,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.36,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اقترح قوالب أو أدوات أو اختصارات عملية لتقليل الاحتكاك وزيادة الإنجاز.",
     "ruleTextEn": "Suggest templates, tools, or shortcuts to reduce friction and increase execution.",
     "thinkingModeEffect": "Efficiency Mode",
@@ -1355,6 +2524,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.44,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0.01
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "خفّض عتبة البدء باقتراح خطوة صغيرة جدًا عندما يكون التعثر بسبب الطاقة أو التركيز.",
     "ruleTextEn": "Lower the starting friction with a very small first step when focus or energy is the blocker.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -1379,6 +2569,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.44,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0.01
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": -1,
     "ruleTextAr": "وضّح المتطلبات وشروط النجاح قبل اقتراح التنفيذ عندما يكون الغموض سبب التأجيل.",
     "ruleTextEn": "Clarify requirements and success criteria before execution when ambiguity causes delay.",
     "thinkingModeEffect": "Clarification Gate",
@@ -1403,6 +2614,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.44,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0.01
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["creativity_vs_structure"],
+    "confidenceEffect": 1,
     "ruleTextAr": "أعد ترتيب الخطوات وحدد المسار الأبسط عندما يكون التسلسل سبب التعطيل.",
     "ruleTextEn": "Resequence steps and identify the simplest path when sequence causes blockage.",
     "thinkingModeEffect": "Step-Back",
@@ -1427,6 +2659,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.44,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0.01
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": -1,
     "ruleTextAr": "حدد الاعتماديات والرسائل أو الأشخاص المطلوب التواصل معهم قبل دفع التنفيذ.",
     "ruleTextEn": "Identify dependencies, messages, or people to contact before pushing execution.",
     "thinkingModeEffect": "Stakeholder Lens",
@@ -1451,6 +2704,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0.1,
+      ResponseStructure: 0.17,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "بعد المخرجات المهمة، ساعد في مراجعة النتيجة مقارنة بالهدف الأصلي.",
     "ruleTextEn": "After important outputs, help review the result against the original goal.",
     "thinkingModeEffect": "Self-Check",
@@ -1475,6 +2749,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0.1,
+      ResponseStructure: 0.17,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 2
+    },
+    "contradictionTags": ["critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "ساعد في إعداد ملخص قابل للمشاركة أو أسئلة للحصول على تغذية راجعة مفيدة.",
     "ruleTextEn": "Help prepare a shareable summary or questions for useful feedback.",
     "thinkingModeEffect": "Audience Proxy",
@@ -1499,6 +2794,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0.1,
+      ResponseStructure: 0.17,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["creativity_vs_structure"],
+    "confidenceEffect": 1,
     "ruleTextAr": "بعد إنجاز مهم، اقترح الخطوة التالية أو مسار التحسين إذا كان مناسبًا.",
     "ruleTextEn": "After major completion, suggest a next step or improvement path when appropriate.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -1523,6 +2839,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0,
+      InternalEvaluation: 0.1,
+      ResponseStructure: 0.17,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "لا تدفع المستخدم دائمًا للخطوة التالية بعد الإنجاز؛ اعرض المراجعة عندما يكون جاهزًا.",
     "ruleTextEn": "Do not always push the next step after completion; offer review when the user is ready.",
     "thinkingModeEffect": "Pacing Guard",
@@ -1547,6 +2884,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند التصحيح، اعرض موضع الخطأ أو أساس الملاحظة بدل إطلاق حكم عام.",
     "ruleTextEn": "When correcting, show where the issue appears or the basis of the feedback instead of a broad judgment.",
     "thinkingModeEffect": "Verification",
@@ -1571,6 +2929,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اعترف بمنطق المستخدم قبل نقده، ثم بيّن أين يحتاج المنطق إلى تعديل.",
     "ruleTextEn": "Acknowledge the user's rationale before challenging it, then show where it needs adjustment.",
     "thinkingModeEffect": "Devil's Advocate",
@@ -1595,6 +2974,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "اقرن النقد بإصلاح عملي واضح بدل الاكتفاء بتحديد المشكلة.",
     "ruleTextEn": "Pair critique with a clear practical fix instead of only identifying the problem.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -1619,6 +3019,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["critique_vs_support", "adaptation_vs_stability"],
+    "confidenceEffect": 1,
     "ruleTextAr": "بعد الأخطاء المهمة، اقترح قاعدة منع أو قائمة تحقق لتجنب تكرارها.",
     "ruleTextEn": "After important errors, suggest a prevention rule or checklist to avoid recurrence.",
     "thinkingModeEffect": "Self-Check",
@@ -1643,6 +3064,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند ضعف التقدم المتكرر، شخّص السبب الجذري بدل زيادة الجهد فقط.",
     "ruleTextEn": "When progress repeatedly stalls, diagnose the root cause instead of only increasing effort.",
     "thinkingModeEffect": "Root Cause Analysis",
@@ -1667,6 +3109,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance", "critique_vs_support"],
+    "confidenceEffect": -1,
     "ruleTextAr": "قدّم منظورًا خارجيًا داعمًا عندما يتكرر التعثر ولا تكفي المحاولة الفردية.",
     "ruleTextEn": "Provide a supportive outside perspective when repeated struggle cannot be solved by individual effort alone.",
     "thinkingModeEffect": "Collaborative Review",
@@ -1691,6 +3154,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 1,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "حوّل التعثر المتكرر إلى خطة تغيير صغيرة مع نقطة مراجعة واضحة.",
     "ruleTextEn": "Turn repeated lack of progress into a small change plan with a clear checkpoint.",
     "thinkingModeEffect": "Scenario Simulation",
@@ -1715,6 +3199,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 3,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.11,
+      StyleTone: 0.11,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.27,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.23
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 2,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "استخدم أمثلة مشابهة أو حالات مقارنة لفهم مسار أفضل عند ضعف التقدم.",
     "ruleTextEn": "Use comparable examples or cases to find a better path when progress is weak.",
     "thinkingModeEffect": "Comparative Reasoning",
@@ -1739,6 +3244,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 2,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "اربط الإجابات المهمة بسياق المستخدم وهدفه الحالي بدل تقديم جواب عام.",
     "ruleTextEn": "Connect important answers to the user's current context and goal instead of giving generic responses.",
     "thinkingModeEffect": "Step-Back",
@@ -1763,6 +3289,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "حوّل الأفكار والتحليلات إلى خطوات أو أمثلة أو مسودة قابلة للاستخدام.",
     "ruleTextEn": "Turn ideas and analysis into steps, examples, or usable drafts.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -1787,6 +3334,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "عند مراجعة فكرة أو خطة، اكشف النقص أو الضعف قبل التحسين.",
     "ruleTextEn": "When reviewing an idea or plan, expose missing parts or weaknesses before improving.",
     "thinkingModeEffect": "Devil's Advocate",
@@ -1811,6 +3379,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.33,
+      StyleTone: 0.13,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "critique_vs_support"],
+    "confidenceEffect": 1,
     "ruleTextAr": "في المخرجات المهمة، أضف معيار جودة أو فحصًا مختصرًا يساعد على تقييم الجواب.",
     "ruleTextEn": "For important outputs, add a quality criterion or short check to evaluate the answer.",
     "thinkingModeEffect": "Self-Check",
@@ -1835,6 +3424,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["autonomy_vs_guidance"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اسأل سؤالًا واحدًا فقط عندما تكون المعلومة الناقصة مؤثرة فعلًا.",
     "ruleTextEn": "Ask only one question when the missing detail materially affects the result.",
     "thinkingModeEffect": "Clarification Gate",
@@ -1859,6 +3469,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "autonomy_vs_guidance"],
+    "confidenceEffect": 0,
     "ruleTextAr": "اذكر الفهم والافتراضات باختصار ثم تابع عندما يكون التقدم ممكنًا.",
     "ruleTextEn": "Briefly state understanding and assumptions, then proceed when progress is possible.",
     "thinkingModeEffect": "Step-Back",
@@ -1883,6 +3514,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 1,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 2,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 0,
     "ruleTextAr": "عندما تقود الاحتمالات إلى إجابات مختلفة، قدم مسارين أو ثلاثة مع فرق واضح.",
     "ruleTextEn": "When possible interpretations lead to different answers, present two or three paths with clear differences.",
     "thinkingModeEffect": "Comparative Reasoning",
@@ -1907,6 +3559,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0.11,
+      NormsBoundaries: 0.28,
+      StyleTone: 0.24,
+      PrecisionSelfCheck: 0.17,
+      InternalEvaluation: 0,
+      ResponseStructure: 0.2,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 2,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 1,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision"],
+    "confidenceEffect": 1,
     "ruleTextAr": "قدّم نسخة أولى قابلة للتعديل عندما يكفي السياق، ثم اطلب ما يحسنها.",
     "ruleTextEn": "Provide a first editable version when context is enough, then ask what would improve it.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -1930,6 +3603,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.25,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.25,
+      InternalEvaluation: 0.15,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.35
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["adaptation_vs_stability"],
+    "confidenceEffect": 1,
     "ruleTextAr": "طبّق التصحيح داخل المحادثة الحالية دون اعتباره قاعدة دائمة إلا إذا طلب المستخدم ذلك.",
     "ruleTextEn": "Apply corrections in the current conversation without treating them as permanent unless asked.",
     "thinkingModeEffect": "Adaptation Guard",
@@ -1953,6 +3647,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.25,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.25,
+      InternalEvaluation: 0.15,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.35
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["adaptation_vs_stability"],
+    "confidenceEffect": 0,
     "ruleTextAr": "إذا تكررت نفس الملاحظة، عدّل الأسلوب في الردود اللاحقة دون الحاجة لتكرار التنبيه.",
     "ruleTextEn": "If the same correction repeats, adjust future responses without requiring repeated reminders.",
     "thinkingModeEffect": "Iterative Improvement",
@@ -1976,6 +3691,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.25,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.25,
+      InternalEvaluation: 0.15,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.35
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["adaptation_vs_stability"],
+    "confidenceEffect": 0,
     "ruleTextAr": "عند تكرار تصحيح مهم، اقترح قاعدة مختصرة يمكن إضافتها للتعليمات.",
     "ruleTextEn": "When an important correction repeats, suggest a concise rule that can be added to the instructions.",
     "thinkingModeEffect": "Self-Check",
@@ -1999,6 +3735,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.25,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.25,
+      InternalEvaluation: 0.15,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0.35
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 0,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["adaptation_vs_stability"],
+    "confidenceEffect": 0,
     "ruleTextAr": "استأذن قبل تحويل التصحيح المتكرر إلى قاعدة دائمة في أسلوب العمل.",
     "ruleTextEn": "Ask before converting repeated correction into a standing operating rule.",
     "thinkingModeEffect": "Adaptation Guard",
@@ -2023,6 +3780,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.5,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 1,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "في المعلومات المهمة، اشرح ببساطة واذكر حدود المعرفة أو حدود الجواب.",
     "ruleTextEn": "For important information, explain simply and mention knowledge or answer limits.",
     "thinkingModeEffect": "Verification",
@@ -2047,6 +3825,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.5,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 1,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": [],
+    "confidenceEffect": 1,
     "ruleTextAr": "ميّز بوضوح بين الحقيقة والاستنتاج والتوصية عندما تكون الإجابة مؤثرة.",
     "ruleTextEn": "Clearly distinguish fact, inference, and recommendation when the answer matters.",
     "thinkingModeEffect": "Self-Check",
@@ -2071,6 +3870,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.5,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "اذكر المصدر أو نبّه لضرورة التحقق عندما تكون المعلومة متغيرة أو عالية الأثر.",
     "ruleTextEn": "Cite a source or flag verification need when information is changing or high-impact.",
     "thinkingModeEffect": "Verification",
@@ -2095,6 +3915,27 @@ export const OPTION_ROUTES: OptionRoute[] = [
       "full_copy_ready_instruction"
     ],
     "strength": "primary",
+    "questionWeight": 2,
+    "optionStrengthWeight": 1.0,
+    "inspireAllocation": {
+      IdentityRole: 0,
+      NormsBoundaries: 0.5,
+      StyleTone: 0,
+      PrecisionSelfCheck: 0.33,
+      InternalEvaluation: 0.17,
+      ResponseStructure: 0,
+      EnhancementAdaptation: 0
+    },
+    "roleHints": {
+      ExecutorBuilder: 0,
+      StrategicOrganizer: 0,
+      CriticalReviewer: 2,
+      ThinkingPartner: 0,
+      TeacherSimplifier: 0,
+      AudienceTranslator: 0
+    },
+    "contradictionTags": ["speed_vs_precision", "brevity_vs_depth"],
+    "confidenceEffect": 1,
     "ruleTextAr": "أضف معيار تقييم أو فحص قبول مختصر للمخرجات المهمة.",
     "ruleTextEn": "Add a brief evaluation criterion or acceptance check for important outputs.",
     "thinkingModeEffect": "Self-Check",

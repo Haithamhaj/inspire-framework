@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { Check, Shield, FileText } from "lucide-react";
+import { Check, Shield, FileText, LockKeyhole, BarChart3, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { useI18n } from "@/i18n";
+import {
+  JourneyPanel,
+  JourneyPrimaryButton,
+  JourneyShell,
+  JourneyStepIndicator,
+} from "@/components/journey";
 
 export default function PrivacyConsent() {
   const [, setLocation] = useLocation();
   const [agreed, setAgreed] = useState(false);
+  const { dir, t } = useI18n();
 
   const handleContinue = () => {
     if (agreed) {
@@ -15,91 +23,114 @@ export default function PrivacyConsent() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] py-12 px-4 sm:px-6 flex justify-center bg-gray-50/50">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-3xl bg-card rounded-3xl shadow-xl shadow-primary/5 border border-border overflow-hidden flex flex-col"
-      >
-        <div className="bg-primary p-8 text-primary-foreground relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/4" />
-          <div className="relative z-10 flex items-center gap-4 mb-2">
-            <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-md">
-              <Shield className="h-8 w-8 text-accent" />
+    <JourneyShell
+      dir={dir}
+      eyebrow="INSPIRE"
+      title={t("privacyConsent.title")}
+      subtitle={t("privacyConsent.subtitle")}
+      aside={
+        <div className="space-y-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
+              <Shield className="h-5 w-5" />
             </div>
-            <h1 className="text-3xl font-display font-bold">سياسة الخصوصية والموافقة</h1>
+            <div>
+              <p className="text-sm font-black text-slate-100">INSPIRE</p>
+              <p className="mt-1 text-sm leading-6 text-slate-400">
+                {t("privacyConsent.intro")}
+              </p>
+            </div>
           </div>
-          <p className="relative z-10 text-primary-foreground/80 text-lg mt-2 ms-16">
-            يرجى قراءة سياسة استخدام البيانات قبل البدء
-          </p>
-        </div>
 
-        <div className="p-8 flex-1 flex flex-col">
-          <div className="prose prose-slate prose-lg max-w-none text-muted-foreground leading-relaxed mb-8 flex-1">
-            <p>
-              نحن في INSPIRE نقدر خصوصيتك ونلتزم بحماية بياناتك الشخصية والمهنية. تم تصميم هذا التقييم لمساعدتك في فهم نمطك السلوكي والتفاعلي.
+          <JourneyStepIndicator
+            steps={[
+              { label: t("privacyConsent.title"), state: "current" },
+              { label: t("register.title"), state: "upcoming" },
+              { label: t("assessment.shell.title"), state: "upcoming" },
+            ]}
+          />
+        </div>
+      }
+    >
+      <JourneyPanel className="max-w-3xl">
+        <div className="mb-8 flex items-start gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.1] text-rose-200 shadow-lg shadow-rose-950/25">
+            <FileText className="h-7 w-7" />
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-rose-200/80">
+              {t("privacyConsent.dataUseTitle")}
             </p>
-            <h3 className="text-foreground font-bold flex items-center gap-2 mt-6 mb-4">
-              <FileText className="h-5 w-5 text-accent" />
-              كيف نستخدم بياناتك؟
-            </h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <div className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
-                <span><strong className="text-foreground">تحليل النمط:</strong> يتم استخدام إجاباتك لإنشاء تقرير دقيق يعكس أسلوبك في العمل والتواصل.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
-                <span><strong className="text-foreground">السرية التامة:</strong> جميع بياناتك مشفرة ولا يتم مشاركتها مع أطراف ثالثة دون موافقتك الصريحة.</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="mt-1.5 w-2 h-2 rounded-full bg-accent shrink-0" />
-                <span><strong className="text-foreground">تحسين الخدمة:</strong> قد نستخدم البيانات المجمعة (بدون الكشف عن الهوية) لتحسين خوارزميات التقييم لدينا.</span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-secondary/50 rounded-2xl p-6 border border-border mb-8">
-            <label className="flex items-start gap-4 cursor-pointer group">
-              <div className="relative flex items-center justify-center mt-1">
-                <input 
-                  type="checkbox" 
-                  className="peer sr-only"
-                  checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
-                />
-                <div className="w-6 h-6 rounded-md border-2 border-primary/30 peer-checked:border-accent peer-checked:bg-accent transition-all flex items-center justify-center group-hover:border-accent/60">
-                  <Check className="h-4 w-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-foreground text-lg select-none group-hover:text-primary transition-colors">
-                  أوافق على استخدام بياناتي 
-                </span>
-                <span className="text-muted-foreground text-sm select-none" dir="ltr">
-                  I agree to the terms and the use of my data
-                </span>
-              </div>
-            </label>
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              onClick={handleContinue}
-              disabled={!agreed}
-              className={`
-                px-8 py-4 rounded-xl font-bold text-lg shadow-lg transition-all flex items-center gap-2
-                ${agreed 
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-xl hover:-translate-y-0.5 hover:shadow-primary/20 cursor-pointer" 
-                  : "bg-muted text-muted-foreground cursor-not-allowed border border-border"
-                }
-              `}
-            >
-              المتابعة للتسجيل
-            </button>
+            <p className="mt-2 max-w-2xl text-base leading-8 text-slate-300">
+              {t("privacyConsent.intro")}
+            </p>
           </div>
         </div>
-      </motion.div>
-    </div>
+
+        <div className="grid gap-3">
+          {[
+            {
+              icon: BarChart3,
+              title: t("privacyConsent.analysisTitle"),
+              text: t("privacyConsent.analysisText"),
+            },
+            {
+              icon: LockKeyhole,
+              title: t("privacyConsent.confidentialityTitle"),
+              text: t("privacyConsent.confidentialityText"),
+            },
+            {
+              icon: Sparkles,
+              title: t("privacyConsent.improvementTitle"),
+              text: t("privacyConsent.improvementText"),
+            },
+          ].map((item) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28 }}
+              className="flex items-start gap-3 rounded-2xl border border-slate-400/10 bg-slate-900/45 p-4"
+            >
+              <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-400/10 bg-slate-950/70 text-rose-200">
+                <item.icon className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <p className="font-black text-slate-100">{item.title}</p>
+                <p className="mt-1 text-sm leading-6 text-slate-400">{item.text}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <label className="group mt-7 flex cursor-pointer items-start gap-4 rounded-3xl border border-slate-400/10 bg-slate-900/55 p-5 transition-colors hover:border-rose-300/25 hover:bg-slate-900/75">
+          <div className="relative mt-1 flex items-center justify-center">
+            <input
+              type="checkbox"
+              className="peer sr-only"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+            />
+            <div className="flex h-7 w-7 items-center justify-center rounded-xl border-2 border-slate-500/50 bg-slate-950/80 transition-all peer-checked:border-rose-300 peer-checked:bg-rose-500 group-hover:border-rose-300/70">
+              <Check className="h-4 w-4 text-slate-950 opacity-0 transition-opacity peer-checked:opacity-100" strokeWidth={3} />
+            </div>
+          </div>
+          <div className="flex min-w-0 flex-col">
+            <span className="select-none text-lg font-black text-slate-100 transition-colors group-hover:text-rose-100">
+              {t("privacyConsent.agreeTitle")}
+            </span>
+            <span className="mt-1 select-none text-sm text-slate-400" dir={dir === "rtl" ? "ltr" : "rtl"}>
+              {t("privacyConsent.agreeSubtitle")}
+            </span>
+          </div>
+        </label>
+
+        <div className="mt-7 flex justify-end">
+          <JourneyPrimaryButton onClick={handleContinue} disabled={!agreed}>
+            {t("privacyConsent.continueButton")}
+          </JourneyPrimaryButton>
+        </div>
+      </JourneyPanel>
+    </JourneyShell>
   );
 }

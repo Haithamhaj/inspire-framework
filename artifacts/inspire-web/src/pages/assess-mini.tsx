@@ -9,16 +9,66 @@ import {
   Zap,
   MessageSquare,
 } from "lucide-react";
+import { useI18n, type Locale } from "@/i18n";
 
 // ─── MINI SCENARIOS (indices 0,1,2,5,6 from full list) ──────
 
 const MINI_SCENARIOS = [
-  { idx: 0, dimension_ar: "العمق / السرعة", question: "عندما تعمل مع الذكاء الاصطناعي، هل تفضل أن يُعطيك الحل مباشرة وبسرعة؟ أم تفضل أن يشرح التفكير والمنطق معك خطوة بخطوة؟", option_a: "أريد الحل مباشرة وبسرعة دون تفاصيل زائدة", option_b: "أفضل الشرح خطوة بخطوة مع المنطق الكامل" },
-  { idx: 1, dimension_ar: "القيادة / التنفيذ", question: "عند استخدام الذكاء الاصطناعي في مشروع، هل تفضل أن تقود أنت الحوار وتوجّهه؟ أم تترك للذكاء الاصطناعي المبادرة باقتراح الخطوات؟", option_a: "أقود أنا الحوار وأحدد الاتجاه بنفسي", option_b: "أترك للذكاء الاصطناعي المبادرة واقتراح الخطوات" },
-  { idx: 2, dimension_ar: "التحدي / التأكيد", question: "عندما تطرح فكرة على الذكاء الاصطناعي، ماذا تريد منه؟ أن يتحداها ويكشف نقاط ضعفها؟ أم أن يدعمها ويساعدك على تطويرها؟", option_a: "أريده أن يتحدى فكرتي ويكشف نقاط ضعفها", option_b: "أريده أن يدعم فكرتي ويساعدني على تطويرها" },
-  { idx: 5, dimension_ar: "الاستقلالية / الاتكاء", question: "كيف تصف علاقتك المثالية مع الذكاء الاصطناعي؟ أداة تستخدمها عند الحاجة؟ أم شريك دائم تعتمد عليه؟", option_a: "أداة أستخدمها عند الحاجة فقط وأعتمد على نفسي", option_b: "شريك دائم أعتمد عليه في معظم مهامي" },
-  { idx: 6, dimension_ar: "تحمل الغموض", question: "عندما تطرح سؤالاً ليس له إجابة واضحة، كيف تريد الذكاء الاصطناعي أن يتعامل معه؟", option_a: "يُقر بالغموض ويعطيني خيارات وجوانب متعددة", option_b: "يختار أفضل إجابة ويُقدمها بثقة حتى لو لم تكن مثالية" },
+  {
+    idx: 0,
+    dimension: { ar: "العمق / السرعة", en: "Depth / speed" },
+    question: {
+      ar: "عندما تعمل مع الذكاء الاصطناعي، هل تفضل أن يُعطيك الحل مباشرة وبسرعة؟ أم تفضل أن يشرح التفكير والمنطق معك خطوة بخطوة؟",
+      en: "When working with AI, do you prefer a direct fast answer, or do you prefer it to explain the reasoning step by step?",
+    },
+    optionA: { ar: "أريد الحل مباشرة وبسرعة دون تفاصيل زائدة", en: "I want the answer directly and quickly without extra detail" },
+    optionB: { ar: "أفضل الشرح خطوة بخطوة مع المنطق الكامل", en: "I prefer step-by-step explanation with the full reasoning" },
+  },
+  {
+    idx: 1,
+    dimension: { ar: "القيادة / التنفيذ", en: "Leadership / execution" },
+    question: {
+      ar: "عند استخدام الذكاء الاصطناعي في مشروع، هل تفضل أن تقود أنت الحوار وتوجّهه؟ أم تترك للذكاء الاصطناعي المبادرة باقتراح الخطوات؟",
+      en: "When using AI in a project, do you prefer to lead and direct the conversation, or let AI take initiative and suggest next steps?",
+    },
+    optionA: { ar: "أقود أنا الحوار وأحدد الاتجاه بنفسي", en: "I lead the conversation and set the direction myself" },
+    optionB: { ar: "أترك للذكاء الاصطناعي المبادرة واقتراح الخطوات", en: "I let AI take initiative and suggest the steps" },
+  },
+  {
+    idx: 2,
+    dimension: { ar: "التحدي / التأكيد", en: "Challenge / affirmation" },
+    question: {
+      ar: "عندما تطرح فكرة على الذكاء الاصطناعي، ماذا تريد منه؟ أن يتحداها ويكشف نقاط ضعفها؟ أم أن يدعمها ويساعدك على تطويرها؟",
+      en: "When you share an idea with AI, what do you want from it: challenge it and reveal weaknesses, or support and develop it?",
+    },
+    optionA: { ar: "أريده أن يتحدى فكرتي ويكشف نقاط ضعفها", en: "I want it to challenge my idea and expose weaknesses" },
+    optionB: { ar: "أريده أن يدعم فكرتي ويساعدني على تطويرها", en: "I want it to support my idea and help develop it" },
+  },
+  {
+    idx: 5,
+    dimension: { ar: "الاستقلالية / الاتكاء", en: "Independence / reliance" },
+    question: {
+      ar: "كيف تصف علاقتك المثالية مع الذكاء الاصطناعي؟ أداة تستخدمها عند الحاجة؟ أم شريك دائم تعتمد عليه؟",
+      en: "How would you describe your ideal relationship with AI: a tool you use when needed, or an always-on partner you rely on?",
+    },
+    optionA: { ar: "أداة أستخدمها عند الحاجة فقط وأعتمد على نفسي", en: "A tool I use only when needed while relying on myself" },
+    optionB: { ar: "شريك دائم أعتمد عليه في معظم مهامي", en: "An always-on partner I rely on for most tasks" },
+  },
+  {
+    idx: 6,
+    dimension: { ar: "تحمل الغموض", en: "Ambiguity tolerance" },
+    question: {
+      ar: "عندما تطرح سؤالاً ليس له إجابة واضحة، كيف تريد الذكاء الاصطناعي أن يتعامل معه؟",
+      en: "When you ask a question with no clear answer, how do you want AI to handle it?",
+    },
+    optionA: { ar: "يُقر بالغموض ويعطيني خيارات وجوانب متعددة", en: "Acknowledge ambiguity and give me multiple options and angles" },
+    optionB: { ar: "يختار أفضل إجابة ويُقدمها بثقة حتى لو لم تكن مثالية", en: "Choose the best answer and present it confidently even if imperfect" },
+  },
 ];
+
+function localized(value: Record<Locale, string>, locale: Locale) {
+  return value[locale];
+}
 
 // Steps: 0 = setup, 1 = scenarios, 2 = open question
 const TOTAL_STEPS = 3;
@@ -29,12 +79,13 @@ function apiUrl(path: string) {
 
 export default function AssessMini() {
   const { user, isLoading } = useAuth();
+  const { dir, locale, t } = useI18n();
   const [, navigate] = useLocation();
 
   const [step, setStep] = useState(0);
   const [projectName, setProjectName] = useState("");
   const [projectGoal, setProjectGoal] = useState("");
-  const [reportLanguage, setReportLanguage] = useState<"ar" | "en" | "both">("ar");
+  const [reportLanguage, setReportLanguage] = useState<"ar" | "en" | "both">(() => locale);
   const [scenarioAnswers, setScenarioAnswers] = useState<Record<number, "a" | "b">>({});
   const [openAnswer, setOpenAnswer] = useState("");
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
@@ -58,7 +109,7 @@ export default function AssessMini() {
 
   async function handleStart() {
     if (!projectName.trim() || !projectGoal.trim()) {
-      setError("يرجى ملء جميع الحقول");
+      setError(t("miniAssessment.requiredFieldsError"));
       return;
     }
     setError(null);
@@ -66,14 +117,22 @@ export default function AssessMini() {
       const res = await fetch(apiUrl("/assessments/start"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ project_name: projectName, project_goal: projectGoal, report_language: reportLanguage, assessment_type: "mini" }),
+        body: JSON.stringify({
+          project_name: projectName,
+          project_goal: projectGoal,
+          domain: "Other",
+          custom_domain: "General AI assistance",
+          project_context: `${projectName}: ${projectGoal}`,
+          report_language: reportLanguage,
+          assessment_type: "mini",
+        }),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.error ?? "فشل في البدء");
+      if (!data.success) throw new Error(data.error ?? t("miniAssessment.startFailed"));
       setAssessmentId(data.assessmentId);
       setStep(1);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "فشل في البدء");
+      setError(e instanceof Error ? e.message : t("miniAssessment.startFailed"));
     }
   }
 
@@ -84,7 +143,7 @@ export default function AssessMini() {
   const allScenariosAnswered = MINI_SCENARIOS.every((s) => scenarioAnswers[s.idx] !== undefined);
 
   async function handleSubmit() {
-    if (!openAnswer.trim()) { setError("يرجى كتابة إجابة"); return; }
+    if (!openAnswer.trim()) { setError(t("miniAssessment.openAnswerRequiredError")); return; }
     if (!assessmentId) return;
     setSubmitting(true);
     setError(null);
@@ -104,16 +163,16 @@ export default function AssessMini() {
         }),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.error ?? "فشل الإرسال");
+      if (!data.success) throw new Error(data.error ?? t("miniAssessment.submitFailed"));
       navigate(`/results/${assessmentId}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "فشل الإرسال");
+      setError(e instanceof Error ? e.message : t("miniAssessment.submitFailed"));
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-start py-12 px-4">
+    <div dir={dir} className="min-h-[calc(100vh-5rem)] flex flex-col items-center justify-start py-12 px-4">
       <div className="w-full max-w-2xl">
         {/* Header */}
         <motion.div
@@ -123,10 +182,10 @@ export default function AssessMini() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-sm font-medium text-accent mb-4">
             <Zap className="h-4 w-4" />
-            النسخة السريعة — 5 دقائق فقط
+            {t("miniAssessment.badge")}
           </div>
-          <h1 className="text-3xl font-display font-bold text-primary mb-2">تقييم سريع</h1>
-          <p className="text-muted-foreground">5 سيناريوهات فقط لتوليد نقاط انطلاقك مع الذكاء الاصطناعي</p>
+          <h1 className="text-3xl font-display font-bold text-primary mb-2">{t("miniAssessment.title")}</h1>
+          <p className="text-muted-foreground">{t("miniAssessment.subtitle")}</p>
         </motion.div>
 
         {/* Progress bar */}
@@ -148,34 +207,34 @@ export default function AssessMini() {
               exit={{ opacity: 0, x: -30 }}
               className="bg-card border border-border rounded-2xl p-8 shadow-sm"
             >
-              <h2 className="text-xl font-bold mb-6 text-primary">بداية سريعة</h2>
+              <h2 className="text-xl font-bold mb-6 text-primary">{t("miniAssessment.setupTitle")}</h2>
               <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">اسم المشروع <span className="text-destructive">*</span></label>
+                  <label className="block text-sm font-medium mb-1.5">{t("miniAssessment.projectNameLabel")} <span className="text-destructive">*</span></label>
                   <input
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
-                    placeholder="مثال: تطوير منتج جديد"
+                    placeholder={t("miniAssessment.projectNamePlaceholder")}
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">هدف المشروع <span className="text-destructive">*</span></label>
+                  <label className="block text-sm font-medium mb-1.5">{t("miniAssessment.projectGoalLabel")} <span className="text-destructive">*</span></label>
                   <textarea
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all resize-none"
-                    placeholder="صف هدفك الرئيسي من هذا المشروع..."
+                    placeholder={t("miniAssessment.projectGoalPlaceholder")}
                     rows={3}
                     value={projectGoal}
                     onChange={(e) => setProjectGoal(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">لغة التقرير</label>
+                  <label className="block text-sm font-medium mb-1.5">{t("miniAssessment.reportLanguageLabel")}</label>
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { value: "ar", label: "عربي" },
-                      { value: "en", label: "English" },
-                      { value: "both", label: "كلاهما" },
+                      { value: "ar", label: t("miniAssessment.reportLanguageArabic") },
+                      { value: "en", label: t("miniAssessment.reportLanguageEnglish") },
+                      { value: "both", label: t("miniAssessment.reportLanguageBoth") },
                     ].map((opt) => (
                       <button
                         key={opt.value}
@@ -197,7 +256,7 @@ export default function AssessMini() {
                 onClick={handleStart}
                 className="mt-6 w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 text-accent-foreground font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-accent/20"
               >
-                ابدأ الآن
+                {t("miniAssessment.startButton")}
                 <ChevronLeft className="h-5 w-5" />
               </button>
             </motion.div>
@@ -213,24 +272,24 @@ export default function AssessMini() {
               className="space-y-5"
             >
               <h2 className="text-lg font-bold text-primary mb-2">
-                كيف تتفاعل مع الذكاء الاصطناعي؟
+                {t("miniAssessment.scenariosTitle")}
               </h2>
               {MINI_SCENARIOS.map((s, i) => (
                 <div key={s.idx} className="bg-card border border-border rounded-2xl p-6 shadow-sm">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-medium px-2.5 py-1 bg-accent/10 text-accent rounded-full">{s.dimension_ar}</span>
+                    <span className="text-xs font-medium px-2.5 py-1 bg-accent/10 text-accent rounded-full">{localized(s.dimension, locale)}</span>
                     <span className="text-xs text-muted-foreground">{i + 1} / {MINI_SCENARIOS.length}</span>
                   </div>
-                  <p className="text-sm font-medium mb-4 leading-relaxed">{s.question}</p>
+                  <p className="text-sm font-medium mb-4 leading-relaxed">{localized(s.question, locale)}</p>
                   <div className="grid grid-cols-1 gap-2">
                     {[
-                      { choice: "a" as const, label: s.option_a },
-                      { choice: "b" as const, label: s.option_b },
+                      { choice: "a" as const, label: localized(s.optionA, locale) },
+                      { choice: "b" as const, label: localized(s.optionB, locale) },
                     ].map(({ choice, label }) => (
                       <button
                         key={choice}
                         onClick={() => handleScenarioAnswer(s.idx, choice)}
-                        className={`text-right p-4 rounded-xl border text-sm transition-all ${
+                        className={`text-start p-4 rounded-xl border text-sm transition-all ${
                           scenarioAnswers[s.idx] === choice
                             ? "bg-accent/10 border-accent text-accent font-medium"
                             : "bg-background border-border hover:border-accent/40"
@@ -249,7 +308,7 @@ export default function AssessMini() {
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border hover:border-primary/30 text-sm transition-all"
                 >
                   <ChevronRight className="h-4 w-4" />
-                  السابق
+                  {t("miniAssessment.backButton")}
                 </button>
                 <button
                   onClick={() => allScenariosAnswered && setStep(2)}
@@ -260,7 +319,7 @@ export default function AssessMini() {
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   }`}
                 >
-                  التالي
+                  {t("miniAssessment.nextButton")}
                   <ChevronLeft className="h-4 w-4" />
                 </button>
               </div>
@@ -278,14 +337,14 @@ export default function AssessMini() {
             >
               <div className="flex items-center gap-2 mb-4">
                 <MessageSquare className="h-5 w-5 text-accent" />
-                <h2 className="text-xl font-bold text-primary">سؤال أخير</h2>
+                <h2 className="text-xl font-bold text-primary">{t("miniAssessment.finalTitle")}</h2>
               </div>
               <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                ما الشيء الذي تتمنى أن يفهمه الذكاء الاصطناعي عنك بشكل أفضل؟
+                {t("miniAssessment.finalDescription")}
               </p>
               <textarea
                 className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all resize-none"
-                placeholder="اكتب إجابتك هنا..."
+                placeholder={t("miniAssessment.finalPlaceholder")}
                 rows={5}
                 value={openAnswer}
                 onChange={(e) => setOpenAnswer(e.target.value)}
@@ -298,7 +357,7 @@ export default function AssessMini() {
                   disabled={submitting}
                 >
                   <ChevronRight className="h-4 w-4" />
-                  السابق
+                  {t("miniAssessment.backButton")}
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -310,9 +369,9 @@ export default function AssessMini() {
                   }`}
                 >
                   {submitting ? (
-                    <><Loader2 className="h-4 w-4 animate-spin" /> جارٍ التوليد...</>
+                    <><Loader2 className="h-4 w-4 animate-spin" /> {t("miniAssessment.generating")}</>
                   ) : (
-                    <>توليد نقاط الانطلاق<Zap className="h-4 w-4" /></>
+                    <>{t("miniAssessment.submitButton")}<Zap className="h-4 w-4" /></>
                   )}
                 </button>
               </div>

@@ -1,0 +1,872 @@
+{
+  "fast executor": {
+    "selectedAnswers": [
+      {
+        "questionId": "S2_messy_task_help",
+        "optionId": "draft_first_refine",
+        "optionAr": "ينتج نسخة أولية قابلة للتعديل بدل الكلام النظري.",
+        "optionEn": "It produces a first editable version instead of theoretical talk.",
+        "behavioralSignal": "draft_to_refine",
+        "weightedScore": 1.5
+      },
+      {
+        "questionId": "S3_idea_clarity_for_others",
+        "optionId": "structured_for_following",
+        "optionAr": "أن تكون مرتبة بحيث يسهل تتبعها.",
+        "optionEn": "That it is organized so it is easy to follow.",
+        "behavioralSignal": "followable_structure",
+        "weightedScore": 1.5
+      },
+      {
+        "questionId": "Q01_starting_orientation",
+        "optionId": "action_oriented",
+        "optionAr": "ما أول خطوة عملية يجب أن أبدأ بها؟",
+        "optionEn": "What is the first practical step I should take?",
+        "behavioralSignal": "action_oriented",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q02_ambiguity_handling",
+        "optionId": "iterative_action",
+        "optionAr": "أبدأ بما هو واضح وأتعلم أثناء التنفيذ.",
+        "optionEn": "I start with what is clear and learn while doing.",
+        "behavioralSignal": "iterative_action",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q03_unfamiliar_decision",
+        "optionId": "intuition_tested",
+        "optionAr": "أبدأ من تقديري الأولي ثم أختبره بسرعة.",
+        "optionEn": "I start from my initial judgment, then test it quickly.",
+        "behavioralSignal": "intuition_tested_decision",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q04_plan_failure",
+        "optionId": "adaptive_pivot",
+        "optionAr": "أغير الخطة بسرعة وأجرب مسارًا آخر.",
+        "optionEn": "I quickly change the plan and try another path.",
+        "behavioralSignal": "adaptive_pivot",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q05_stalled_task",
+        "optionId": "tool_method",
+        "optionAr": "أبحث عن أداة أو طريقة تنظّم المشكلة.",
+        "optionEn": "I look for a tool or method to organize the problem.",
+        "behavioralSignal": "tool_method_oriented",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q06_success_clarity",
+        "optionId": "learn_by_doing",
+        "optionAr": "البدء والتعلم أثناء التجربة.",
+        "optionEn": "Starting and learning through the process.",
+        "behavioralSignal": "learn_by_doing",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q07_learning_style",
+        "optionId": "practice_learning",
+        "optionAr": "تطبيق عملي أو تمرين صغير.",
+        "optionEn": "A practical application or small exercise.",
+        "behavioralSignal": "practice_based_learning",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q08_new_challenge",
+        "optionId": "experiment",
+        "optionAr": "أجرب طريقة أولية وأتعلم من النتيجة.",
+        "optionEn": "I try an initial approach and learn from the result.",
+        "behavioralSignal": "experiment_first",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q09_repeating_problems",
+        "optionId": "alternative_search",
+        "optionAr": "أجرب طريقة مختلفة بدل تكرار نفس الحل.",
+        "optionEn": "I try a different approach instead of repeating the same solution.",
+        "behavioralSignal": "alternative_solution_search",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q10_disagreement",
+        "optionId": "outcome_priority",
+        "optionAr": "أركز على مصلحة العمل والنتيجة المطلوبة.",
+        "optionEn": "I focus on the work interest and required outcome.",
+        "behavioralSignal": "outcome_priority",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q11_tasks_piling",
+        "optionId": "efficiency_tool",
+        "optionAr": "أبحث عن طريقة أو أداة تسرّع الإنجاز.",
+        "optionEn": "I look for a method or tool that speeds up execution.",
+        "behavioralSignal": "efficiency_tooling",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q12_postponing",
+        "optionId": "focus_energy",
+        "optionAr": "لا أكون مركزًا أو لا أجد طاقة كافية للبدء.",
+        "optionEn": "I am not focused or do not have enough energy to start.",
+        "behavioralSignal": "focus_energy_blocker",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q13_completion_review",
+        "optionId": "forward_planning",
+        "optionAr": "أبدأ التفكير في الخطوة أو المشروع التالي.",
+        "optionEn": "I start thinking about the next step or project.",
+        "behavioralSignal": "forward_planning",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q14_error_feedback",
+        "optionId": "fix_oriented",
+        "optionAr": "أبحث عن حل عملي لإصلاحه.",
+        "optionEn": "I look for a practical way to fix it.",
+        "behavioralSignal": "fix_oriented",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q15_repeated_no_progress",
+        "optionId": "change_plan",
+        "optionAr": "أضع خطة تغيير واضحة.",
+        "optionEn": "I create a clear change plan.",
+        "behavioralSignal": "change_plan_needed",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "AI01_correct_unusable",
+        "optionId": "not_practical",
+        "optionAr": "لا يحوّل الفكرة إلى شيء عملي يمكنني استخدامه.",
+        "optionEn": "It does not turn the idea into something practical I can use.",
+        "behavioralSignal": "ai_practicality_needed",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI02_incomplete_request",
+        "optionId": "draft_refine",
+        "optionAr": "يبدأ بمسودة أولية ثم يوضح ما الذي يحتاجه لتحسينها.",
+        "optionEn": "It starts with a first draft, then explains what it needs to improve it.",
+        "behavioralSignal": "draft_then_refine",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI03_repeated_ai_mistake",
+        "optionId": "auto_adjust",
+        "optionAr": "يلاحظ النمط ويعدّل أسلوبه تلقائيًا.",
+        "optionEn": "It notices the pattern and adjusts its style automatically.",
+        "behavioralSignal": "automatic_style_adjustment",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI04_trust_verification",
+        "optionId": "simple_limits",
+        "optionAr": "أن يوضح الفكرة ببساطة ويذكر حدودها.",
+        "optionEn": "It explains the idea simply and mentions its limits.",
+        "behavioralSignal": "simple_with_limits",
+        "weightedScore": 2
+      }
+    ],
+    "inspireSectionScores": {
+      "IdentityRole": 6.36,
+      "NormsBoundaries": 13.24,
+      "StyleTone": 6.61,
+      "PrecisionSelfCheck": 8.41,
+      "InternalEvaluation": 8.24,
+      "ResponseStructure": 8.65,
+      "EnhancementAdaptation": 4.51
+    },
+    "inspireSectionPercentages": {
+      "IdentityRole": 11,
+      "NormsBoundaries": 24,
+      "StyleTone": 12,
+      "PrecisionSelfCheck": 15,
+      "InternalEvaluation": 15,
+      "ResponseStructure": 15,
+      "EnhancementAdaptation": 8
+    },
+    "lowCoverageNotes": {},
+    "roleScores": {
+      "ExecutorBuilder": 57.5,
+      "StrategicOrganizer": 24,
+      "CriticalReviewer": 34,
+      "ThinkingPartner": 33.5,
+      "TeacherSimplifier": 14,
+      "AudienceTranslator": 0
+    },
+    "domain": "Coding / Software Development",
+    "customDomain": null,
+    "domainSpecialization": null,
+    "projectContext": "AI-assisted work",
+    "domainRole": "software development assistant",
+    "domainSource": "selected_domain",
+    "domainConfidence": "medium",
+    "primaryOperatingArchetype": "Executor / Builder",
+    "secondaryOperatingMode": "Critical Reviewer",
+    "operatingModeTriggers": [
+      "Activate Critical Reviewer only when the task needs that mode; score 34 met threshold 31.63."
+    ],
+    "primaryRole": "Executor / Builder",
+    "secondaryRole": "Critical Reviewer",
+    "secondaryRoleTrigger": "Activate Critical Reviewer only when the task needs that mode; score 34 met threshold 31.63.",
+    "contradictionTags": {
+      "speed_vs_precision": 8,
+      "creativity_vs_structure": 4,
+      "adaptation_vs_stability": 3,
+      "autonomy_vs_guidance": 3,
+      "brevity_vs_depth": 2
+    },
+    "contradictionRulesGenerated": [
+      "Provide a quick actionable first version, then apply a concise verification step before finalizing.",
+      "Offer creative options inside a structured comparison.",
+      "Adapt to repeated corrections, but preserve stable rules unless the user explicitly changes them.",
+      "Proceed independently on clear tasks, but ask one focused question when requirements are missing.",
+      "Start concise, then offer expandable detail if the task is complex."
+    ],
+    "confidenceIndex": {
+      "score": 54,
+      "label": "High behavioral clarity"
+    },
+    "topEvidenceLabels": [
+      "action oriented (Q01_starting_orientation:action_oriented)",
+      "iterative action (Q02_ambiguity_handling:iterative_action)",
+      "intuition tested decision (Q03_unfamiliar_decision:intuition_tested)",
+      "adaptive pivot (Q04_plan_failure:adaptive_pivot)",
+      "tool method oriented (Q05_stalled_task:tool_method)",
+      "learn by doing (Q06_success_clarity:learn_by_doing)",
+      "practice based learning (Q07_learning_style:practice_learning)",
+      "experiment first (Q08_new_challenge:experiment)"
+    ],
+    "selectedInstructionRules": [
+      "Translate ideas quickly into a first practical action.",
+      "Start with what is clear when gaps do not block progress, then improve iteratively.",
+      "Turn initial intuition into a testable hypothesis instead of treating it as final truth.",
+      "Suggest alternative routes quickly after failure without over-diagnosing when time matters.",
+      "Suggest a framework, template, or organizing method when the problem is messy.",
+      "Support drafts, experiments, and improvement instead of waiting for perfect clarity.",
+      "Add a small exercise or application when learning is better through practice.",
+      "Suggest a small safe experiment before full commitment when the path is unclear.",
+      "If the same fix fails repeatedly, propose different alternatives rather than only a refined repeat.",
+      "Use the goal and decision impact as the deciding standard when opinions conflict."
+    ],
+    "selectedOutputRules": [
+      "Translate ideas quickly into a first practical action.",
+      "Start with what is clear when gaps do not block progress, then improve iteratively.",
+      "Suggest a framework, template, or organizing method when the problem is messy.",
+      "Support drafts, experiments, and improvement instead of waiting for perfect clarity.",
+      "Add a small exercise or application when learning is better through practice.",
+      "Suggest templates, tools, or shortcuts to reduce friction and increase execution.",
+      "Lower the starting friction with a very small first step when focus or energy is the blocker.",
+      "Turn ideas and analysis into steps, examples, or usable drafts."
+    ],
+    "selectedRedLines": [
+      "Avoid generic, premature, or surface-level behavior.",
+      "No theory without application",
+      "No paralysis from missing context",
+      "No repeated mistake",
+      "No overclaiming",
+      "No theory without usable output",
+      "Avoid scattered output"
+    ],
+    "selectedRiskGuards": [
+      "Apply conditionally; do not force heavy structure on simple requests.",
+      "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+      "Make clear it is a first draft, not a final answer, when context is incomplete.",
+      "Do not force heavy structure on very small direct answers."
+    ],
+    "openAnswerOverlay": {
+      "exists": true,
+      "affectsNumericScoring": false,
+      "affects": [
+        "tone",
+        "examples/domain",
+        "red lines",
+        "adaptation rules"
+      ],
+      "note": "The open-ended answer is passed to the AI writer as qualitative context only. It must not change INSPIRE section scores or role scores directly."
+    }
+  },
+  "analytical critical reviewer": {
+    "selectedAnswers": [
+      {
+        "questionId": "S2_messy_task_help",
+        "optionId": "identify_gaps_before_build",
+        "optionAr": "يكشف ما هو ناقص أو ضعيف قبل البناء عليها.",
+        "optionEn": "It reveals what is missing or weak before building on it.",
+        "behavioralSignal": "gap_weakness_detection",
+        "weightedScore": 1.5
+      },
+      {
+        "questionId": "S3_idea_clarity_for_others",
+        "optionId": "self_clarity_first",
+        "optionAr": "أن أفهمها أنا بوضوح قبل أن أشرحها.",
+        "optionEn": "That I understand it clearly myself before explaining it.",
+        "behavioralSignal": "self_clarity_before_communication",
+        "weightedScore": 1.5
+      },
+      {
+        "questionId": "Q01_starting_orientation",
+        "optionId": "resource_oriented",
+        "optionAr": "ما الموارد أو المعلومات المتاحة لدي؟",
+        "optionEn": "What resources or information do I already have?",
+        "behavioralSignal": "resource_oriented",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q02_ambiguity_handling",
+        "optionId": "gap_mapping",
+        "optionAr": "أكتب الأسئلة أو النقاط الناقصة أولًا.",
+        "optionEn": "I write down the missing questions or information first.",
+        "behavioralSignal": "gap_mapping",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q03_unfamiliar_decision",
+        "optionId": "evaluation_first",
+        "optionAr": "أطلب وقتًا لتحليل الخيارات والمخاطر.",
+        "optionEn": "I ask for time to analyze options and risks.",
+        "behavioralSignal": "evaluation_first",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q04_plan_failure",
+        "optionId": "root_cause",
+        "optionAr": "أعيد تحليل ما حدث لأفهم السبب.",
+        "optionEn": "I re-analyze what happened to understand the cause.",
+        "behavioralSignal": "root_cause_analysis",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q05_stalled_task",
+        "optionId": "blocker_diagnosis",
+        "optionAr": "أبحث عن السبب الذي جعلني أتوقف.",
+        "optionEn": "I look for the reason I got stuck.",
+        "behavioralSignal": "blocker_diagnosis",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q06_success_clarity",
+        "optionId": "success_criteria",
+        "optionAr": "معرفة شروط النجاح بوضوح.",
+        "optionEn": "Knowing the success criteria clearly.",
+        "behavioralSignal": "success_criteria_needed",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q07_learning_style",
+        "optionId": "analytical_learning",
+        "optionAr": "شرح منظم وتحليل خطوة بخطوة.",
+        "optionEn": "A structured explanation and step-by-step analysis.",
+        "behavioralSignal": "analytical_learning",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q08_new_challenge",
+        "optionId": "risk_first",
+        "optionAr": "أقيّم المخاطر قبل أن أبدأ.",
+        "optionEn": "I assess the risks before starting.",
+        "behavioralSignal": "risk_first",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q09_repeating_problems",
+        "optionId": "root_pattern",
+        "optionAr": "أبحث عن السبب المشترك وراء التكرار.",
+        "optionEn": "I look for the common cause behind the repetition.",
+        "behavioralSignal": "root_pattern_detection",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q10_disagreement",
+        "optionId": "conflict_analysis",
+        "optionAr": "أحلل سبب الخلاف قبل اقتراح حل.",
+        "optionEn": "I analyze the reason for the disagreement before suggesting a solution.",
+        "behavioralSignal": "conflict_analysis",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q11_tasks_piling",
+        "optionId": "schedule",
+        "optionAr": "أرتب جدولًا أو خطة زمنية.",
+        "optionEn": "I create a schedule or time plan.",
+        "behavioralSignal": "scheduling_needed",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q12_postponing",
+        "optionId": "unclear_requirements",
+        "optionAr": "المطلوب غير واضح بما يكفي.",
+        "optionEn": "The requirements are not clear enough.",
+        "behavioralSignal": "unclear_requirements_blocker",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q13_completion_review",
+        "optionId": "result_review",
+        "optionAr": "أراجع النتائج وما تحقق فعليًا.",
+        "optionEn": "I review the results and what was actually achieved.",
+        "behavioralSignal": "result_review",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q14_error_feedback",
+        "optionId": "detail_verify",
+        "optionAr": "أراجع التفاصيل لأتأكد من الخطأ.",
+        "optionEn": "I review the details to verify the error.",
+        "behavioralSignal": "detail_verification",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q15_repeated_no_progress",
+        "optionId": "under_root",
+        "optionAr": "أبحث عن السبب الجذري وراء التعثر.",
+        "optionEn": "I look for the root cause behind the lack of progress.",
+        "behavioralSignal": "root_cause_underperformance",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "AI01_correct_unusable",
+        "optionId": "no_quality_check",
+        "optionAr": "لا يعطيني طريقة أتأكد بها من جودة الجواب.",
+        "optionEn": "It does not give me a way to judge whether the answer is good enough.",
+        "behavioralSignal": "ai_quality_check_needed",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI02_incomplete_request",
+        "optionId": "ask_one",
+        "optionAr": "يسألني سؤالًا واحدًا عن أهم نقطة ناقصة.",
+        "optionEn": "It asks me one question about the most important missing point.",
+        "behavioralSignal": "one_key_clarification",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI03_repeated_ai_mistake",
+        "optionId": "suggest_rule",
+        "optionAr": "يخبرني أنه لاحظ التكرار ويقترح قاعدة جديدة.",
+        "optionEn": "It tells me it noticed the pattern and suggests a new rule.",
+        "behavioralSignal": "suggest_rule_update",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI04_trust_verification",
+        "optionId": "validation_criteria",
+        "optionAr": "أن يعطيني معيارًا أستخدمه للحكم على جودة الجواب.",
+        "optionEn": "It gives me a criterion to judge whether the answer is good enough.",
+        "behavioralSignal": "validation_criteria_needed",
+        "weightedScore": 2
+      }
+    ],
+    "inspireSectionScores": {
+      "IdentityRole": 6.78,
+      "NormsBoundaries": 13.78,
+      "StyleTone": 6.47,
+      "PrecisionSelfCheck": 8.66,
+      "InternalEvaluation": 8.34,
+      "ResponseStructure": 7.82,
+      "EnhancementAdaptation": 4.15
+    },
+    "inspireSectionPercentages": {
+      "IdentityRole": 12,
+      "NormsBoundaries": 25,
+      "StyleTone": 12,
+      "PrecisionSelfCheck": 15,
+      "InternalEvaluation": 15,
+      "ResponseStructure": 14,
+      "EnhancementAdaptation": 7
+    },
+    "lowCoverageNotes": {},
+    "roleScores": {
+      "ExecutorBuilder": 23.5,
+      "StrategicOrganizer": 16.5,
+      "CriticalReviewer": 80,
+      "ThinkingPartner": 28,
+      "TeacherSimplifier": 6,
+      "AudienceTranslator": 3
+    },
+    "domain": "Coding / Software Development",
+    "customDomain": null,
+    "domainSpecialization": null,
+    "projectContext": "AI-assisted work",
+    "domainRole": "software development assistant",
+    "domainSource": "selected_domain",
+    "domainConfidence": "medium",
+    "primaryOperatingArchetype": "Critical Reviewer",
+    "secondaryOperatingMode": null,
+    "operatingModeTriggers": [],
+    "primaryRole": "Critical Reviewer",
+    "secondaryRole": null,
+    "secondaryRoleTrigger": null,
+    "contradictionTags": {
+      "speed_vs_precision": 11,
+      "critique_vs_support": 7,
+      "brevity_vs_depth": 5,
+      "autonomy_vs_guidance": 1,
+      "adaptation_vs_stability": 1
+    },
+    "contradictionRulesGenerated": [
+      "Provide a quick actionable first version, then apply a concise verification step before finalizing.",
+      "Challenge weak logic without using harsh or motivational language.",
+      "Start concise, then offer expandable detail if the task is complex.",
+      "Proceed independently on clear tasks, but ask one focused question when requirements are missing.",
+      "Adapt to repeated corrections, but preserve stable rules unless the user explicitly changes them."
+    ],
+    "confidenceIndex": {
+      "score": 48,
+      "label": "High behavioral clarity"
+    },
+    "topEvidenceLabels": [
+      "resource oriented (Q01_starting_orientation:resource_oriented)",
+      "gap mapping (Q02_ambiguity_handling:gap_mapping)",
+      "evaluation first (Q03_unfamiliar_decision:evaluation_first)",
+      "root cause analysis (Q04_plan_failure:root_cause)",
+      "blocker diagnosis (Q05_stalled_task:blocker_diagnosis)",
+      "success criteria needed (Q06_success_clarity:success_criteria)",
+      "analytical learning (Q07_learning_style:analytical_learning)",
+      "risk first (Q08_new_challenge:risk_first)"
+    ],
+    "selectedInstructionRules": [
+      "Review available resources, constraints, and inputs before building the solution.",
+      "For complex tasks, identify gaps and open assumptions before solving.",
+      "Compare options, risks, and trade-offs before recommending in unfamiliar decisions.",
+      "When a plan fails, diagnose the root cause, not only the visible symptom.",
+      "When stuck, diagnose whether the blocker is goal, information, sequence, confidence, or complexity.",
+      "For important tasks, clarify success criteria before producing the final answer.",
+      "Explain complex concepts through organized steps and a clear reasoning summary.",
+      "Start with risk and assumption scan before proposing a plan for new challenges.",
+      "When a problem repeats, identify the pattern and common cause before suggesting a new fix.",
+      "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving."
+    ],
+    "selectedOutputRules": [
+      "Review available resources, constraints, and inputs before building the solution.",
+      "For complex tasks, identify gaps and open assumptions before solving.",
+      "When stuck, diagnose whether the blocker is goal, information, sequence, confidence, or complexity.",
+      "For important tasks, clarify success criteria before producing the final answer.",
+      "Explain complex concepts through organized steps and a clear reasoning summary.",
+      "When tasks pile up, suggest a realistic schedule or timeline instead of generic advice.",
+      "Clarify requirements and success criteria before execution when ambiguity causes delay.",
+      "For important outputs, add a quality criterion or short check to evaluate the answer."
+    ],
+    "selectedRedLines": [
+      "Avoid generic, premature, or surface-level behavior.",
+      "No unsupported confidence",
+      "No clarification loops",
+      "No silent pattern loss",
+      "No untestable output",
+      "Do not agree too quickly",
+      "Avoid audience polish before idea clarity"
+    ],
+    "selectedRiskGuards": [
+      "Apply conditionally; do not force heavy structure on simple requests.",
+      "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+      "Use critique constructively; do not turn every simple request into a harsh re...",
+      "Do not assume public-facing output unless the task clearly requires it."
+    ],
+    "openAnswerOverlay": {
+      "exists": true,
+      "affectsNumericScoring": false,
+      "affects": [
+        "tone",
+        "examples/domain",
+        "red lines",
+        "adaptation rules"
+      ],
+      "note": "The open-ended answer is passed to the AI writer as qualitative context only. It must not change INSPIRE section scores or role scores directly."
+    }
+  },
+  "thinking partner / conversational explorer": {
+    "selectedAnswers": [
+      {
+        "questionId": "S2_messy_task_help",
+        "optionId": "show_possible_directions",
+        "optionAr": "يعرض أكثر من اتجاه ممكن قبل اختيار المسار.",
+        "optionEn": "It shows more than one possible direction before choosing a path.",
+        "behavioralSignal": "multi_path_exploration",
+        "weightedScore": 1.5
+      },
+      {
+        "questionId": "S3_idea_clarity_for_others",
+        "optionId": "context_adaptive_style",
+        "optionAr": "أن يتغير الأسلوب حسب الشخص أو الموقف.",
+        "optionEn": "That the style changes depending on the person or situation.",
+        "behavioralSignal": "context_adaptive_communication",
+        "weightedScore": 1.5
+      },
+      {
+        "questionId": "Q01_starting_orientation",
+        "optionId": "beneficiary_oriented",
+        "optionAr": "من سيستفيد من هذه الفكرة أو المهمة؟",
+        "optionEn": "Who will benefit from this idea or task?",
+        "behavioralSignal": "beneficiary_oriented",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q02_ambiguity_handling",
+        "optionId": "clarification_first",
+        "optionAr": "أطلب توضيحًا قبل أن أبدأ.",
+        "optionEn": "I ask for clarification before starting.",
+        "behavioralSignal": "clarification_first",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q03_unfamiliar_decision",
+        "optionId": "collaborative_decision",
+        "optionAr": "أشارك القرار مع شخص آخر قبل الحسم.",
+        "optionEn": "I discuss the decision with someone else before deciding.",
+        "behavioralSignal": "collaborative_decision",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q04_plan_failure",
+        "optionId": "second_opinion",
+        "optionAr": "أطلب رأيًا أو دعمًا من شخص آخر.",
+        "optionEn": "I ask someone else for input or support.",
+        "behavioralSignal": "support_or_second_opinion",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q05_stalled_task",
+        "optionId": "external_feedback",
+        "optionAr": "أطلب تقييمًا أو رأيًا خارجيًا.",
+        "optionEn": "I ask for external assessment or feedback.",
+        "behavioralSignal": "external_feedback_needed",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q06_success_clarity",
+        "optionId": "multi_path",
+        "optionAr": "تجربة أكثر من طريقة قبل اختيار واحدة.",
+        "optionEn": "Trying more than one approach before choosing.",
+        "behavioralSignal": "multi_path_exploration",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q07_learning_style",
+        "optionId": "interactive_learning",
+        "optionAr": "نقاش أو أسئلة تفاعلية.",
+        "optionEn": "Discussion or interactive questions.",
+        "behavioralSignal": "interactive_learning",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q08_new_challenge",
+        "optionId": "precedent",
+        "optionAr": "أبحث عن حالات أو تجارب مشابهة.",
+        "optionEn": "I look for similar cases or previous examples.",
+        "behavioralSignal": "precedent_seeking",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q09_repeating_problems",
+        "optionId": "collaborative_review",
+        "optionAr": "أناقش المشكلة مع من له علاقة بها.",
+        "optionEn": "I discuss the issue with the people involved.",
+        "behavioralSignal": "collaborative_pattern_review",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q10_disagreement",
+        "optionId": "conflict_analysis",
+        "optionAr": "أحلل سبب الخلاف قبل اقتراح حل.",
+        "optionEn": "I analyze the reason for the disagreement before suggesting a solution.",
+        "behavioralSignal": "conflict_analysis",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q11_tasks_piling",
+        "optionId": "delegate",
+        "optionAr": "أطلب دعمًا أو أوزع بعض المهام.",
+        "optionEn": "I ask for support or distribute some tasks.",
+        "behavioralSignal": "support_delegation",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q12_postponing",
+        "optionId": "unclear_requirements",
+        "optionAr": "المطلوب غير واضح بما يكفي.",
+        "optionEn": "The requirements are not clear enough.",
+        "behavioralSignal": "unclear_requirements_blocker",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q13_completion_review",
+        "optionId": "share_feedback",
+        "optionAr": "أشارك الإنجاز أو أطلب رأيًا حوله.",
+        "optionEn": "I share the achievement or ask for feedback on it.",
+        "behavioralSignal": "feedback_sharing",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q14_error_feedback",
+        "optionId": "rationale_context",
+        "optionAr": "أشرح سبب اختياري أو طريقتي.",
+        "optionEn": "I explain the reason behind my choice or approach.",
+        "behavioralSignal": "rationale_context_needed",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "Q15_repeated_no_progress",
+        "optionId": "support_perspective",
+        "optionAr": "أطلب دعمًا أو رأيًا من شخص آخر.",
+        "optionEn": "I ask for support or another perspective.",
+        "behavioralSignal": "support_perspective_needed",
+        "weightedScore": 3
+      },
+      {
+        "questionId": "AI01_correct_unusable",
+        "optionId": "no_context",
+        "optionAr": "لا يربط الجواب بسياقي أو هدفي الحالي.",
+        "optionEn": "It does not connect the answer to my current context or goal.",
+        "behavioralSignal": "ai_context_connection_needed",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI02_incomplete_request",
+        "optionId": "conditional_paths",
+        "optionAr": "يعطيني مسارين أو ثلاثة حسب الاحتمالات الممكنة.",
+        "optionEn": "It gives me two or three possible paths based on likely interpretations.",
+        "behavioralSignal": "conditional_paths",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI03_repeated_ai_mistake",
+        "optionId": "confirm_permanent",
+        "optionAr": "يسألني قبل أن يعتبر التصحيح قاعدة دائمة.",
+        "optionEn": "It asks me before treating the correction as a permanent rule.",
+        "behavioralSignal": "confirm_persistent_change",
+        "weightedScore": 2
+      },
+      {
+        "questionId": "AI04_trust_verification",
+        "optionId": "fact_inference_reco",
+        "optionAr": "أن يميز بين الحقيقة والاستنتاج والتوصية.",
+        "optionEn": "It distinguishes fact, inference, and recommendation.",
+        "behavioralSignal": "fact_inference_recommendation_split",
+        "weightedScore": 2
+      }
+    ],
+    "inspireSectionScores": {
+      "IdentityRole": 6.36,
+      "NormsBoundaries": 13.12,
+      "StyleTone": 6.5,
+      "PrecisionSelfCheck": 9.16,
+      "InternalEvaluation": 8.6,
+      "ResponseStructure": 8.12,
+      "EnhancementAdaptation": 4.15
+    },
+    "inspireSectionPercentages": {
+      "IdentityRole": 11,
+      "NormsBoundaries": 23,
+      "StyleTone": 12,
+      "PrecisionSelfCheck": 16,
+      "InternalEvaluation": 15,
+      "ResponseStructure": 14,
+      "EnhancementAdaptation": 7
+    },
+    "lowCoverageNotes": {},
+    "roleScores": {
+      "ExecutorBuilder": 25,
+      "StrategicOrganizer": 19,
+      "CriticalReviewer": 40,
+      "ThinkingPartner": 61,
+      "TeacherSimplifier": 6,
+      "AudienceTranslator": 9
+    },
+    "domain": "Coding / Software Development",
+    "customDomain": null,
+    "domainSpecialization": null,
+    "projectContext": "AI-assisted work",
+    "domainRole": "software development assistant",
+    "domainSource": "selected_domain",
+    "domainConfidence": "medium",
+    "primaryOperatingArchetype": "Thinking Partner",
+    "secondaryOperatingMode": "Critical Reviewer",
+    "operatingModeTriggers": [
+      "Activate Critical Reviewer only when the task needs that mode; score 40 met threshold 33.55."
+    ],
+    "primaryRole": "Thinking Partner",
+    "secondaryRole": "Critical Reviewer",
+    "secondaryRoleTrigger": "Activate Critical Reviewer only when the task needs that mode; score 40 met threshold 33.55.",
+    "contradictionTags": {
+      "critique_vs_support": 8,
+      "autonomy_vs_guidance": 6,
+      "creativity_vs_structure": 3,
+      "adaptation_vs_stability": 2,
+      "speed_vs_precision": 1,
+      "brevity_vs_depth": 1
+    },
+    "contradictionRulesGenerated": [
+      "Challenge weak logic without using harsh or motivational language.",
+      "Proceed independently on clear tasks, but ask one focused question when requirements are missing.",
+      "Offer creative options inside a structured comparison.",
+      "Adapt to repeated corrections, but preserve stable rules unless the user explicitly changes them.",
+      "Provide a quick actionable first version, then apply a concise verification step before finalizing.",
+      "Start concise, then offer expandable detail if the task is complex."
+    ],
+    "confidenceIndex": {
+      "score": 10,
+      "label": "High behavioral clarity"
+    },
+    "topEvidenceLabels": [
+      "beneficiary oriented (Q01_starting_orientation:beneficiary_oriented)",
+      "clarification first (Q02_ambiguity_handling:clarification_first)",
+      "collaborative decision (Q03_unfamiliar_decision:collaborative_decision)",
+      "support or second opinion (Q04_plan_failure:second_opinion)",
+      "external feedback needed (Q05_stalled_task:external_feedback)",
+      "multi path exploration (Q06_success_clarity:multi_path)",
+      "interactive learning (Q07_learning_style:interactive_learning)",
+      "precedent seeking (Q08_new_challenge:precedent)"
+    ],
+    "selectedInstructionRules": [
+      "Connect work to beneficiaries or affected parties when that matters to the goal.",
+      "Ask one high-impact question when missing information would change answer quality.",
+      "Surface alternative viewpoints and stakeholder impact before deciding.",
+      "Provide a second perspective or suggest who to consult when visibility is limited.",
+      "Act as reviewer or second perspective when stuck due to limited viewpoint.",
+      "Offer multiple paths when the choice is unclear before locking into one.",
+      "Use short interactive questions when the goal is learning or understanding.",
+      "For new topics, use comparable cases or precedents to reduce ambiguity.",
+      "For repeated problems, examine communication, roles, and dependencies among involved parties.",
+      "Diagnose the disagreement source—information, incentives, roles, risks, or misunderstanding—before solving."
+    ],
+    "selectedOutputRules": [
+      "Connect work to beneficiaries or affected parties when that matters to the goal.",
+      "Ask one high-impact question when missing information would change answer quality.",
+      "Act as reviewer or second perspective when stuck due to limited viewpoint.",
+      "Offer multiple paths when the choice is unclear before locking into one.",
+      "Use short interactive questions when the goal is learning or understanding.",
+      "When workload is high, suggest role splitting or support if realistic.",
+      "Clarify requirements and success criteria before execution when ambiguity causes delay.",
+      "Connect important answers to the user's current context and goal instead of giving generic responses."
+    ],
+    "selectedRedLines": [
+      "Avoid generic, premature, or surface-level behavior.",
+      "No generic answers",
+      "No forced single answer under uncertainty",
+      "No unwanted permanent changes",
+      "No mixing claims",
+      "Avoid single-path certainty too early",
+      "Avoid fixed-audience assumptions"
+    ],
+    "selectedRiskGuards": [
+      "Apply conditionally; do not force heavy structure on simple requests.",
+      "Use only when the task is meaningful; avoid overcomplicating simple answers.",
+      "Do not overload the user with options when the request is already specific.",
+      "Do not ask audience questions repeatedly; infer when safe and ask only when material."
+    ],
+    "openAnswerOverlay": {
+      "exists": true,
+      "affectsNumericScoring": false,
+      "affects": [
+        "tone",
+        "examples/domain",
+        "red lines",
+        "adaptation rules"
+      ],
+      "note": "The open-ended answer is passed to the AI writer as qualitative context only. It must not change INSPIRE section scores or role scores directly."
+    }
+  }
+}
