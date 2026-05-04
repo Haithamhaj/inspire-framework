@@ -212,8 +212,8 @@ export function InspireExplainer() {
                 <Glass className="overflow-hidden" style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07), 0 12px 60px rgba(0,0,0,0.5)" }}>
                   <TitleBar label="AI Assistant" />
                   <div className="p-8 flex flex-col gap-6">
-                    {/* User bubble */}
-                    <div className={`flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}>
+                    {/* User bubble — RTL: justify-start = visual RIGHT */}
+                    <div className={`flex ${dir === "rtl" ? "justify-start" : "justify-start"}`}>
                       <div
                         className="rounded-2xl px-6 py-4 text-xl font-bold text-white max-w-md leading-snug"
                         style={{ background: "linear-gradient(135deg,#e11d48,#7c3aed)", boxShadow: "0 6px 28px rgba(225,29,72,.4)" }}
@@ -221,17 +221,17 @@ export function InspireExplainer() {
                         <TypingText text={c.userPrompt} speed={60} seed={loopKey} />
                       </div>
                     </div>
-                    {/* AI generic reply */}
+                    {/* AI generic reply — RTL: justify-end = visual LEFT */}
                     <motion.div
                       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.9, duration: 0.4 }}
-                      className="flex justify-start"
+                      className={`flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}
                     >
                       <div className="rounded-2xl px-6 py-4 text-base text-white/60 leading-relaxed max-w-lg border border-white/10" style={{ background: "rgba(255,255,255,0.045)" }}>
                         {c.genericResponse}
                       </div>
                     </motion.div>
-                    {/* Typing dots */}
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.2, duration: 0.3 }} className="flex justify-start">
+                    {/* Typing dots — RTL: justify-end = visual LEFT (AI side) */}
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3.2, duration: 0.3 }} className={`flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}>
                       <div className="rounded-xl px-4 py-3 border border-white/8 flex gap-1.5 items-center" style={{ background: "rgba(255,255,255,0.03)" }}>
                         {[0, 0.2, 0.4].map((d, i) => (
                           <motion.div key={i} className="w-2 h-2 rounded-full bg-white/25" animate={{ opacity: [.25, 1, .25], y: [0, -4, 0] }} transition={{ duration: 1, repeat: Infinity, delay: d }} />
@@ -307,8 +307,8 @@ export function InspireExplainer() {
                 >
                   <TitleBar label="AI Assistant + INSPIRE Profile" glow />
                   <div className="p-8 flex flex-col gap-6">
-                    {/* Same user bubble */}
-                    <div className={`flex ${dir === "rtl" ? "justify-end" : "justify-start"}`}>
+                    {/* Same user bubble — RTL: justify-start = visual RIGHT */}
+                    <div className="flex justify-start">
                       <div className="rounded-2xl px-6 py-4 text-xl font-bold text-white max-w-md" style={{ background: "linear-gradient(135deg,#e11d48,#7c3aed)", boxShadow: "0 6px 28px rgba(225,29,72,.4)" }}>
                         {c.userPrompt}
                       </div>
@@ -325,7 +325,7 @@ export function InspireExplainer() {
                         ))}
                       </ul>
                       <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.3, duration: .4 }} className="text-rose-300 text-sm font-semibold pt-3 border-t border-white/10 flex items-center gap-2">
-                        <span className="text-rose-400 text-base">→</span>{c.nextStep}
+                        <span className="text-rose-400 text-base">{dir === "rtl" ? "←" : "→"}</span>{c.nextStep}
                       </motion.p>
                     </motion.div>
                   </div>
