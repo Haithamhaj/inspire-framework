@@ -3,10 +3,11 @@ import { db } from "@workspace/db";
 import { assessmentsTable, usersTable } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
-import { generateAndSavePDF } from "../lib/pdf";
+import { generateAndSavePDF, type AssessmentForPDF } from "../lib/pdf";
 import path from "path";
 import fs from "fs";
 import { randomBytes } from "crypto";
+import { type InspireAxisScore } from "../inspire-types";
 
 const router: IRouter = Router();
 
@@ -165,11 +166,11 @@ router.get(
       return;
     }
 
-    const compare = (tableA: any[], tableB: any[]) => {
+    const compare = (tableA: InspireAxisScore[], tableB: InspireAxisScore[]) => {
       const mapB = Object.fromEntries(
-        (tableB ?? []).map((r: any) => [r.axis, r])
+        (tableB ?? []).map((r) => [r.axis, r])
       );
-      return (tableA ?? []).map((rowA: any) => ({
+      return (tableA ?? []).map((rowA) => ({
         axis: rowA.axis,
         a: { score: rowA.score, percentage: rowA.percentage, note: rowA.note },
         b: mapB[rowA.axis]
@@ -194,8 +195,8 @@ router.get(
         inspireTable: assessB.inspireTable,
       },
       comparison: compare(
-        (assessA.inspireTable as any[]) ?? [],
-        (assessB.inspireTable as any[]) ?? []
+        (assessA.inspireTable as InspireAxisScore[]) ?? [],
+        (assessB.inspireTable as InspireAxisScore[]) ?? []
       ),
     });
   }
@@ -365,7 +366,7 @@ router.post(
       return;
     }
 
-    const pdfUrl = await generateAndSavePDF(id as string, user, assessment);
+    const pdfUrl = await generateAndSavePDF(id as string, user, assessment as AssessmentForPDF);
     if (!pdfUrl) {
       res.status(500).json({ success: false, error: "PDF generation failed" });
       return;

@@ -24,7 +24,7 @@ const router: IRouter = Router();
 router.post(
   "/auth/register",
   async (req: Request, res: Response): Promise<void> => {
-    const ip = getClientIp(req as any);
+    const ip = getClientIp(req);
     const registerLimit = rateLimit(ip, "register", 5, 60 * 60 * 1000);
     if (!registerLimit.allowed) {
       res
@@ -138,7 +138,7 @@ router.get(
 router.post(
   "/auth/login",
   async (req: Request, res: Response): Promise<void> => {
-    const ip = getClientIp(req as any);
+    const ip = getClientIp(req);
     const loginLimit = rateLimit(ip, "login", 10, 15 * 60 * 1000);
     if (!loginLimit.allowed) {
       res

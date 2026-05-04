@@ -200,8 +200,8 @@ export async function processRetryQueue(): Promise<void> {
         projectName: assessment.projectName,
         projectGoal: assessment.projectGoal,
         reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
-        behavioralAnswers: (assessment.behavioralAnswers as any) ?? [],
-        scenarioAnswers: (assessment.scenarioAnswers as any) ?? [],
+        behavioralAnswers: (assessment.behavioralAnswers as Array<{ question_index: number; answer_index: number }>) ?? [],
+        scenarioAnswers: (assessment.scenarioAnswers as Array<{ scenario_index: number; choice: "a" | "b" }>) ?? [],
         openAnswer: assessment.openAnswer ?? "",
       };
       prompt = buildPrompt(promptData);
@@ -270,7 +270,7 @@ async function tryOpenAI(
         messages: [{ role: "user", content: prompt }],
         max_completion_tokens: 3500,
         temperature: 0.7,
-      } as any);
+      });
       const text = res.choices[0]?.message?.content ?? "";
       if (!text) throw new Error("Empty response");
       return { success: true, text };

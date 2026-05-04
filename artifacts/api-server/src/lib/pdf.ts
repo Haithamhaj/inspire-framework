@@ -6,6 +6,21 @@ import { db } from "@workspace/db";
 import { assessmentsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
+import { type InspireAxisScore } from "../inspire-types";
+
+export interface AssessmentForPDF {
+  projectName: string;
+  projectGoal: string;
+  roleAnalysis?: string | null;
+  inspireTable?: InspireAxisScore[] | null;
+  strengths?: string[] | null;
+  redLines?: string[] | null;
+  developmentAreas?: string[] | null;
+  recommendations?: string[] | null;
+  systemInstruction?: string | null;
+  quickStarters?: string[] | null;
+  createdAt?: Date | string | null;
+}
 
 // ─── PDF Document ──────────────────────────────────────────
 
@@ -14,7 +29,7 @@ function buildPDFDocument(data: {
   projectName: string;
   projectGoal: string;
   roleAnalysis: string;
-  inspireTable: any[];
+  inspireTable: InspireAxisScore[];
   strengths: string[];
   redLines: string[];
   developmentAreas: string[];
@@ -26,8 +41,8 @@ function buildPDFDocument(data: {
   const { Document, Page, Text, View, StyleSheet, Image } = ReactPDF;
 
   const styles = StyleSheet.create({
-    page: { padding: 50, fontFamily: "Helvetica", fontSize: 10, direction: "rtl" as any },
-    header: { marginBottom: 30, alignItems: "center" as any },
+    page: { padding: 50, fontFamily: "Helvetica", fontSize: 10, direction: "rtl" as "ltr" | "rtl" },
+    header: { marginBottom: 30, alignItems: "center" as "flex-start" | "flex-end" | "center" | "stretch" | "baseline" },
     logoImage: { width: 150, marginBottom: 12 },
     brand: { fontSize: 24, fontFamily: "Helvetica-Bold", color: "#1a1a2e", marginBottom: 4 },
     subtitle: { fontSize: 10, color: "#6b7280" },
@@ -86,7 +101,7 @@ function buildPDFDocument(data: {
         React.createElement(Text, { style: styles.tablePctHeader }, "Score"),
         React.createElement(Text, { style: styles.tableNoteHeader }, "Note"),
       ),
-      ...(data.inspireTable ?? []).map((row: any, i: number) =>
+      ...(data.inspireTable ?? []).map((row: InspireAxisScore, i: number) =>
         React.createElement(View, { key: i, style: styles.tableRow },
           React.createElement(Text, { style: styles.tableAxis }, row.axis ?? ""),
           React.createElement(Text, { style: styles.tablePct }, `${row.percentage ?? 0}%`),
@@ -144,7 +159,7 @@ function buildPDFDocument(data: {
 export async function generateAndSavePDF(
   assessmentId: string,
   userData: { name: string },
-  assessment: any
+  assessment: AssessmentForPDF
 ): Promise<string | null> {
   try {
     const doc = buildPDFDocument({
@@ -152,7 +167,7 @@ export async function generateAndSavePDF(
       projectName: assessment.projectName,
       projectGoal: assessment.projectGoal,
       roleAnalysis: assessment.roleAnalysis ?? "",
-      inspireTable: (assessment.inspireTable as any[]) ?? [],
+      inspireTable: (assessment.inspireTable as InspireAxisScore[]) ?? [],
       strengths: (assessment.strengths as string[]) ?? [],
       redLines: (assessment.redLines as string[]) ?? [],
       developmentAreas: (assessment.developmentAreas as string[]) ?? [],

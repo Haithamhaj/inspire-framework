@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { assessmentsTable, usersTable, discountCodesTable, paymentsTable } from "@workspace/db/schema";
-import { eq, and, gte, lte, or, desc, count, avg } from "drizzle-orm";
+import { eq, and, gte, lte, or, desc, count, avg, type SQL } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendResultsEmail } from "../lib/email";
 
@@ -89,7 +89,7 @@ router.get(
     const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
     const offset = (pageNum - 1) * limitNum;
 
-    const conditions: any[] = [];
+    const conditions: SQL[] = [];
 
     if (status) conditions.push(eq(assessmentsTable.status, status));
     if (language) conditions.push(eq(assessmentsTable.reportLanguage, language));
@@ -150,7 +150,7 @@ router.get(
     const totalFiltered = enriched.length;
     const paginated = enriched.slice(offset, offset + limitNum);
 
-    const enrichedWithFlat = paginated.map((a: any) => ({
+    const enrichedWithFlat = paginated.map((a) => ({
       id: a.id,
       userId: a.userId,
       userName: a.user?.name ?? "",

@@ -72,8 +72,8 @@ export default function AssessMini() {
       if (!data.success) throw new Error(data.error ?? "فشل في البدء");
       setAssessmentId(data.assessmentId);
       setStep(1);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "فشل في البدء");
     }
   }
 
@@ -106,8 +106,8 @@ export default function AssessMini() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error ?? "فشل الإرسال");
       navigate(`/results/${assessmentId}`);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "فشل الإرسال");
       setSubmitting(false);
     }
   }

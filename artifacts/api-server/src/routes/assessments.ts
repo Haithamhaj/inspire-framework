@@ -32,7 +32,7 @@ async function requireUser(req: Request, _res: Response) {
 router.post(
   "/assessments/start",
   async (req: Request, res: Response): Promise<void> => {
-    const ip = getClientIp(req as any);
+    const ip = getClientIp(req);
     if (!rateLimit(ip, "assess-start", 10, 60 * 60 * 1000)) {
       res.status(429).json({ success: false, error: "تجاوزت الحد المسموح. حاول لاحقاً." });
       return;
