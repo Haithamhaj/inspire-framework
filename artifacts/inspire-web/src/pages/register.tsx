@@ -34,12 +34,23 @@ export default function Register() {
   const [success, setSuccess] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isDuplicateEmail, setIsDuplicateEmail] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
 
+  const emailRegistration = register("email");
+  const emailField = {
+    ...emailRegistration,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsDuplicateEmail(false);
+      return emailRegistration.onChange(e);
+    },
+  };
+
   const onSubmit = async (data: RegisterFormData) => {
+    setIsDuplicateEmail(false);
     try {
       const result = await registerUser({
         data: {
@@ -62,7 +73,15 @@ export default function Register() {
       let message = "حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى.";
       if (err instanceof ApiError) {
         const data = err.data as { error?: string; retryAfter?: number; details?: { fieldErrors?: Record<string, string[]> } } | null;
-        if (err.status === 429 && data?.retryAfter != null) {
+        if (err.status === 409) {
+          setIsDuplicateEmail(true);
+          toast({
+            variant: "destructive",
+            title: "البريد الإلكتروني مستخدم بالفعل",
+            description: "هذا البريد الإلكتروني مسجّل مسبقاً. يمكنك تسجيل الدخول بدلاً من ذلك.",
+          });
+          return;
+        } else if (err.status === 429 && data?.retryAfter != null) {
           const minutes = Math.ceil(data.retryAfter / 60);
           message = `حاولت كثيراً، أعد المحاولة بعد ${minutes} دقيقة`;
         } else {
@@ -146,7 +165,7 @@ export default function Register() {
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                 <input
-                  {...register("email")}
+                  {...emailField}
                   type="email"
                   dir="ltr"
                   className="input-ltr w-full bg-background border-2 border-border rounded-xl py-3 pl-12 pr-4 text-foreground focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all"
@@ -154,6 +173,14 @@ export default function Register() {
                 />
               </div>
               {errors.email && <p className="text-destructive text-sm mt-1.5 font-medium">{errors.email.message}</p>}
+              {isDuplicateEmail && !errors.email && (
+                <p className="text-destructive text-sm mt-1.5 font-medium">
+                  هذا البريد الإلكتروني مستخدم بالفعل.{" "}
+                  <Link href="/login" className="underline font-bold hover:text-destructive/80 transition-colors">
+                    هل تريد تسجيل الدخول؟
+                  </Link>
+                </p>
+              )}
             </div>
 
             {/* Password */}

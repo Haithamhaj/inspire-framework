@@ -59,7 +59,7 @@ router.post(
       .where(eq(usersTable.email, email.toLowerCase()));
 
     if (existing) {
-      res.status(409).json({ success: false, error: "Email already in use" });
+      res.status(409).json({ success: false, error: "هذا البريد الإلكتروني مستخدم بالفعل" });
       return;
     }
 
