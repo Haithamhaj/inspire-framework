@@ -150,3 +150,9 @@ export function parseFullReportV2(text: string): {
     inspireTable: null,
   };
 }
+
+export function parseInspireInstructionMarkdownV2(text: string): string {
+  const trimmed = text.trim();
+  const fenced = trimmed.match(/^```(?:markdown|md)?\s*\n([\s\S]*?)\n```$/i);
+  return (fenced ? fenced[1] : trimmed).trim();
+}

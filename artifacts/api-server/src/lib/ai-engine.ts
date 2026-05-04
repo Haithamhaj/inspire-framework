@@ -3,8 +3,18 @@ import Anthropic from "@anthropic-ai/sdk";
 import { db } from "@workspace/db";
 import { assessmentsTable, usersTable } from "@workspace/db/schema";
 import { eq, lte, lt, and } from "drizzle-orm";
-import { buildPrompt, buildPromptV2, type PromptData, type PromptDataV2 } from "./prompt-builder";
-import { parseFullReport, parseFullReportV2 } from "./report-parser";
+import {
+  buildInspireInstructionPromptV2,
+  buildPrompt,
+  buildPromptV2,
+  type PromptData,
+  type PromptDataV2,
+} from "./prompt-builder";
+import {
+  parseFullReport,
+  parseFullReportV2,
+  parseInspireInstructionMarkdownV2,
+} from "./report-parser";
 import { sendResultsEmail, sendFailureEmail } from "./email";
 import { logger } from "./logger";
 
@@ -98,30 +108,16 @@ export async function generateReportV2(
   assessmentId: string,
   promptData: PromptDataV2
 ): Promise<void> {
-  const prompt = buildPromptV2(promptData);
-
-  const openaiResult = await tryOpenAI(prompt);
-  if (openaiResult.success) {
+  const generationResult = await tryGenerateV2InstructionAndReport(promptData);
+  if (generationResult.success) {
     await finishV2(
       assessmentId,
-      openaiResult.text!,
-      "openai",
-      process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT
+      generationResult.reportText!,
+      generationResult.instructionText!,
+      generationResult.provider!,
+      generationResult.model!
     );
     return;
-  }
-
-  if (process.env["ANTHROPIC_API_KEY"]) {
-    const claudeResult = await tryClaude(prompt);
-    if (claudeResult.success) {
-      await finishV2(
-        assessmentId,
-        claudeResult.text!,
-        "anthropic",
-        process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT
-      );
-      return;
-    }
   }
 
   await db
@@ -196,7 +192,43 @@ export async function processRetryQueue(): Promise<void> {
         answers: storedAnswers,
         openAnswer: assessment.openAnswer ?? undefined,
       };
-      prompt = buildPromptV2(promptDataV2);
+      const generationResult = await tryGenerateV2InstructionAndReport(promptDataV2);
+      if (generationResult.success) {
+        await finishV2(
+          assessment.id,
+          generationResult.reportText!,
+          generationResult.instructionText!,
+          generationResult.provider!,
+          generationResult.model!
+        );
+        continue;
+      }
+
+      const nextCount = count + 1;
+      if (nextCount >= 10) {
+        await db
+          .update(assessmentsTable)
+          .set({ status: "failed", retryCount: nextCount, nextRetryAt: null })
+          .where(eq(assessmentsTable.id, assessment.id));
+        logger.error(
+          { assessmentId: assessment.id },
+          "Assessment failed after 10 retries"
+        );
+        sendFailureEmail(user.email, user.name).catch((err) =>
+          logger.error({ assessmentId: assessment.id, err }, "sendFailureEmail threw")
+        );
+      } else {
+        await db
+          .update(assessmentsTable)
+          .set({
+            retryCount: nextCount,
+            nextRetryAt: new Date(
+              Date.now() + (RETRY_INTERVALS_MS[count] ?? 3_600_000)
+            ),
+          })
+          .where(eq(assessmentsTable.id, assessment.id));
+      }
+      continue;
     } else {
       const promptData: PromptData = {
         name: user.name,
@@ -213,22 +245,14 @@ export async function processRetryQueue(): Promise<void> {
 
     const openaiResult = await tryOpenAI(prompt);
     if (openaiResult.success) {
-      if (isV2Full) {
-        await finishV2(assessment.id, openaiResult.text!, "openai", process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT);
-      } else {
-        await finish(assessment.id, openaiResult.text!, "openai", process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT, "v1");
-      }
+      await finish(assessment.id, openaiResult.text!, "openai", process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT, "v1");
       continue;
     }
 
     if (process.env["ANTHROPIC_API_KEY"]) {
       const claudeResult = await tryClaude(prompt);
       if (claudeResult.success) {
-        if (isV2Full) {
-          await finishV2(assessment.id, claudeResult.text!, "anthropic", process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT);
-        } else {
-          await finish(assessment.id, claudeResult.text!, "anthropic", process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT, "v1");
-        }
+        await finish(assessment.id, claudeResult.text!, "anthropic", process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT, "v1");
         continue;
       }
     }
@@ -309,6 +333,66 @@ async function tryClaude(
   }
 }
 
+async function tryGenerateAiText(
+  prompt: string
+): Promise<{ success: boolean; text?: string; provider?: string; model?: string }> {
+  const openaiResult = await tryOpenAI(prompt);
+  if (openaiResult.success) {
+    return {
+      success: true,
+      text: openaiResult.text,
+      provider: "openai",
+      model: process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT,
+    };
+  }
+
+  if (process.env["ANTHROPIC_API_KEY"]) {
+    const claudeResult = await tryClaude(prompt);
+    if (claudeResult.success) {
+      return {
+        success: true,
+        text: claudeResult.text,
+        provider: "anthropic",
+        model: process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT,
+      };
+    }
+  }
+
+  return { success: false };
+}
+
+async function tryGenerateV2InstructionAndReport(
+  promptData: PromptDataV2
+): Promise<{
+  success: boolean;
+  instructionText?: string;
+  reportText?: string;
+  provider?: string;
+  model?: string;
+}> {
+  const instructionPrompt = buildInspireInstructionPromptV2(promptData);
+  const reportPrompt = buildPromptV2(promptData);
+
+  const instructionResult = await tryGenerateAiText(instructionPrompt);
+  if (!instructionResult.success || !instructionResult.text) return { success: false };
+
+  const reportResult = await tryGenerateAiText(reportPrompt);
+  if (!reportResult.success || !reportResult.text) return { success: false };
+
+  const sameProvider = instructionResult.provider === reportResult.provider;
+  const sameModel = instructionResult.model === reportResult.model;
+
+  return {
+    success: true,
+    instructionText: instructionResult.text,
+    reportText: reportResult.text,
+    provider: sameProvider
+      ? instructionResult.provider
+      : `${instructionResult.provider}+${reportResult.provider}`,
+    model: sameModel ? instructionResult.model : `${instructionResult.model}+${reportResult.model}`,
+  };
+}
+
 // ─── SAVE (v1 / mini) ─────────────────────────────────────────────────────────
 
 async function finish(
@@ -340,15 +424,17 @@ async function finish(
 
 async function finishV2(
   assessmentId: string,
-  rawText: string,
+  rawReportText: string,
+  rawInstructionText: string,
   provider: string,
   model: string
 ): Promise<void> {
-  const parsed = parseFullReportV2(rawText);
+  const parsed = parseFullReportV2(rawReportText);
+  const instructionMarkdown = parseInspireInstructionMarkdownV2(rawInstructionText);
   await db
     .update(assessmentsTable)
     .set({
-      systemInstruction: parsed.systemInstruction,
+      systemInstruction: instructionMarkdown,
       quickStarters: parsed.quickStarters,
       redLines: parsed.redLines,
       recommendations: parsed.recommendations,

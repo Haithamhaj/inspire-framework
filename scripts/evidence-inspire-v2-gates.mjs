@@ -22,7 +22,7 @@ await writeFile(
     export { computeInspireV2Profile } from ${JSON.stringify(
       path.join(repoRoot, "artifacts/api-server/src/lib/inspire-v2-decision-engine.ts")
     )};
-    export { buildPromptV2 } from ${JSON.stringify(
+    export { buildInspireInstructionPromptV2, buildPromptV2 } from ${JSON.stringify(
       path.join(repoRoot, "artifacts/api-server/src/lib/prompt-builder.ts")
     )};
     export { AssessmentStartSchema } from ${JSON.stringify(
@@ -43,6 +43,7 @@ await build({
 const {
   V2_QUESTIONS,
   computeInspireV2Profile,
+  buildInspireInstructionPromptV2,
   buildPromptV2,
   AssessmentStartSchema,
 } = await import(pathToFileURL(bundleFile).href);
@@ -153,7 +154,7 @@ const proofProfileJson = Object.fromEntries(
   proofProfiles.map((profile) => [profile.name, computeProofProfile(profile)])
 );
 
-const promptTemplate = buildPromptV2({
+const promptInput = {
   name: "Evidence User",
   jobTitle: "Not specified",
   projectName: "INSPIRE evidence gate",
@@ -164,32 +165,53 @@ const promptTemplate = buildPromptV2({
   reportLanguage: "en",
   answers: makeAnswers(proofProfiles[0].choices),
   openAnswer: proofProfiles[0].openAnswer,
-});
+};
 
-const computedProfileJsonBlock = promptTemplate.match(/```json\n([\s\S]*?)\n```/)?.[1] ?? "";
+const promptTemplate = buildPromptV2(promptInput);
+const instructionPromptTemplate = buildInspireInstructionPromptV2(promptInput);
+
+const instructionInputJsonBlock =
+  instructionPromptTemplate.match(/```json\n([\s\S]*?)\n```/)?.[1] ?? "";
 
 const promptContractProof = {
-  thinkingModeProfilePresent: promptTemplate.includes('"thinkingModeProfile"'),
-  selectedModesPassed: promptTemplate.includes('"selectedModes"'),
-  modeManualContractPresent: promptTemplate.includes("## 8. Thinking Modes Manual"),
+  instructionGenerationSeparated:
+    instructionPromptTemplate.includes("Do not generate a report.") &&
+    instructionPromptTemplate.includes("Do not use marker blocks.") &&
+    promptTemplate.includes("Output EXACTLY these 8 marker blocks"),
+  instructionPromptHasNoReportSections:
+    !instructionPromptTemplate.includes("===STRENGTHS_START===") &&
+    !instructionPromptTemplate.includes("===RISKS_START===") &&
+    !instructionPromptTemplate.includes("===RECOMMENDATIONS_START===") &&
+    !instructionPromptTemplate.includes("===ROLE_ANALYSIS_START===") &&
+    !instructionPromptTemplate.includes("===SIGNAL_MAP_START==="),
+  thinkingModeProfilePresent: instructionPromptTemplate.includes('"thinkingModeProfile"'),
+  selectedModesPassed: instructionPromptTemplate.includes('"selectedModes"'),
+  universalInstructionsPassed: instructionPromptTemplate.includes('"universalInstructions"'),
+  modeManualContractPresent: instructionPromptTemplate.includes("## 8. Thinking Modes Manual"),
   whenHowWhenNotRequired:
-    promptTemplate.includes("whenToUse") &&
-    promptTemplate.includes("howToApply") &&
-    promptTemplate.includes("whenNotToUse") &&
-    promptTemplate.includes("when/how/when-not-to-use"),
-  instructionOnlyCopyReadyContract: promptTemplate.includes(
-    "Write ONLY the complete, standalone INSPIRE assistant instruction"
+    instructionPromptTemplate.includes("whenToUse") &&
+    instructionPromptTemplate.includes("howToApply") &&
+    instructionPromptTemplate.includes("whenNotToUse") &&
+    instructionPromptTemplate.includes("when to use it") &&
+    instructionPromptTemplate.includes("how to apply it") &&
+    instructionPromptTemplate.includes("when not to use it"),
+  instructionOnlyCopyReadyContract: instructionPromptTemplate.includes(
+    "Return ONLY standalone Markdown"
   ),
-  aiWriterCannotChooseModes: promptTemplate.includes(
-    "Do not choose thinking modes"
+  aiWriterCannotChooseModes: instructionPromptTemplate.includes(
+    "Do not choose new thinking modes"
   ),
   forbidsSelectionReasonsScoresAndMatrix:
-    promptTemplate.includes("Do not explain why") &&
-    promptTemplate.includes("Do not expose raw scores") &&
-    promptTemplate.includes("selectionSignals") &&
-    promptTemplate.includes("matrix logic"),
-  noSelectionSignalsInSelectedModePayload: !computedProfileJsonBlock.includes("selectionSignals"),
-  noPriorityScoresInSelectedModePayload: !computedProfileJsonBlock.includes("priorityScore"),
+    instructionPromptTemplate.includes("Do not explain why") &&
+    instructionPromptTemplate.includes("Do not expose scores") &&
+    instructionPromptTemplate.includes("selectionSignals") &&
+    instructionPromptTemplate.includes("matrix logic"),
+  noSelectionSignalsInSelectedModePayload: !instructionInputJsonBlock.includes("selectionSignals"),
+  noPriorityScoresInSelectedModePayload: !instructionInputJsonBlock.includes("priorityScore"),
+  reportGenerationPathStillHasLegacyMarkers:
+    promptTemplate.includes("===FULL_INSTRUCTION_START===") &&
+    promptTemplate.includes("===STARTERS_START===") &&
+    promptTemplate.includes("===SIGNAL_MAP_START==="),
 };
 
 const failedPromptContractChecks = Object.entries(promptContractProof)
@@ -469,6 +491,7 @@ const evidence = {
   generatedAt: new Date().toISOString(),
   proofProfiles: proofProfileJson,
   finalPromptTemplateAsSentFromBuildPromptV2: promptTemplate,
+  instructionPromptTemplateAsSentFromBuildInspireInstructionPromptV2: instructionPromptTemplate,
   promptContractProof,
   realCsvSmoke: {
     sourceFile: csvPath.replace(/\/[^/]+$/, "/[masked file]"),
@@ -485,10 +508,15 @@ await mkdir(path.join(repoRoot, "docs/evidence"), { recursive: true });
 const outputPath = path.join(repoRoot, "docs/evidence/inspire-v2-evidence-gate.json");
 const proofProfilesPath = path.join(repoRoot, "docs/evidence/inspire-v2-proof-profiles.json");
 const promptPath = path.join(repoRoot, "docs/evidence/inspire-v2-final-prompt-template.txt");
+const instructionPromptPath = path.join(
+  repoRoot,
+  "docs/evidence/inspire-v2-instruction-prompt-template.txt"
+);
 const smokePath = path.join(repoRoot, "docs/evidence/inspire-v2-real-csv-smoke.json");
 await writeFile(outputPath, `${JSON.stringify(evidence, null, 2)}\n`);
 await writeFile(proofProfilesPath, `${JSON.stringify(proofProfileJson, null, 2)}\n`);
 await writeFile(promptPath, promptTemplate);
+await writeFile(instructionPromptPath, instructionPromptTemplate);
 await writeFile(smokePath, `${JSON.stringify({
   realCsvSmoke: evidence.realCsvSmoke,
   validationCases,
@@ -499,6 +527,7 @@ console.log(JSON.stringify({
   outputPath,
   proofProfilesPath,
   promptPath,
+  instructionPromptPath,
   smokePath,
   proofProfileNames: Object.keys(proofProfileJson),
   promptContractProof,

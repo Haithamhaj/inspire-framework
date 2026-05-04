@@ -82,6 +82,54 @@ export interface PromptDataV2 {
   openAnswer?: string;
 }
 
+export interface InspireInstructionWriterInput {
+  subjectProfile: {
+    clientName: string;
+    jobTitle?: string;
+    projectName: string;
+    projectGoal: string;
+    projectContext?: string;
+    domain: string;
+    customDomain?: string | null;
+    domainSpecialization?: string | null;
+    domainRole: string;
+    reportLanguage: PromptDataV2["reportLanguage"];
+  };
+  computedProfile: {
+    primaryRole: string;
+    secondaryRole: string | null;
+    secondaryRoleTrigger: string | null;
+    primaryOperatingArchetype: string;
+    secondaryOperatingMode: string | null;
+    selectedInstructionRules: string[];
+    selectedOutputRules: string[];
+    selectedRedLines: string[];
+    selectedRiskGuards: string[];
+    contradictionRulesGenerated: string[];
+    inspireSectionFocus: Array<{
+      section: string;
+      guidance: string;
+    }>;
+    openAnswerOverlay: {
+      exists: boolean;
+      affectsNumericScoring: false;
+      affects: string[];
+      note: string;
+    };
+  };
+  thinkingModeProfile: {
+    selectedModes: Array<{
+      modeId: string;
+      displayName: string;
+      trigger: string;
+      whenToUse: string;
+      howToApply: string;
+      whenNotToUse: string;
+    }>;
+  };
+  universalInstructions: string;
+}
+
 // ─── Score Calculator ──────────────────────────────────────
 // Maps each axis to the question indices that measure it and
 // computes a score out of 6 using semantic weighting per option.
@@ -355,6 +403,198 @@ Write EXACTLY 3 ready-to-use prompt starters this person can immediately use wit
 //     → identify 3–5 dominant patterns across all buckets
 //     → build prompt: pass section names + dominant pattern descriptors as compact context
 //     → instruct AI: produce the 8 named output sections
+
+export function buildInspireInstructionWriterInput(
+  data: PromptDataV2
+): InspireInstructionWriterInput {
+  const computedProfile = computeInspireV2Profile({
+    answers: data.answers,
+    domain: data.domain,
+    customDomain: data.customDomain,
+    domainSpecialization: data.domainSpecialization,
+    projectContext: data.projectContext,
+    openAnswer: data.openAnswer,
+  });
+
+  const secondaryRoleTrigger = computedProfile.secondaryRole
+    ? `Activate ${computedProfile.secondaryRole} only when the task clearly needs that mode; do not expose score thresholds or selection logic.`
+    : null;
+
+  const inspireSectionFocus = Object.entries(computedProfile.inspireSectionPercentages)
+    .sort((a, b) => b[1] - a[1])
+    .map(([section]) => ({
+      section,
+      guidance:
+        section === "IdentityRole"
+          ? "Use this section to define the assistant's role and relationship to the client."
+          : section === "NormsBoundaries"
+            ? "Use this section to define direct boundaries, red lines, and risk controls."
+            : section === "StyleTone"
+              ? "Use this section to define tone, length, directness, and language behavior."
+              : section === "PrecisionSelfCheck"
+                ? "Use this section to define accuracy, uncertainty, and verification behavior."
+                : section === "InternalEvaluation"
+                  ? "Use this section to define final quality checks before responding."
+                  : section === "ResponseStructure"
+                    ? "Use this section to define answer-first structure, bullets, steps, and copy-ready output."
+                    : "Use this section to define adaptation, feedback handling, clarification, and scope control.",
+    }));
+
+  return {
+    subjectProfile: {
+      clientName: data.name,
+      jobTitle: data.jobTitle,
+      projectName: data.projectName,
+      projectGoal: data.projectGoal,
+      projectContext: computedProfile.projectContext ?? data.projectContext,
+      domain: computedProfile.domain,
+      customDomain: computedProfile.customDomain,
+      domainSpecialization: computedProfile.domainSpecialization,
+      domainRole: computedProfile.domainRole,
+      reportLanguage: data.reportLanguage,
+    },
+    computedProfile: {
+      primaryRole: computedProfile.primaryRole,
+      secondaryRole: computedProfile.secondaryRole,
+      secondaryRoleTrigger,
+      primaryOperatingArchetype: computedProfile.primaryOperatingArchetype,
+      secondaryOperatingMode: computedProfile.secondaryOperatingMode,
+      selectedInstructionRules: computedProfile.selectedInstructionRules,
+      selectedOutputRules: computedProfile.selectedOutputRules,
+      selectedRedLines: computedProfile.selectedRedLines,
+      selectedRiskGuards: computedProfile.selectedRiskGuards,
+      contradictionRulesGenerated: computedProfile.contradictionRulesGenerated,
+      inspireSectionFocus,
+      openAnswerOverlay: computedProfile.openAnswerOverlay,
+    },
+    thinkingModeProfile: {
+      selectedModes: computedProfile.thinkingModeProfile.selectedModes.map((mode) => ({
+        modeId: mode.modeId,
+        displayName: mode.displayName,
+        trigger: mode.trigger,
+        whenToUse: mode.whenToUse,
+        howToApply: mode.howToApply,
+        whenNotToUse: mode.whenNotToUse,
+      })),
+    },
+    universalInstructions: UNIVERSAL_RULES,
+  };
+}
+
+export function buildInspireInstructionPromptV2(data: PromptDataV2): string {
+  const lang =
+    data.reportLanguage === "en"
+      ? "English"
+      : data.reportLanguage === "both"
+        ? "Arabic and English"
+        : "Arabic";
+  const writerInput = buildInspireInstructionWriterInput(data);
+
+  return `You are the INSPIRE v2 instruction writer.
+
+Your only task is to generate a standalone copy-ready Markdown instruction that the client can paste into ChatGPT, Gemini, Claude, or another AI assistant.
+
+Do not generate a report.
+Do not generate strengths.
+Do not generate risks.
+Do not generate recommendations.
+Do not generate role analysis.
+Do not generate a signal map.
+Do not use marker blocks.
+Do not return JSON.
+Do not explain the assessment.
+Do not explain why any role, rule, or thinking mode was selected.
+Do not expose scores, matrix logic, evidence labels, selectionSignals, priorityScore, raw answers, or computedProfile terminology.
+Do not choose new thinking modes. Use only thinkingModeProfile.selectedModes from the input packet.
+
+Write everything in ${lang}.
+
+## Instruction Writer Input Packet
+This JSON is fixed input. Use it only to phrase operational assistant instructions.
+
+\`\`\`json
+${JSON.stringify(writerInput, null, 2)}
+\`\`\`
+
+## Output Contract
+
+Return ONLY standalone Markdown.
+Start exactly with:
+# ${writerInput.subjectProfile.projectName} — INSPIRE AI Instructions
+
+Use this exact section order:
+
+## 1. Identity & Role
+- Address the AI assistant directly.
+- Include the client name, project name, project goal, project context, domainRole, primaryRole, and secondaryRole when present.
+- Explain when to activate secondaryRole using secondaryRoleTrigger.
+- Do not write "the user tends to", "the analysis shows", or report-style wording.
+
+## 2. Norms & Boundaries
+- Convert selectedRedLines, selectedRiskGuards, contradictionRulesGenerated, and relevant universalInstructions into direct operating rules.
+- Merge truth, hallucination, clarification, and boundary rules naturally into this section.
+
+## 3. Style & Tone
+- Convert selectedInstructionRules, selectedOutputRules, openAnswerOverlay, and StyleTone-related focus into direct style rules.
+- Define tone, length, directness, language behavior, and level of detail.
+
+## 4. Precision & Self-Check
+- Merge verification, uncertainty, no-fabrication, fact/inference/recommendation separation, and no-generic-output rules here.
+- Do not ask the assistant to reveal hidden chain-of-thought.
+
+## 5. Internal Evaluation
+- Define how the assistant checks quality before responding.
+- Include coherence, gaps, contradictions, usability, and alignment with the client's goal.
+
+## 6. Response Structure
+- Define answer-first behavior, concise sections, bullets, steps, tables only when useful, and copy-ready outputs.
+- Merge output usability rules here.
+
+## 7. Enhancement & Adaptation
+- Define how the assistant adapts to feedback, preserves stable rules, asks one focused question when needed, and avoids scope sprawl.
+
+## 8. Thinking Modes Manual
+- Include this section only when selected thinking modes add practical value.
+- Use only thinkingModeProfile.selectedModes.
+- For each included mode, write one concise instruction with:
+  - when to use it
+  - how to apply it
+  - when not to use it
+- Do not include why the mode was selected.
+- Do not include scores, evidence, selectionSignals, category, priorityLevel, priorityScore, raw JSON, or matrix logic.
+
+Instruction style:
+- direct
+- concise
+- bullet-based
+- operational
+- addressed to the AI assistant
+- no long narrative paragraphs
+- no report language
+
+Arabic style examples:
+- أنت مساعد مخصص لـ [clientName] في سياق [projectName].
+- دورك الأساسي هو [primaryRole].
+- استخدم [thinking mode] عندما...
+- تجنب...
+- اسأل سؤالًا واحدًا فقط عندما...
+
+English style examples:
+- You are a custom assistant for [clientName] in the context of [projectName].
+- Your primary role is [primaryRole].
+- Use [thinking mode] when...
+- Avoid...
+- Ask one focused question only when...
+
+Before finalizing, silently verify:
+- the output is Markdown only
+- the output starts with the required H1
+- no report blocks or marker blocks appear
+- no raw JSON appears
+- no scores, matrix, evidence labels, selectionSignals, or priorityScore appear
+- no unselected thinking mode appears
+- universalInstructions are merged into the relevant sections instead of pasted as a separate dump`;
+}
 
 export function buildPromptV2(data: PromptDataV2): string {
   const lang =
