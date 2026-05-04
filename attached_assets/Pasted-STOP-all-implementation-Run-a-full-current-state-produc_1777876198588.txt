@@ -1,0 +1,95 @@
+STOP all implementation.
+
+Run a full current-state product audit only.
+Do not modify code.
+Do not commit.
+Do not push.
+
+First confirm GitHub sync:
+- git fetch origin main
+- git status
+- git rev-parse HEAD
+- git ls-remote origin main
+
+Expected HEAD:
+ef2bc7febfc2600a0da24a37ec44a3014d5f3a78
+
+If local HEAD does not match origin/main, stop and report.
+
+Audit the current INSPIRE website as one product, not as phases.
+
+Check these routes in Arabic and English:
+
+1. Landing
+- /?lang=ar
+- /?lang=en
+
+2. Login
+- /login?lang=ar
+- /login?lang=en
+
+3. Assessment
+- /assess?lang=ar
+- /assess?lang=en
+
+4. Results demo / real result if available
+- /results-demo?lang=ar
+- /results-demo?lang=en
+- any existing /results/:id if available
+
+5. Demo/dev routes
+- /hero-demo
+- /i18n-demo
+- /results-demo
+
+Report for each route:
+
+A. Language correctness
+- Is Arabic fully Arabic?
+- Is English fully English?
+- Any mixed Arabic/English where it should not be mixed?
+- Is RTL/LTR correct?
+- Does the default language make sense?
+
+B. Visual consistency
+- Does the page feel like the same product?
+- Are colors consistent?
+- Is Navbar consistent?
+- Are cards/buttons/spacing consistent?
+- Any page that looks old compared to the others?
+
+C. Product message consistency
+- Does the site say AI Operating Profile?
+- Does it avoid old v1 wording?
+- Any remaining “24 questions”, “8 scenarios”, “scores”, “7-axis score sheet”, “Universal Rules”, “personality test” framing?
+
+D. Flow correctness
+- Do CTAs route correctly?
+- Does /assess work or redirect as expected?
+- Does login work?
+- Are payment/result buttons present where expected?
+
+E. Demo route risk
+- Are /hero-demo, /i18n-demo, /results-demo exposed publicly?
+- Should they be removed, hidden, or kept only for dev?
+
+Return a blunt report:
+
+1. Current HEAD
+2. Whether Replit is synced with GitHub
+3. Top 10 problems found
+4. Which problems are critical before launch
+5. Which problems are cosmetic
+6. Screenshots:
+   - Landing AR/EN
+   - Assessment AR/EN
+   - Results AR/EN
+   - Login AR/EN
+7. Recommendation:
+   - fix now
+   - leave for later
+   - remove demo routes
+   - freeze
+
+Do not fix anything.
+Hold after report.
