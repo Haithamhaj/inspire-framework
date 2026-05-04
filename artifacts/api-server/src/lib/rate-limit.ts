@@ -13,24 +13,33 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000);
 
+export interface RateLimitResult {
+  allowed: boolean;
+  retryAfterSeconds: number;
+}
+
 export function rateLimit(
   ip: string,
   key: string,
   limit: number,
   windowMs: number
-): boolean {
+): RateLimitResult {
   const mapKey = `${key}:${ip}`;
   const now = Date.now();
   const entry = store.get(mapKey);
 
   if (!entry || now > entry.reset) {
     store.set(mapKey, { count: 1, reset: now + windowMs });
-    return true;
+    return { allowed: true, retryAfterSeconds: 0 };
   }
 
-  if (entry.count >= limit) return false;
+  if (entry.count >= limit) {
+    const retryAfterSeconds = Math.ceil((entry.reset - now) / 1000);
+    return { allowed: false, retryAfterSeconds };
+  }
+
   entry.count++;
-  return true;
+  return { allowed: true, retryAfterSeconds: 0 };
 }
 
 export function getClientIp(req: { headers: Record<string, string | string[] | undefined>; socket: { remoteAddress?: string } }): string {

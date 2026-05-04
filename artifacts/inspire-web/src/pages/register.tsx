@@ -61,14 +61,19 @@ export default function Register() {
     } catch (err: unknown) {
       let message = "حدث خطأ أثناء التسجيل، يرجى المحاولة مرة أخرى.";
       if (err instanceof ApiError) {
-        const data = err.data as { error?: string; details?: { fieldErrors?: Record<string, string[]> } } | null;
-        const fieldErrors = data?.details?.fieldErrors;
-        if (fieldErrors && Object.keys(fieldErrors).length > 0) {
-          message = Object.values(fieldErrors).flat().join(" • ");
-        } else if (data?.error) {
-          message = data.error;
+        const data = err.data as { error?: string; retryAfter?: number; details?: { fieldErrors?: Record<string, string[]> } } | null;
+        if (err.status === 429 && data?.retryAfter != null) {
+          const minutes = Math.ceil(data.retryAfter / 60);
+          message = `حاولت كثيراً، أعد المحاولة بعد ${minutes} دقيقة`;
         } else {
-          message = err.message;
+          const fieldErrors = data?.details?.fieldErrors;
+          if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+            message = Object.values(fieldErrors).flat().join(" • ");
+          } else if (data?.error) {
+            message = data.error;
+          } else {
+            message = err.message;
+          }
         }
       } else if (err instanceof Error) {
         message = err.message;

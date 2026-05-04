@@ -39,3 +39,11 @@ ASSESSMENT_PRICE = "10.00"
 
 [userenv.development]
 APP_URL = "https://65b87698-2306-4a02-a0fa-7e418a57ad9f-00-3vu82xw7xi73i.kirk.replit.dev"
+
+[[ports]]
+localPort = 8080
+externalPort = 8080
+
+[[ports]]
+localPort = 24301
+externalPort = 80

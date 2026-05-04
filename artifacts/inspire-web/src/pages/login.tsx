@@ -2,7 +2,7 @@ import { useLocation, Link } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useLogin } from "@workspace/api-client-react";
+import { useLogin, ApiError } from "@workspace/api-client-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useI18n } from "@/i18n";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
@@ -36,8 +36,20 @@ export default function Login() {
         setLocation("/assess");
       }
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : t("login.errorFallback");
+      let message = t("login.errorFallback");
+      if (err instanceof ApiError) {
+        const data = err.data as { error?: string; retryAfter?: number } | null;
+        if (err.status === 429 && data?.retryAfter != null) {
+          const minutes = Math.ceil(data.retryAfter / 60);
+          message = `حاولت كثيراً، أعد المحاولة بعد ${minutes} دقيقة`;
+        } else if (data?.error) {
+          message = data.error;
+        } else {
+          message = err.message;
+        }
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
       toast({
         variant: "destructive",
         title: t("login.errorToastTitle"),

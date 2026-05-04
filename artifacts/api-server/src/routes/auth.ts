@@ -27,8 +27,16 @@ router.post(
   "/auth/register",
   async (req: Request, res: Response): Promise<void> => {
     const ip = getClientIp(req as any);
-    if (!rateLimit(ip, "register", 5, 60 * 60 * 1000)) {
-      res.status(429).json({ success: false, error: "تجاوزت الحد المسموح. حاول لاحقاً." });
+    const registerLimit = rateLimit(ip, "register", 5, 60 * 60 * 1000);
+    if (!registerLimit.allowed) {
+      res
+        .status(429)
+        .set("Retry-After", String(registerLimit.retryAfterSeconds))
+        .json({
+          success: false,
+          error: "تجاوزت الحد المسموح. حاول لاحقاً.",
+          retryAfter: registerLimit.retryAfterSeconds,
+        });
       return;
     }
 
@@ -132,6 +140,20 @@ router.get(
 router.post(
   "/auth/login",
   async (req: Request, res: Response): Promise<void> => {
+    const ip = getClientIp(req as any);
+    const loginLimit = rateLimit(ip, "login", 10, 15 * 60 * 1000);
+    if (!loginLimit.allowed) {
+      res
+        .status(429)
+        .set("Retry-After", String(loginLimit.retryAfterSeconds))
+        .json({
+          success: false,
+          error: "تجاوزت الحد المسموح. حاول لاحقاً.",
+          retryAfter: loginLimit.retryAfterSeconds,
+        });
+      return;
+    }
+
     const parsed = LoginSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
