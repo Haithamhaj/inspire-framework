@@ -1,0 +1,143 @@
+Build a standalone bilingual marketing motion prototype for INSPIRE.
+
+Goal:
+Create a 15–18 second looping explainer video that shows:
+1) the user writes a natural request,
+2) INSPIRE builds an operating profile,
+3) the same request becomes clearer for AI because it now includes better operating context.
+
+Important:
+- Do not imply magical AI behavior.
+- Do not imply AI “knows the person” in a human sense.
+- The message is: INSPIRE adds structured operating context to the request.
+
+Do not modify production pages if this is a prototype.
+Use static mock content only.
+
+Visual style:
+- premium dark UI
+- glass cards
+- subtle rose/orange/violet glow
+- modern SaaS feel
+- smooth elegant motion
+- bilingual support:
+  - Arabic when lang=ar
+  - English when lang=en
+
+Video structure:
+
+SCENE 1 — 0s to 5s
+Show a user typing a natural prompt in an AI chat interface.
+Prompt example:
+AR: "ساعدني أرتب مشروعي"
+EN: "Help me organize my project"
+
+A general response begins to appear.
+The message is not “bad prompt”, but “missing operating context”.
+
+On-screen text:
+AR: "طلب واضح… لكن بدون ملف تشغيل"
+EN: "A clear request… but without an operating profile"
+
+SCENE 2 — 5s to 11s
+Show a glowing central INSPIRE panel.
+Text:
+AR: "INSPIRE يبني ملف تشغيل للـ AI"
+EN: "INSPIRE builds an operating profile for AI"
+
+Animate 5 cards emerging one by one from the INSPIRE panel.
+Each card should:
+- appear with fade/slide
+- cycle through 3 short values
+- settle on one final value
+
+Card 1:
+AR title: "الدور"
+EN title: "Role"
+AR rotating values: "خبير", "كوتش", "مساعد"
+EN rotating values: "Expert", "Coach", "Assistant"
+Final:
+AR: "خبير"
+EN: "Expert"
+Helper:
+AR: "يحدد زاوية تعامل AI مع الطلب"
+EN: "Defines how AI should approach the request"
+
+Card 2:
+AR title: "الأسلوب"
+EN title: "Style"
+AR rotating values: "مباشر", "تحليلي", "مرن"
+EN rotating values: "Direct", "Analytical", "Flexible"
+Final:
+AR: "مباشر وتحليلي"
+EN: "Direct & Analytical"
+Helper:
+AR: "يشكل نبرة الرد وطريقته"
+EN: "Shapes the tone and style of the response"
+
+Card 3:
+AR title: "المخرجات"
+EN title: "Output"
+AR rotating values: "خطوات", "ملخص", "خطة"
+EN rotating values: "Steps", "Summary", "Plan"
+Final:
+AR: "خطة بخطوات واضحة"
+EN: "Structured plan with clear steps"
+Helper:
+AR: "تحدد شكل الإجابة المطلوبة"
+EN: "Defines the expected output format"
+
+Card 4:
+AR title: "الحدود"
+EN title: "Boundaries"
+AR rotating values: "لا تعميم", "اختصر", "اسأل عند الغموض"
+EN rotating values: "No generic advice", "Be concise", "Ask if unclear"
+Final:
+AR: "لا تعميم + اسأل عند الغموض"
+EN: "No generic advice + Ask if unclear"
+Helper:
+AR: "توضح ما يجب أن يتجنبه AI"
+EN: "Clarifies what AI should avoid"
+
+Card 5:
+AR title: "طريقة التفكير"
+EN title: "Thinking Mode"
+AR rotating values: "استراتيجية", "خطوة بخطوة", "ناقدة"
+EN rotating values: "Strategic", "Step-by-step", "Critical"
+Final:
+AR: "استراتيجية + خطوة بخطوة"
+EN: "Strategic + Step-by-step"
+Helper:
+AR: "تؤثر على كيفية بناء الجواب"
+EN: "Guides how the answer is constructed"
+
+After the cards settle, arrange them around the INSPIRE panel.
+Show:
+AR: "ملف تشغيل جاهز"
+EN: "Operating Profile Ready"
+
+Then merge the cards with the original prompt so it is visually clear that INSPIRE adds context to the same request.
+
+SCENE 3 — 11s to 18s
+Show the same AI interface again.
+The same prompt is now paired with the INSPIRE operating profile.
+The response appears more structured and clearer:
+- a clean title
+- a few bullet points
+- a next step
+
+On-screen text:
+AR: "نفس الطلب… بسياق أوضح"
+EN: "The same request… with clearer context"
+
+Then:
+AR: "INSPIRE يضيف للـ AI طريقة أوضح ليتعامل معك"
+EN: "INSPIRE gives AI a clearer way to work with you"
+
+Final frame:
+INSPIRE logo + CTA
+AR: "ابنِ ملفك الآن"
+EN: "Build your profile now"
+
+Hold after implementation and show a preview.
+Do not modify production routes or pages unless explicitly asked.
