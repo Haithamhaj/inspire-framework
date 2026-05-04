@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, User, ClipboardList, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { useT } from "@/i18n";
+import { useI18n } from "@/i18n";
 
 type NavbarProps = {
   variant?: "default" | "premium";
@@ -10,7 +10,7 @@ type NavbarProps = {
 
 export function Navbar({ variant = "default" }: NavbarProps) {
   const { user, logout, isLoading } = useAuth();
-  const t = useT();
+  const { t, locale, setLocale } = useI18n();
   const isPremium = variant === "premium";
 
   return (
@@ -34,6 +34,19 @@ export function Navbar({ variant = "default" }: NavbarProps) {
         </Link>
 
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => setLocale(locale === "ar" ? "en" : "ar")}
+            className={[
+              "text-sm font-semibold px-3 py-1.5 rounded-lg border transition-all",
+              isPremium
+                ? "border-white/20 text-white/70 hover:text-white hover:border-white/40 hover:bg-white/10"
+                : "border-border/60 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-secondary/50",
+            ].join(" ")}
+            dir="ltr"
+          >
+            {locale === "ar" ? "EN" : "ع"}
+          </button>
+
           {!isLoading && (
             user ? (
               <div className="flex items-center gap-4">
