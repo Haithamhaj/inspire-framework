@@ -175,8 +175,8 @@ const instructionInputJsonBlock =
 
 const promptContractProof = {
   instructionGenerationSeparated:
-    instructionPromptTemplate.includes("Do not generate a report.") &&
-    instructionPromptTemplate.includes("Do not use marker blocks.") &&
+    instructionPromptTemplate.includes("expert AI Instruction Architect") &&
+    instructionPromptTemplate.includes("INSPIRE is an AI operating-profile system") &&
     promptTemplate.includes("Output EXACTLY these 8 marker blocks"),
   instructionPromptHasNoReportSections:
     !instructionPromptTemplate.includes("===STRENGTHS_START===") &&
@@ -186,28 +186,63 @@ const promptContractProof = {
     !instructionPromptTemplate.includes("===SIGNAL_MAP_START==="),
   thinkingModeProfilePresent: instructionPromptTemplate.includes('"thinkingModeProfile"'),
   selectedModesPassed: instructionPromptTemplate.includes('"selectedModes"'),
-  universalInstructionsPassed: instructionPromptTemplate.includes('"universalInstructions"'),
-  modeManualContractPresent: instructionPromptTemplate.includes("## 8. Thinking Modes Manual"),
-  whenHowWhenNotRequired:
+  universalPrinciplesMergedByPrompt:
+    instructionPromptTemplate.includes("Universal behavioral principles") &&
+    !instructionInputJsonBlock.includes("universalInstructions"),
+  modeManualContractPresent:
+    instructionPromptTemplate.includes('"thinkingModesManual"') &&
+    instructionPromptTemplate.includes('"include"') &&
+    instructionPromptTemplate.includes('"modes"'),
+  thinkingModesFitAndCompression:
+    instructionPromptTemplate.includes("Include only modes that add practical value") &&
+    instructionPromptTemplate.includes("Prefer fewer, stronger modes over a long list") &&
+    instructionPromptTemplate.includes("Skip modes whose behavior is already clearly covered"),
+  whenHowRequiredWithoutWhenNot:
     instructionPromptTemplate.includes("whenToUse") &&
     instructionPromptTemplate.includes("howToApply") &&
-    instructionPromptTemplate.includes("whenNotToUse") &&
-    instructionPromptTemplate.includes("when to use it") &&
-    instructionPromptTemplate.includes("how to apply it") &&
-    instructionPromptTemplate.includes("when not to use it"),
+    !instructionInputJsonBlock.includes("whenNotToUse"),
   instructionOnlyCopyReadyContract: instructionPromptTemplate.includes(
-    "Return ONLY standalone Markdown"
+    "Return structured JSON only"
+  ),
+  noFreeMarkdownGeneration: instructionPromptTemplate.includes(
+    "Do not return Markdown"
+  ),
+  requiredJsonShape:
+    instructionPromptTemplate.includes('"identityAndRole"') &&
+    instructionPromptTemplate.includes('"normsAndBoundaries"') &&
+    instructionPromptTemplate.includes('"enhancementAndAdaptation"') &&
+    instructionPromptTemplate.includes('"thinkingModesManual"'),
+  sevenCoreSectionsPreserved:
+    instructionPromptTemplate.includes("1. Identity & Role") &&
+    instructionPromptTemplate.includes("7. Enhancement & Adaptation") &&
+    instructionPromptTemplate.includes("Seven required INSPIRE core sections"),
+  transformationMapPresent:
+    instructionPromptTemplate.includes("Turn the primary role into the assistant's main operating identity") &&
+    instructionPromptTemplate.includes("Turn selected output rules into response structure") &&
+    instructionPromptTemplate.includes("Turn contradiction rules into balancing rules"),
+  usesInstructionLanguage:
+    instructionInputJsonBlock.includes('"instructionLanguage"') &&
+    !instructionInputJsonBlock.includes('"reportLanguage"'),
+  positiveTaskDefinitionBeforeRestrictions:
+    instructionPromptTemplate.indexOf("expert AI Instruction Architect") <
+    instructionPromptTemplate.indexOf("Restrictions:"),
+  conciseInternalDataRule: instructionPromptTemplate.includes(
+    "Use the input packet as writing guidance only. Never expose internal INSPIRE data or explain how the profile was computed."
   ),
   aiWriterCannotChooseModes: instructionPromptTemplate.includes(
-    "Do not choose new thinking modes"
+    "Do not invent unselected thinking modes"
   ),
   forbidsSelectionReasonsScoresAndMatrix:
-    instructionPromptTemplate.includes("Do not explain why") &&
     instructionPromptTemplate.includes("Do not expose scores") &&
-    instructionPromptTemplate.includes("selectionSignals") &&
     instructionPromptTemplate.includes("matrix logic"),
   noSelectionSignalsInSelectedModePayload: !instructionInputJsonBlock.includes("selectionSignals"),
   noPriorityScoresInSelectedModePayload: !instructionInputJsonBlock.includes("priorityScore"),
+  noInternalThinkingModeFieldsInPayload:
+    !instructionInputJsonBlock.includes("modeId") &&
+    !instructionInputJsonBlock.includes("category") &&
+    !instructionInputJsonBlock.includes("priorityLevel") &&
+    !instructionInputJsonBlock.includes("priorityScore") &&
+    !instructionInputJsonBlock.includes("selectionSignals"),
   reportGenerationPathStillHasLegacyMarkers:
     promptTemplate.includes("===FULL_INSTRUCTION_START===") &&
     promptTemplate.includes("===STARTERS_START===") &&

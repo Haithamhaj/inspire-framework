@@ -151,8 +151,80 @@ export function parseFullReportV2(text: string): {
   };
 }
 
-export function parseInspireInstructionMarkdownV2(text: string): string {
+type InspireInstructionWriterOutput = {
+  title?: string;
+  identityAndRole?: { bullets?: string[] };
+  normsAndBoundaries?: { bullets?: string[] };
+  styleAndTone?: { bullets?: string[] };
+  precisionAndSelfCheck?: { bullets?: string[] };
+  internalEvaluation?: { bullets?: string[] };
+  responseStructure?: { bullets?: string[] };
+  enhancementAndAdaptation?: { bullets?: string[] };
+  thinkingModesManual?: {
+    include?: boolean;
+    modes?: Array<{
+      name?: string;
+      whenToUse?: string;
+      howToApply?: string;
+    }>;
+  };
+};
+
+const cleanAiJson = (text: string): string => {
   const trimmed = text.trim();
-  const fenced = trimmed.match(/^```(?:markdown|md)?\s*\n([\s\S]*?)\n```$/i);
+  const fenced = trimmed.match(/^```(?:json)?\s*\n([\s\S]*?)\n```$/i);
   return (fenced ? fenced[1] : trimmed).trim();
+};
+
+const renderBullets = (bullets: string[] | undefined): string =>
+  (bullets ?? [])
+    .map((bullet) => bullet.trim())
+    .filter(Boolean)
+    .map((bullet) => `- ${bullet}`)
+    .join("\n");
+
+export function parseInspireInstructionJsonV2(text: string): string {
+  let parsed: InspireInstructionWriterOutput;
+  try {
+    parsed = JSON.parse(cleanAiJson(text)) as InspireInstructionWriterOutput;
+  } catch {
+    return text.trim();
+  }
+
+  const title = parsed.title?.trim() || "INSPIRE AI Instructions";
+  const sections: Array<[string, string[] | undefined]> = [
+    ["1. Identity & Role", parsed.identityAndRole?.bullets],
+    ["2. Norms & Boundaries", parsed.normsAndBoundaries?.bullets],
+    ["3. Style & Tone", parsed.styleAndTone?.bullets],
+    ["4. Precision & Self-Check", parsed.precisionAndSelfCheck?.bullets],
+    ["5. Internal Evaluation", parsed.internalEvaluation?.bullets],
+    ["6. Response Structure", parsed.responseStructure?.bullets],
+    ["7. Enhancement & Adaptation", parsed.enhancementAndAdaptation?.bullets],
+  ];
+
+  const markdown = [`# ${title}`];
+  for (const [heading, bullets] of sections) {
+    const rendered = renderBullets(bullets);
+    markdown.push(`## ${heading}`, rendered || "- Not specified.");
+  }
+
+  const modes = parsed.thinkingModesManual?.include
+    ? (parsed.thinkingModesManual.modes ?? []).filter(
+        (mode) => mode.name?.trim() && mode.whenToUse?.trim() && mode.howToApply?.trim()
+      )
+    : [];
+
+  if (modes.length > 0) {
+    markdown.push(
+      "## 8. Thinking Modes Manual",
+      modes
+        .map(
+          (mode) =>
+            `- ${mode.name}\n  - When to use: ${mode.whenToUse}\n  - How to apply: ${mode.howToApply}`
+        )
+        .join("\n")
+    );
+  }
+
+  return markdown.join("\n\n").trim();
 }

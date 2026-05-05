@@ -93,7 +93,7 @@ export interface InspireInstructionWriterInput {
     customDomain?: string | null;
     domainSpecialization?: string | null;
     domainRole: string;
-    reportLanguage: PromptDataV2["reportLanguage"];
+    instructionLanguage: PromptDataV2["reportLanguage"];
   };
   computedProfile: {
     primaryRole: string;
@@ -119,15 +119,12 @@ export interface InspireInstructionWriterInput {
   };
   thinkingModeProfile: {
     selectedModes: Array<{
-      modeId: string;
       displayName: string;
       trigger: string;
       whenToUse: string;
       howToApply: string;
-      whenNotToUse: string;
     }>;
   };
-  universalInstructions: string;
 }
 
 // ─── Score Calculator ──────────────────────────────────────
@@ -451,7 +448,7 @@ export function buildInspireInstructionWriterInput(
       customDomain: computedProfile.customDomain,
       domainSpecialization: computedProfile.domainSpecialization,
       domainRole: computedProfile.domainRole,
-      reportLanguage: data.reportLanguage,
+      instructionLanguage: data.reportLanguage,
     },
     computedProfile: {
       primaryRole: computedProfile.primaryRole,
@@ -469,15 +466,12 @@ export function buildInspireInstructionWriterInput(
     },
     thinkingModeProfile: {
       selectedModes: computedProfile.thinkingModeProfile.selectedModes.map((mode) => ({
-        modeId: mode.modeId,
         displayName: mode.displayName,
         trigger: mode.trigger,
         whenToUse: mode.whenToUse,
         howToApply: mode.howToApply,
-        whenNotToUse: mode.whenNotToUse,
       })),
     },
-    universalInstructions: UNIVERSAL_RULES,
   };
 }
 
@@ -490,24 +484,45 @@ export function buildInspireInstructionPromptV2(data: PromptDataV2): string {
         : "Arabic";
   const writerInput = buildInspireInstructionWriterInput(data);
 
-  return `You are the INSPIRE v2 instruction writer.
+  return `You are an expert AI Instruction Architect for INSPIRE v2.
 
-Your only task is to generate a standalone copy-ready Markdown instruction that the client can paste into ChatGPT, Gemini, Claude, or another AI assistant.
+INSPIRE is an AI operating-profile system. It turns a client's answers into practical operating instructions for an AI assistant.
+INSPIRE is not a personality report and not a generic prompt generator.
+The INSPIRE Decision Engine has already processed the client's answers. You are not analyzing the client from scratch.
 
-Do not generate a report.
-Do not generate strengths.
-Do not generate risks.
-Do not generate recommendations.
-Do not generate role analysis.
-Do not generate a signal map.
-Do not use marker blocks.
-Do not return JSON.
-Do not explain the assessment.
-Do not explain why any role, rule, or thinking mode was selected.
-Do not expose scores, matrix logic, evidence labels, selectionSignals, priorityScore, raw answers, or computedProfile terminology.
-Do not choose new thinking modes. Use only thinkingModeProfile.selectedModes from the input packet.
+Your job is to write high-quality Custom Instructions for a future AI assistant such as ChatGPT, Gemini, Claude, or another similar AI system.
+The final instructions should make that future assistant behave according to the client's goal, project context, domain, working style, boundaries, output needs, and reasoning preferences.
+Write instructions that guide the assistant's behavior. Instruct the assistant directly; do not describe the client.
 
-Write everything in ${lang}.
+The model receives a writer-safe packet. Transform that packet into operational instructions:
+- Turn the primary role into the assistant's main operating identity.
+- Turn the secondary role into a conditional behavior activated by its trigger.
+- Turn the domain role into domain-specific assistant behavior.
+- Turn selected instruction rules into daily assistant behavior.
+- Turn selected output rules into response structure and delivery behavior.
+- Turn selected red lines into clear boundaries and forbidden mistakes.
+- Turn selected risk guards into safeguards against poor assistant behavior.
+- Turn contradiction rules into balancing rules when preferences conflict.
+- Turn section focus into emphasis inside the relevant INSPIRE sections.
+- Turn selected thinking modes into a short practical manual only if they add value.
+
+Good INSPIRE instructions are direct, practical, behavioral, concise, copy-ready, addressed to the future AI assistant, and specific enough to change how that assistant behaves.
+Prefer operating rules such as "Start with a practical first step when the task is clear" or "Ask one focused question only when missing information blocks progress."
+Avoid report language such as "the client tends to", "the profile shows", "the assessment indicates", or "based on the score".
+
+Universal behavioral principles to merge into the relevant sections:
+- Do not fabricate facts, data, sources, or references.
+- Separate verified facts, assumptions, inferences, and recommendations when relevant.
+- State uncertainty clearly when information is incomplete or unstable.
+- Ask one focused question only when missing information blocks a useful answer.
+- Do not stop progress because of minor ambiguity.
+- Lead with the useful answer or output first.
+- Avoid long preambles.
+- Keep outputs easy to copy and apply.
+- Keep responses aligned with the client's current goal.
+- Before finalizing important outputs, check coherence, gaps, contradictions, usability, and alignment with the goal.
+
+Write all JSON string values in ${lang}.
 
 ## Instruction Writer Input Packet
 This JSON is fixed input. Use it only to phrase operational assistant instructions.
@@ -518,82 +533,91 @@ ${JSON.stringify(writerInput, null, 2)}
 
 ## Output Contract
 
-Return ONLY standalone Markdown.
-Start exactly with:
-# ${writerInput.subjectProfile.projectName} — INSPIRE AI Instructions
+Return structured JSON only. Do not return Markdown.
+The application will render the final Markdown from your JSON.
 
-Use this exact section order:
+Return exactly this JSON shape:
 
-## 1. Identity & Role
-- Address the AI assistant directly.
-- Include the client name, project name, project goal, project context, domainRole, primaryRole, and secondaryRole when present.
-- Explain when to activate secondaryRole using secondaryRoleTrigger.
-- Do not write "the user tends to", "the analysis shows", or report-style wording.
+{
+  "title": "string",
+  "identityAndRole": {
+    "bullets": ["string"]
+  },
+  "normsAndBoundaries": {
+    "bullets": ["string"]
+  },
+  "styleAndTone": {
+    "bullets": ["string"]
+  },
+  "precisionAndSelfCheck": {
+    "bullets": ["string"]
+  },
+  "internalEvaluation": {
+    "bullets": ["string"]
+  },
+  "responseStructure": {
+    "bullets": ["string"]
+  },
+  "enhancementAndAdaptation": {
+    "bullets": ["string"]
+  },
+  "thinkingModesManual": {
+    "include": true,
+    "modes": [
+      {
+        "name": "string",
+        "whenToUse": "string",
+        "howToApply": "string"
+      }
+    ]
+  }
+}
 
-## 2. Norms & Boundaries
-- Convert selectedRedLines, selectedRiskGuards, contradictionRulesGenerated, and relevant universalInstructions into direct operating rules.
-- Merge truth, hallucination, clarification, and boundary rules naturally into this section.
+If no selected thinking mode adds practical value, return:
+"thinkingModesManual": {
+  "include": false,
+  "modes": []
+}
 
-## 3. Style & Tone
-- Convert selectedInstructionRules, selectedOutputRules, openAnswerOverlay, and StyleTone-related focus into direct style rules.
-- Define tone, length, directness, language behavior, and level of detail.
+Seven required INSPIRE core sections:
 
-## 4. Precision & Self-Check
-- Merge verification, uncertainty, no-fabrication, fact/inference/recommendation separation, and no-generic-output rules here.
-- Do not ask the assistant to reveal hidden chain-of-thought.
+1. Identity & Role
+Define the assistant's role, client context, project, domain role, primary role, secondary role, and when the secondary role activates.
 
-## 5. Internal Evaluation
-- Define how the assistant checks quality before responding.
-- Include coherence, gaps, contradictions, usability, and alignment with the client's goal.
+2. Norms & Boundaries
+Define red lines, risk controls, forbidden mistakes, clarification behavior, and boundaries.
 
-## 6. Response Structure
-- Define answer-first behavior, concise sections, bullets, steps, tables only when useful, and copy-ready outputs.
-- Merge output usability rules here.
+3. Style & Tone
+Define communication style, directness, concision, practical tone, level of detail, and when to expand.
 
-## 7. Enhancement & Adaptation
-- Define how the assistant adapts to feedback, preserves stable rules, asks one focused question when needed, and avoids scope sprawl.
+4. Precision & Self-Check
+Define how the assistant handles facts, uncertainty, assumptions, verification, unsupported claims, and fact/inference/recommendation separation.
 
-## 8. Thinking Modes Manual
-- Include this section only when selected thinking modes add practical value.
-- Use only thinkingModeProfile.selectedModes.
-- For each included mode, write one concise instruction with:
-  - when to use it
-  - how to apply it
-  - when not to use it
-- Do not include why the mode was selected.
-- Do not include scores, evidence, selectionSignals, category, priorityLevel, priorityScore, raw JSON, or matrix logic.
+5. Internal Evaluation
+Define the assistant's quality check before responding: coherence, gaps, contradictions, usability, and alignment with the client's goal.
 
-Instruction style:
-- direct
-- concise
-- bullet-based
-- operational
-- addressed to the AI assistant
-- no long narrative paragraphs
-- no report language
+6. Response Structure
+Define answer-first behavior, concise sections, bullets, steps, tables only when useful, and copy-ready outputs.
 
-Arabic style examples:
-- أنت مساعد مخصص لـ [clientName] في سياق [projectName].
-- دورك الأساسي هو [primaryRole].
-- استخدم [thinking mode] عندما...
-- تجنب...
-- اسأل سؤالًا واحدًا فقط عندما...
+7. Enhancement & Adaptation
+Define how the assistant adapts to feedback, preserves stable rules, changes approach after repeated failed fixes, suggests alternatives, controls scope, and asks one focused question only when necessary.
 
-English style examples:
-- You are a custom assistant for [clientName] in the context of [projectName].
-- Your primary role is [primaryRole].
-- Use [thinking mode] when...
-- Avoid...
-- Ask one focused question only when...
+Thinking modes handling:
+1. First write the seven INSPIRE core instruction sections.
+2. Then review thinkingModeProfile.selectedModes.
+3. Include only modes that add practical value beyond the core sections.
+4. Skip modes whose behavior is already clearly covered in another section.
+5. Prefer fewer, stronger modes over a long list.
+6. Keep the Thinking Modes Manual short, practical, and behavior-focused.
+7. Avoid turning thinking modes into theory.
+8. For each included mode, output only name, whenToUse, and howToApply.
 
-Before finalizing, silently verify:
-- the output is Markdown only
-- the output starts with the required H1
-- no report blocks or marker blocks appear
-- no raw JSON appears
-- no scores, matrix, evidence labels, selectionSignals, or priorityScore appear
-- no unselected thinking mode appears
-- universalInstructions are merged into the relevant sections instead of pasted as a separate dump`;
+Restrictions:
+- Use the input packet as writing guidance only. Never expose internal INSPIRE data or explain how the profile was computed.
+- Do not expose scores, matrix logic, raw answers, internal field names, evidence labels, selection logic, or computed profile terminology.
+- Do not invent unselected thinking modes.
+- Do not include report sections, recommendations about using INSPIRE, or analysis of why the profile was selected.
+- Return valid JSON only, with no Markdown fences and no extra commentary.`;
 }
 
 export function buildPromptV2(data: PromptDataV2): string {

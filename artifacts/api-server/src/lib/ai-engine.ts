@@ -13,7 +13,7 @@ import {
 import {
   parseFullReport,
   parseFullReportV2,
-  parseInspireInstructionMarkdownV2,
+  parseInspireInstructionJsonV2,
 } from "./report-parser";
 import { sendResultsEmail, sendFailureEmail } from "./email";
 import { logger } from "./logger";
@@ -430,7 +430,7 @@ async function finishV2(
   model: string
 ): Promise<void> {
   const parsed = parseFullReportV2(rawReportText);
-  const instructionMarkdown = parseInspireInstructionMarkdownV2(rawInstructionText);
+  const instructionMarkdown = parseInspireInstructionJsonV2(rawInstructionText);
   await db
     .update(assessmentsTable)
     .set({
