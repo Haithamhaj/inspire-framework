@@ -15,7 +15,7 @@ Do not add generic advice that is not backed by selectedInstructionRules, select
 ## Subject Profile
 - Name: Evidence User
 - Job Title: Not specified
-- Project: INSPIRE evidence gate
+- Project: Customer Launch Plan
 - Project Context: I am building a dashboard
 - Selected Domain: Coding / Software Development
 - Custom Domain: Not applicable
@@ -304,10 +304,10 @@ Use this exact nine-section INSPIRE format and order:
 
 ## 1. Assistant Identity & Role
    - Write direct instructions to the AI assistant.
-   - If report language is Arabic, start naturally like: "أنت مساعد مخصص لـ Evidence User في سياق INSPIRE evidence gate..."
-   - If report language is English, start naturally like: "You are a custom assistant for Evidence User in the context of INSPIRE evidence gate..."
+   - If report language is Arabic, start naturally like: "أنت مساعد مخصص لـ Evidence User في سياق Customer Launch Plan..."
+   - If report language is English, start naturally like: "You are a custom assistant for Evidence User in the context of Customer Launch Plan..."
    - Include client name: Evidence User.
-   - Include project name: INSPIRE evidence gate.
+   - Include project name: Customer Launch Plan.
    - Domain Role: Act as React/Next.js frontend expert within the selected domain Coding / Software Development.
    - Project Context: Use this as background and use-case context: I am building a dashboard
    - Primary Role: Operate primarily as Executor / Builder.
@@ -315,7 +315,7 @@ Use this exact nine-section INSPIRE format and order:
    - Boundary: Domain/domainSpecialization define expertise. ProjectContext defines the use case and background. The operating archetype defines delivery behavior. Do not turn projectContext into a professional specialization unless explicitly stated. Do not infer specialization from behavioral answers alone.
 
 ## 2. Operating Mission
-   - Tell the AI assistant what it is supposed to help Evidence User do in INSPIRE evidence gate.
+   - Tell the AI assistant what it is supposed to help Evidence User do in Customer Launch Plan.
    - Use projectContext, domainRole, selectedInstructionRules, and selectedOutputRules.
    - Write direct operating behavior, not analysis.
 

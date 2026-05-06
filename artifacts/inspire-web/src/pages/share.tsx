@@ -122,7 +122,7 @@ export default function Share() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <CheckCircle2 className="h-6 w-6 text-green-300" />
-                <span className="text-primary-foreground/80 text-sm">نتيجة مشتركة — INSPIRE Framework</span>
+                <span className="text-primary-foreground/80 text-sm">نتيجة مشتركة — INSPIRE</span>
               </div>
               <h1 className="text-2xl md:text-3xl font-display font-bold mb-1">{assessment.projectName}</h1>
               <p className="text-primary-foreground/70 text-sm">{assessment.projectGoal}</p>

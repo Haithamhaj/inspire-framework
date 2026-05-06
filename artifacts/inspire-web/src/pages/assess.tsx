@@ -227,7 +227,7 @@ function AssessmentShell({
               <Brain className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-200/70">INSPIRE v2</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-200/70">INSPIRE</p>
               <h2 className="mt-1 text-lg font-black leading-tight text-slate-100">{t("assessment.shell.sidebarTitle")}</h2>
               <p className="mt-2 text-sm leading-7 text-slate-400">
                 {t("assessment.shell.sidebarDescription")}
@@ -1038,7 +1038,7 @@ export default function Assess() {
                 <Brain className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-black text-slate-100">INSPIRE v2</p>
+                <p className="text-sm font-black text-slate-100">INSPIRE</p>
                 <p className="mt-1 text-sm leading-6 text-slate-400">
                   {t("assessment.shell.sidebarDescription")}
                 </p>

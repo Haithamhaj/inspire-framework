@@ -6,16 +6,17 @@ import { eq, lte, lt, and } from "drizzle-orm";
 import {
   buildInspireInstructionPromptV2,
   buildPrompt,
-  buildPromptV2,
+  buildReportWriterPromptV2,
   type PromptData,
   type PromptDataV2,
 } from "./prompt-builder";
 import {
   parseFullReport,
-  parseFullReportV2,
   parseInspireInstructionJsonV2,
+  parseReportWriterJsonV2,
 } from "./report-parser";
-import { sendResultsEmail, sendFailureEmail } from "./email";
+import { buildOperatingPatternReportContentV1 } from "../inspire-types";
+import { sendResultsEmail, sendFailureEmail, sendAdminAlertEmail } from "./email";
 import { logger } from "./logger";
 
 const OPENAI_MODEL_DEFAULT = "gpt-5.4";
@@ -108,16 +109,22 @@ export async function generateReportV2(
   assessmentId: string,
   promptData: PromptDataV2
 ): Promise<void> {
-  const generationResult = await tryGenerateV2InstructionAndReport(promptData);
-  if (generationResult.success) {
-    await finishV2(
-      assessmentId,
-      generationResult.reportText!,
-      generationResult.instructionText!,
-      generationResult.provider!,
-      generationResult.model!
-    );
-    return;
+  try {
+    const generationResult = await tryGenerateV2InstructionAndReport(promptData);
+    if (generationResult.success) {
+      await finishV2(
+        assessmentId,
+        generationResult.reportText!,
+        generationResult.instructionText!,
+        promptData.reportLanguage,
+        promptData.projectName,
+        generationResult.provider!,
+        generationResult.model!
+      );
+      return;
+    }
+  } catch (err) {
+    logger.error({ assessmentId, err }, "V2 generation or validation failed before completion");
   }
 
   await db
@@ -130,6 +137,13 @@ export async function generateReportV2(
     .where(eq(assessmentsTable.id, assessmentId));
 
   logger.warn({ assessmentId }, "Both AI providers failed (v2) — queued for retry");
+  sendAdminAlertEmail({
+    subject: "INSPIRE alert — report queued for retry",
+    assessmentId,
+    reason: "A v2 report generation attempt failed or did not validate, so it was queued for retry.",
+  }).catch((err) =>
+    logger.error({ assessmentId, err }, "sendAdminAlertEmail threw")
+  );
 }
 
 // ─── CRON JOB (called every minute) ──────────────────────────────────────────
@@ -198,6 +212,8 @@ export async function processRetryQueue(): Promise<void> {
           assessment.id,
           generationResult.reportText!,
           generationResult.instructionText!,
+          promptDataV2.reportLanguage,
+          promptDataV2.projectName,
           generationResult.provider!,
           generationResult.model!
         );
@@ -213,6 +229,13 @@ export async function processRetryQueue(): Promise<void> {
         logger.error(
           { assessmentId: assessment.id },
           "Assessment failed after 10 retries"
+        );
+        sendAdminAlertEmail({
+          subject: "INSPIRE alert — report failed after retries",
+          assessmentId: assessment.id,
+          reason: "A v2 paid/full report reached the retry limit and is now failed.",
+        }).catch((err) =>
+          logger.error({ assessmentId: assessment.id, err }, "sendAdminAlertEmail threw")
         );
         sendFailureEmail(user.email, user.name).catch((err) =>
           logger.error({ assessmentId: assessment.id, err }, "sendFailureEmail threw")
@@ -371,7 +394,7 @@ async function tryGenerateV2InstructionAndReport(
   model?: string;
 }> {
   const instructionPrompt = buildInspireInstructionPromptV2(promptData);
-  const reportPrompt = buildPromptV2(promptData);
+  const reportPrompt = buildReportWriterPromptV2(promptData);
 
   const instructionResult = await tryGenerateAiText(instructionPrompt);
   if (!instructionResult.success || !instructionResult.text) return { success: false };
@@ -426,22 +449,32 @@ async function finishV2(
   assessmentId: string,
   rawReportText: string,
   rawInstructionText: string,
+  reportLanguage: "ar" | "en" | "both",
+  projectName: string,
   provider: string,
   model: string
 ): Promise<void> {
-  const parsed = parseFullReportV2(rawReportText);
-  const instructionMarkdown = parseInspireInstructionJsonV2(rawInstructionText);
+  const reportWriterOutput = parseReportWriterJsonV2(rawReportText, reportLanguage);
+  const reportContent = buildOperatingPatternReportContentV1(
+    reportWriterOutput,
+    reportLanguage
+  );
+  const instructionMarkdown = parseInspireInstructionJsonV2(rawInstructionText, {
+    instructionLanguage: "en",
+    projectName,
+  });
   await db
     .update(assessmentsTable)
     .set({
       systemInstruction: instructionMarkdown,
-      quickStarters: parsed.quickStarters,
-      redLines: parsed.redLines,
-      recommendations: parsed.recommendations,
-      roleAnalysis: parsed.roleAnalysis,
-      strengths: parsed.strengths,
-      developmentAreas: parsed.developmentAreas,
-      inspireTable: parsed.inspireTable,
+      reportContent,
+      quickStarters: null,
+      redLines: null,
+      recommendations: null,
+      roleAnalysis: null,
+      strengths: null,
+      developmentAreas: null,
+      inspireTable: null,
       status: "completed",
       aiProvider: provider,
       aiModel: model,

@@ -483,18 +483,33 @@ export default function MyAssessments() {
                           </>
                         )}
                         {a.status === "processing" && (
-                          <div className="col-span-2 flex items-center justify-center gap-2 rounded-2xl border border-sky-300/20 bg-sky-500/[0.08] px-4 py-2 text-sm font-bold text-sky-200 sm:col-span-1">
-                            <Loader2 className="h-4 w-4 animate-spin" /> معالجة...
+                          <div className="col-span-2 rounded-2xl border border-sky-300/20 bg-sky-500/[0.08] px-4 py-2 text-center text-sm font-bold text-sky-200 sm:col-span-1">
+                            <span className="flex items-center justify-center gap-2">
+                              <Loader2 className="h-4 w-4 animate-spin" /> معالجة...
+                            </span>
+                            <span className="mt-1 block text-xs font-medium text-sky-100/70">
+                              طلبك محفوظ، ويمكنك الرجوع لهذه الصفحة لاحقًا.
+                            </span>
                           </div>
                         )}
                         {a.status === "failed" && (
-                          <div className="col-span-2 flex items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] px-4 py-2 text-sm font-bold text-rose-200 sm:col-span-1">
-                            <AlertTriangle className="h-4 w-4" /> فشل
+                          <div className="col-span-2 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] px-4 py-2 text-center text-sm font-bold text-rose-200 sm:col-span-1">
+                            <span className="flex items-center justify-center gap-2">
+                              <AlertTriangle className="h-4 w-4" /> فشل
+                            </span>
+                            <span className="mt-1 block text-xs font-medium text-rose-100/70">
+                              لم يكتمل التقرير تلقائيًا. فريق الدعم يستطيع مراجعته.
+                            </span>
                           </div>
                         )}
                         {a.status === "pending_retry" && (
-                          <div className="col-span-2 flex items-center justify-center gap-2 rounded-2xl border border-amber-300/20 bg-amber-500/[0.08] px-4 py-2 text-sm font-bold text-amber-200 sm:col-span-1">
-                            <RotateCcw className="h-4 w-4" /> إعادة محاولة
+                          <div className="col-span-2 rounded-2xl border border-amber-300/20 bg-amber-500/[0.08] px-4 py-2 text-center text-sm font-bold text-amber-200 sm:col-span-1">
+                            <span className="flex items-center justify-center gap-2">
+                              <RotateCcw className="h-4 w-4" /> إعادة محاولة
+                            </span>
+                            <span className="mt-1 block text-xs font-medium text-amber-100/75">
+                              نحاول تجهيز التقرير تلقائيًا بدون دفع جديد.
+                            </span>
                           </div>
                         )}
                       </div>

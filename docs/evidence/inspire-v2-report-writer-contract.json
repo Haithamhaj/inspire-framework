@@ -1,0 +1,131 @@
+{
+  "reportWriterContract": {
+    "shape": {
+      "operatingSnapshot": {
+        "bullets": "3 to 5 strings"
+      },
+      "personalizedRecommendations": {
+        "bullets": "4 to 6 strings"
+      },
+      "customAiUsageTips": {
+        "bullets": "2 to 4 strings"
+      },
+      "instructionExplanation": {
+        "include": "false for \"en\"; true for \"ar\" and \"both\"",
+        "bullets": "0 strings when include is false; 3 to 5 strings when include is true"
+      }
+    },
+    "bothLanguageBehavior": "For reportLanguage='both', each generated bullet should be Arabic-first followed by an English rendering in the same string, separated by ' / ', because the approved contract shape does not include per-locale nested values.",
+    "fixedContentExcluded": "The Report Writer JSON contract excludes Copy-Ready AI Instructions, CRAFT, Smart Prompt Engineer link, headings, cards, and layout text."
+  },
+  "reportWriterContractExamples": {
+    "english": {
+      "operatingSnapshot": {
+        "bullets": [
+          "You move fastest when ideas are converted into a first practical action.",
+          "You can work with partial clarity when the next step is obvious, then refine through feedback.",
+          "Your best support pattern combines quick execution with a short quality check before final decisions."
+        ]
+      },
+      "personalizedRecommendations": {
+        "bullets": [
+          "Start complex work with a small first draft, then ask AI to improve the structure.",
+          "Ask for alternatives when a first fix fails instead of repeating the same approach.",
+          "Use a quick verification pass before accepting launch, planning, or technical recommendations.",
+          "Request templates or structured methods when the task feels messy or hard to start."
+        ]
+      },
+      "customAiUsageTips": {
+        "bullets": [
+          "Ask AI for a first usable version before requesting deeper analysis.",
+          "When the task is important, ask AI to separate facts, assumptions, and recommendations."
+        ]
+      },
+      "instructionExplanation": {
+        "include": false,
+        "bullets": []
+      }
+    },
+    "arabic": {
+      "operatingSnapshot": {
+        "bullets": [
+          "يميل نمط العمل إلى تحويل الفكرة بسرعة إلى خطوة عملية أولى.",
+          "يمكن البدء مع وضوح جزئي عندما تكون الخطوة التالية معروفة، ثم تحسين النتيجة بالتدرج.",
+          "الدعم الأنسب يجمع بين التنفيذ السريع وفحص مختصر للجودة قبل القرارات المهمة."
+        ]
+      },
+      "personalizedRecommendations": {
+        "bullets": [
+          "ابدأ المهام المعقدة بمسودة صغيرة قابلة للاستخدام، ثم اطلب تحسين البنية.",
+          "عندما لا ينجح الحل الأول، اطلب بدائل مختلفة بدل تكرار نفس المسار.",
+          "استخدم فحص تحقق مختصر قبل اعتماد توصيات الإطلاق أو التخطيط أو القرارات التقنية.",
+          "اطلب قالبا أو طريقة منظمة عندما تكون المهمة غير مرتبة أو يصعب البدء بها."
+        ]
+      },
+      "customAiUsageTips": {
+        "bullets": [
+          "اطلب من الذكاء الاصطناعي نسخة أولى قابلة للاستخدام قبل التوسع في التحليل.",
+          "في المهام المهمة، اطلب فصل الحقائق عن الافتراضات والتوصيات."
+        ]
+      },
+      "instructionExplanation": {
+        "include": true,
+        "bullets": [
+          "تعليمات النسخ الجاهزة مكتوبة بالإنجليزية لأنها ستستخدم مباشرة داخل أدوات الذكاء الاصطناعي.",
+          "توضح التعليمات للمساعد كيف يتعامل مع سياق المشروع، الحدود، وطريقة عرض المخرجات.",
+          "استخدمها كما هي في إعدادات الأداة، ثم اطلب المهام اليومية باللغة التي تفضلها."
+        ]
+      }
+    },
+    "both": {
+      "operatingSnapshot": {
+        "bullets": [
+          "يميل نمط العمل إلى البدء بخطوة عملية واضحة. / The working pattern favors a clear practical first step.",
+          "يستفيد من تحسين تدريجي بعد المسودة الأولى. / It benefits from iterative refinement after a first draft.",
+          "يحتاج إلى فحص جودة مختصر قبل القرارات المهمة. / It needs a concise quality check before important decisions."
+        ]
+      },
+      "personalizedRecommendations": {
+        "bullets": [
+          "ابدأ بمسودة قابلة للاستخدام ثم حسّنها. / Start with a usable draft, then improve it.",
+          "اطلب بدائل عند تعثر الحل الأول. / Ask for alternatives when the first fix stalls.",
+          "استخدم فحص تحقق قبل اعتماد التوصيات. / Use verification before accepting recommendations.",
+          "اطلب بنية واضحة عندما تكون المهمة واسعة. / Ask for structure when the task is broad."
+        ]
+      },
+      "customAiUsageTips": {
+        "bullets": [
+          "اطلب النتيجة أولا ثم التفاصيل. / Ask for the answer first, then details.",
+          "اطلب فصل الحقائق عن الافتراضات عند الدقة. / Ask to separate facts from assumptions when accuracy matters."
+        ]
+      },
+      "instructionExplanation": {
+        "include": true,
+        "bullets": [
+          "تعليمات النسخ الجاهزة تبقى بالإنجليزية للاستخدام المباشر داخل الأداة. / The copy-ready instructions stay in English for direct tool use.",
+          "هي تضبط دور المساعد وحدوده وطريقة إخراجه بدون ترجمة النص نفسه. / They set role, boundaries, and output behavior without translating the instruction text.",
+          "يمكن استخدام التقرير لفهم التصميم، ثم نسخ التعليمات الإنجليزية كما هي. / Use the report to understand the design, then paste the English instructions as-is."
+        ]
+      }
+    }
+  },
+  "reportWriterContractValidation": {
+    "english": true,
+    "arabic": true,
+    "both": true,
+    "rejectsOldSectionTerm": true,
+    "rejectsInternalTerm": true,
+    "rejectsMarkdownHeading": true,
+    "rejectsWrongExplanationForEnglish": true,
+    "englishExplanationRule": true,
+    "arabicExplanationRule": true,
+    "bothExplanationRule": true,
+    "bothLanguageBehaviorDocumented": true
+  },
+  "reportWriterParserProof": {
+    "parsesStrictEnglishJson": true,
+    "acceptsFencedJsonAsRecovery": true,
+    "rejectsInvalidContractOutput": true,
+    "parserIsDisconnectedFromLiveGeneration": true
+  }
+}

@@ -27,6 +27,7 @@ interface Stats {
   totalAssessments: number;
   completedAssessments: number;
   processingAssessments: number;
+  pendingRetryAssessments: number;
   avgCompletionSeconds: number;
   assessmentsToday: number;
   assessmentsThisWeek: number;
@@ -43,6 +44,13 @@ interface Assessment {
   status: string;
   aiProvider: string | null;
   completionTimeSeconds: number | null;
+  retryCount: number;
+  nextRetryAt: string | null;
+  hasReportContent: boolean;
+  paymentId: string | null;
+  paymentStatus: string | null;
+  paypalOrderId: string | null;
+  paymentAmount: string | null;
   createdAt: string;
 }
 
@@ -77,10 +85,13 @@ export default function Admin() {
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
+  const [recovery, setRecovery] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [retryingId, setRetryingId] = useState<string | null>(null);
+  const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const PAGE_SIZE = 20;
 
@@ -133,12 +144,13 @@ export default function Admin() {
   }
 
   const loadAssessments = useCallback(
-    async (p: number, s: string, pw: string) => {
+    async (p: number, s: string, pw: string, recoveryFilter = recovery) => {
       setLoading(true);
       setError(null);
       try {
         const params = new URLSearchParams({ page: String(p), limit: String(PAGE_SIZE) });
         if (s) params.set("status", s);
+        if (recoveryFilter) params.set("recovery", recoveryFilter);
         const res = await fetch(apiUrl(`/admin/assessments?${params}`), {
           headers: { "x-admin-password": pw },
         });
@@ -154,7 +166,7 @@ export default function Admin() {
         setLoading(false);
       }
     },
-    []
+    [recovery]
   );
 
   async function loadStats() {
@@ -327,14 +339,45 @@ export default function Admin() {
     }
   }
 
+  async function handleRetryGeneration(assessmentId: string) {
+    if (!confirm("إعادة توليد هذا التقرير بدون دفع جديد؟")) return;
+    setRetryingId(assessmentId);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/admin/assessments/${assessmentId}/retry-generation`), {
+        method: "POST",
+        headers: { "x-admin-password": password },
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (!d.success) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل إعادة التوليد" });
+        return;
+      }
+      setActionMsg({ ok: true, text: "بدأت إعادة التوليد لهذا التقرير" });
+      await loadAssessments(page, status, password);
+      await loadStats();
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setRetryingId(null);
+    }
+  }
+
   const statusBadge = (s: string) => {
     const map: Record<string, string> = {
       completed: "bg-green-500/10 text-green-600 border-green-500/20",
       processing: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+      pending_retry: "bg-amber-500/10 text-amber-600 border-amber-500/20",
       draft: "bg-secondary text-muted-foreground border-border",
       failed: "bg-destructive/10 text-destructive border-destructive/20",
     };
-    const ar: Record<string, string> = { completed: "مكتمل", processing: "جارٍ", draft: "مسودة", failed: "فشل" };
+    const ar: Record<string, string> = {
+      completed: "مكتمل",
+      processing: "جارٍ",
+      pending_retry: "إعادة محاولة",
+      draft: "مسودة",
+      failed: "فشل",
+    };
     return (
       <span className={`text-xs px-2 py-1 rounded-full border font-medium ${map[s] ?? "bg-secondary border-border"}`}>
         {ar[s] ?? s}
@@ -393,6 +436,9 @@ export default function Admin() {
         { label: "إجمالي المستخدمين", value: stats.totalUsers, icon: Users, color: "text-blue-500" },
         { label: "التقييمات الكاملة", value: stats.totalAssessments, icon: ClipboardList, color: "text-purple-500" },
         { label: "مكتملة", value: stats.completedAssessments, icon: CheckCircle2, color: "text-green-500" },
+        { label: "قيد المعالجة", value: stats.processingAssessments, icon: Loader2, color: "text-yellow-500" },
+        { label: "إعادة محاولة", value: stats.pendingRetryAssessments, icon: RefreshCw, color: "text-amber-500" },
+        { label: "فشلت", value: stats.failedAssessments, icon: AlertCircle, color: "text-red-500" },
         { label: "هذا الأسبوع", value: stats.assessmentsThisWeek, icon: Clock, color: "text-accent" },
       ]
     : [];
@@ -473,8 +519,21 @@ export default function Admin() {
             <option value="">الكل</option>
             <option value="completed">مكتمل</option>
             <option value="processing">جارٍ</option>
+            <option value="pending_retry">إعادة محاولة</option>
             <option value="draft">مسودة</option>
             <option value="failed">فشل</option>
+          </select>
+          <select
+            className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+            value={recovery}
+            onChange={(e) => {
+              setRecovery(e.target.value);
+              loadAssessments(1, status, password, e.target.value);
+            }}
+          >
+            <option value="">كل الحالات</option>
+            <option value="needs_attention">تحتاج متابعة</option>
+            <option value="paid_no_report">مدفوع بلا تقرير</option>
           </select>
         </div>
 
@@ -483,6 +542,12 @@ export default function Admin() {
           <div className="flex items-center gap-2 text-destructive text-sm mb-4">
             <AlertCircle className="h-4 w-4" />
             {error}
+          </div>
+        )}
+        {actionMsg && (
+          <div className={`mb-4 flex items-center gap-2 text-sm ${actionMsg.ok ? "text-green-600" : "text-destructive"}`}>
+            {actionMsg.ok ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+            {actionMsg.text}
           </div>
         )}
 
@@ -502,6 +567,9 @@ export default function Admin() {
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">المشروع</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">النوع</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">الحالة</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground">الدفع</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground">التعافي</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground">إجراء</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">التاريخ</th>
                   </tr>
                 </thead>
@@ -522,6 +590,61 @@ export default function Admin() {
                         </span>
                       </td>
                       <td className="px-4 py-3">{statusBadge(a.status)}</td>
+                      <td className="px-4 py-3">
+                        <div className="text-xs">
+                          <span className={`rounded-full border px-2 py-1 font-medium ${
+                            a.paymentStatus === "completed"
+                              ? "border-green-500/20 bg-green-500/10 text-green-600"
+                              : a.paymentStatus
+                                ? "border-amber-500/20 bg-amber-500/10 text-amber-600"
+                                : "border-border bg-secondary text-muted-foreground"
+                          }`}>
+                            {a.paymentStatus === "completed" ? "مدفوع" : a.paymentStatus ?? "بدون دفع"}
+                          </span>
+                          {a.paymentAmount && (
+                            <div className="mt-1 text-muted-foreground" dir="ltr">
+                              ${a.paymentAmount}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="space-y-1 text-xs text-muted-foreground">
+                          <div>محاولات: {a.retryCount}</div>
+                          <div>{a.hasReportContent ? "reportContent موجود" : "لا يوجد reportContent"}</div>
+                          {a.nextRetryAt && (
+                            <div dir="ltr">
+                              {new Date(a.nextRetryAt).toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-col gap-2">
+                          <a
+                            href={`/results/${a.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30"
+                          >
+                            فتح
+                          </a>
+                          {a.status !== "completed" && a.assessmentType !== "mini" && (
+                            <button
+                              onClick={() => handleRetryGeneration(a.id)}
+                              disabled={retryingId === a.id}
+                              className="inline-flex items-center justify-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                            >
+                              {retryingId === a.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <RefreshCw className="h-3.5 w-3.5" />
+                              )}
+                              Retry
+                            </button>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-4 py-3 text-xs text-muted-foreground" dir="ltr">
                         {new Date(a.createdAt).toLocaleDateString("ar-SA")}
                       </td>

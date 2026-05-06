@@ -205,5 +205,5 @@
     "otherWithEmptyCustomDomain": false,
     "nonOtherWithEmptyCustomDomain": true
   },
-  "migrationRequirement": "Production/Replit must apply lib/db/migrations/0001_add_assessment_domain.sql before running new assessment creation."
+  "migrationRequirement": "Production/Replit must apply lib/db/migrations/0001_add_assessment_domain.sql and lib/db/migrations/0002_add_report_content.sql before running new assessment creation."
 }

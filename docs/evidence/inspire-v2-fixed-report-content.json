@@ -1,0 +1,187 @@
+{
+  "fixedReportContent": {
+    "english": {
+      "title": "Customer Launch Plan Operating Pattern Report",
+      "reportLanguage": "en",
+      "sections": {
+        "operatingSnapshot": {
+          "heading": "Operating Snapshot",
+          "bullets": [
+            "You move fastest when ideas are converted into a first practical action.",
+            "You can work with partial clarity when the next step is obvious, then refine through feedback.",
+            "Your best support pattern combines quick execution with a short quality check before final decisions."
+          ]
+        },
+        "personalizedRecommendations": {
+          "heading": "Personalized Recommendations",
+          "bullets": [
+            "Start complex work with a small first draft, then ask AI to improve the structure.",
+            "Ask for alternatives when a first fix fails instead of repeating the same approach.",
+            "Use a quick verification pass before accepting launch, planning, or technical recommendations.",
+            "Request templates or structured methods when the task feels messy or hard to start."
+          ]
+        },
+        "howToUseAiBetter": {
+          "heading": "How to Use AI Better",
+          "customBullets": [
+            "Ask AI for a first usable version before requesting deeper analysis.",
+            "When the task is important, ask AI to separate facts, assumptions, and recommendations."
+          ],
+          "fixedCraftFramework": {
+            "title": "CRAFT Prompt Framework",
+            "bullets": [
+              "Context: state the situation, goal, and relevant constraints.",
+              "Role: define the practical role you want AI to take.",
+              "Action: ask clearly for the output or next step.",
+              "Format: specify the structure you want back.",
+              "Tone: set the level of directness, detail, and language style."
+            ]
+          },
+          "smartPromptEngineer": {
+            "label": "Smart Prompt Engineer",
+            "url": "https://chatgpt.com/g/g-67fe5939b39c8191a7ad597fd6fb0192-smart-prompt-engineer-mhnds-lmtlbt-ldhky"
+          }
+        },
+        "copyReadyAiInstructions": {
+          "heading": "Copy-Ready AI Instructions",
+          "language": "en",
+          "notice": "These copy-ready instructions are intentionally written in English.",
+          "markdown": "# Customer Launch Plan - AI Assistant Operating Instructions\n\n- Work in English for copy-ready instructions.\n- Start with practical next steps."
+        },
+        "instructionExplanation": {
+          "include": false,
+          "heading": "Instruction Explanation",
+          "bullets": []
+        }
+      }
+    },
+    "arabic": {
+      "title": "تقرير نمط التشغيل - Customer Launch Plan",
+      "reportLanguage": "ar",
+      "sections": {
+        "operatingSnapshot": {
+          "heading": "لمحة التشغيل",
+          "bullets": [
+            "يميل نمط العمل إلى تحويل الفكرة بسرعة إلى خطوة عملية أولى.",
+            "يمكن البدء مع وضوح جزئي عندما تكون الخطوة التالية معروفة، ثم تحسين النتيجة بالتدرج.",
+            "الدعم الأنسب يجمع بين التنفيذ السريع وفحص مختصر للجودة قبل القرارات المهمة."
+          ]
+        },
+        "personalizedRecommendations": {
+          "heading": "توصيات مخصصة",
+          "bullets": [
+            "ابدأ المهام المعقدة بمسودة صغيرة قابلة للاستخدام، ثم اطلب تحسين البنية.",
+            "عندما لا ينجح الحل الأول، اطلب بدائل مختلفة بدل تكرار نفس المسار.",
+            "استخدم فحص تحقق مختصر قبل اعتماد توصيات الإطلاق أو التخطيط أو القرارات التقنية.",
+            "اطلب قالبا أو طريقة منظمة عندما تكون المهمة غير مرتبة أو يصعب البدء بها."
+          ]
+        },
+        "howToUseAiBetter": {
+          "heading": "كيف تستخدم الذكاء الاصطناعي بشكل أفضل",
+          "customBullets": [
+            "اطلب من الذكاء الاصطناعي نسخة أولى قابلة للاستخدام قبل التوسع في التحليل.",
+            "في المهام المهمة، اطلب فصل الحقائق عن الافتراضات والتوصيات."
+          ],
+          "fixedCraftFramework": {
+            "title": "إطار CRAFT لكتابة الطلبات",
+            "bullets": [
+              "Context: اذكر السياق والهدف قبل الطلب.",
+              "Role: حدد الدور العملي الذي تريد من الذكاء الاصطناعي أن يتخذه.",
+              "Action: اطلب الفعل أو الناتج المطلوب بوضوح.",
+              "Format: حدد شكل المخرجات المناسب.",
+              "Tone: وضح النبرة ومستوى التفصيل المطلوب."
+            ]
+          },
+          "smartPromptEngineer": {
+            "label": "Smart Prompt Engineer",
+            "url": "https://chatgpt.com/g/g-67fe5939b39c8191a7ad597fd6fb0192-smart-prompt-engineer-mhnds-lmtlbt-ldhky"
+          }
+        },
+        "copyReadyAiInstructions": {
+          "heading": "تعليمات الذكاء الاصطناعي الجاهزة للنسخ",
+          "language": "en",
+          "notice": "هذه التعليمات الجاهزة للنسخ مكتوبة بالإنجليزية عمدا.",
+          "markdown": "# Customer Launch Plan - AI Assistant Operating Instructions\n\n- Work in English for copy-ready instructions.\n- Start with practical next steps."
+        },
+        "instructionExplanation": {
+          "include": true,
+          "heading": "شرح التعليمات",
+          "bullets": [
+            "تعليمات النسخ الجاهزة مكتوبة بالإنجليزية لأنها ستستخدم مباشرة داخل أدوات الذكاء الاصطناعي.",
+            "توضح التعليمات للمساعد كيف يتعامل مع سياق المشروع، الحدود، وطريقة عرض المخرجات.",
+            "استخدمها كما هي في إعدادات الأداة، ثم اطلب المهام اليومية باللغة التي تفضلها."
+          ]
+        }
+      }
+    },
+    "both": {
+      "title": "تقرير نمط التشغيل - Customer Launch Plan / Customer Launch Plan Operating Pattern Report",
+      "reportLanguage": "both",
+      "sections": {
+        "operatingSnapshot": {
+          "heading": "لمحة التشغيل / Operating Snapshot",
+          "bullets": [
+            "يميل نمط العمل إلى البدء بخطوة عملية واضحة. / The working pattern favors a clear practical first step.",
+            "يستفيد من تحسين تدريجي بعد المسودة الأولى. / It benefits from iterative refinement after a first draft.",
+            "يحتاج إلى فحص جودة مختصر قبل القرارات المهمة. / It needs a concise quality check before important decisions."
+          ]
+        },
+        "personalizedRecommendations": {
+          "heading": "توصيات مخصصة / Personalized Recommendations",
+          "bullets": [
+            "ابدأ بمسودة قابلة للاستخدام ثم حسّنها. / Start with a usable draft, then improve it.",
+            "اطلب بدائل عند تعثر الحل الأول. / Ask for alternatives when the first fix stalls.",
+            "استخدم فحص تحقق قبل اعتماد التوصيات. / Use verification before accepting recommendations.",
+            "اطلب بنية واضحة عندما تكون المهمة واسعة. / Ask for structure when the task is broad."
+          ]
+        },
+        "howToUseAiBetter": {
+          "heading": "كيف تستخدم الذكاء الاصطناعي بشكل أفضل / How to Use AI Better",
+          "customBullets": [
+            "اطلب النتيجة أولا ثم التفاصيل. / Ask for the answer first, then details.",
+            "اطلب فصل الحقائق عن الافتراضات عند الدقة. / Ask to separate facts from assumptions when accuracy matters."
+          ],
+          "fixedCraftFramework": {
+            "title": "إطار CRAFT لكتابة الطلبات / CRAFT Prompt Framework",
+            "bullets": [
+              "Context: اذكر السياق والهدف. / State the context and goal.",
+              "Role: حدد الدور العملي. / Define the practical role.",
+              "Action: اطلب الناتج بوضوح. / Ask clearly for the output.",
+              "Format: حدد شكل المخرجات. / Specify the output format.",
+              "Tone: وضح النبرة والتفصيل. / Set tone and detail level."
+            ]
+          },
+          "smartPromptEngineer": {
+            "label": "Smart Prompt Engineer / Smart Prompt Engineer",
+            "url": "https://chatgpt.com/g/g-67fe5939b39c8191a7ad597fd6fb0192-smart-prompt-engineer-mhnds-lmtlbt-ldhky"
+          }
+        },
+        "copyReadyAiInstructions": {
+          "heading": "تعليمات الذكاء الاصطناعي الجاهزة للنسخ / Copy-Ready AI Instructions",
+          "language": "en",
+          "notice": "هذه التعليمات الجاهزة للنسخ مكتوبة بالإنجليزية عمدا. / These copy-ready instructions are intentionally written in English.",
+          "markdown": "# Customer Launch Plan - AI Assistant Operating Instructions\n\n- Work in English for copy-ready instructions.\n- Start with practical next steps."
+        },
+        "instructionExplanation": {
+          "include": true,
+          "heading": "شرح التعليمات / Instruction Explanation",
+          "bullets": [
+            "تعليمات النسخ الجاهزة تبقى بالإنجليزية للاستخدام المباشر داخل الأداة. / The copy-ready instructions stay in English for direct tool use.",
+            "هي تضبط دور المساعد وحدوده وطريقة إخراجه بدون ترجمة النص نفسه. / They set role, boundaries, and output behavior without translating the instruction text.",
+            "يمكن استخدام التقرير لفهم التصميم، ثم نسخ التعليمات الإنجليزية كما هي. / Use the report to understand the design, then paste the English instructions as-is."
+          ]
+        }
+      }
+    }
+  },
+  "fixedReportContentProof": {
+    "hasFiveCustomerFacingSections": true,
+    "craftIsCodeOwnedFixedContent": true,
+    "smartPromptEngineerLinkIsCodeOwned": true,
+    "copyReadyInstructionsRemainEnglish": true,
+    "instructionExplanationLanguageRules": true,
+    "noForbiddenInternalFieldsInFixedContent": true,
+    "rendererIsDisconnectedFromLiveRoutes": true
+  },
+  "fixedReportContentForbiddenPatternsFound": []
+}

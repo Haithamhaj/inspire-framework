@@ -14,7 +14,7 @@ function getResend(): Resend {
 }
 
 function getFrom(): string {
-  return `${process.env["FROM_NAME"] ?? "INSPIRE Framework"} <${process.env["FROM_EMAIL"] ?? "noreply@imperfect-success.com"}>`;
+  return `${process.env["FROM_NAME"] ?? "INSPIRE"} <${process.env["FROM_EMAIL"] ?? "noreply@imperfect-success.com"}>`;
 }
 
 function getAppUrl(): string {
@@ -85,6 +85,62 @@ export async function sendFailureEmail(email: string, name: string): Promise<voi
   }
 }
 
+export async function sendAdminAlertEmail({
+  subject,
+  assessmentId,
+  reason,
+}: {
+  subject: string;
+  assessmentId: string;
+  reason: string;
+}): Promise<void> {
+  const to = process.env["ADMIN_ALERT_EMAIL"];
+  if (!process.env["RESEND_API_KEY"] || !to) {
+    logger.warn({ assessmentId, reason }, "Admin alert email skipped");
+    return;
+  }
+
+  const [assessment] = await db
+    .select()
+    .from(assessmentsTable)
+    .where(eq(assessmentsTable.id, assessmentId));
+
+  const user = assessment
+    ? (
+        await db
+          .select()
+          .from(usersTable)
+          .where(eq(usersTable.id, assessment.userId))
+      )[0]
+    : null;
+
+  const appUrl = getAppUrl();
+  const resultsUrl = `${appUrl}/results/${assessmentId}`;
+
+  try {
+    await getResend().emails.send({
+      from: getFrom(),
+      to,
+      subject,
+      html: buildAdminAlertEmailHtml({
+        assessmentId,
+        reason,
+        resultsUrl,
+        userName: user?.name ?? "Unknown",
+        userEmail: user?.email ?? "Unknown",
+        projectName: assessment?.projectName ?? "Unknown",
+        status: assessment?.status ?? "Unknown",
+        retryCount: assessment?.retryCount ?? 0,
+        nextRetryAt: assessment?.nextRetryAt?.toISOString() ?? null,
+        paymentId: assessment?.paymentId ?? null,
+      }),
+    });
+    logger.info({ assessmentId, to }, "Admin alert email sent");
+  } catch (err) {
+    logger.error({ assessmentId, err }, "Failed to send admin alert email");
+  }
+}
+
 function buildResultsEmailHtml({
   name,
   projectName,
@@ -118,16 +174,16 @@ function buildResultsEmailHtml({
           <h2 style="color:#1a1a2e;margin:0 0 16px;font-size:22px;">مرحباً ${name}! 🎉</h2>
           <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 24px;">
             اكتمل تقرير INSPIRE الخاص بمشروعك <strong style="color:#1a1a2e;">"${projectName}"</strong>.
-            تم تحليل نمطك السلوكي عبر 7 أبعاد و8 أبعاد تفاعلية بواسطة الذكاء الاصطناعي (${aiProvider}).
+            تم تجهيز تقرير نمط التشغيل الخاص بك بواسطة الذكاء الاصطناعي (${aiProvider}).
           </p>
           <div style="background:#f0f4ff;border-radius:12px;padding:20px;margin-bottom:24px;">
             <p style="color:#1a1a2e;font-size:15px;font-weight:600;margin:0 0 8px;">ما يتضمنه تقريرك:</p>
             <ul style="color:#4a5568;font-size:14px;line-height:2;margin:0;padding-right:20px;">
-              <li>جدول مؤشرات INSPIRE السبعة</li>
-              <li>تحليل نمطك السلوكي والمهني</li>
-              <li>نقاط قوتك والخطوط الحمراء</li>
-              <li>تعليمات النظام الشخصية — جاهزة للنسخ</li>
-              <li>5 بوادئ حوار مخصصة لمشروعك</li>
+              <li>لمحة تشغيلية عن طريقة عملك</li>
+              <li>توصيات عملية مخصصة</li>
+              <li>إرشادات مختصرة لاستخدام AI بشكل أفضل</li>
+              <li>تعليمات AI إنجليزية جاهزة للنسخ</li>
+              <li>شرح لكيفية استخدام التعليمات عند الحاجة</li>
             </ul>
           </div>
           <div style="text-align:center;margin-bottom:24px;">
@@ -139,7 +195,7 @@ function buildResultsEmailHtml({
         </td></tr>
         <!-- Footer -->
         <tr><td style="background:#f8f9fc;padding:24px 40px;text-align:center;border-top:1px solid #eee;">
-          <p style="color:#9ca3af;font-size:12px;margin:0;">INSPIRE Framework — تعليمات الذكاء الاصطناعي المخصصة</p>
+          <p style="color:#9ca3af;font-size:12px;margin:0;">INSPIRE — تقرير نمط التشغيل وتعليمات الذكاء الاصطناعي</p>
         </td></tr>
       </table>
     </td></tr>
@@ -157,7 +213,53 @@ function buildFailureEmailHtml(name: string) {
     <h2 style="color:#1a1a2e;margin:0 0 16px;">مرحباً ${name}،</h2>
     <p style="color:#4a5568;line-height:1.8;">نعتذر — واجهنا مشكلة تقنية في توليد تقريرك. فريقنا يعمل على حل المشكلة وسيُرسل تقريرك في أقرب وقت ممكن.</p>
     <p style="color:#4a5568;line-height:1.8;">شكراً لصبرك وثقتك.</p>
-    <p style="color:#9ca3af;font-size:13px;margin-top:32px;">INSPIRE Framework</p>
+    <p style="color:#9ca3af;font-size:13px;margin-top:32px;">INSPIRE</p>
+  </div>
+</body>
+</html>`;
+}
+
+function buildAdminAlertEmailHtml({
+  assessmentId,
+  reason,
+  resultsUrl,
+  userName,
+  userEmail,
+  projectName,
+  status,
+  retryCount,
+  nextRetryAt,
+  paymentId,
+}: {
+  assessmentId: string;
+  reason: string;
+  resultsUrl: string;
+  userName: string;
+  userEmail: string;
+  projectName: string;
+  status: string;
+  retryCount: number;
+  nextRetryAt: string | null;
+  paymentId: string | null;
+}) {
+  return `<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head><meta charset="UTF-8"><title>INSPIRE Admin Alert</title></head>
+<body style="margin:0;padding:32px 18px;background:#f8f9fc;font-family:'Segoe UI',Arial,sans-serif;direction:rtl;">
+  <div style="max-width:640px;margin:0 auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <h2 style="color:#b91c1c;margin:0 0 16px;">تنبيه تشغيل INSPIRE</h2>
+    <p style="color:#374151;line-height:1.8;margin:0 0 18px;">${reason}</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;color:#374151;font-size:14px;">
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Assessment ID</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${assessmentId}</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Project</td><td style="padding:8px;border-bottom:1px solid #e5e7eb;">${projectName}</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">User</td><td style="padding:8px;border-bottom:1px solid #e5e7eb;">${userName} — <span dir="ltr">${userEmail}</span></td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Status</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${status}</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Retry</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${retryCount}${nextRetryAt ? ` — next: ${nextRetryAt}` : ""}</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Payment ID</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${paymentId ?? "None"}</td></tr>
+    </table>
+    <div style="margin-top:22px;text-align:center;">
+      <a href="${resultsUrl}" style="display:inline-block;background:#e94560;color:#fff;text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:700;">فتح صفحة النتيجة</a>
+    </div>
   </div>
 </body>
 </html>`;

@@ -80,6 +80,7 @@ router.get(
         createdAt: assessment.createdAt,
         completionTimeSeconds: assessment.completionTimeSeconds,
         pdfUrl: assessment.pdfUrl,
+        reportContent: assessment.reportContent,
         inspireTable: assessment.inspireTable,
         roleAnalysis: assessment.roleAnalysis,
         redLines: assessment.redLines,

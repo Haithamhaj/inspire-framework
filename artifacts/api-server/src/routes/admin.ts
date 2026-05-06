@@ -4,6 +4,7 @@ import { assessmentsTable, usersTable, discountCodesTable, paymentsTable } from 
 import { eq, and, gte, lte, or, desc, count, avg, type SQL } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendResultsEmail } from "../lib/email";
+import { generateReportV2 } from "../lib/ai-engine";
 
 const router: IRouter = Router();
 
@@ -22,6 +23,16 @@ function requireAdmin(req: Request, res: Response): boolean {
   return true;
 }
 
+function isV2Answers(value: unknown): value is Array<{ questionId: string; optionId: string }> {
+  return Array.isArray(value) && value.every(
+    (item) =>
+      item &&
+      typeof item === "object" &&
+      typeof (item as { questionId?: unknown }).questionId === "string" &&
+      typeof (item as { optionId?: unknown }).optionId === "string"
+  );
+}
+
 // ─── GET /api/admin/stats ─────────────────────────────────
 
 router.get(
@@ -34,12 +45,13 @@ router.get(
     const startOfWeek = new Date(startOfToday);
     startOfWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
 
-    const [[totalRow], [usersRow], [completedRow], [processingRow], [failedRow], [todayRow], [weekRow], [avgTimeRow]] =
+    const [[totalRow], [usersRow], [completedRow], [processingRow], [pendingRetryRow], [failedRow], [todayRow], [weekRow], [avgTimeRow]] =
       await Promise.all([
         db.select({ total: count() }).from(assessmentsTable),
         db.select({ total: count() }).from(usersTable),
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "completed")),
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "processing")),
+        db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "pending_retry")),
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "failed")),
         db.select({ total: count() }).from(assessmentsTable).where(gte(assessmentsTable.createdAt, startOfToday)),
         db.select({ total: count() }).from(assessmentsTable).where(gte(assessmentsTable.createdAt, startOfWeek)),
@@ -58,6 +70,7 @@ router.get(
         totalAssessments: total,
         completedAssessments: completed,
         processingAssessments: Number(processingRow?.total ?? 0),
+        pendingRetryAssessments: Number(pendingRetryRow?.total ?? 0),
         failedAssessments: Number(failedRow?.total ?? 0),
         assessmentsToday: Number(todayRow?.total ?? 0),
         assessmentsThisWeek: Number(weekRow?.total ?? 0),
@@ -81,6 +94,7 @@ router.get(
       status,
       language,
       search,
+      recovery,
       dateFrom,
       dateTo,
     } = req.query as Record<string, string>;
@@ -113,6 +127,10 @@ router.get(
         completionTimeSeconds: assessmentsTable.completionTimeSeconds,
         emailSent: assessmentsTable.emailSent,
         pdfGenerated: assessmentsTable.pdfGenerated,
+        retryCount: assessmentsTable.retryCount,
+        nextRetryAt: assessmentsTable.nextRetryAt,
+        paymentId: assessmentsTable.paymentId,
+        reportContent: assessmentsTable.reportContent,
         createdAt: assessmentsTable.createdAt,
         userId: assessmentsTable.userId,
       })
@@ -131,9 +149,41 @@ router.get(
 
     const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
 
+    const assessmentIds = allAssessments.map((a) => a.id);
+    const paymentIds = allAssessments
+      .map((a) => a.paymentId)
+      .filter((id): id is string => Boolean(id));
+    const paymentConditions: SQL[] = [];
+    if (assessmentIds.length > 0) {
+      paymentConditions.push(or(...assessmentIds.map((id) => eq(paymentsTable.assessmentId, id)))!);
+    }
+    if (paymentIds.length > 0) {
+      paymentConditions.push(or(...paymentIds.map((id) => eq(paymentsTable.id, id)))!);
+    }
+    const payments =
+      paymentConditions.length > 0
+        ? await db
+            .select({
+              id: paymentsTable.id,
+              assessmentId: paymentsTable.assessmentId,
+              paypalOrderId: paymentsTable.paypalOrderId,
+              status: paymentsTable.status,
+              amount: paymentsTable.amount,
+            })
+            .from(paymentsTable)
+            .where(or(...paymentConditions))
+        : [];
+    const paymentByAssessmentId = Object.fromEntries(
+      payments
+        .filter((p) => p.assessmentId)
+        .map((p) => [p.assessmentId!, p])
+    );
+    const paymentById = Object.fromEntries(payments.map((p) => [p.id, p]));
+
     let enriched = allAssessments.map((a) => ({
       ...a,
       user: userMap[a.userId] ?? null,
+      payment: paymentByAssessmentId[a.id] ?? (a.paymentId ? paymentById[a.paymentId] : null),
     }));
 
     // Apply search filter (name/email)
@@ -144,6 +194,21 @@ router.get(
           a.user?.name?.toLowerCase().includes(term) ||
           a.user?.email?.toLowerCase().includes(term) ||
           a.projectName?.toLowerCase().includes(term)
+      );
+    }
+
+    if (recovery === "paid_no_report") {
+      enriched = enriched.filter(
+        (a) =>
+          a.payment?.status === "completed" &&
+          a.status !== "completed"
+      );
+    } else if (recovery === "needs_attention") {
+      enriched = enriched.filter(
+        (a) =>
+          a.status === "failed" ||
+          a.status === "pending_retry" ||
+          (a.payment?.status === "completed" && a.status !== "completed")
       );
     }
 
@@ -164,6 +229,13 @@ router.get(
       completionTimeSeconds: a.completionTimeSeconds,
       emailSent: a.emailSent,
       pdfGenerated: a.pdfGenerated,
+      retryCount: a.retryCount,
+      nextRetryAt: a.nextRetryAt,
+      hasReportContent: Boolean(a.reportContent),
+      paymentId: a.payment?.id ?? a.paymentId,
+      paymentStatus: a.payment?.status ?? null,
+      paypalOrderId: a.payment?.paypalOrderId ?? null,
+      paymentAmount: a.payment?.amount ?? null,
       createdAt: a.createdAt,
     }));
 
@@ -175,6 +247,78 @@ router.get(
       pageSize: limitNum,
       totalPages: Math.ceil(totalFiltered / limitNum),
     });
+  }
+);
+
+// ─── POST /api/admin/assessments/:id/retry-generation ─────────────────────
+
+router.post(
+  "/admin/assessments/:id/retry-generation",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select()
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    if (assessment.status === "completed") {
+      res.status(409).json({ success: false, error: "Assessment is already completed" });
+      return;
+    }
+
+    if ((assessment.assessmentType ?? "full") !== "full" || !isV2Answers(assessment.behavioralAnswers)) {
+      res.status(400).json({ success: false, error: "Only submitted v2 full assessments can be retried here" });
+      return;
+    }
+    const answers = assessment.behavioralAnswers;
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, assessment.userId));
+
+    if (!user) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    await db
+      .update(assessmentsTable)
+      .set({
+        status: "processing",
+        retryCount: 0,
+        nextRetryAt: null,
+      })
+      .where(eq(assessmentsTable.id, assessment.id));
+
+    setImmediate(async () => {
+      try {
+        await generateReportV2(assessment.id, {
+          name: user.name,
+          jobTitle: user.jobTitle ?? undefined,
+          projectName: assessment.projectName,
+          projectGoal: assessment.projectGoal,
+          domain: assessment.domain ?? assessment.projectName,
+          customDomain: assessment.customDomain ?? undefined,
+          domainSpecialization: assessment.domainSpecialization ?? undefined,
+          projectContext: assessment.projectContext ?? assessment.projectGoal,
+          reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
+          answers,
+          openAnswer: assessment.openAnswer ?? undefined,
+        });
+      } catch (err) {
+        logger.error({ assessmentId: assessment.id, err }, "Admin retry generation threw unexpectedly");
+      }
+    });
+
+    res.json({ success: true, status: "processing" });
   }
 );
 
@@ -550,4 +694,3 @@ router.post(
 );
 
 export default router;
-

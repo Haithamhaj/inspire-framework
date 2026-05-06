@@ -117,10 +117,133 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+
+  .private-report-print-only {
+    display: none;
+  }
   
   /* LTR text inputs explicitly inside RTL container */
   .input-ltr {
     direction: ltr;
     text-align: left;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  body,
+  #root {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .private-report-screen-only,
+  .private-report-screen-only *,
+  .private-report-print-root button {
+    display: none !important;
+  }
+
+  .private-report-print-only {
+    display: block !important;
+  }
+
+  .private-report-print-only * {
+    display: revert !important;
+  }
+
+  .private-report-print-root {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  .private-report-print-root *,
+  .private-report-print-root [class*="text-white"],
+  .private-report-print-root [class*="text-slate"],
+  .private-report-print-root [class*="text-rose"],
+  .private-report-print-root [class*="text-amber"] {
+    color: #111827 !important;
+    border-color: #d1d5db !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .private-report-print-root [class*="bg-"],
+  .private-report-print-root [class*="from-"],
+  .private-report-print-root [class*="to-"],
+  .private-report-print-root [class*="via-"] {
+    background: #ffffff !important;
+    background-image: none !important;
+  }
+
+  .private-report-print-root .print-section {
+    break-inside: auto;
+    page-break-inside: auto;
+    margin-bottom: 18pt !important;
+  }
+
+  .private-report-print-root .print-page-break-before {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .private-report-print-root .print-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .private-report-print-root [hidden] {
+    display: block !important;
+  }
+
+  .private-report-print-root h1,
+  .private-report-print-root h2,
+  .private-report-print-root h3 {
+    color: #111827 !important;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .private-report-print-root p,
+  .private-report-print-root li {
+    color: #111827 !important;
+    orphans: 3;
+    widows: 3;
+  }
+
+  .private-report-print-root a {
+    color: #111827 !important;
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+  }
+
+  .private-report-print-root .smart-prompt-engineer-link::after {
+    content: " (" attr(href) ")";
+    font-weight: 400;
+    font-size: 9pt;
+  }
+
+  .private-report-print-root .copy-ready-instructions-text {
+    max-height: none !important;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
   }
 }

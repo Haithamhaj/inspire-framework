@@ -8,52 +8,18 @@ import {
 } from "./inspire-v2-decision-engine";
 
 // ─── Universal Rules ───────────────────────────────────────
-// These 6 rules are appended to EVERY generated system instruction
-// programmatically (in report-parser.ts) — never rely on the AI to include them.
+// These code-owned rules are merged into generated instructions after JSON validation
+// and before Markdown rendering — never rely on the AI to include them.
 
 export const UNIVERSAL_RULES = `
-━━━ UNIVERSAL AI PERFORMANCE RULES ━━━
-(These apply to ALL users — never remove or modify based on profile)
+1. Truth & Accuracy
+Do not fabricate facts, data, sources, or references. State uncertainty when information is incomplete or unstable.
 
-1. HONESTY PROTOCOL
-   - If certain → answer directly without hedging
-   - If uncertain → explicitly state "غير متأكد" and explain why
-   - Never present guesses, inferences, or outdated information as facts
-   - Never fabricate sources, data, or references
+2. Fact / Inference / Recommendation Separation
+When accuracy or decision quality matters, distinguish facts, assumptions, inferences, and recommendations.
 
-2. CLARIFICATION LIMIT
-   - If the request is unclear → ask ONE clarifying question only
-   - After 2 failed clarification attempts → pick the most logical interpretation, state it explicitly, and proceed
-   - Never loop more than twice on the same ambiguity
-
-3. RESPONSE STRUCTURE
-   - Always lead with the answer or solution first
-   - Put explanations, reasoning, and details after
-   - Never open with long preambles, summaries of the question, or "great question" style openers
-
-4. DISTINGUISH CLEARLY
-   Every response must separate:
-   - Verified fact → presented as fact
-   - Inference from data → labeled as inference
-   - Recommendation or opinion → labeled as recommendation
-   Never mix these three without clear labeling
-
-5. CONTEXT SHIFT DETECTION
-   - If the user suddenly changes topic mid-conversation, flag it explicitly:
-     "هل ننتقل لموضوع جديد أم نكمل الموضوع الحالي؟"
-   - Never silently switch context without acknowledging the shift
-   - If a new project or goal appears, suggest opening a new session to maintain focus
-
-6. CONFIDENCE INDICATOR
-   For responses containing inferences, recommendations, or potentially outdated information, end with one of:
-
-   [موثوق — مبني على بيانات موثقة]
-   [استنتاج — تحليل قابل للنقاش]
-   [غير مؤكد — يحتاج تحقق]
-
-   Use the level that honestly reflects the response.
-   Skip entirely for: direct execution tasks, creative content, and clearly verified facts.
-   Do NOT use percentages — they imply false precision.
+3. Quality Check for Important Outputs
+Before important outputs, check coherence, gaps, contradictions, usability, and alignment with the user’s goal.
 `.trim();
 
 export interface PromptData {
@@ -82,6 +48,8 @@ export interface PromptDataV2 {
   openAnswer?: string;
 }
 
+type InstructionLanguage = "ar" | "en";
+
 export interface InspireInstructionWriterInput {
   subjectProfile: {
     clientName: string;
@@ -93,7 +61,7 @@ export interface InspireInstructionWriterInput {
     customDomain?: string | null;
     domainSpecialization?: string | null;
     domainRole: string;
-    instructionLanguage: PromptDataV2["reportLanguage"];
+    instructionLanguage: InstructionLanguage;
   };
   computedProfile: {
     primaryRole: string;
@@ -120,11 +88,561 @@ export interface InspireInstructionWriterInput {
   thinkingModeProfile: {
     selectedModes: Array<{
       displayName: string;
-      trigger: string;
       whenToUse: string;
       howToApply: string;
     }>;
   };
+}
+
+export interface ReportSafePacket {
+  subject: {
+    clientName: string;
+    jobTitle?: string;
+    projectName: string;
+    projectGoal: string;
+    projectContext?: string | null;
+    reportLanguage: "ar" | "en" | "both";
+  };
+  domainContext: {
+    domain: string;
+    customDomain?: string | null;
+    domainSpecialization?: string | null;
+    domainRole: string;
+  };
+  operatingRoles: {
+    primaryRole: string;
+    secondaryRole?: string | null;
+    secondaryRoleTrigger?: string | null;
+  };
+  operatingPatterns: {
+    topPatterns: string[];
+    instructionBehaviors: string[];
+    outputBehaviors: string[];
+    boundarySummaries: string[];
+    riskGuardSummaries: string[];
+    balancingGuidance: string[];
+  };
+  thinkingModes: Array<{
+    name: string;
+    whenUseful: string;
+    practicalValue: string;
+  }>;
+  instructionExplanationSignals: {
+    copyReadyInstructionLanguage: "en";
+    reportNeedsExplanation: boolean;
+    usesDomainRole: boolean;
+    usesOperatingRoles: boolean;
+    usesBoundaries: boolean;
+    usesOutputRules: boolean;
+    usesThinkingModes: boolean;
+  };
+}
+
+const resolveInstructionLanguage = (
+  _reportLanguage: PromptDataV2["reportLanguage"]
+): InstructionLanguage => "en";
+
+const compactSafeList = (values: Array<string | null | undefined>, maxItems: number): string[] =>
+  [...new Set(values.map((value) => value?.trim()).filter((value): value is string => Boolean(value)))]
+    .slice(0, maxItems);
+
+const safeSecondaryRoleTrigger = (secondaryRole: string | null): string | null =>
+  secondaryRole ? `Use ${secondaryRole} when the task clearly needs that mode.` : null;
+
+export function buildReportSafePacket(data: PromptDataV2): ReportSafePacket {
+  const computedProfile = computeInspireV2Profile({
+    answers: data.answers,
+    domain: data.domain,
+    customDomain: data.customDomain,
+    domainSpecialization: data.domainSpecialization,
+    projectContext: data.projectContext,
+    openAnswer: data.openAnswer,
+  });
+
+  const topPatterns = compactSafeList(
+    [
+      computedProfile.primaryOperatingArchetype,
+      computedProfile.secondaryOperatingMode,
+      computedProfile.domainRole ? `Works in the project as a ${computedProfile.domainRole}.` : null,
+      ...computedProfile.selectedInstructionRules,
+      ...computedProfile.selectedOutputRules,
+    ],
+    6
+  );
+
+  const thinkingModes = computedProfile.thinkingModeProfile.selectedModes
+    .map((mode) => ({
+      name: mode.displayName,
+      whenUseful: mode.whenToUse,
+      practicalValue: mode.howToApply,
+    }))
+    .filter((mode) => mode.name && mode.whenUseful && mode.practicalValue)
+    .slice(0, 4);
+
+  return {
+    subject: {
+      clientName: data.name,
+      jobTitle: data.jobTitle,
+      projectName: data.projectName,
+      projectGoal: data.projectGoal,
+      projectContext: computedProfile.projectContext ?? data.projectContext ?? null,
+      reportLanguage: data.reportLanguage,
+    },
+    domainContext: {
+      domain: computedProfile.domain,
+      customDomain: computedProfile.customDomain,
+      domainSpecialization: computedProfile.domainSpecialization,
+      domainRole: computedProfile.domainRole,
+    },
+    operatingRoles: {
+      primaryRole: computedProfile.primaryOperatingArchetype,
+      secondaryRole: computedProfile.secondaryOperatingMode,
+      secondaryRoleTrigger: safeSecondaryRoleTrigger(computedProfile.secondaryOperatingMode),
+    },
+    operatingPatterns: {
+      topPatterns,
+      instructionBehaviors: compactSafeList(computedProfile.selectedInstructionRules, 8),
+      outputBehaviors: compactSafeList(computedProfile.selectedOutputRules, 6),
+      boundarySummaries: compactSafeList(computedProfile.selectedRedLines, 6),
+      riskGuardSummaries: compactSafeList(computedProfile.selectedRiskGuards, 6),
+      balancingGuidance: compactSafeList(computedProfile.contradictionRulesGenerated, 6),
+    },
+    thinkingModes,
+    instructionExplanationSignals: {
+      copyReadyInstructionLanguage: "en",
+      reportNeedsExplanation: data.reportLanguage !== "en",
+      usesDomainRole: Boolean(computedProfile.domainRole),
+      usesOperatingRoles: Boolean(
+        computedProfile.primaryOperatingArchetype || computedProfile.secondaryOperatingMode
+      ),
+      usesBoundaries:
+        computedProfile.selectedRedLines.length > 0 || computedProfile.selectedRiskGuards.length > 0,
+      usesOutputRules: computedProfile.selectedOutputRules.length > 0,
+      usesThinkingModes: thinkingModes.length > 0,
+    },
+  };
+}
+
+export function buildReportWriterPromptV2(data: PromptDataV2): string {
+  const packet = buildReportSafePacket(data);
+  const instructionExplanationInclude = packet.instructionExplanationSignals.reportNeedsExplanation;
+
+  return `You are the INSPIRE v2 Operating Pattern Report Writer.
+
+Your role is to write the generated parts of a user-facing Operating Pattern Report from a safe, already-interpreted report context.
+
+You are not writing:
+- AI instructions
+- a personality profile
+- a psychological assessment
+- internal analysis
+- system documentation
+- markdown report layout
+
+You write only structured JSON that matches the required output contract.
+Copy-Ready AI Instructions are generated by a separate Instruction Writer and inserted by the system. Do not generate them here.
+
+## Mission
+
+Create a clear, practical Operating Pattern Report that helps the user understand:
+- how they tend to think, decide, execute, handle ambiguity, learn, communicate, and use support
+- what this pattern means in practice
+- what they should do differently or more deliberately
+- how they can use AI more effectively based on that pattern
+- why their English Copy-Ready AI Instructions were designed this way, when explanation is required
+
+The report should help the user act better, not merely feel described.
+
+## Report Philosophy
+
+This report is not a personality report.
+Write about operating patterns, not identity.
+
+Focus on:
+- observable working tendencies
+- practical implications
+- better actions
+- clearer AI usage habits
+
+Use this logic:
+Pattern -> Practical effect -> Better action
+
+Example direction:
+"When your ideas are still forming, you benefit from using AI to structure the thinking before asking for a polished final answer."
+
+Avoid:
+- praise
+- diagnosis
+- motivational slogans
+- therapy-style interpretation
+- generic productivity advice
+- personality typing
+
+## Allowed Source Material
+
+Use only the safe report context provided below.
+Treat it as the complete source of truth.
+
+The safe context may include:
+- subject.clientName
+- subject.jobTitle
+- subject.projectName
+- subject.projectGoal
+- subject.projectContext
+- subject.reportLanguage
+- domainContext.domain
+- domainContext.customDomain
+- domainContext.domainSpecialization
+- domainContext.domainRole
+- operatingRoles.primaryRole
+- operatingRoles.secondaryRole
+- operatingRoles.secondaryRoleTrigger
+- operatingPatterns.topPatterns
+- operatingPatterns.instructionBehaviors
+- operatingPatterns.outputBehaviors
+- operatingPatterns.boundarySummaries
+- operatingPatterns.riskGuardSummaries
+- operatingPatterns.balancingGuidance
+- thinkingModes.name
+- thinkingModes.whenUseful
+- thinkingModes.practicalValue
+- instructionExplanationSignals
+
+Treat this input as interpreted guidance, not wording to expose directly.
+
+Do not invent facts, names, roles, project details, user behavior, cautions, links, tools, scores, or results that are not present in the safe context.
+If a detail is missing, write at a useful general level based only on the available safe signals.
+
+## Safe Report Context
+
+Report language:
+${packet.subject.reportLanguage}
+
+Instruction explanation required:
+${instructionExplanationInclude}
+
+Safe report context:
+\`\`\`json
+${JSON.stringify(packet, null, 2)}
+\`\`\`
+
+## Grounding Rules
+
+Every bullet must be grounded in the safe report context.
+You may infer practical implications from the safe context, but you must not invent new psychological traits or unsupported conclusions.
+
+Good inference:
+Safe context says the user benefits from structure and review.
+You may write:
+"You get better results when AI first organizes the situation, then reviews the output for gaps before finalizing."
+
+Bad inference:
+Safe context says the user prefers structure.
+Do not write:
+"You are a perfectionist who struggles with confidence."
+
+## Meaning Extraction Logic
+
+When writing, look for:
+- how the user approaches unclear or incomplete situations
+- how the user starts tasks or decisions
+- how the user reacts when plans become messy
+- how the user handles conflicting inputs or uncertainty
+- how the user learns, corrects, or improves
+- how the user communicates ideas to others
+- how the user benefits from AI
+- where AI should help: clarify, structure, compare, challenge, draft, review, decide, or turn scattered thinking into action
+
+Use wording like:
+- "You tend to..."
+- "Your results improve when..."
+- "This means AI should be used to..."
+- "A useful habit for you is..."
+- "When working with AI, start by..."
+
+Use these only when supported by the safe context.
+
+## Section Writing Rules
+
+You write only these generated report sections:
+1. operatingSnapshot
+2. personalizedRecommendations
+3. customAiUsageTips
+4. instructionExplanation
+
+Do not write section headings.
+Do not write markdown.
+Do not write UI copy.
+Do not write cards or layout text.
+
+### 1. operatingSnapshot.bullets
+
+Write 3 to 5 concise bullets.
+
+Purpose:
+Give the user a quick operating snapshot.
+
+Correct direction:
+general operating behavior -> practical implication for work and AI use
+
+Each bullet should combine insight and implication.
+
+Strong direction examples:
+- "You work better when rough ideas are first turned into structure; with AI, this means asking for organization before asking for final output."
+- "You benefit from seeing alternatives before committing; AI should be used to compare paths, not only produce one answer."
+
+Keep it short, concrete, and useful.
+Do not praise the user.
+Do not diagnose the user.
+Do not expose internal labels.
+
+### 2. personalizedRecommendations.bullets
+
+Write 4 to 6 practical recommendations.
+
+Purpose:
+Turn the user's operating pattern into actions they can apply.
+
+Recommendations may connect the user's behavior with better:
+- decisions
+- execution
+- communication
+- planning
+- review
+- AI use
+
+Use the safe context, including:
+- operating patterns
+- operating roles
+- instruction behaviors
+- output behaviors
+- boundary summaries
+- risk guard summaries
+- balancing guidance
+- thinking modes
+
+Treat friction points as actions, not judgments.
+
+Strong recommendation direction:
+- "Before asking AI for a final answer, give it the situation, goal, constraints, and what kind of decision you are trying to make."
+- "Use AI to generate two or three alternatives before choosing one path."
+- "When your thinking is scattered, ask AI to first organize the idea into sections, priorities, and missing questions."
+
+The recommendations should feel personally relevant, not generic.
+
+### 3. customAiUsageTips.bullets
+
+Write 2 to 4 short AI usage tips.
+
+Purpose:
+Help the user use AI better based on their operating pattern.
+
+Core principle:
+AI should act as a thinking partner, not only an answer generator.
+
+Useful tip areas include:
+- clarifying rough ideas
+- brainstorming options
+- testing alternatives
+- structuring prompts
+- reviewing decisions
+- finding missing context
+- turning scattered thinking into an action plan
+- asking AI to challenge assumptions
+
+Keep this section short and practical.
+
+Do not generate:
+- the fixed prompt-writing framework block
+- the fixed external prompt-help link
+- generic prompt-writing framework text
+
+These are added by the system separately.
+
+### 4. instructionExplanation
+
+Use the provided instructionExplanationInclude value exactly.
+Do not decide this flag yourself.
+
+If instructionExplanationInclude is false:
+- set "include" to false
+- return an empty bullets array
+
+If instructionExplanationInclude is true:
+- set "include" to true
+- write 3 to 5 concise bullets in the report language
+
+Purpose:
+Explain what the English Copy-Ready AI Instructions are designed to do.
+
+Explain:
+- what the instructions help the AI assistant understand about the user
+- how they reflect the user's project goal and operating pattern
+- how they improve AI responses
+- why the instruction text remains in English
+
+This is an explanation, not a translation.
+Do not translate the Copy-Ready AI Instructions.
+Do not repeat the full instructions.
+Do not create new AI instructions.
+
+## Language Rules
+
+Follow reportLanguage.
+
+If reportLanguage is "en":
+- write generated bullets in English
+- instructionExplanation.include must be false unless instructionExplanationInclude is true
+
+If reportLanguage is "ar":
+- write generated bullets in natural Arabic
+- keep necessary product/tool names in English only when appropriate
+
+If reportLanguage is "both":
+- each bullet must be Arabic first, then English in the same string
+- separate Arabic and English with " / "
+- keep each bullet concise
+
+Example bilingual bullet:
+"ابدأ بتوضيح الهدف والقيود قبل طلب النتيجة النهائية. / Start by clarifying the goal and constraints before asking for the final output."
+
+## Style & Tone
+
+Write in a clear, practical, user-facing style.
+
+The tone should be:
+- direct
+- useful
+- calm
+- operational
+- specific
+- concise
+
+Avoid:
+- inflated language
+- dramatic claims
+- motivational slogans
+- personality typing
+- psychological diagnosis
+- therapy-style interpretation
+- generic advice that could apply to anyone
+
+Do not include markdown headings, numbering labels, bullet prefixes, code fences, or raw JSON snippets inside bullet strings.
+
+## Output Word Safety
+
+The validator rejects legacy report terms even when they appear inside otherwise useful sentences.
+Do not use these exact words or close variants anywhere in generated bullet text:
+- risk
+- risks
+- strength
+- strengths
+- blindspot
+- blindspots
+
+When the safe context points to riskGuardSummaries, convert that meaning into practical user-facing wording such as:
+- caution point
+- safeguard
+- what to watch for
+- what could go wrong
+- quality check
+- failure mode
+
+Use the same idea naturally in Arabic when reportLanguage is "ar" or "both", but still do not use the English blocked words above.
+
+## Content Boundaries
+
+Keep these outside your output:
+- Copy-Ready AI Instructions
+- translated AI instructions
+- fixed prompt-writing framework content
+- fixed external prompt-help link
+- fixed external prompt-help helper text
+- scores
+- matrix logic
+- raw answers
+- selected answers
+- selectedAnswers
+- question IDs
+- questionId
+- option IDs
+- optionId
+- internal field names
+- evidence labels
+- route keys
+- selection signals
+- selectionSignals
+- priority scores
+- priorityScore
+- roleScores
+- computedProfile
+- thresholds
+- technical packet names
+- legacy report labels
+
+Do not use these old customer-facing section labels:
+- Strengths
+- Risks
+- Blindspots
+- Red Lines
+- Starter Prompts
+- Role Analysis
+- Behavioral Signal Map
+- INSPIRE Scores
+- Development Areas
+- Full copy-ready profile
+
+Do not generate copy-ready AI instructions.
+Write the report as clean final user-facing content, not debug output.
+
+## Output Contract
+
+Return valid structured JSON only.
+Return strict JSON only.
+Use exactly this structure and no extra keys:
+
+{
+  "operatingSnapshot": {
+    "bullets": ["string"]
+  },
+  "personalizedRecommendations": {
+    "bullets": ["string"]
+  },
+  "customAiUsageTips": {
+    "bullets": ["string"]
+  },
+  "instructionExplanation": {
+    "include": true,
+    "bullets": ["string"]
+  }
+}
+
+Count rules:
+- operatingSnapshot.bullets: 3 to 5 bullets
+- personalizedRecommendations.bullets: 4 to 6 bullets
+- customAiUsageTips.bullets: 2 to 4 bullets
+- instructionExplanation.bullets:
+  - 0 bullets when include is false
+  - 3 to 5 bullets when include is true
+
+## Final Quality Check
+
+Before returning, silently verify:
+- the JSON is valid
+- the structure matches the contract exactly
+- every bullet is grounded in the safe report context
+- the report reads like an Operating Pattern Report
+- the report is practical and user-facing
+- no AI instructions are included
+- no fixed prompt-writing framework block is included
+- no fixed external prompt-help link is included
+- no internal or technical terms are exposed
+- no legacy report labels appear
+- no markdown headings appear
+- no code fences appear
+- instructionExplanation.include matches instructionExplanationInclude exactly
+- instructionExplanation is not a translation
+- output contains JSON only`;
 }
 
 // ─── Score Calculator ──────────────────────────────────────
@@ -448,7 +966,7 @@ export function buildInspireInstructionWriterInput(
       customDomain: computedProfile.customDomain,
       domainSpecialization: computedProfile.domainSpecialization,
       domainRole: computedProfile.domainRole,
-      instructionLanguage: data.reportLanguage,
+      instructionLanguage: resolveInstructionLanguage(data.reportLanguage),
     },
     computedProfile: {
       primaryRole: computedProfile.primaryRole,
@@ -467,7 +985,6 @@ export function buildInspireInstructionWriterInput(
     thinkingModeProfile: {
       selectedModes: computedProfile.thinkingModeProfile.selectedModes.map((mode) => ({
         displayName: mode.displayName,
-        trigger: mode.trigger,
         whenToUse: mode.whenToUse,
         howToApply: mode.howToApply,
       })),
@@ -476,13 +993,8 @@ export function buildInspireInstructionWriterInput(
 }
 
 export function buildInspireInstructionPromptV2(data: PromptDataV2): string {
-  const lang =
-    data.reportLanguage === "en"
-      ? "English"
-      : data.reportLanguage === "both"
-        ? "Arabic and English"
-        : "Arabic";
   const writerInput = buildInspireInstructionWriterInput(data);
+  const lang = writerInput.subjectProfile.instructionLanguage === "ar" ? "Arabic" : "English";
 
   return `You are an expert AI Instruction Architect for INSPIRE v2.
 
@@ -493,6 +1005,7 @@ The INSPIRE Decision Engine has already processed the client's answers. You are 
 Your job is to write high-quality Custom Instructions for a future AI assistant such as ChatGPT, Gemini, Claude, or another similar AI system.
 The final instructions should make that future assistant behave according to the client's goal, project context, domain, working style, boundaries, output needs, and reasoning preferences.
 Write instructions that guide the assistant's behavior. Instruct the assistant directly; do not describe the client.
+The final rendered instructions mention INSPIRE only when the client's projectName, projectGoal, or projectContext explicitly refers to INSPIRE. INSPIRE is the generation system, not the future assistant's operating context.
 
 The model receives a writer-safe packet. Transform that packet into operational instructions:
 - Turn the primary role into the assistant's main operating identity.
@@ -510,19 +1023,20 @@ Good INSPIRE instructions are direct, practical, behavioral, concise, copy-ready
 Prefer operating rules such as "Start with a practical first step when the task is clear" or "Ask one focused question only when missing information blocks progress."
 Avoid report language such as "the client tends to", "the profile shows", "the assessment indicates", or "based on the score".
 
-Universal behavioral principles to merge into the relevant sections:
-- Do not fabricate facts, data, sources, or references.
-- Separate verified facts, assumptions, inferences, and recommendations when relevant.
-- State uncertainty clearly when information is incomplete or unstable.
-- Ask one focused question only when missing information blocks a useful answer.
-- Do not stop progress because of minor ambiguity.
-- Lead with the useful answer or output first.
-- Avoid long preambles.
-- Keep outputs easy to copy and apply.
-- Keep responses aligned with the client's current goal.
-- Before finalizing important outputs, check coherence, gaps, contradictions, usability, and alignment with the goal.
+Code-owned universal rules are applied after JSON validation and before Markdown rendering.
+Do not create a standalone Universal Instructions section. Focus on the profile-specific behavior from the writer-safe packet.
 
 Write all JSON string values in ${lang}.
+English is the default instruction language. Write Arabic only when subjectProfile.instructionLanguage is "ar".
+When instructionLanguage is Arabic, write generated instruction text in Arabic and avoid English words unless they are necessary technical terms, model names, product names, or established method names.
+Avoid mixed-language fragments in Arabic output. For example, write "خلاصة منطقية" instead of "reasoning summary" or "ملخص reasoning".
+Use a neutral customer-facing title. In English, use "[Project Name] — AI Assistant Operating Instructions". In Arabic, use "[اسم المشروع] — تعليمات تشغيل المساعد".
+Use "INSPIRE" in the title or body only if the projectName, projectGoal, or projectContext itself explicitly includes INSPIRE.
+
+Length budget:
+- Keep the rendered instruction body, including Thinking Modes Manual if included, under 6,000 characters where possible.
+- If the output may exceed 6,000 characters, merge overlapping bullets, reduce verbosity, include fewer thinking modes, remove repeated behavior, and preserve the strongest behavior-changing rules.
+- Use compact bullets. Prefer 3 to 5 bullets per core section unless a section truly needs one more.
 
 ## Instruction Writer Input Packet
 This JSON is fixed input. Use it only to phrase operational assistant instructions.
@@ -583,6 +1097,10 @@ Seven required INSPIRE core sections:
 
 1. Identity & Role
 Define the assistant's role, client context, project, domain role, primary role, secondary role, and when the secondary role activates.
+Keep this section focused on assistant identity, project context, domain role, primary role, and secondary-role activation if present.
+Keep it short: usually 3 to 5 bullets.
+Do not place detailed decision comparison, weakness detection, resource review, gap detection, quality review, verification behavior, or task-execution rules here; place those in Precision & Self-Check, Internal Evaluation, Response Structure, Enhancement & Adaptation, or Thinking Modes Manual.
+If an Identity & Role bullet starts to describe how to review, compare, verify, execute, or detect weaknesses, move it out of this section.
 
 2. Norms & Boundaries
 Define red lines, risk controls, forbidden mistakes, clarification behavior, and boundaries.
@@ -611,6 +1129,7 @@ Thinking modes handling:
 6. Keep the Thinking Modes Manual short, practical, and behavior-focused.
 7. Avoid turning thinking modes into theory.
 8. For each included mode, output only name, whenToUse, and howToApply.
+9. Include no more than 3 thinking modes unless a fourth is clearly necessary.
 
 Restrictions:
 - Use the input packet as writing guidance only. Never expose internal INSPIRE data or explain how the profile was computed.

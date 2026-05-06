@@ -11,6 +11,35 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { usersTable } from "./users";
 
+export type OperatingPatternReportContentV1 = {
+  reportType: "operating_pattern";
+  version: "v1";
+  generatedAt?: string;
+  language: "ar" | "en" | "both";
+  sections: {
+    operatingSnapshot: {
+      bullets: string[];
+    };
+    personalizedRecommendations: {
+      bullets: string[];
+    };
+    customAiUsageTips: {
+      bullets: string[];
+    };
+    instructionExplanation: {
+      include: boolean;
+      bullets: string[];
+    };
+  };
+  fixedContent: {
+    craftIncluded: true;
+    smartPromptEngineerLinkIncluded: true;
+    copyReadyInstructionLanguage: "en";
+  };
+};
+
+export type AssessmentReportContent = OperatingPatternReportContentV1;
+
 export const assessmentsTable = pgTable("assessments", {
   id: uuid("id").primaryKey().defaultRandom(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -34,6 +63,7 @@ export const assessmentsTable = pgTable("assessments", {
   scenarioAnswers: jsonb("scenario_answers"),
   openAnswer: text("open_answer"),
 
+  // Deprecated legacy report fields. New Operating Pattern Report UI should use reportContent.
   inspireTable: jsonb("inspire_table"),
   roleAnalysis: text("role_analysis"),
   redLines: jsonb("red_lines"),
@@ -42,6 +72,7 @@ export const assessmentsTable = pgTable("assessments", {
   recommendations: jsonb("recommendations"),
   systemInstruction: text("system_instruction"),
   quickStarters: jsonb("quick_starters"),
+  reportContent: jsonb("report_content").$type<AssessmentReportContent | null>(),
 
   aiProvider: text("ai_provider"),
   aiModel: text("ai_model"),

@@ -11,6 +11,7 @@ import {
   Check,
   Loader2,
   Download,
+  Printer,
   ChevronRight,
   AlertTriangle,
   Share2,
@@ -54,6 +55,27 @@ interface InspireRow {
   note?: string;
 }
 
+const SMART_PROMPT_ENGINEER_URL =
+  "https://chatgpt.com/g/g-67fe5939b39c8191a7ad597fd6fb0192-smart-prompt-engineer-mhnds-lmtlbt-ldhky";
+
+interface OperatingPatternReportContentV1 {
+  reportType: "operating_pattern";
+  version: "v1";
+  generatedAt?: string;
+  language: "ar" | "en" | "both";
+  sections: {
+    operatingSnapshot: { bullets: string[] };
+    personalizedRecommendations: { bullets: string[] };
+    customAiUsageTips: { bullets: string[] };
+    instructionExplanation: { include: boolean; bullets: string[] };
+  };
+  fixedContent: {
+    craftIncluded: true;
+    smartPromptEngineerLinkIncluded: true;
+    copyReadyInstructionLanguage: "en";
+  };
+}
+
 interface AssessmentDto {
   id: string;
   status: string;
@@ -66,6 +88,7 @@ interface AssessmentDto {
   createdAt: string;
   completionTimeSeconds: number | null;
   pdfUrl: string | null;
+  reportContent: OperatingPatternReportContentV1 | null;
   inspireTable: InspireRow[] | null;
   roleAnalysis: string | null;
   redLines: string[] | null;
@@ -402,6 +425,590 @@ function CopyButton({
   );
 }
 
+function isOperatingPatternReportContentV1(
+  value: OperatingPatternReportContentV1 | null | undefined
+): value is OperatingPatternReportContentV1 {
+  return value?.reportType === "operating_pattern" && value.version === "v1";
+}
+
+type SingleReportLanguage = "ar" | "en";
+
+function resolveOperatingReportDisplayLanguage(
+  reportLanguage: ReportLanguage,
+  uiLocale: string
+): SingleReportLanguage {
+  if (reportLanguage === "en") return "en";
+  if (reportLanguage === "ar") return "ar";
+  return uiLocale === "en" ? "en" : "ar";
+}
+
+function localizedOperatingReportText(
+  reportLanguage: SingleReportLanguage,
+  english: string,
+  arabic: string
+) {
+  if (reportLanguage === "ar") return arabic;
+  return english;
+}
+
+function selectOperatingReportText(text: string, displayLanguage: SingleReportLanguage) {
+  const parts = text.split(" / ");
+  if (parts.length < 2) return text;
+  const [arabic, ...englishParts] = parts;
+  const english = englishParts.join(" / ");
+  return displayLanguage === "ar" ? arabic.trim() : (english.trim() || arabic.trim());
+}
+
+function fixedCraftExplanation(reportLanguage: SingleReportLanguage) {
+  if (reportLanguage === "ar") {
+    return "CRAFT هو إطار بسيط يساعدك على كتابة طلب أوضح للذكاء الاصطناعي عبر تحديد السياق، الدور، المطلوب، شكل المخرج، والنبرة. استخدمه عندما تكون فكرتك غير مرتبة أو عندما تريد نتيجة أدق من AI.";
+  }
+  return "CRAFT is a simple framework for turning a rough idea into a clearer AI prompt by defining the context, role, action, output format, and tone. Use it when your request is unclear or when you want a more accurate AI response.";
+}
+
+function smartPromptEngineerExplanation(reportLanguage: SingleReportLanguage) {
+  if (reportLanguage === "ar") {
+    return "Smart Prompt Engineer أداة تساعدك على تحويل الفكرة الأولية أو الطلب غير الواضح إلى prompt مرتب وواضح يمكن استخدامه مع الذكاء الاصطناعي. استخدمها عندما تعرف ما تريد تقريبًا، لكنك لا تعرف كيف تصيغه بطريقة تعطيك نتيجة جيدة.";
+  }
+  return "Smart Prompt Engineer helps you turn a rough idea or unclear request into a structured, clear prompt that can be used with an AI assistant. Use it when you roughly know what you want, but you need help wording it in a way that produces a better result.";
+}
+
+function fixedCraftBullets(reportLanguage: SingleReportLanguage) {
+  if (reportLanguage === "ar") {
+    return [
+      "Context: اذكر السياق والهدف قبل الطلب.",
+      "Role: حدد الدور العملي الذي تريد من الذكاء الاصطناعي أن يتخذه.",
+      "Action: اطلب الفعل أو الناتج المطلوب بوضوح.",
+      "Format: حدد شكل المخرجات المناسب.",
+      "Tone: وضح النبرة ومستوى التفصيل المطلوب.",
+    ];
+  }
+  return [
+    "Context: state the situation, goal, and relevant constraints.",
+    "Role: define the practical role you want AI to take.",
+    "Action: ask clearly for the output or next step.",
+    "Format: specify the structure you want back.",
+    "Tone: set the level of directness, detail, and language style.",
+  ];
+}
+
+function platformInstructionItems(reportLanguage: SingleReportLanguage): Array<{
+  id: "chatgpt" | "gemini" | "claude";
+  name: string;
+  accent: string;
+  intro: string;
+  steps: string[];
+}> {
+  if (reportLanguage === "ar") {
+    return [
+      {
+        id: "chatgpt",
+        name: "ChatGPT",
+        accent: "from-emerald-500/30 to-teal-500/20",
+        intro:
+          "استخدم هذه الخطوات عندما تريد أن يعمل ChatGPT بنفس التعليمات الإنجليزية في كل محادثة جديدة.",
+        steps: [
+          "افتح ChatGPT وادخل إلى Customize ChatGPT أو إعدادات التعليمات المخصصة.",
+          'الصق النص الإنجليزي في خانة "How would you like ChatGPT to respond?" أو خانة التعليمات المناسبة.',
+          "احفظ الإعدادات، ثم ابدأ محادثة جديدة مرتبطة بنفس طريقة العمل.",
+        ],
+      },
+      {
+        id: "gemini",
+        name: "Gemini",
+        accent: "from-sky-500/30 to-indigo-500/20",
+        intro:
+          "استخدم Gemini Gems عندما تريد مساعدًا ثابتًا لمشروعك يعمل بهذه التعليمات.",
+        steps: [
+          "افتح Gemini واختر Gems لإنشاء مساعد جديد.",
+          "الصق النص الإنجليزي في حقل تعليمات الـ Gem.",
+          "احفظ الـ Gem باسم مرتبط بمشروعك، وافتحه كل مرة تحتاج نفس السلوك.",
+        ],
+      },
+      {
+        id: "claude",
+        name: "Claude",
+        accent: "from-rose-500/30 to-orange-500/20",
+        intro:
+          "استخدم Claude Projects عندما تريد ربط التعليمات بمشروع كامل وليس محادثة واحدة.",
+        steps: [
+          "افتح Claude وأنشئ Project جديدًا باسم مشروعك.",
+          "الصق النص الإنجليزي في Custom Instructions أو Project Instructions.",
+          "ابدأ محادثاتك من داخل هذا المشروع حتى يحافظ Claude على نفس السياق والسلوك.",
+        ],
+      },
+    ];
+  }
+
+  return [
+    {
+      id: "chatgpt",
+      name: "ChatGPT",
+      accent: "from-emerald-500/30 to-teal-500/20",
+      intro:
+        "Use these steps when you want ChatGPT to follow the English instructions across new conversations.",
+      steps: [
+        "Open ChatGPT and go to Customize ChatGPT or custom instructions settings.",
+        'Paste the English text into the "How would you like ChatGPT to respond?" field or the relevant instructions area.',
+        "Save the settings, then start a new conversation using the same operating style.",
+      ],
+    },
+    {
+      id: "gemini",
+      name: "Gemini",
+      accent: "from-sky-500/30 to-indigo-500/20",
+      intro:
+        "Use Gemini Gems when you want a stable project assistant that follows these instructions.",
+      steps: [
+        "Open Gemini and choose Gems to create a new assistant.",
+        "Paste the English text into the Gem instructions field.",
+        "Save the Gem with a project-specific name, then open it whenever you need the same behavior.",
+      ],
+    },
+    {
+      id: "claude",
+      name: "Claude",
+      accent: "from-rose-500/30 to-orange-500/20",
+      intro:
+        "Use Claude Projects when you want the instructions tied to a full project, not only one chat.",
+      steps: [
+        "Open Claude and create a new Project named after your project.",
+        "Paste the English text into Custom Instructions or Project Instructions.",
+        "Start conversations inside that project so Claude keeps the same context and behavior.",
+      ],
+    },
+  ];
+}
+
+function BulletList({
+  bullets,
+  lang,
+  ordered = false,
+}: {
+  bullets: string[];
+  lang: SingleReportLanguage;
+  ordered?: boolean;
+}) {
+  const ListTag = ordered ? "ol" : "ul";
+  return (
+    <ListTag className="space-y-4">
+      {bullets.map((bullet, index) => (
+        <li
+          key={`${index}-${bullet}`}
+          className="flex items-start gap-3"
+        >
+          <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-rose-300/25 bg-rose-500/[0.08] text-xs font-black text-rose-100">
+            {ordered ? index + 1 : "•"}
+          </span>
+          <ReportBlock lang={lang} className="flex-1 text-[15px] leading-7 text-white/85">
+            {bullet}
+          </ReportBlock>
+        </li>
+      ))}
+    </ListTag>
+  );
+}
+
+function ReportSectionCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.028] p-5 md:p-6">
+      {children}
+    </div>
+  );
+}
+
+function OperatingReportExecutiveSummary({
+  reportContent,
+  displayLanguage,
+}: {
+  reportContent: OperatingPatternReportContentV1;
+  displayLanguage: SingleReportLanguage;
+}) {
+  const snapshot = reportContent.sections.operatingSnapshot.bullets[0];
+  const recommendation = reportContent.sections.personalizedRecommendations.bullets[0];
+
+  if (!snapshot && !recommendation) return null;
+
+  const labels = {
+    title: localizedOperatingReportText(displayLanguage, "Executive Summary", "خلاصة التقرير"),
+    helper: localizedOperatingReportText(
+      displayLanguage,
+      "Start with this summary, then use the sections below for detail.",
+      "ابدأ بهذه الخلاصة، ثم استخدم الأقسام التالية للتفاصيل."
+    ),
+    pattern: localizedOperatingReportText(displayLanguage, "Pattern", "النمط"),
+    startHere: localizedOperatingReportText(displayLanguage, "Start here", "ابدأ من هنا"),
+  };
+
+  const items = [
+    snapshot
+      ? {
+          label: labels.pattern,
+          text: selectOperatingReportText(snapshot, displayLanguage),
+        }
+      : null,
+    recommendation
+      ? {
+          label: labels.startHere,
+          text: selectOperatingReportText(recommendation, displayLanguage),
+        }
+      : null,
+  ].filter((item): item is { label: string; text: string } => Boolean(item));
+
+  return (
+    <div className="mt-6 rounded-2xl border border-white/10 bg-[#0a0c1c]/45 p-5 print-avoid-break md:mt-7 md:p-6">
+      <div className="mb-4">
+        <h3 className="text-lg font-black text-white">{labels.title}</h3>
+        <ReportBlock lang={displayLanguage} className="mt-1 text-sm leading-6 text-white/55">
+          {labels.helper}
+        </ReportBlock>
+      </div>
+      <div className="grid gap-3 md:grid-cols-2">
+        {items.map((item) => (
+          <div key={item.label} className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
+            <p className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-rose-100/55">
+              {item.label}
+            </p>
+            <ReportBlock lang={displayLanguage} className="text-sm leading-7 text-white/80">
+              {item.text}
+            </ReportBlock>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OperatingReportIntro({ displayLanguage }: { displayLanguage: SingleReportLanguage }) {
+  const labels = {
+    title: localizedOperatingReportText(displayLanguage, "Before You Start", "قبل أن تبدأ"),
+    thanks: localizedOperatingReportText(
+      displayLanguage,
+      "Thank you for completing the INSPIRE experience. This report is based on your answers to 21 questions designed to understand your operating pattern, not to judge you or label your personality.",
+      "شكرًا لإكمال تجربة INSPIRE. هذا التقرير مبني على إجاباتك في 21 سؤالًا صُممت لفهم نمطك التشغيلي، وليس لتقييمك أو تصنيف شخصيتك."
+    ),
+    questions: localizedOperatingReportText(
+      displayLanguage,
+      "Most questions look at how you think, decide, execute, handle ambiguity, ask for support, and turn ideas into results. The final AI-use questions help connect that pattern to how you can work better with AI tools.",
+      "معظم الأسئلة تنظر إلى طريقة تفكيرك واتخاذك للقرار وتنفيذك وتعاملِك مع الغموض وطلبك للدعم وتحويلك للأفكار إلى نتائج. أما أسئلة استخدام الذكاء الاصطناعي في النهاية فتساعد على ربط هذا النمط بطريقة عملك مع أدوات AI."
+    ),
+    value: localizedOperatingReportText(
+      displayLanguage,
+      "The real value of this customization is practical: clearer recommendations and English copy-ready instructions that help AI assistants respond in a way that fits your work style instead of giving generic answers.",
+      "القيمة الحقيقية من هذا التخصيص عملية: توصيات أوضح وتعليمات إنجليزية جاهزة للنسخ تساعد مساعدات الذكاء الاصطناعي على الرد بطريقة تناسب أسلوب عملك بدل تقديم إجابات عامة."
+    ),
+    bestPractice: localizedOperatingReportText(
+      displayLanguage,
+      "Best practice: read the report first, copy the English instructions into ChatGPT, Gemini, or Claude, then use CRAFT to write your first clear request.",
+      "أفضل ممارسة: اقرأ التقرير أولًا، ثم انسخ التعليمات الإنجليزية إلى ChatGPT أو Gemini أو Claude، وبعدها استخدم CRAFT لكتابة أول طلب واضح."
+    ),
+  };
+
+  return (
+    <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.028] p-5 print-avoid-break md:mt-7 md:p-6">
+      <h3 className="text-lg font-black text-white">{labels.title}</h3>
+      <div className="mt-4 space-y-3">
+        {[labels.thanks, labels.questions, labels.value, labels.bestPractice].map((text) => (
+          <ReportBlock
+            key={text}
+            lang={displayLanguage}
+            className="text-sm font-semibold leading-7 text-white/78"
+          >
+            {text}
+          </ReportBlock>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OperatingPatternReportSections({
+  reportContent,
+  profileText,
+  displayLanguage,
+}: {
+  reportContent: OperatingPatternReportContentV1;
+  profileText: string;
+  displayLanguage: SingleReportLanguage;
+}) {
+  const labels = {
+    operatingSnapshot: localizedOperatingReportText(
+      displayLanguage,
+      "Operating Snapshot",
+      "لمحة التشغيل"
+    ),
+    personalizedRecommendations: localizedOperatingReportText(
+      displayLanguage,
+      "Personalized Recommendations",
+      "توصيات مخصصة"
+    ),
+    howToUseAiBetter: localizedOperatingReportText(
+      displayLanguage,
+      "How to Use AI Better",
+      "كيف تستخدم الذكاء الاصطناعي بشكل أفضل"
+    ),
+    customTips: localizedOperatingReportText(displayLanguage, "Personalized AI tips", "نصائح مخصصة"),
+    craftTitle: localizedOperatingReportText(
+      displayLanguage,
+      "CRAFT Prompt Framework",
+      "إطار CRAFT لكتابة الطلبات"
+    ),
+    smartPromptEngineer: "Smart Prompt Engineer",
+    craftExplanation: fixedCraftExplanation(displayLanguage),
+    smartPromptEngineerHelper: smartPromptEngineerExplanation(displayLanguage),
+    copyReadyAiInstructions: localizedOperatingReportText(
+      displayLanguage,
+      "Copy-Ready AI Instructions",
+      "تعليمات الذكاء الاصطناعي الجاهزة للنسخ"
+    ),
+    platformTitle: localizedOperatingReportText(
+      displayLanguage,
+      "Where to use these instructions",
+      "أين تستخدم هذه التعليمات"
+    ),
+    platformSubtitle: localizedOperatingReportText(
+      displayLanguage,
+      "Paste the same English instructions into the platform where you want the assistant to follow your operating pattern.",
+      "الصق نفس التعليمات الإنجليزية في المنصة التي تريد أن يعمل فيها المساعد وفق نمطك التشغيلي."
+    ),
+    platformHeadingPrefix: localizedOperatingReportText(
+      displayLanguage,
+      "Use with",
+      "الاستخدام مع"
+    ),
+    instructionNotice: localizedOperatingReportText(
+      displayLanguage,
+      "These copy-ready instructions are intentionally written in English.",
+      "هذه التعليمات الجاهزة للنسخ مكتوبة بالإنجليزية عمدا."
+    ),
+    instructionHelper: localizedOperatingReportText(
+      displayLanguage,
+      "Paste this English text into the custom instructions or system prompt area of your AI assistant. It is intentionally kept in English for best consistency.",
+      "الصق هذا النص الإنجليزي في خانة التعليمات المخصصة أو System Prompt في مساعد الذكاء الاصطناعي. أبقيناه بالإنجليزية عمدًا للحفاظ على أفضل اتساق."
+    ),
+    instructionExplanationHint: localizedOperatingReportText(
+      displayLanguage,
+      "The explanation section before the instruction block clarifies why these English instructions were designed this way. It is not a translation.",
+      "قسم الشرح قبل كتلة التعليمات يوضح سبب تصميم هذه التعليمات الإنجليزية بهذا الشكل. هو ليس ترجمة لها."
+    ),
+    instructionExplanation: localizedOperatingReportText(
+      displayLanguage,
+      "Instruction Explanation",
+      "شرح التعليمات"
+    ),
+    copyInstructions: localizedOperatingReportText(displayLanguage, "Copy instructions", "نسخ التعليمات"),
+    copied: localizedOperatingReportText(displayLanguage, "Copied", "تم النسخ"),
+  };
+  const localizeBullets = (bullets: string[]) =>
+    bullets.map((bullet) => selectOperatingReportText(bullet, displayLanguage));
+  const explanationIncluded = reportContent.sections.instructionExplanation.include;
+  const platformInstructions = platformInstructionItems(displayLanguage);
+
+  return (
+    <>
+      <RevealSection id="operating-snapshot" index={1} label={labels.operatingSnapshot} icon={Brain} className="print-section">
+        <SectionHeading eyebrow="01" title={labels.operatingSnapshot} />
+        <ReportSectionCard>
+          <BulletList
+            bullets={localizeBullets(reportContent.sections.operatingSnapshot.bullets)}
+            lang={displayLanguage}
+          />
+        </ReportSectionCard>
+      </RevealSection>
+
+      <RevealSection
+        id="personalized-recommendations"
+        index={2}
+        label={labels.personalizedRecommendations}
+        icon={Zap}
+        className="print-section print-avoid-break"
+      >
+        <SectionHeading eyebrow="02" title={labels.personalizedRecommendations} />
+        <ReportSectionCard>
+          <BulletList
+            bullets={localizeBullets(reportContent.sections.personalizedRecommendations.bullets)}
+            lang={displayLanguage}
+            ordered
+          />
+        </ReportSectionCard>
+      </RevealSection>
+
+      <RevealSection id="how-to-use-ai" index={3} label={labels.howToUseAiBetter} icon={Settings2} className="print-section print-page-break-before">
+        <SectionHeading eyebrow="03" title={labels.howToUseAiBetter} />
+        <ReportSectionCard>
+          <div className="space-y-8">
+            <section>
+              <h3 className="mb-4 text-lg font-black text-white">{labels.customTips}</h3>
+            <BulletList
+              bullets={localizeBullets(reportContent.sections.customAiUsageTips.bullets)}
+              lang={displayLanguage}
+            />
+            </section>
+
+            <section className="border-t border-white/10 pt-6">
+              <h3 className="mb-4 text-lg font-black text-white">{labels.craftTitle}</h3>
+            <p className="mb-5 text-sm leading-7 text-white/70">{labels.craftExplanation}</p>
+            <BulletList bullets={fixedCraftBullets(displayLanguage)} lang={displayLanguage} />
+            </section>
+
+            <section className="border-t border-white/10 pt-6">
+              <p className="mb-3 text-sm leading-6 text-white/70">
+              {labels.smartPromptEngineerHelper}
+            </p>
+            <a
+              href={SMART_PROMPT_ENGINEER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="smart-prompt-engineer-link inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-rose-300/25 bg-rose-500/[0.1] px-4 py-3 text-sm font-black text-rose-100 transition-colors hover:bg-rose-500/[0.16]"
+            >
+              <LinkIcon className="h-4 w-4 shrink-0" />
+              <span>{labels.smartPromptEngineer}</span>
+            </a>
+            </section>
+          </div>
+        </ReportSectionCard>
+      </RevealSection>
+
+      {explanationIncluded && (
+        <RevealSection
+          id="instruction-explanation"
+          index={4}
+          label={labels.instructionExplanation}
+          icon={Lightbulb}
+          className="print-section print-page-break-before print-avoid-break"
+        >
+          <SectionHeading eyebrow="04" title={labels.instructionExplanation} />
+          <ReportSectionCard>
+            <BulletList
+              bullets={localizeBullets(reportContent.sections.instructionExplanation.bullets)}
+              lang={displayLanguage}
+            />
+          </ReportSectionCard>
+        </RevealSection>
+      )}
+
+      {profileText && (
+        <RevealSection
+          id="copy-ready-instructions"
+          index={explanationIncluded ? 5 : 4}
+          label={labels.copyReadyAiInstructions}
+          icon={BookOpen}
+          className="print-section print-page-break-before"
+        >
+          <SectionHeading eyebrow={explanationIncluded ? "05" : "04"} title={labels.copyReadyAiInstructions} />
+          <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.02]">
+            <div className="flex flex-col gap-3 border-b border-white/10 bg-white/[0.02] px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-start">
+                <p className="text-sm font-semibold text-white/80">{labels.instructionNotice}</p>
+                <p className="mt-1 text-xs leading-5 text-white/55">{labels.instructionHelper}</p>
+                {explanationIncluded && (
+                  <p className="mt-1 text-xs leading-5 text-amber-100/70">
+                    {labels.instructionExplanationHint}
+                  </p>
+                )}
+              </div>
+              <CopyButton
+                text={profileText}
+                label={labels.copyInstructions}
+                successLabel={labels.copied}
+                variant="primary"
+                size="md"
+              />
+            </div>
+            <div className="p-4 md:p-6">
+              <div className="max-h-[620px] overflow-auto rounded-xl border border-white/10 bg-[#0a0c1c]/70 p-4 md:max-h-none">
+                <ReportBlock lang="en">
+                  <p className="copy-ready-instructions-text whitespace-pre-line font-sans text-[15px] leading-8 text-white/85">
+                    {profileText}
+                  </p>
+                </ReportBlock>
+              </div>
+
+              <div className="private-report-screen-only mt-6 rounded-2xl border border-white/10 bg-white/[0.025] p-4 md:p-5">
+                <div className="mb-5 text-start">
+                  <h3 className="text-lg font-black text-white">{labels.platformTitle}</h3>
+                  <p className="mt-2 text-sm leading-6 text-white/60">{labels.platformSubtitle}</p>
+                </div>
+                <Tabs defaultValue="chatgpt" className="w-full">
+                  <TabsList className="h-auto flex-wrap gap-1 rounded-xl border border-white/10 bg-white/5 p-1">
+                    {platformInstructions.map((platform) => (
+                      <TabsTrigger
+                        key={platform.id}
+                        value={platform.id}
+                        className="rounded-lg px-4 py-2 text-sm font-semibold text-white/65 transition-colors data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:shadow-sm"
+                      >
+                        {platform.name}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {platformInstructions.map((platform) => (
+                    <TabsContent key={platform.id} value={platform.id} className="mt-4">
+                      <div className={`relative rounded-xl border border-white/10 bg-gradient-to-br ${platform.accent} p-5`}>
+                        <div className="mb-4 flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10">
+                            <Settings2 className="h-5 w-5 text-white" />
+                          </div>
+                          <div className="text-start">
+                            <h4 className="text-lg font-bold text-white">
+                              {labels.platformHeadingPrefix} {platform.name}
+                            </h4>
+                            <p className="mt-1 text-sm leading-6 text-white/70">{platform.intro}</p>
+                          </div>
+                        </div>
+                        <ol className="space-y-3">
+                          {platform.steps.map((step, index) => (
+                            <li
+                              key={`${platform.id}-${index}`}
+                              className="flex items-start gap-3 rounded-xl border border-white/10 bg-black/20 p-3.5"
+                            >
+                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/10 text-sm font-bold text-white">
+                                {index + 1}
+                              </span>
+                              <ReportBlock lang={displayLanguage} className="flex-1 text-[15px] leading-relaxed text-white/85">
+                                {step}
+                              </ReportBlock>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </div>
+              <div className="private-report-print-only mt-6">
+                <h3 className="text-lg font-black text-white">{labels.platformTitle}</h3>
+                <p className="mt-2 text-sm leading-6 text-white/60">{labels.platformSubtitle}</p>
+                <div className="mt-4 space-y-5">
+                  {platformInstructions.map((platform) => (
+                    <section key={platform.id} className="print-avoid-break rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+                      <h4 className="text-base font-black text-white">
+                        {labels.platformHeadingPrefix} {platform.name}
+                      </h4>
+                      <p className="mt-2 text-sm leading-6 text-white/70">{platform.intro}</p>
+                      <ol className="mt-3 space-y-2">
+                        {platform.steps.map((step, index) => (
+                          <li key={`${platform.id}-print-${index}`} className="flex items-start gap-3">
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/10 text-xs font-bold text-white">
+                              {index + 1}
+                            </span>
+                            <ReportBlock lang={displayLanguage} className="flex-1 text-sm leading-6 text-white/85">
+                              {step}
+                            </ReportBlock>
+                          </li>
+                        ))}
+                      </ol>
+                    </section>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </RevealSection>
+      )}
+    </>
+  );
+}
+
 export default function Results() {
   const { id } = useParams<{ id: string }>();
   const { user, isLoading: authLoading } = useAuth();
@@ -519,14 +1126,22 @@ export default function Results() {
     }
   }
 
+  function handlePrintReport() {
+    window.print();
+  }
+
   // ── Derive report language safely ────────────────────────────────────────
   const reportLang: ReportLanguage = useMemo(() => {
-    const v = assessment?.reportLanguage;
+    const v = assessment?.reportContent?.language ?? assessment?.reportLanguage;
     if (v === "ar" || v === "en" || v === "both") return v;
     return "ar";
-  }, [assessment?.reportLanguage]);
+  }, [assessment?.reportContent?.language, assessment?.reportLanguage]);
   const reportLangSingle: "ar" | "en" =
     reportLang === "en" ? "en" : "ar";
+  const operatingDisplayLanguage = useMemo(
+    () => resolveOperatingReportDisplayLanguage(reportLang, locale),
+    [locale, reportLang]
+  );
 
   if (authLoading) {
     return (
@@ -701,11 +1316,55 @@ export default function Results() {
     },
   ];
 
-  const profileText = assessment.systemInstruction ?? "";
-  const revealItems = [
-    {
-      href: "#identity",
-      label: t("results.sections.identity"),
+	  const profileText = assessment.systemInstruction ?? "";
+	  const operatingReport = isOperatingPatternReportContentV1(assessment.reportContent)
+	    ? assessment.reportContent
+	    : null;
+	  const revealItems = operatingReport
+	    ? [
+	        {
+	          href: "#operating-snapshot",
+	          label: localizedOperatingReportText(operatingDisplayLanguage, "Operating Snapshot", "لمحة التشغيل"),
+	          icon: Brain,
+	          available: true,
+	        },
+	        {
+	          href: "#personalized-recommendations",
+	          label: localizedOperatingReportText(operatingDisplayLanguage, "Personalized Recommendations", "توصيات مخصصة"),
+	          icon: Zap,
+	          available: true,
+	        },
+	        {
+	          href: "#how-to-use-ai",
+	          label: localizedOperatingReportText(
+	            operatingDisplayLanguage,
+	            "How to Use AI Better",
+	            "كيف تستخدم الذكاء الاصطناعي بشكل أفضل"
+	          ),
+	          icon: Settings2,
+	          available: true,
+	        },
+	        {
+	          href: "#instruction-explanation",
+	          label: localizedOperatingReportText(operatingDisplayLanguage, "Instruction Explanation", "شرح التعليمات"),
+	          icon: Lightbulb,
+	          available: operatingReport.sections.instructionExplanation.include,
+	        },
+	        {
+	          href: "#copy-ready-instructions",
+	          label: localizedOperatingReportText(
+	            operatingDisplayLanguage,
+	            "Copy-Ready AI Instructions",
+	            "تعليمات الذكاء الاصطناعي الجاهزة للنسخ"
+	          ),
+	          icon: BookOpen,
+	          available: !!profileText,
+	        },
+	      ]
+	    : [
+	    {
+	      href: "#identity",
+	      label: t("results.sections.identity"),
       icon: Sparkles,
       available: true,
     },
@@ -748,14 +1407,107 @@ export default function Results() {
     {
       href: "#starters",
       label: t("results.sections.starters"),
-      icon: MessageSquare,
-      available: Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0,
-    },
-  ];
+	      icon: MessageSquare,
+	      available: Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0,
+	    },
+	  ];
+	  const secondaryCtaHref = operatingReport ? "#how-to-use-ai" : "#how-to-use";
+  const headerTitle = operatingReport
+    ? localizedOperatingReportText(
+        operatingDisplayLanguage,
+        "Operating Pattern Report",
+        "تقرير نمط التشغيل"
+      )
+    : t("results.header.titlePrefix");
+  const headerSubtitle = operatingReport
+    ? localizedOperatingReportText(
+        operatingDisplayLanguage,
+        "A private report for how you tend to think, decide, execute, handle ambiguity, and use AI support.",
+        "تقرير خاص يوضح كيف تميل إلى التفكير واتخاذ القرار والتنفيذ والتعامل مع الغموض واستخدام دعم الذكاء الاصطناعي."
+      )
+    : t("results.header.subtitle");
+  const headerCtaPrimary = operatingReport
+    ? localizedOperatingReportText(
+        operatingDisplayLanguage,
+        "Copy AI Instructions",
+        "نسخ تعليمات الذكاء الاصطناعي"
+      )
+    : t("results.header.ctaPrimary");
+  const headerCtaPrimarySuccess = operatingReport
+    ? localizedOperatingReportText(operatingDisplayLanguage, "AI instructions copied", "تم نسخ تعليمات الذكاء الاصطناعي")
+    : t("results.header.ctaPrimarySuccess");
+  const headerCtaSecondary = operatingReport
+    ? localizedOperatingReportText(operatingDisplayLanguage, "How to use AI better", "كيف تستخدم الذكاء الاصطناعي بشكل أفضل")
+    : t("results.header.ctaSecondary");
+  const privateReportLabel = operatingReport
+    ? localizedOperatingReportText(operatingDisplayLanguage, "Private report", "تقرير خاص")
+    : t("results.status.ready");
+  const printReportLabel = localizedOperatingReportText(
+    operatingDisplayLanguage,
+    "Print / Save as PDF",
+    "طباعة / حفظ PDF"
+  );
+  const projectGoalLabel = operatingReport
+    ? localizedOperatingReportText(operatingDisplayLanguage, "Project goal", "هدف المشروع")
+    : t("results.projectGoalLabel");
+  const nextStepsTitle = localizedOperatingReportText(
+    operatingDisplayLanguage,
+    "Your next step",
+    "خطوتك التالية"
+  );
+  const nextStepsIntro = localizedOperatingReportText(
+    operatingDisplayLanguage,
+    "Use the report now: copy the English instructions, paste them into your AI assistant, then start with one CRAFT-based request.",
+    "استخدم التقرير الآن: انسخ التعليمات الإنجليزية، الصقها في مساعد الذكاء الاصطناعي، ثم ابدأ بطلب واحد مبني على CRAFT."
+  );
+  const nextSteps = operatingReport
+    ? [
+        localizedOperatingReportText(
+          operatingDisplayLanguage,
+          "Copy the English AI instructions.",
+          "انسخ تعليمات الذكاء الاصطناعي الإنجليزية."
+        ),
+        localizedOperatingReportText(
+          operatingDisplayLanguage,
+          "Choose ChatGPT, Gemini, or Claude and paste the instructions there.",
+          "اختر ChatGPT أو Gemini أو Claude والصق التعليمات هناك."
+        ),
+        localizedOperatingReportText(
+          operatingDisplayLanguage,
+          "Use CRAFT to write your first clear request.",
+          "استخدم CRAFT لكتابة أول طلب واضح."
+        ),
+        localizedOperatingReportText(
+          operatingDisplayLanguage,
+          "Print or save the report if you want a reference copy.",
+          "اطبع التقرير أو احفظه إذا كنت تريد نسخة مرجعية."
+        ),
+      ]
+    : [];
+  const goToInstructionsLabel = localizedOperatingReportText(
+    operatingDisplayLanguage,
+    "Go to instructions",
+    "اذهب إلى التعليمات"
+  );
+  const reportDocumentLabel = localizedOperatingReportText(
+    operatingDisplayLanguage,
+    "Report document",
+    "وثيقة التقرير"
+  );
+  const reportCategoryLabel = localizedOperatingReportText(
+    operatingDisplayLanguage,
+    "Operating Pattern",
+    "نمط التشغيل"
+  );
+  const generatedDateLabel = localizedOperatingReportText(
+    operatingDisplayLanguage,
+    "Generated",
+    "تاريخ الإصدار"
+  );
 
   return (
     <PageShell>
-      <div className="container mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6 md:space-y-14 md:py-14">
+      <div className="private-report-print-root container mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6 md:space-y-14 md:py-14">
         {/* ── 1. RESULTS-READY HEADER ─────────────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: 14 }}
@@ -768,63 +1520,77 @@ export default function Results() {
               <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
             </span>
-            {t("results.status.ready")}
+            {privateReportLabel}
           </div>
 
-          <h1 className="mb-4 font-display text-2xl font-black leading-[1.25] text-white sm:text-4xl md:text-5xl">
-            {t("results.header.titlePrefix")}{" "}
-            <span className="relative inline-block">
-              <span className="bg-gradient-to-l from-rose-300 via-orange-300 to-amber-200 bg-clip-text text-transparent">
-                {t("results.header.titleConnector")}{" "}
-                <span
-                  lang={reportLangSingle}
-                  dir={reportLangSingle === "ar" ? "rtl" : "ltr"}
-                  className="inline"
-                >
-                  {assessment.projectName}
+          {operatingReport ? (
+            <>
+              <h1 className="mb-3 font-display text-2xl font-black leading-[1.25] text-white sm:text-4xl md:text-5xl">
+                {headerTitle}
+              </h1>
+              <ReportBlock
+                lang={operatingDisplayLanguage}
+                className="mx-auto mb-4 max-w-3xl bg-gradient-to-l from-rose-300 via-orange-300 to-amber-200 bg-clip-text text-2xl font-black leading-tight text-transparent sm:text-3xl"
+              >
+                {assessment.projectName}
+              </ReportBlock>
+            </>
+          ) : (
+            <h1 className="mb-4 font-display text-2xl font-black leading-[1.25] text-white sm:text-4xl md:text-5xl">
+              {headerTitle}{" "}
+              <span className="relative inline-block">
+                <span className="bg-gradient-to-l from-rose-300 via-orange-300 to-amber-200 bg-clip-text text-transparent">
+                  {t("results.header.titleConnector")}{" "}
+                  <span
+                    lang={reportLangSingle}
+                    dir={reportLangSingle === "ar" ? "rtl" : "ltr"}
+                    className="inline"
+                  >
+                    {assessment.projectName}
+                  </span>
                 </span>
+                <span className="absolute -bottom-1 inset-x-0 h-[3px] bg-gradient-to-l from-rose-400/80 to-orange-300/80 rounded-full" />
               </span>
-              <span className="absolute -bottom-1 inset-x-0 h-[3px] bg-gradient-to-l from-rose-400/80 to-orange-300/80 rounded-full" />
-            </span>
-          </h1>
+            </h1>
+          )}
 
           <p className="text-white/70 text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-3">
-            {t("results.header.subtitle")}
+            {headerSubtitle}
           </p>
 
           {assessment.projectGoal && (
             <ReportBlock
-              lang={reportLangSingle}
+              lang={operatingReport ? operatingDisplayLanguage : reportLangSingle}
               className="text-white/55 text-sm max-w-2xl mx-auto mb-6"
             >
               <span className="text-white/40">
-                {t("results.projectGoalLabel")}:
+                {projectGoalLabel}:
               </span>{" "}
               {assessment.projectGoal}
             </ReportBlock>
           )}
 
-          <div className="mb-5 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+          <div className="private-report-screen-only mb-5 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             {profileText && (
               <CopyButton
                 text={profileText}
-                label={t("results.header.ctaPrimary")}
-                successLabel={t("results.header.ctaPrimarySuccess")}
+                label={headerCtaPrimary}
+                successLabel={headerCtaPrimarySuccess}
                 variant="primary"
                 size="lg"
               />
             )}
-            <a
-              href="#how-to-use"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-base font-semibold text-white/90 transition-all hover:bg-white/10 active:scale-[0.98]"
-            >
-              {t("results.header.ctaSecondary")}
+	            <a
+	              href={secondaryCtaHref}
+	              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-base font-semibold text-white/90 transition-all hover:bg-white/10 active:scale-[0.98]"
+	            >
+              {headerCtaSecondary}
               <Arrow className="h-4 w-4" />
             </a>
           </div>
 
           {/* Secondary actions: my reports / pdf / share */}
-          <div className="grid grid-cols-1 gap-2 text-sm sm:flex sm:flex-wrap sm:items-center sm:justify-center">
+          <div className="private-report-screen-only grid grid-cols-1 gap-2 text-sm sm:flex sm:flex-wrap sm:items-center sm:justify-center">
             <button
               onClick={() => navigate("/my-assessments")}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
@@ -832,7 +1598,16 @@ export default function Results() {
               <ChevronRight className="h-4 w-4" />
               {t("results.header.myAssessments")}
             </button>
-            {assessment.pdfUrl ? (
+            {operatingReport ? (
+              <button
+                type="button"
+                onClick={handlePrintReport}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <Printer className="h-4 w-4" />
+                {printReportLabel}
+              </button>
+            ) : assessment.pdfUrl ? (
               <a
                 href={apiUrl(assessment.pdfUrl)}
                 target="_blank"
@@ -857,7 +1632,7 @@ export default function Results() {
                   : t("results.header.generatePdf")}
               </button>
             )}
-            {assessment.shareEnabled ? (
+            {!operatingReport && assessment.shareEnabled ? (
               <button
                 onClick={handleRevokeShare}
                 disabled={sharingLoading}
@@ -872,7 +1647,7 @@ export default function Results() {
                   ? t("results.header.revoking")
                   : t("results.header.revokeShare")}
               </button>
-            ) : (
+            ) : !operatingReport ? (
               <button
                 onClick={handleShare}
                 disabled={sharingLoading}
@@ -887,7 +1662,7 @@ export default function Results() {
                   ? t("results.header.sharing")
                   : t("results.header.share")}
               </button>
-            )}
+            ) : null}
           </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-white/45">
@@ -900,9 +1675,11 @@ export default function Results() {
             {formattedDate && <span>{formattedDate}</span>}
           </div>
 
-          <div className="mt-5 flex justify-center">
-            <MismatchNotice reportLanguage={reportLang} />
-          </div>
+          {!operatingReport && (
+            <div className="private-report-screen-only mt-5 flex justify-center">
+              <MismatchNotice reportLanguage={reportLang} />
+            </div>
+          )}
         </motion.section>
 
         {/* Share message */}
@@ -910,17 +1687,90 @@ export default function Results() {
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-4 text-sm text-white/85"
+            className="private-report-screen-only flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-4 text-sm text-white/85"
           >
             <LinkIcon className="h-4 w-4 text-rose-300 shrink-0 mt-0.5" />
             <span className="break-all">{shareMsg}</span>
           </motion.div>
         )}
 
-        <ReportRevealMap items={revealItems} />
+	        {operatingReport ? (
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="operating-report-document overflow-hidden rounded-[2rem] border border-white/15 bg-[#101426]/95 shadow-2xl shadow-black/30 backdrop-blur-xl"
+          >
+            <div className="border-b border-white/10 bg-white/[0.035] px-5 py-6 text-start md:px-8 md:py-8">
+              <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+                <div className="min-w-0">
+                  <p className="mb-3 text-[11px] font-black uppercase tracking-[0.22em] text-rose-100/60">
+                    {reportDocumentLabel}
+                  </p>
+                  <h2 className="text-2xl font-black leading-tight text-white md:text-3xl">
+                    {headerTitle}
+                  </h2>
+                  <ReportBlock
+                    lang={operatingDisplayLanguage}
+                    className="mt-2 text-xl font-black leading-tight text-rose-100 md:text-2xl"
+                  >
+                    {assessment.projectName}
+                  </ReportBlock>
+                  {assessment.projectGoal && (
+                    <ReportBlock
+                      lang={operatingDisplayLanguage}
+                      className="mt-4 max-w-3xl text-sm leading-7 text-white/65"
+                    >
+                      <span className="font-bold text-white/80">{projectGoalLabel}:</span>{" "}
+                      {assessment.projectGoal}
+                    </ReportBlock>
+                  )}
+                </div>
 
-        {/* ── 2. ASSISTANT IDENTITY CARD ──────────────────────────────── */}
-        <RevealSection
+                <div className="grid shrink-0 gap-2 rounded-2xl border border-white/10 bg-[#0a0c1c]/55 p-4 text-sm text-white/70 md:min-w-56">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/35">
+                      {privateReportLabel}
+                    </p>
+                    <p className="mt-1 font-bold text-white">{reportCategoryLabel}</p>
+                  </div>
+                  {formattedDate && (
+                    <div className="border-t border-white/10 pt-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/35">
+                        {generatedDateLabel}
+                      </p>
+                      <p className="mt-1 font-bold text-white">{formattedDate}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <OperatingReportIntro displayLanguage={operatingDisplayLanguage} />
+              <OperatingReportExecutiveSummary
+                reportContent={operatingReport}
+                displayLanguage={operatingDisplayLanguage}
+              />
+            </div>
+
+            <div className="private-report-screen-only border-b border-white/10 bg-[#0a0c1c]/35 p-3 md:p-4">
+              <ReportRevealMap items={revealItems} />
+            </div>
+
+            <div className="space-y-12 px-5 py-8 md:px-8 md:py-10">
+              <OperatingPatternReportSections
+                reportContent={operatingReport}
+                profileText={profileText}
+                displayLanguage={operatingDisplayLanguage}
+              />
+            </div>
+          </motion.div>
+        ) : (
+	          <>
+		        <div className="private-report-screen-only">
+	          <ReportRevealMap items={revealItems} />
+	        </div>
+
+		        {/* ── 2. ASSISTANT IDENTITY CARD ──────────────────────────────── */}
+	        <RevealSection
           id="identity"
           index={1}
           label={t("results.sections.identity")}
@@ -1270,8 +2120,8 @@ export default function Results() {
         </RevealSection>
 
         {/* ── 9. STARTER PROMPTS ──────────────────────────────────────── */}
-        {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 && (
-          <RevealSection
+	        {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 && (
+	          <RevealSection
             id="starters"
             index={8}
             label={t("results.sections.starters")}
@@ -1316,28 +2166,91 @@ export default function Results() {
                 </motion.div>
               ))}
             </div>
-          </RevealSection>
-        )}
+	          </RevealSection>
+	        )}
+		          </>
+		        )}
 
-        {/* ── CTA ─────────────────────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5 }}
-          className="rounded-2xl border border-white/10 bg-gradient-to-l from-rose-500/10 to-orange-500/5 p-5 text-center md:p-6"
-        >
-          <p className="text-white font-semibold mb-4">
-            {t("results.newCta.line")}
-          </p>
-          <button
-            onClick={() => navigate("/assess")}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-rose-500 to-orange-500 px-8 py-3 font-bold text-white transition-colors hover:from-rose-400 hover:to-orange-400 sm:w-auto"
+	        {/* ── CTA ─────────────────────────────────────────────────────── */}
+        {operatingReport ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+            className="private-report-screen-only rounded-2xl border border-white/10 bg-gradient-to-l from-rose-500/10 to-orange-500/5 p-5 text-start md:p-6"
           >
-            {t("results.newCta.button")}
-            <Arrow className="h-4 w-4" />
-          </button>
-        </motion.div>
+            <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-start">
+              <div>
+                <h2 className="text-xl font-black text-white">{nextStepsTitle}</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-white/65">
+                  {nextStepsIntro}
+                </p>
+                <ol className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {nextSteps.map((step, index) => (
+                    <li
+                      key={step}
+                      className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.035] p-3.5"
+                    >
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-rose-300/20 bg-rose-500/[0.1] text-xs font-black text-rose-100">
+                        {index + 1}
+                      </span>
+                      <ReportBlock lang={operatingDisplayLanguage} className="flex-1 text-sm leading-6 text-white/80">
+                        {step}
+                      </ReportBlock>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              <div className="flex flex-col gap-2 md:min-w-52">
+                {profileText && (
+                  <CopyButton
+                    text={profileText}
+                    label={headerCtaPrimary}
+                    successLabel={headerCtaPrimarySuccess}
+                    variant="primary"
+                    size="md"
+                  />
+                )}
+                <a
+                  href="#copy-ready-instructions"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/90 transition-all hover:bg-white/10"
+                >
+                  {goToInstructionsLabel}
+                  <Arrow className="h-4 w-4" />
+                </a>
+                <button
+                  type="button"
+                  onClick={handlePrintReport}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/90 transition-all hover:bg-white/10"
+                >
+                  <Printer className="h-4 w-4" />
+                  {printReportLabel}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+            className="private-report-screen-only rounded-2xl border border-white/10 bg-gradient-to-l from-rose-500/10 to-orange-500/5 p-5 text-center md:p-6"
+          >
+            <p className="mb-4 font-semibold text-white">
+              {t("results.newCta.line")}
+            </p>
+            <button
+              onClick={() => navigate("/assess")}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-rose-500 to-orange-500 px-8 py-3 font-bold text-white transition-colors hover:from-rose-400 hover:to-orange-400 sm:w-auto"
+            >
+              {t("results.newCta.button")}
+              <Arrow className="h-4 w-4" />
+            </button>
+          </motion.div>
+        )}
       </div>
     </PageShell>
   );

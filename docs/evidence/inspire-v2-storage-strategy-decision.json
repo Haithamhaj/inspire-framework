@@ -1,0 +1,76 @@
+{
+  "storageStrategy": {
+    "currentStorageShape": "New Operating Pattern Report content has a dedicated versioned reportContent JSONB field. Legacy report columns remain present temporarily but are deprecated for the new report UI.",
+    "currentPrivateResultsBehavior": "Authenticated results currently return legacy report fields and include systemInstruction for the owner's copy-ready instruction experience.",
+    "currentPublicShareBehavior": "Public share currently returns a safe subset of legacy report fields and excludes systemInstruction.",
+    "currentPdfBehavior": "PDF generation currently renders legacy sections such as INSPIRE Scores, Strengths, Red Lines, Recommendations, and Quick Starters.",
+    "sourceOfTruth": "The new Operating Pattern Report source of truth is reportContent with reportType='operating_pattern' and version='v1'. Legacy columns must not be used as the source of truth for the new report UI.",
+    "legacyDecision": "Legacy report columns are kept temporarily to reduce schema/build risk, but they are marked deprecated and are not used by the new reportContent shape."
+  },
+  "persistedReportContentExample": {
+    "reportType": "operating_pattern",
+    "version": "v1",
+    "generatedAt": "2026-05-05T00:00:00.000Z",
+    "language": "en",
+    "sections": {
+      "operatingSnapshot": {
+        "bullets": [
+          "You move fastest when ideas are converted into a first practical action.",
+          "You can work with partial clarity when the next step is obvious, then refine through feedback.",
+          "Your best support pattern combines quick execution with a short quality check before final decisions."
+        ]
+      },
+      "personalizedRecommendations": {
+        "bullets": [
+          "Start complex work with a small first draft, then ask AI to improve the structure.",
+          "Ask for alternatives when a first fix fails instead of repeating the same approach.",
+          "Use a quick verification pass before accepting launch, planning, or technical recommendations.",
+          "Request templates or structured methods when the task feels messy or hard to start."
+        ]
+      },
+      "customAiUsageTips": {
+        "bullets": [
+          "Ask AI for a first usable version before requesting deeper analysis.",
+          "When the task is important, ask AI to separate facts, assumptions, and recommendations."
+        ]
+      },
+      "instructionExplanation": {
+        "include": false,
+        "bullets": []
+      }
+    },
+    "fixedContent": {
+      "craftIncluded": true,
+      "smartPromptEngineerLinkIncluded": true,
+      "copyReadyInstructionLanguage": "en"
+    }
+  },
+  "persistedReportContentForbiddenPatternsFound": [],
+  "storageStrategyProof": {
+    "reportContentFieldExistsInStorageLayer": true,
+    "reportContentIsTypedAndVersioned": true,
+    "persistedShapeMatchesApprovedContract": true,
+    "persistedShapeContainsNoForbiddenInternalFields": true,
+    "legacyReportColumnsKeptTemporarily": true,
+    "legacyFieldsMarkedDeprecated": true,
+    "noLegacyFieldsInPersistedReportContent": true,
+    "v2GenerationStoresReportContentAsSourceOfTruth": true,
+    "privateResultsDtoExposesReportContent": true,
+    "privateResultsDtoKeepsLegacyFieldsForCompatibility": true,
+    "publicShareStillExcludesCopyReadyInstruction": true,
+    "publicShareStillExposesLegacyReportFields": true,
+    "pdfStillUsesLegacyReportFields": true,
+    "cleanFiveSectionStorageFoundationApproved": true,
+    "noUnnecessaryOldReportCompatibilityLayerAdded": true,
+    "authenticatedResultsUiUsesReportContentAsPrimarySource": true,
+    "authenticatedResultsUiRendersFiveNewSections": true,
+    "fixedCraftAndSmartPromptLinkRenderInAuthenticatedUi": true,
+    "authenticatedOperatingReportUsesNewPrivateFraming": true,
+    "authenticatedOperatingReportUsesPrivateActions": true,
+    "authenticatedPrintCssExists": true,
+    "smartPromptEngineerHelperTextPresent": true,
+    "copyReadyInstructionUxKeepsEnglishAndPasteGuidance": true,
+    "instructionExplanationIsFlaggedBeforeLongEnglishBlock": true,
+    "oldCustomerSectionsAreFallbackOnly": true
+  }
+}
