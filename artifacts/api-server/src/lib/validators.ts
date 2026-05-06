@@ -84,6 +84,7 @@ export const V2SubmitSchema = z.object({
     .length(21, "Exactly 21 answers required"),
   open_answer: z.string().max(2000).optional(),
   completion_time_seconds: z.number().int().positive(),
+  payment_id: z.string().uuid().optional(),
 });
 
 export const ProfileUpdateSchema = z.object({

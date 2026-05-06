@@ -138,7 +138,7 @@ function TitleBar({ label, glow = false }: { label: string; glow?: boolean }) {
       <div className="w-3 h-3 rounded-full bg-rose-500/70" />
       <div className="w-3 h-3 rounded-full bg-orange-400/70" />
       <div className="w-3 h-3 rounded-full bg-emerald-500/70" />
-      <span className="text-white/25 text-xs font-mono mx-auto">{label}</span>
+      <span className="text-white/35 text-[13px] font-mono mx-auto">{label}</span>
     </div>
   );
 }
@@ -222,12 +222,12 @@ export function InspireExplainerSection() {
         {/* Top bar */}
         <div className="relative z-10 flex items-center justify-between px-10 pt-7 pb-0 flex-shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-sm font-black text-white" style={{ background: "linear-gradient(135deg,#e11d48,#7c3aed)" }}>I</div>
-            <span className="text-white/60 text-sm font-bold tracking-[0.18em]">INSPIRE</span>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[15px] font-black text-white" style={{ background: "linear-gradient(135deg,#e11d48,#7c3aed)" }}>I</div>
+            <span className="text-white/68 text-[15px] font-bold tracking-[0.18em]">INSPIRE</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
-            <span className="text-white/25 text-xs font-mono">{c.sceneLabel(scene)}</span>
+            <span className="text-white/35 text-[13px] font-mono">{c.sceneLabel(scene)}</span>
           </div>
         </div>
 
@@ -274,7 +274,7 @@ export function InspireExplainerSection() {
                 <div className="flex justify-center">
                   <div className="flex items-center gap-3 px-7 py-3 rounded-full border border-rose-500/35" style={{ background: "rgba(225,29,72,.09)" }}>
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-400 animate-pulse" />
-                    <span className="text-rose-300 text-sm font-bold tracking-widest uppercase">{c.scene2Title}</span>
+                    <span className="text-rose-300 text-[15px] font-bold tracking-widest uppercase">{c.scene2Title}</span>
                   </div>
                 </div>
                 <div className="grid grid-cols-5 gap-4">
@@ -298,8 +298,8 @@ export function InspireExplainerSection() {
                         <div className="w-11 h-11 rounded-xl flex items-center justify-center text-base font-black text-white flex-shrink-0" style={{ background: "linear-gradient(135deg,#e11d48,#7c3aed)", boxShadow: "0 4px 16px rgba(225,29,72,.35)" }}>
                           {card.letter}
                         </div>
-                        <div className="text-white/45 text-xs font-bold uppercase tracking-widest">{card.label}</div>
-                        <div className="text-sm leading-snug min-h-[2.8rem] flex items-start">
+                        <div className="text-white/55 text-[13px] font-bold uppercase tracking-widest">{card.label}</div>
+                        <div className="text-[15px] leading-snug min-h-[2.8rem] flex items-start">
                           {vis && <CyclingValue values={card.values} final={card.final} active={active} seed={loopKey} />}
                         </div>
                       </motion.div>
@@ -308,7 +308,7 @@ export function InspireExplainerSection() {
                 </div>
                 <motion.div animate={{ opacity: activeCard >= 4 ? 1 : 0 }} transition={{ duration: 0.5 }} className="flex items-center justify-center gap-4">
                   <div className="h-px flex-1 max-w-32" style={{ background: "linear-gradient(to right,transparent,rgba(225,29,72,.5))" }} />
-                  <span className="text-white/20 text-xs tracking-widest uppercase">merging with prompt</span>
+                  <span className="text-white/35 text-[13px] font-medium tracking-widest uppercase">merging with prompt</span>
                   <div className="h-px flex-1 max-w-32" style={{ background: "linear-gradient(to left,transparent,rgba(124,58,237,.5))" }} />
                 </motion.div>
               </motion.div>
@@ -329,23 +329,23 @@ export function InspireExplainerSection() {
                       <p className="text-white font-bold text-lg">{c.structuredTitle}</p>
                       <ul className="flex flex-col gap-3">
                         {c.bullets.map((b, i) => (
-                          <motion.li key={i} initial={{ opacity: 0, x: dir === "rtl" ? 14 : -14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .55 + i * .22, duration: .3 }} className="flex items-start gap-3 text-white/65 text-sm leading-relaxed">
+                          <motion.li key={i} initial={{ opacity: 0, x: dir === "rtl" ? 14 : -14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .55 + i * .22, duration: .3 }} className="flex items-start gap-3 text-white/72 text-[15px] leading-relaxed">
                             <span className="text-orange-400 flex-shrink-0 mt-0.5 text-base">◆</span>
                             <span>{b}</span>
                           </motion.li>
                         ))}
                       </ul>
-                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.3, duration: .4 }} className="text-rose-300 text-sm font-semibold pt-3 border-t border-white/10 flex items-center gap-2">
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.3, duration: .4 }} className="text-rose-300 text-[15px] font-semibold pt-3 border-t border-white/10 flex items-center gap-2">
                         <span className="text-rose-400 text-base">{dir === "rtl" ? "←" : "→"}</span>{c.nextStep}
                       </motion.p>
                     </motion.div>
                   </div>
                 </Glass>
                 <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.7, duration: .5 }} className="flex items-center justify-between px-1">
-                  <span className="text-white/30 text-sm">{c.scene3Caption}</span>
+                  <span className="text-white/45 text-[15px]">{c.scene3Caption}</span>
                   <div className="flex items-center gap-5">
-                    <span className="text-white/45 text-sm font-black tracking-[.22em]">INSPIRE</span>
-                    <div className="px-7 py-3 rounded-full text-sm font-bold text-white" style={{ background: "linear-gradient(135deg,#e11d48,#7c3aed)", boxShadow: "0 0 28px rgba(225,29,72,.5), 0 4px 14px rgba(0,0,0,.3)" }}>
+                    <span className="text-white/55 text-[15px] font-black tracking-[.22em]">INSPIRE</span>
+                    <div className="px-7 py-3 rounded-full text-[15px] font-bold text-white" style={{ background: "linear-gradient(135deg,#e11d48,#7c3aed)", boxShadow: "0 0 28px rgba(225,29,72,.5), 0 4px 14px rgba(0,0,0,.3)" }}>
                       {c.cta}
                     </div>
                   </div>

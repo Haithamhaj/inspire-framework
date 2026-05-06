@@ -225,7 +225,7 @@ const PLATFORMS = [
     name: "ChatGPT",
     accent: "from-emerald-500/30 to-teal-500/20",
     steps: [
-      "افتح ChatGPT وادخل على إعدادات المساعد المخصص (Customize ChatGPT).",
+      "افتح ChatGPT واستخدم الملف داخل تعليمات Custom GPT، أو الصقه في تعليمات المشاريع مثل Claude Projects.",
       "الصق ملف التشغيل في خانة \"كيف تريد أن يردّ عليك ChatGPT؟\".",
       "احفظ الإعدادات. ستجد المساعد يعمل بشخصيتك المخصصة في كل محادثة جديدة.",
     ],

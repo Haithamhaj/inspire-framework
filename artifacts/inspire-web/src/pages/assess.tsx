@@ -52,6 +52,19 @@ interface Answer {
   optionId: string;
 }
 
+interface PreviousAssessmentReuse {
+  id: string;
+  projectName: string;
+  projectGoal: string;
+  domain: string | null;
+  customDomain: string | null;
+  domainSpecialization: string | null;
+  projectContext: string | null;
+  reportLanguage: "ar" | "en" | "both";
+  answers: Answer[];
+  openAnswer: string;
+}
+
 // ─── Wizard Config ────────────────────────────────────────
 const Q_PER_PAGE = 3;
 const OPEN_STEP_OFFSET = 1; // open step comes after all question pages
@@ -239,9 +252,9 @@ function AssessmentShell({
             steps={[
               { label: t("privacyConsent.title"), state: "complete" },
               { label: t("register.title"), state: "complete" },
-              { label: t("assessment.payment.eyebrow"), state: "complete" },
               { label: t("assessment.wizard.setupTitle"), state: "complete" },
               { label: t("assessment.shell.questionsLabel"), state: "current" },
+              { label: t("assessment.payment.eyebrow"), state: "upcoming" },
             ]}
           />
 
@@ -484,6 +497,15 @@ interface DiscountInfo {
   originalPrice: number;
 }
 
+interface NextAssessmentDiscount {
+  code: string;
+  discountPercent: number;
+  finalPrice: number;
+  originalPrice: number;
+  maxUses: number | null;
+  usedCount: number;
+}
+
 export default function Assess() {
   const { user, isLoading } = useAuth();
   const { dir, locale, t } = useI18n();
@@ -505,6 +527,10 @@ export default function Assess() {
   // v2 answers
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [openAnswer, setOpenAnswer] = useState("");
+  const [answerMode, setAnswerMode] = useState<"new" | "reuse">("new");
+  const [previousReuse, setPreviousReuse] = useState<PreviousAssessmentReuse | null>(null);
+  const [previousReuseLoading, setPreviousReuseLoading] = useState(Boolean(previousAssessmentId));
+  const [previousReuseError, setPreviousReuseError] = useState("");
 
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -521,12 +547,24 @@ export default function Assess() {
   const [checkingDiscount, setCheckingDiscount] = useState(false);
   const [paymentError, setPaymentError] = useState("");
   const [processingFree, setProcessingFree] = useState(false);
+  const [pendingPayment, setPendingPayment] = useState(false);
 
-  // eslint-disable-next-line react-hooks/purity
   const startTime = useRef(Date.now());
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
+
+  useEffect(() => {
+    if (paymentStatus !== "required" || paypalConfig) {
+      return;
+    }
+    fetch(apiUrl("/billing/paypal-config"))
+      .then((r) => r.json() as Promise<{ success: boolean; clientId: string; env: string; price: number }>)
+      .then((config) => {
+        if (config.success) setPaypalConfig(config);
+      })
+      .catch(() => undefined);
+  }, [paymentStatus, paypalConfig]);
 
   // Fetch questions from API
   useEffect(() => {
@@ -546,8 +584,22 @@ export default function Assess() {
   useEffect(() => {
     if (!user) return;
     fetch(apiUrl("/billing/status"))
-      .then((r) => r.json() as Promise<{ success: boolean; freeUsed: boolean; price: number }>)
+      .then((r) => r.json() as Promise<{
+        success: boolean;
+        freeUsed: boolean;
+        price: number;
+        nextAssessmentDiscount?: NextAssessmentDiscount | null;
+      }>)
       .then((d) => {
+        if (d.nextAssessmentDiscount) {
+          setDiscountCode(d.nextAssessmentDiscount.code);
+          setDiscountInfo({
+            valid: true,
+            discountPercent: d.nextAssessmentDiscount.discountPercent,
+            finalPrice: d.nextAssessmentDiscount.finalPrice,
+            originalPrice: d.nextAssessmentDiscount.originalPrice,
+          });
+        }
         if (d.freeUsed) {
           setPaymentStatus("required");
           fetch(apiUrl("/billing/paypal-config"))
@@ -562,6 +614,31 @@ export default function Assess() {
       })
       .catch(() => setPaymentStatus("free"));
   }, [user]);
+
+  useEffect(() => {
+    if (!previousAssessmentId || !user) {
+      return;
+    }
+
+    fetch(apiUrl(`/assessments/${previousAssessmentId}/reuse-data`))
+      .then((r) => r.json() as Promise<{
+        success: boolean;
+        assessment?: PreviousAssessmentReuse;
+        error?: string;
+      }>)
+      .then((d) => {
+        if (!d.success || !d.assessment) {
+          throw new Error(d.error ?? "تعذر تحميل إجابات التحليل السابق");
+        }
+        setPreviousReuse(d.assessment);
+        setAnswerMode("reuse");
+      })
+      .catch((err: unknown) => {
+        setAnswerMode("new");
+        setPreviousReuseError(err instanceof Error ? err.message : "تعذر تحميل إجابات التحليل السابق");
+      })
+      .finally(() => setPreviousReuseLoading(false));
+  }, [previousAssessmentId, user]);
 
   async function handleFreeOrder() {
     const code = discountCode.trim();
@@ -578,6 +655,10 @@ export default function Assess() {
       if (!d.success || !d.paymentId) throw new Error(d.error ?? t("assessment.payment.freeOrderError"));
       setPaymentId(d.paymentId);
       setPaymentStatus("paid");
+      if (pendingPayment && assessmentId) {
+        setPendingPayment(false);
+        await submitAssessment(assessmentId, answers, openAnswer, d.paymentId);
+      }
     } catch (err: unknown) {
       setPaymentError(err instanceof Error ? err.message : t("assessment.payment.freeOrderFallback"));
     } finally {
@@ -628,7 +709,7 @@ export default function Assess() {
   if (!user) return <Redirect to="/login" />;
 
   // ── Payment gate screen ────────────────────────────────
-  if (paymentStatus === "required") {
+  if (paymentStatus === "required" && pendingPayment) {
     const displayPrice = discountInfo?.valid ? discountInfo.finalPrice : (paypalConfig?.price ?? 10);
     const originalPrice = paypalConfig?.price ?? 10;
 
@@ -656,8 +737,10 @@ export default function Assess() {
               steps={[
                 { label: t("privacyConsent.title"), state: "complete" },
                 { label: t("register.title"), state: "complete" },
+                { label: t("assessment.progress.setupStage"), state: "complete" },
+                { label: t("assessment.progress.questionsStage"), state: "complete" },
                 { label: t("assessment.payment.eyebrow"), state: "current" },
-                { label: t("assessment.shell.questionsLabel"), state: "upcoming" },
+                { label: t("assessment.progress.reportStage"), state: "upcoming" },
               ]}
             />
           </div>
@@ -709,6 +792,13 @@ export default function Assess() {
 
               <div className="mb-6">
                 <label className="mb-2 block text-sm font-bold text-slate-200">{t("assessment.payment.discountCodeLabel")}</label>
+                {discountInfo?.valid && discountInfo.discountPercent === 50 && (
+                  <div className="mb-3 rounded-2xl border border-teal-300/20 bg-teal-500/[0.08] px-4 py-3 text-sm leading-6 text-teal-100">
+                    {locale === "ar"
+                      ? "لأن لديك تحليلاً سابقاً، تم تطبيق خصم خاص لك 50% لهذا التحليل فقط. الكود صالح لمرة واحدة."
+                      : "Because you already have a previous assessment, a private 50% discount has been applied for this assessment only. This code is one-time use."}
+                  </div>
+                )}
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <input
                     type="text"
@@ -788,6 +878,10 @@ export default function Assess() {
                         if (!d.success || !d.paymentId) throw new Error(d.error ?? t("assessment.payment.captureOrderError"));
                         setPaymentId(d.paymentId);
                         setPaymentStatus("paid");
+                        if (pendingPayment && assessmentId) {
+                          setPendingPayment(false);
+                          await submitAssessment(assessmentId, answers, openAnswer, d.paymentId);
+                        }
                       }}
                       onError={(err) => {
                         setPaymentError(t("assessment.payment.paypalError"));
@@ -898,12 +992,71 @@ export default function Assess() {
     return pageQuestions.every((q) => getAnswer(q.questionId) !== null);
   }
 
+  async function submitAssessment(
+    targetAssessmentId: string,
+    selectedAnswers: Answer[],
+    selectedOpenAnswer: string,
+    overridePaymentId?: string,
+  ) {
+    if (submitting) return;
+    setSubmitting(true);
+    const elapsed = Math.max(1, Math.round((Date.now() - startTime.current) / 1000));
+    try {
+      const res = await fetch(apiUrl(`/assessments/${targetAssessmentId}/submit`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          answers: selectedAnswers,
+          ...(selectedOpenAnswer.trim() ? { open_answer: selectedOpenAnswer.trim() } : {}),
+          completion_time_seconds: elapsed,
+          ...((overridePaymentId ?? paymentId) ? { payment_id: overridePaymentId ?? paymentId } : {}),
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        if (data.error === "payment_required") {
+          setPaymentStatus("required");
+          setPendingPayment(true);
+          setSubmitting(false);
+          return;
+        }
+        throw new Error(data.message || data.error || "فشل الإرسال");
+      }
+      setPhase("processing");
+      pollRef.current = setInterval(async () => {
+        try {
+          const r = await fetch(apiUrl(`/assessments/${targetAssessmentId}/status`));
+          const d = await r.json();
+          if (!d.success) return;
+          if (d.assessment.status === "completed") {
+            clearInterval(pollRef.current!);
+            navigate(`/results/${targetAssessmentId}`);
+          } else if (d.assessment.status === "failed") {
+            clearInterval(pollRef.current!);
+            setPhase("error");
+          }
+        } catch { /* keep polling */ }
+      }, 3000);
+    } catch (err: unknown) {
+      setSetupError(err instanceof Error ? err.message : "فشل الإرسال");
+      setSubmitting(false);
+    }
+  }
+
   // ── Setup submit ───────────────────────────────────────
 
   async function handleSetupSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!domainChoice || (domainChoice === "Other" && !customDomain.trim())) return;
     const context = projectContext.trim();
+    if (answerMode === "reuse" && !context) {
+      setSetupError(
+        locale === "ar"
+          ? "عند استخدام نفس الإجابات، يجب إدخال سياق/هدف جديد حتى يتأثر التحليل الجديد بالدومين."
+          : "When reusing answers, add a new context/goal so the new analysis is affected by the selected domain."
+      );
+      return;
+    }
     setSetupError("");
     try {
       const res = await fetch(apiUrl("/assessments/start"), {
@@ -919,13 +1072,22 @@ export default function Assess() {
           report_language: reportLanguage,
           assessment_type: "full",
           ...(previousAssessmentId ? { previous_assessment_id: previousAssessmentId } : {}),
-          ...(paymentId ? { payment_id: paymentId } : {}),
         }),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || "فشل بدء التقييم");
       setAssessmentId(data.assessmentId);
       startTime.current = Date.now();
+      if (answerMode === "reuse" && previousReuse) {
+        setAnswers(previousReuse.answers);
+        setOpenAnswer(previousReuse.openAnswer ?? "");
+        if (paymentStatus === "required") {
+          setPendingPayment(true);
+          return;
+        }
+        await submitAssessment(data.assessmentId, previousReuse.answers, previousReuse.openAnswer ?? "");
+        return;
+      }
       setStep(1);
     } catch (err: unknown) {
       setSetupError(err instanceof Error ? err.message : "فشل بدء التقييم");
@@ -936,39 +1098,12 @@ export default function Assess() {
 
   async function handleFinalSubmit() {
     if (!assessmentId || submitting) return;
-    setSubmitting(true);
-    const elapsed = Math.round((Date.now() - startTime.current) / 1000);
-    try {
-      const res = await fetch(apiUrl(`/assessments/${assessmentId}/submit`), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          answers,
-          ...(openAnswer.trim() ? { open_answer: openAnswer.trim() } : {}),
-          completion_time_seconds: elapsed,
-        }),
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || "فشل الإرسال");
-      setPhase("processing");
-      pollRef.current = setInterval(async () => {
-        try {
-          const r = await fetch(apiUrl(`/assessments/${assessmentId}/status`));
-          const d = await r.json();
-          if (!d.success) return;
-          if (d.assessment.status === "completed") {
-            clearInterval(pollRef.current!);
-            navigate(`/results/${assessmentId}`);
-          } else if (d.assessment.status === "failed") {
-            clearInterval(pollRef.current!);
-            setPhase("error");
-          }
-        } catch { /* keep polling */ }
-      }, 3000);
-    } catch (err: unknown) {
-      setSetupError(err instanceof Error ? err.message : "فشل الإرسال");
-      setSubmitting(false);
+    if (paymentStatus === "required") {
+      setPaymentError("");
+      setPendingPayment(true);
+      return;
     }
+    await submitAssessment(assessmentId, answers, openAnswer);
   }
 
   // ── Processing screen ──────────────────────────────────
@@ -1098,6 +1233,90 @@ export default function Assess() {
             </div>
           </div>
 
+          {previousAssessmentId && (
+            <div className="mb-7 rounded-3xl border border-slate-400/10 bg-slate-950/45 p-4">
+              <div className="mb-4 flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] text-rose-200">
+                  <RotateCcw className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-black text-slate-100">
+                    {locale === "ar" ? "إجابات التحليل السابق" : "Previous assessment answers"}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-slate-400">
+                    {locale === "ar"
+                      ? "اختر هل تريد الإجابة على الأسئلة من جديد، أو استخدام نفس إجاباتك السلوكية السابقة مع دومين وسياق جديد."
+                      : "Choose whether to answer again or reuse your previous behavioral answers with a new domain and context."}
+                  </p>
+                  {previousReuse && (
+                    <p className="mt-2 text-xs leading-5 text-slate-500">
+                      {locale === "ar"
+                        ? `الإجابات السابقة محفوظة من: ${previousReuse.projectName}`
+                        : `Previous answers saved from: ${previousReuse.projectName}`}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {previousReuseLoading ? (
+                <div className="flex items-center gap-2 rounded-2xl border border-slate-400/10 bg-slate-900/45 px-4 py-3 text-sm text-slate-300">
+                  <Loader2 className="h-4 w-4 animate-spin text-rose-200" />
+                  {locale === "ar" ? "جاري تحميل الإجابات السابقة..." : "Loading previous answers..."}
+                </div>
+              ) : previousReuseError ? (
+                <div className="rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] px-4 py-3 text-sm text-rose-200">
+                  {previousReuseError}
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => setAnswerMode("reuse")}
+                    disabled={!previousReuse}
+                    className={`rounded-2xl border p-4 text-start transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
+                      answerMode === "reuse"
+                        ? "border-rose-300/35 bg-rose-500/[0.1] ring-2 ring-rose-500/10"
+                        : "border-slate-400/10 bg-slate-900/45 hover:border-rose-300/25"
+                    }`}
+                  >
+                    <div className="mb-2 flex items-center gap-2 text-sm font-black text-slate-100">
+                      <Check className="h-4 w-4 text-rose-200" />
+                      {locale === "ar" ? "استخدم نفس الإجابات" : "Reuse previous answers"}
+                    </div>
+                    <p className="text-xs leading-5 text-slate-400">
+                      {locale === "ar"
+                        ? "سيتم تخطي الأسئلة السلوكية فقط. يجب اختيار الدومين وإدخال السياق الحالي قبل التوليد."
+                        : "Only behavioral questions will be skipped. You still need to choose the domain and enter the current context before generation."}
+                    </p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAnswerMode("new");
+                      setAnswers([]);
+                      setOpenAnswer("");
+                    }}
+                    className={`rounded-2xl border p-4 text-start transition-all ${
+                      answerMode === "new"
+                        ? "border-rose-300/35 bg-rose-500/[0.1] ring-2 ring-rose-500/10"
+                        : "border-slate-400/10 bg-slate-900/45 hover:border-rose-300/25"
+                    }`}
+                  >
+                    <div className="mb-2 flex items-center gap-2 text-sm font-black text-slate-100">
+                      <ClipboardList className="h-4 w-4 text-rose-200" />
+                      {locale === "ar" ? "أجيب من جديد" : "Answer again"}
+                    </div>
+                    <p className="text-xs leading-5 text-slate-400">
+                      {locale === "ar"
+                        ? "ستمر على الأسئلة كاملة وتبني تحليلاً جديداً من إجابات جديدة."
+                        : "You will go through the full questions and build a new analysis from new answers."}
+                    </p>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {setupError && (
             <div className="mb-6 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] p-3 text-sm text-rose-200">
               {setupError}
@@ -1175,8 +1394,17 @@ export default function Assess() {
             </div>
 
             <div className="pt-3">
-              <JourneyPrimaryButton type="submit" className="w-full">
-                {t("assessment.wizard.startButton")}
+              <JourneyPrimaryButton
+                type="submit"
+                className="w-full"
+                disabled={previousReuseLoading || (answerMode === "reuse" && !previousReuse)}
+                icon={submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : undefined}
+              >
+                {submitting
+                  ? t("assessment.wizard.submitting")
+                  : answerMode === "reuse" && previousReuse
+                    ? (locale === "ar" ? "استخدم الإجابات وابدأ التوليد" : "Reuse answers and generate")
+                    : t("assessment.wizard.startButton")}
               </JourneyPrimaryButton>
             </div>
           </form>

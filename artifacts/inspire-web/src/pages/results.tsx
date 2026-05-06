@@ -24,6 +24,7 @@ import {
   Lightbulb,
   ArrowLeft,
   ArrowRight,
+  Star,
 } from "lucide-react";
 import {
   Accordion,
@@ -101,6 +102,17 @@ interface AssessmentDto {
   shareEnabled: boolean;
   previousAssessmentId: string | null;
   previousInspireTable: InspireRow[] | null;
+  feedback: AssessmentFeedbackDto | null;
+}
+
+interface AssessmentFeedbackDto {
+  id: string;
+  rating: number;
+  usefulAnswer: string | null;
+  mostUseful: string | null;
+  missing: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 function Skeleton({ className }: { className?: string }) {
@@ -425,6 +437,143 @@ function CopyButton({
   );
 }
 
+function ReportFeedbackPanel({
+  assessmentId,
+  initialFeedback,
+  displayLanguage,
+}: {
+  assessmentId: string;
+  initialFeedback: AssessmentFeedbackDto | null;
+  displayLanguage: SingleReportLanguage;
+}) {
+  const [rating, setRating] = useState(initialFeedback?.rating ?? 0);
+  const [usefulAnswer, setUsefulAnswer] = useState(initialFeedback?.usefulAnswer ?? "");
+  const [mostUseful, setMostUseful] = useState(initialFeedback?.mostUseful ?? "");
+  const [missing, setMissing] = useState(initialFeedback?.missing ?? "");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(Boolean(initialFeedback));
+  const [error, setError] = useState("");
+
+  const copy = {
+    title: localizedOperatingReportText(displayLanguage, "Rate this report", "قيّم هذا التقرير"),
+    useful: localizedOperatingReportText(displayLanguage, "Was the report useful?", "هل التقرير مفيد؟"),
+    usefulPlaceholder: localizedOperatingReportText(displayLanguage, "Yes, partly, or no - add a short note.", "نعم، جزئياً، أو لا - أضف ملاحظة قصيرة."),
+    mostUseful: localizedOperatingReportText(displayLanguage, "What was most useful?", "ما أكثر شيء كان مفيداً؟"),
+    missing: localizedOperatingReportText(displayLanguage, "What was missing?", "ما الذي كان ناقصاً؟"),
+    optional: localizedOperatingReportText(displayLanguage, "Optional", "اختياري"),
+    submit: localizedOperatingReportText(displayLanguage, "Send feedback", "إرسال feedback"),
+    saved: localizedOperatingReportText(displayLanguage, "Feedback saved. Thank you.", "تم حفظ التقييم. شكراً لك."),
+    choose: localizedOperatingReportText(displayLanguage, "Choose a rating first.", "اختر التقييم أولاً."),
+  };
+
+  async function submitFeedback() {
+    if (rating < 1 || rating > 5) {
+      setError(copy.choose);
+      return;
+    }
+    setSaving(true);
+    setError("");
+    try {
+      const res = await fetch(apiUrl(`/results/${assessmentId}/feedback`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rating,
+          useful_answer: usefulAnswer,
+          most_useful: mostUseful,
+          missing,
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Feedback failed");
+      setSaved(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Feedback failed");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.45 }}
+      className="private-report-screen-only rounded-2xl border border-white/10 bg-white/[0.035] p-5 text-start md:p-6"
+    >
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-xl font-black text-white">{copy.title}</h2>
+          <p className="mt-1 text-sm leading-6 text-white/55">{copy.useful}</p>
+        </div>
+        <div className="flex items-center gap-1" aria-label={copy.title}>
+          {[1, 2, 3, 4, 5].map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setRating(value)}
+              className="rounded-lg p-1.5 text-amber-200 transition-colors hover:bg-white/10"
+              aria-label={`${value}/5`}
+            >
+              <Star className={`h-6 w-6 ${value <= rating ? "fill-current" : "opacity-35"}`} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        <label className="space-y-2">
+          <span className="text-xs font-bold text-white/60">{copy.useful}</span>
+          <textarea
+            value={usefulAnswer}
+            onChange={(e) => setUsefulAnswer(e.target.value)}
+            maxLength={1000}
+            rows={4}
+            placeholder={copy.usefulPlaceholder}
+            className="min-h-28 w-full resize-none rounded-xl border border-white/10 bg-[#0a0c1c]/70 px-3 py-2 text-sm leading-6 text-white outline-none transition-colors placeholder:text-white/30 focus:border-rose-300/35"
+          />
+        </label>
+        <label className="space-y-2">
+          <span className="text-xs font-bold text-white/60">{copy.mostUseful} ({copy.optional})</span>
+          <textarea
+            value={mostUseful}
+            onChange={(e) => setMostUseful(e.target.value)}
+            maxLength={1000}
+            rows={4}
+            className="min-h-28 w-full resize-none rounded-xl border border-white/10 bg-[#0a0c1c]/70 px-3 py-2 text-sm leading-6 text-white outline-none transition-colors placeholder:text-white/30 focus:border-rose-300/35"
+          />
+        </label>
+        <label className="space-y-2">
+          <span className="text-xs font-bold text-white/60">{copy.missing} ({copy.optional})</span>
+          <textarea
+            value={missing}
+            onChange={(e) => setMissing(e.target.value)}
+            maxLength={1000}
+            rows={4}
+            className="min-h-28 w-full resize-none rounded-xl border border-white/10 bg-[#0a0c1c]/70 px-3 py-2 text-sm leading-6 text-white outline-none transition-colors placeholder:text-white/30 focus:border-rose-300/35"
+          />
+        </label>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-h-5 text-sm">
+          {error ? <span className="text-rose-200">{error}</span> : saved ? <span className="text-teal-200">{copy.saved}</span> : null}
+        </div>
+        <button
+          type="button"
+          onClick={submitFeedback}
+          disabled={saving}
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-rose-500 to-orange-500 px-5 py-2.5 text-sm font-black text-slate-950 transition-colors hover:from-rose-400 hover:to-orange-400 disabled:opacity-60"
+        >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+          {copy.submit}
+        </button>
+      </div>
+    </motion.section>
+  );
+}
+
 function isOperatingPatternReportContentV1(
   value: OperatingPatternReportContentV1 | null | undefined
 ): value is OperatingPatternReportContentV1 {
@@ -508,7 +657,7 @@ function platformInstructionItems(reportLanguage: SingleReportLanguage): Array<{
         intro:
           "استخدم هذه الخطوات عندما تريد أن يعمل ChatGPT بنفس التعليمات الإنجليزية في كل محادثة جديدة.",
         steps: [
-          "افتح ChatGPT وادخل إلى Customize ChatGPT أو إعدادات التعليمات المخصصة.",
+          "افتح ChatGPT واستخدم النص داخل تعليمات Custom GPT، أو الصقه في تعليمات المشاريع مثل Claude Projects.",
           'الصق النص الإنجليزي في خانة "How would you like ChatGPT to respond?" أو خانة التعليمات المناسبة.',
           "احفظ الإعدادات، ثم ابدأ محادثة جديدة مرتبطة بنفس طريقة العمل.",
         ],
@@ -548,7 +697,7 @@ function platformInstructionItems(reportLanguage: SingleReportLanguage): Array<{
       intro:
         "Use these steps when you want ChatGPT to follow the English instructions across new conversations.",
       steps: [
-        "Open ChatGPT and go to Customize ChatGPT or custom instructions settings.",
+        "Open ChatGPT and use the text in Custom GPT instructions, or paste it into project instructions like Claude Projects.",
         'Paste the English text into the "How would you like ChatGPT to respond?" field or the relevant instructions area.',
         "Save the settings, then start a new conversation using the same operating style.",
       ],
@@ -2170,6 +2319,12 @@ export default function Results() {
 	        )}
 		          </>
 		        )}
+
+        <ReportFeedbackPanel
+          assessmentId={assessment.id}
+          initialFeedback={assessment.feedback}
+          displayLanguage={operatingDisplayLanguage}
+        />
 
 	        {/* ── CTA ─────────────────────────────────────────────────────── */}
         {operatingReport ? (

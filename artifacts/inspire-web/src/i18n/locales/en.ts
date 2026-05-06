@@ -57,15 +57,15 @@ export const en: Dictionary = {
     },
     payment: {
       eyebrow: "Full assessment",
-      titleNew: "Start your full assessment",
-      titleRetry: "Revisit your profile and improve the result",
+      titleNew: "Complete payment to create your report",
+      titleRetry: "Complete payment to create a new assessment",
       subtitleNew:
-        "Unlock the complete 21-question analysis and generate a personal AI operating profile ready to use with any assistant.",
+        "Your answers are saved. Complete payment now to start the analysis and generate your ready-to-use AI operating profile.",
       subtitleRetry:
-        "Create an improved assessment linked to your previous result, with clearer comparison and a deeper output.",
+        "Your reassessment answers are ready. Complete payment to generate a new report linked to your previous result.",
       sidebarTitle: "What you unlock",
       sidebarText:
-        "The full path keeps payment, questions, analysis, and report generation in one guided INSPIRE journey.",
+        "Payment happens after your answers and before report generation, keeping the experience clear and connected.",
       priceAfterDiscount: "Price after discount",
       oneTime: "One-time payment",
       noSubscription: "No subscription · PDF report and sharing included",
@@ -76,8 +76,8 @@ export const en: Dictionary = {
       checkingDiscount: "Checking...",
       discountValid: "Code valid — {percent}% off",
       discountInvalid: "Code is invalid or expired",
-      freeActivate: "Activate full assessment for free",
-      freeActivateRetry: "Start reassessment for free",
+      freeActivate: "Create report for free",
+      freeActivateRetry: "Create reassessment report for free",
       activating: "Activating...",
       paypalLoading: "Loading payment gateway...",
       previewTitle: "A quick preview of the complete result",
@@ -258,7 +258,8 @@ export const en: Dictionary = {
         name: "ChatGPT",
         howTo:
           "Open ChatGPT customization settings and paste this profile into the instructions field to activate your assistant's working style.",
-        step1: "Open ChatGPT and go to Customize ChatGPT settings.",
+        step1:
+          "Open ChatGPT and use the profile in Custom GPT instructions, or paste it into project instructions like Claude Projects.",
         step2:
           'Paste the operating profile into the "How would you like ChatGPT to respond?" field.',
         step3:

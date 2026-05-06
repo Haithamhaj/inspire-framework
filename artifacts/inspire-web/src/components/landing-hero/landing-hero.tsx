@@ -117,7 +117,7 @@ function SignalChip({
       initial={reduced ? { opacity: 1 } : { opacity: 0, y: 10, scale: 0.94 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] backdrop-blur-md ${a.chip}`}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium backdrop-blur-md ${a.chip}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${a.dot}`} />
       {label}
@@ -147,7 +147,7 @@ function ProfilePreview({
         className={`relative rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-2xl ring-1 ${a.ring} backdrop-blur-xl`}
       >
         <div className="mb-4 flex items-center justify-between">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[11px] text-white/70">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[12px] font-medium text-white/76">
             <span className="relative flex h-1.5 w-1.5">
               {!reduced && (
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
@@ -156,7 +156,7 @@ function ProfilePreview({
             </span>
             {t("landing.hero.profile.liveLabel")}
           </div>
-          <div className={`text-[11px] ${a.text}`}>
+          <div className={`text-[12px] font-medium ${a.text}`}>
             {t("landing.hero.profile.tag")}
           </div>
         </div>
@@ -177,7 +177,7 @@ function ProfilePreview({
                 <Icon className={`h-5 w-5 ${a.text}`} />
               </div>
               <div>
-                <div className="text-[11px] text-white/50">
+                <div className="text-[12px] font-medium text-white/58">
                   {t("landing.hero.profile.identity")}
                 </div>
                 <div className="text-base font-semibold text-white">
@@ -185,7 +185,7 @@ function ProfilePreview({
                 </div>
               </div>
             </div>
-            <p className="text-[13px] leading-relaxed text-white/70">
+            <p className="text-[13.5px] leading-relaxed text-white/74">
               {t(goalKey(goal.key, "identityLine"))}
             </p>
           </motion.div>
@@ -201,7 +201,7 @@ function ProfilePreview({
               transition={{ duration: 0.4, delay: 0.05 }}
               className="rounded-xl border border-white/10 bg-black/20 p-3"
             >
-              <div className="mb-2 flex items-center gap-2 text-[11px] text-white/60">
+              <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-white/66">
                 <Workflow className="h-3.5 w-3.5" />
                 {t("landing.hero.profile.roles")}
               </div>
@@ -209,7 +209,7 @@ function ProfilePreview({
                 {[1, 2, 3].map((i) => (
                   <span
                     key={i}
-                    className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] text-white/80"
+                    className="rounded-md bg-white/5 px-2 py-0.5 text-[12px] font-medium text-white/84"
                   >
                     {t(goalKey(goal.key, `role${i}`))}
                   </span>
@@ -227,7 +227,7 @@ function ProfilePreview({
               transition={{ duration: 0.4, delay: 0.1 }}
               className="rounded-xl border border-white/10 bg-black/20 p-3"
             >
-              <div className="mb-2 flex items-center gap-2 text-[11px] text-white/60">
+              <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-white/66">
                 <Brain className="h-3.5 w-3.5" />
                 {t("landing.hero.profile.modes")}
               </div>
@@ -235,7 +235,7 @@ function ProfilePreview({
                 {[1, 2, 3].map((i) => (
                   <span
                     key={i}
-                    className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] text-white/80"
+                    className="rounded-md bg-white/5 px-2 py-0.5 text-[12px] font-medium text-white/84"
                   >
                     {t(goalKey(goal.key, `mode${i}`))}
                   </span>
@@ -253,11 +253,11 @@ function ProfilePreview({
               transition={{ duration: 0.4, delay: 0.15 }}
               className="col-span-2 rounded-xl border border-white/10 bg-black/20 p-3"
             >
-              <div className="mb-1.5 flex items-center gap-2 text-[11px] text-white/60">
+              <div className="mb-1.5 flex items-center gap-2 text-[12px] font-medium text-white/66">
                 <ShieldAlert className="h-3.5 w-3.5" />
                 {t("landing.hero.profile.rules")}
               </div>
-              <div className="text-[12.5px] text-white/85">
+              <div className="text-[13px] text-white/88">
                 {t(goalKey(goal.key, "outputRule"))}
               </div>
             </motion.div>
@@ -272,11 +272,11 @@ function ProfilePreview({
               transition={{ duration: 0.4, delay: 0.2 }}
               className={`col-span-2 rounded-xl border bg-gradient-to-br p-3 ${a.chip} from-white/[0.04] to-transparent`}
             >
-              <div className="mb-1.5 flex items-center gap-2 text-[11px] opacity-80">
+              <div className="mb-1.5 flex items-center gap-2 text-[12px] font-medium opacity-85">
                 <MessageSquare className="h-3.5 w-3.5" />
                 {t("landing.hero.profile.starter")}
               </div>
-              <div className="text-[12.5px] leading-relaxed">
+              <div className="text-[13px] leading-relaxed">
                 « {t(goalKey(goal.key, "starter"))} »
               </div>
             </motion.div>
@@ -297,22 +297,15 @@ function FloatingSignals({
   isRtl: boolean;
 }) {
   const t = useT();
-  const positionsRtl = [
-    { top: "-6%", right: "8%" },
-    { top: "12%", right: "-10%" },
-    { top: "48%", right: "-14%" },
-    { bottom: "8%", right: "-6%" },
+  const positions = [
+    { top: "-6%" },
+    { top: "12%" },
+    { top: "48%" },
+    { bottom: "8%" },
   ];
-  const positionsLtr = [
-    { top: "-6%", left: "8%" },
-    { top: "12%", left: "-10%" },
-    { top: "48%", left: "-14%" },
-    { bottom: "8%", left: "-6%" },
-  ];
-  const positions = isRtl ? positionsRtl : positionsLtr;
 
   return (
-    <div className="pointer-events-none absolute inset-0 -z-0">
+    <div className="pointer-events-none absolute inset-0 z-20 hidden lg:block">
       <AnimatePresence mode="popLayout">
         {[1, 2, 3, 4].map((i) => {
           const pos = positions[(i - 1) % positions.length];
@@ -346,14 +339,16 @@ function FloatingSignals({
                       ease: "easeInOut",
                     },
               }}
-              className="absolute"
+              className={`absolute ${isRtl ? "left-full ml-4" : "right-full mr-4"}`}
               style={pos}
             >
-              <SignalChip
-                label={t(goalKey(goal.key, `signal${i}`))}
-                accent={goal.accent}
-                reduced={reduced}
-              />
+              <div className="whitespace-nowrap">
+                <SignalChip
+                  label={t(goalKey(goal.key, `signal${i}`))}
+                  accent={goal.accent}
+                  reduced={reduced}
+                />
+              </div>
             </motion.div>
           );
         })}
@@ -382,7 +377,7 @@ function GoalSelector({
             type="button"
             onClick={() => onSelect(g.key)}
             data-testid={`hero-goal-${g.key}`}
-            className={`group inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[13px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60 ${
+            className={`group inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[13.5px] font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400/60 ${
               isActive
                 ? `${a.chip} ring-2 ${a.ring} shadow-lg`
                 : "border-white/10 bg-white/[0.03] text-white/70 hover:bg-white/[0.06] hover:text-white"
@@ -413,18 +408,18 @@ function BeforeAfter({ goal, reduced }: { goal: GoalDef; reduced: boolean }) {
         className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-5"
       >
         <div className="mb-3 flex items-center justify-between">
-          <div className="inline-flex items-center gap-2 text-[12px] text-white/60">
+          <div className="inline-flex items-center gap-2 text-[13px] font-medium text-white/66">
             <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
             {t("landing.hero.compare.withoutLabel")}
           </div>
-          <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 text-[10px] text-white/50">
+          <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 text-[11.5px] font-medium text-white/58">
             {t("landing.hero.compare.withoutTag")}
           </span>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-black/20 p-4 text-[13px] leading-relaxed text-white/70">
+        <div className="rounded-xl border border-white/[0.06] bg-black/20 p-4 text-[14px] leading-relaxed text-white/76">
           {t(goalKey(goal.key, "before"))}
         </div>
-        <div className="mt-3 flex items-center gap-2 text-[11px] text-white/50">
+        <div className="mt-3 flex items-center gap-2 text-[12.5px] font-medium text-white/58">
           <span className="h-1 w-1 rounded-full bg-white/40" />
           {t("landing.hero.compare.withoutNote")}
         </div>
@@ -441,18 +436,18 @@ function BeforeAfter({ goal, reduced }: { goal: GoalDef; reduced: boolean }) {
           className={`pointer-events-none absolute -top-12 -left-12 h-40 w-40 rounded-full bg-gradient-to-br ${a.glow} blur-2xl`}
         />
         <div className="relative mb-3 flex items-center justify-between">
-          <div className="inline-flex items-center gap-2 text-[12px]">
+          <div className="inline-flex items-center gap-2 text-[13px] font-medium">
             <Sparkles className={`h-3.5 w-3.5 ${a.text}`} />
             {t("landing.hero.compare.withLabel")}
           </div>
-          <span className="rounded-full border border-white/15 bg-black/30 px-2 py-0.5 text-[10px] text-white/70">
+          <span className="rounded-full border border-white/15 bg-black/30 px-2 py-0.5 text-[11.5px] font-medium text-white/76">
             {t("landing.hero.compare.withTag")}
           </span>
         </div>
-        <div className="relative rounded-xl border border-white/10 bg-black/30 p-4 text-[13px] leading-relaxed text-white/90">
+        <div className="relative rounded-xl border border-white/10 bg-black/30 p-4 text-[14px] leading-relaxed text-white/92">
           {t(goalKey(goal.key, "after"))}
         </div>
-        <div className="relative mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/70">
+        <div className="relative mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] font-medium text-white/76">
           {(["withChip1", "withChip2", "withChip3", "withChip4"] as const).map(
             (k) => (
               <span key={k} className="inline-flex items-center gap-1">
@@ -534,7 +529,7 @@ export default function LandingHero({
               initial={reduced ? { opacity: 1 } : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[12px] text-white/70 backdrop-blur-md"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-[13px] font-medium text-white/78 backdrop-blur-md"
             >
               <Sparkles className="h-3.5 w-3.5 text-rose-300" />
               {t("landing.hero.eyebrow")}
@@ -596,20 +591,20 @@ export default function LandingHero({
               initial={reduced ? { opacity: 1 } : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-5 flex flex-wrap items-center gap-2 text-[12.5px] text-white/55"
+              className="mt-5 flex flex-wrap items-center gap-2 text-[13.5px] font-medium text-white/68"
             >
               <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               {t("landing.hero.trustLine")}
-              <span className="text-white/80">ChatGPT</span>·
-              <span className="text-white/80">Gemini</span>·
-              <span className="text-white/80">Claude</span>
+              <span className="text-white/88">ChatGPT</span>·
+              <span className="text-white/88">Gemini</span>·
+              <span className="text-white/88">Claude</span>
             </motion.div>
 
             <motion.div
               initial={reduced ? { opacity: 1 } : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="mt-8 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-gradient-to-l from-rose-500/10 via-violet-500/10 to-teal-500/10 px-4 py-2 text-[13px] text-white/85"
+              className="mt-8 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-gradient-to-l from-rose-500/10 via-violet-500/10 to-teal-500/10 px-4 py-2.5 text-[14px] font-medium text-white/90"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-200" />
               {t("landing.hero.slogan")}
@@ -631,18 +626,18 @@ export default function LandingHero({
         <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-md md:p-8">
           <div className="mb-5 flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
             <div>
-              <div className="mb-1 inline-flex items-center gap-2 text-[12px] text-white/60">
+              <div className="mb-1 inline-flex items-center gap-2 text-[13px] font-medium text-white/68">
                 <Target className="h-3.5 w-3.5 text-rose-300" />
                 {t("landing.hero.goalsEyebrow")}
               </div>
               <h2 className="text-[22px] font-bold md:text-[26px]">
                 {t("landing.hero.goalsTitle")}
               </h2>
-              <p className="mt-1 max-w-xl text-[13.5px] text-white/65 md:text-[14.5px]">
+              <p className="mt-1 max-w-xl text-[14.5px] leading-6 text-white/72 md:text-[15px]">
                 {t("landing.hero.goalsSubtitle")}
               </p>
             </div>
-            <div className="text-[11.5px] text-white/45">
+            <div className="text-[13px] font-medium text-white/58">
               {userTouched
                 ? t("landing.hero.manualSelected")
                 : t("landing.hero.autoCycling")}
@@ -657,7 +652,7 @@ export default function LandingHero({
       <section className="relative mx-auto w-full max-w-7xl px-5 pb-16 md:px-8 md:pb-20">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <div className="mb-1 inline-flex items-center gap-2 text-[12px] text-white/60">
+            <div className="mb-1 inline-flex items-center gap-2 text-[13px] font-medium text-white/68">
               <Sparkles className="h-3.5 w-3.5 text-violet-300" />
               {t("landing.hero.compare.eyebrow")}
             </div>
@@ -665,7 +660,7 @@ export default function LandingHero({
               {t("landing.hero.compare.title")}
             </h2>
           </div>
-          <div className="hidden text-[12px] text-white/45 md:block">
+          <div className="hidden text-[13px] font-medium text-white/58 md:block">
             {t("landing.hero.compare.goalExampleLabel")}{" "}
             {t(goalKey(goal.key, "label"))}
           </div>

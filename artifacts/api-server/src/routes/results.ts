@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { assessmentsTable, usersTable } from "@workspace/db/schema";
+import { assessmentFeedbackTable, assessmentsTable, usersTable } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import { generateAndSavePDF, type AssessmentForPDF } from "../lib/pdf";
@@ -8,8 +8,16 @@ import path from "path";
 import fs from "fs";
 import { randomBytes } from "crypto";
 import { type InspireAxisScore } from "../inspire-types";
+import { z } from "zod";
 
 const router: IRouter = Router();
+
+const FeedbackSchema = z.object({
+  rating: z.number().int().min(1).max(5),
+  useful_answer: z.string().trim().max(1000).optional().nullable(),
+  most_useful: z.string().trim().max(1000).optional().nullable(),
+  missing: z.string().trim().max(1000).optional().nullable(),
+});
 
 async function requireUser(req: Request, _res: Response) {
   const authHeader = req.headers["authorization"] as string | undefined;
@@ -49,6 +57,24 @@ router.get(
       res.status(404).json({ success: false, error: "Not found" });
       return;
     }
+
+    const [feedback] = await db
+      .select({
+        id: assessmentFeedbackTable.id,
+        rating: assessmentFeedbackTable.rating,
+        usefulAnswer: assessmentFeedbackTable.usefulAnswer,
+        mostUseful: assessmentFeedbackTable.mostUseful,
+        missing: assessmentFeedbackTable.missing,
+        createdAt: assessmentFeedbackTable.createdAt,
+        updatedAt: assessmentFeedbackTable.updatedAt,
+      })
+      .from(assessmentFeedbackTable)
+      .where(
+        and(
+          eq(assessmentFeedbackTable.assessmentId, assessment.id),
+          eq(assessmentFeedbackTable.userId, user.id)
+        )
+      );
 
     // Fetch previous assessment's inspire table for delta display
     // Scoped to the same user to prevent cross-user IDOR data leakage
@@ -93,8 +119,92 @@ router.get(
         shareEnabled: assessment.shareEnabled,
         previousAssessmentId: assessment.previousAssessmentId ?? null,
         previousInspireTable,
+        feedback: feedback ?? null,
       },
     });
+  }
+);
+
+// ─── POST /api/results/:id/feedback ──────────────────────
+
+router.post(
+  "/results/:id/feedback",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const parsed = FeedbackSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        success: false,
+        error: "Validation failed",
+        details: parsed.error.flatten(),
+      });
+      return;
+    }
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select({
+        id: assessmentsTable.id,
+        status: assessmentsTable.status,
+        userId: assessmentsTable.userId,
+      })
+      .from(assessmentsTable)
+      .where(
+        and(
+          eq(assessmentsTable.id, id as string),
+          eq(assessmentsTable.userId, user.id)
+        )
+      );
+
+    if (!assessment || assessment.status !== "completed") {
+      res.status(404).json({ success: false, error: "Completed assessment not found" });
+      return;
+    }
+
+    const clean = (value: string | null | undefined) => {
+      const trimmed = value?.trim();
+      return trimmed ? trimmed : null;
+    };
+
+    const [feedback] = await db
+      .insert(assessmentFeedbackTable)
+      .values({
+        assessmentId: assessment.id,
+        userId: user.id,
+        rating: parsed.data.rating,
+        usefulAnswer: clean(parsed.data.useful_answer),
+        mostUseful: clean(parsed.data.most_useful),
+        missing: clean(parsed.data.missing),
+      })
+      .onConflictDoUpdate({
+        target: [
+          assessmentFeedbackTable.assessmentId,
+          assessmentFeedbackTable.userId,
+        ],
+        set: {
+          rating: parsed.data.rating,
+          usefulAnswer: clean(parsed.data.useful_answer),
+          mostUseful: clean(parsed.data.most_useful),
+          missing: clean(parsed.data.missing),
+          updatedAt: new Date(),
+        },
+      })
+      .returning({
+        id: assessmentFeedbackTable.id,
+        rating: assessmentFeedbackTable.rating,
+        usefulAnswer: assessmentFeedbackTable.usefulAnswer,
+        mostUseful: assessmentFeedbackTable.mostUseful,
+        missing: assessmentFeedbackTable.missing,
+        createdAt: assessmentFeedbackTable.createdAt,
+        updatedAt: assessmentFeedbackTable.updatedAt,
+      });
+
+    res.json({ success: true, feedback });
   }
 );
 

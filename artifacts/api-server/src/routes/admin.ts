@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { assessmentsTable, usersTable, discountCodesTable, paymentsTable } from "@workspace/db/schema";
+import { assessmentFeedbackTable, assessmentsTable, usersTable, discountCodesTable, paymentsTable } from "@workspace/db/schema";
 import { eq, and, gte, lte, or, desc, count, avg, type SQL } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendResultsEmail } from "../lib/email";
@@ -45,7 +45,7 @@ router.get(
     const startOfWeek = new Date(startOfToday);
     startOfWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
 
-    const [[totalRow], [usersRow], [completedRow], [processingRow], [pendingRetryRow], [failedRow], [todayRow], [weekRow], [avgTimeRow]] =
+    const [[totalRow], [usersRow], [completedRow], [processingRow], [pendingRetryRow], [failedRow], [lowRatingRow], [todayRow], [weekRow], [avgTimeRow]] =
       await Promise.all([
         db.select({ total: count() }).from(assessmentsTable),
         db.select({ total: count() }).from(usersTable),
@@ -53,6 +53,7 @@ router.get(
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "processing")),
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "pending_retry")),
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "failed")),
+        db.select({ total: count() }).from(assessmentFeedbackTable).where(lte(assessmentFeedbackTable.rating, 2)),
         db.select({ total: count() }).from(assessmentsTable).where(gte(assessmentsTable.createdAt, startOfToday)),
         db.select({ total: count() }).from(assessmentsTable).where(gte(assessmentsTable.createdAt, startOfWeek)),
         db.select({ avg: avg(assessmentsTable.completionTimeSeconds) }).from(assessmentsTable).where(eq(assessmentsTable.status, "completed")),
@@ -72,6 +73,7 @@ router.get(
         processingAssessments: Number(processingRow?.total ?? 0),
         pendingRetryAssessments: Number(pendingRetryRow?.total ?? 0),
         failedAssessments: Number(failedRow?.total ?? 0),
+        lowRatingAssessments: Number(lowRatingRow?.total ?? 0),
         assessmentsToday: Number(todayRow?.total ?? 0),
         assessmentsThisWeek: Number(weekRow?.total ?? 0),
         completionRate,
@@ -180,10 +182,28 @@ router.get(
     );
     const paymentById = Object.fromEntries(payments.map((p) => [p.id, p]));
 
+    const feedbacks = assessmentIds.length > 0
+      ? await db
+          .select({
+            assessmentId: assessmentFeedbackTable.assessmentId,
+            rating: assessmentFeedbackTable.rating,
+            usefulAnswer: assessmentFeedbackTable.usefulAnswer,
+            mostUseful: assessmentFeedbackTable.mostUseful,
+            missing: assessmentFeedbackTable.missing,
+            updatedAt: assessmentFeedbackTable.updatedAt,
+          })
+          .from(assessmentFeedbackTable)
+          .where(or(...assessmentIds.map((id) => eq(assessmentFeedbackTable.assessmentId, id))))
+      : [];
+    const feedbackByAssessmentId = Object.fromEntries(
+      feedbacks.map((f) => [f.assessmentId, f])
+    );
+
     let enriched = allAssessments.map((a) => ({
       ...a,
       user: userMap[a.userId] ?? null,
       payment: paymentByAssessmentId[a.id] ?? (a.paymentId ? paymentById[a.paymentId] : null),
+      feedback: feedbackByAssessmentId[a.id] ?? null,
     }));
 
     // Apply search filter (name/email)
@@ -203,11 +223,14 @@ router.get(
           a.payment?.status === "completed" &&
           a.status !== "completed"
       );
+    } else if (recovery === "low_rating") {
+      enriched = enriched.filter((a) => (a.feedback?.rating ?? 99) <= 2);
     } else if (recovery === "needs_attention") {
       enriched = enriched.filter(
         (a) =>
           a.status === "failed" ||
           a.status === "pending_retry" ||
+          (a.feedback?.rating ?? 99) <= 2 ||
           (a.payment?.status === "completed" && a.status !== "completed")
       );
     }
@@ -232,6 +255,11 @@ router.get(
       retryCount: a.retryCount,
       nextRetryAt: a.nextRetryAt,
       hasReportContent: Boolean(a.reportContent),
+      feedbackRating: a.feedback?.rating ?? null,
+      feedbackUsefulAnswer: a.feedback?.usefulAnswer ?? null,
+      feedbackMostUseful: a.feedback?.mostUseful ?? null,
+      feedbackMissing: a.feedback?.missing ?? null,
+      feedbackUpdatedAt: a.feedback?.updatedAt ?? null,
       paymentId: a.payment?.id ?? a.paymentId,
       paymentStatus: a.payment?.status ?? null,
       paypalOrderId: a.payment?.paypalOrderId ?? null,

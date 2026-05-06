@@ -6,6 +6,7 @@ import {
   integer,
   boolean,
 } from "drizzle-orm/pg-core";
+import { usersTable } from "./users";
 
 export const discountCodesTable = pgTable("discount_codes", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -20,6 +21,9 @@ export const discountCodesTable = pgTable("discount_codes", {
   usedCount: integer("used_count").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   expiresAt: timestamp("expires_at"),
+  userId: uuid("user_id").references(() => usersTable.id, {
+    onDelete: "cascade",
+  }),
 });
 
 export type DiscountCode = typeof discountCodesTable.$inferSelect;

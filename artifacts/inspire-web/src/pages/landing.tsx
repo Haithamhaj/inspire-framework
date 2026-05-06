@@ -87,13 +87,13 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">
+            <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">
               {locale === "ar" ? "شاهد كيف يعمل" : "See It In Action"}
             </span>
             <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">
               {locale === "ar" ? "الفرق الذي يصنعه ملف التشغيل" : "The Difference a Profile Makes"}
             </h2>
-            <p className="text-slate-400 max-w-xl mx-auto">
+            <p className="text-[15px] leading-7 text-slate-400 max-w-xl mx-auto">
               {locale === "ar"
                 ? "بدون ملف تشغيل، الذكاء الاصطناعي يجيب بشكل عام. بعده، يعرف تمامًا كيف تفكر وما تحتاجه."
                 : "Without a profile, AI responds generically. With one, it knows exactly how you think and what you need."}
@@ -119,7 +119,7 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.philosophy.eyebrow}</span>
+            <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">{copy.philosophy.eyebrow}</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-50 mb-6">
               {copy.philosophy.title}
             </h2>
@@ -150,7 +150,7 @@ export default function Landing() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.07 }}
-                    className="flex items-start gap-3 text-slate-400 text-sm leading-relaxed"
+                    className="flex items-start gap-3 text-slate-400 text-[15px] leading-relaxed"
                   >
                     <span className="mt-1 w-5 h-5 rounded-full border border-red-500/40 flex items-center justify-center shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-red-500/60" />
@@ -182,7 +182,7 @@ export default function Landing() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.07 }}
-                    className="flex items-start gap-3 text-slate-300 text-sm leading-relaxed"
+                    className="flex items-start gap-3 text-slate-300 text-[15px] leading-relaxed"
                   >
                     <CheckCircle2 className="mt-0.5 h-5 w-5 text-accent shrink-0" />
                     {item}
@@ -203,11 +203,11 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.axes.eyebrow}</span>
+            <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">{copy.axes.eyebrow}</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-slate-50 mb-4">
               <span className="text-transparent bg-clip-text bg-gradient-to-l from-accent to-orange-400" dir="ltr">INSPIRE</span> {copy.axes.titleSuffix}
             </h2>
-            <p className="text-slate-400 max-w-xl mx-auto">{copy.axes.subtitle}</p>
+            <p className="text-[15px] leading-7 text-slate-400 max-w-xl mx-auto">{copy.axes.subtitle}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -234,12 +234,12 @@ export default function Landing() {
 
                   <div className="flex items-baseline gap-2 mb-2">
                     <span className={`text-2xl font-display font-black ${axis.text}`} dir="ltr">{axis.letter}</span>
-                    <span className="text-sm font-bold text-slate-100">{item.name}</span>
+                    <span className="text-[15px] font-bold text-slate-100">{item.name}</span>
                   </div>
                   {locale === "ar" && (
-                    <div className="text-xs text-slate-500 mb-3 italic" dir="ltr">{axis.latin}</div>
+                    <div className="text-[13px] text-slate-500 mb-3 italic" dir="ltr">{axis.latin}</div>
                   )}
-                  <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
+                  <p className="text-[15px] text-slate-400 leading-relaxed">{item.desc}</p>
                 </motion.div>
               );
             })}
@@ -256,10 +256,10 @@ export default function Landing() {
                 <Sparkles className="h-6 w-6 text-accent" />
               </div>
               <p className="font-bold text-slate-50 mb-2">{copy.axes.ctaTitle}</p>
-              <p className="text-xs text-slate-400 mb-5 leading-relaxed">{copy.axes.ctaSubtitle}</p>
+              <p className="text-[13.5px] text-slate-400 mb-5 leading-relaxed">{copy.axes.ctaSubtitle}</p>
               <Link
                 href="/privacy-consent"
-                className="px-5 py-2.5 bg-accent text-white rounded-xl text-sm font-bold hover:bg-accent/90 transition-colors shadow-lg shadow-accent/20"
+                className="px-5 py-2.5 bg-accent text-white rounded-xl text-[15px] font-bold hover:bg-accent/90 transition-colors shadow-lg shadow-accent/20"
               >
                 {copy.axes.ctaButton}
               </Link>
@@ -277,9 +277,9 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.sample.eyebrow}</span>
+            <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">{copy.sample.eyebrow}</span>
             <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">{copy.sample.title}</h2>
-            <p className="text-slate-400 max-w-xl mx-auto">{copy.sample.subtitle}</p>
+            <p className="text-[15px] leading-7 text-slate-400 max-w-xl mx-auto">{copy.sample.subtitle}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
@@ -296,8 +296,8 @@ export default function Landing() {
                 >
                   <span className="text-2xl shrink-0">{SAMPLE_FEATURE_ICONS[i]}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-slate-100 text-sm">{item.title}</div>
-                    <div className="text-xs text-slate-400 mt-0.5">{item.desc}</div>
+                    <div className="font-semibold text-slate-100 text-[15px]">{item.title}</div>
+                    <div className="text-[13.5px] leading-5 text-slate-400 mt-1">{item.desc}</div>
                   </div>
                   <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                 </motion.div>
@@ -319,22 +319,22 @@ export default function Landing() {
                       <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
                       <span className="w-3 h-3 rounded-full bg-green-500/70" />
                     </div>
-                    <span className="text-xs text-white/50 ml-2">{copy.sample.fileName}</span>
+                    <span className="text-[13px] text-white/60 ml-2">{copy.sample.fileName}</span>
                   </div>
                   <button
                     onClick={copySample}
-                    className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-slate-800/70"
+                    className="flex items-center gap-1.5 text-[13px] font-medium text-slate-400 hover:text-white transition-colors px-2 py-1 rounded-md hover:bg-slate-800/70"
                   >
                     <Copy className="h-3.5 w-3.5" />
                     {copied ? copy.sample.copiedLabel : copy.sample.copyLabel}
                   </button>
                 </div>
                 <div className="p-6 bg-slate-950/98">
-                  <pre className="text-xs text-emerald-400/90 leading-relaxed whitespace-pre-wrap font-mono" dir="ltr">
+                  <pre className="text-[13px] text-emerald-400/90 leading-relaxed whitespace-pre-wrap font-mono" dir="ltr">
                     {SAMPLE}
                   </pre>
                 </div>
-                <div className="bg-slate-950/95 px-5 py-3 border-t border-slate-400/10 flex items-center justify-between text-xs text-white/40" dir={dir}>
+                <div className="bg-slate-950/95 px-5 py-3 border-t border-slate-400/10 flex items-center justify-between text-[13px] text-white/50" dir={dir}>
                   <span>{copy.sample.footerHint}</span>
                   <span className="px-2 py-0.5 bg-accent/20 text-accent rounded-full">{copy.sample.badge}</span>
                 </div>
@@ -353,9 +353,9 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.how.eyebrow}</span>
+            <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">{copy.how.eyebrow}</span>
             <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">{copy.how.title}</h2>
-            <p className="text-slate-400 max-w-xl mx-auto">{copy.how.subtitle}</p>
+            <p className="text-[15px] leading-7 text-slate-400 max-w-xl mx-auto">{copy.how.subtitle}</p>
           </motion.div>
 
           <div className="relative">
@@ -378,7 +378,7 @@ export default function Landing() {
                     </div>
                     <div className="text-5xl font-display font-black text-white/[0.08] mb-2 -mt-2">{step.n}</div>
                     <h3 className="text-lg font-bold text-slate-100 mb-3">{step.title}</h3>
-                    <p className="text-sm text-slate-400 leading-relaxed max-w-[220px] mx-auto">{step.desc}</p>
+                    <p className="text-[15px] text-slate-400 leading-relaxed max-w-[240px] mx-auto">{step.desc}</p>
                   </motion.div>
                 );
               })}
@@ -396,9 +396,9 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.pricing.eyebrow}</span>
+            <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">{copy.pricing.eyebrow}</span>
             <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">{copy.pricing.title}</h2>
-            <p className="text-slate-400 max-w-xl mx-auto">{copy.pricing.subtitle}</p>
+            <p className="text-[15px] leading-7 text-slate-400 max-w-xl mx-auto">{copy.pricing.subtitle}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
@@ -410,16 +410,16 @@ export default function Landing() {
               className="bg-slate-950/55 border-2 border-slate-400/10 rounded-3xl p-8 flex flex-col shadow-2xl shadow-black/20"
             >
               <div className="mb-6">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/70 text-xs font-semibold text-slate-300 mb-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/70 text-[13px] font-semibold text-slate-300 mb-3">
                   <Zap className="h-3.5 w-3.5" />
                   {copy.pricing.free.badge}
                 </div>
                 <div className="text-5xl font-display font-black text-slate-50 mb-1">{copy.pricing.free.price}</div>
-                <div className="text-sm text-slate-400">{copy.pricing.free.period}</div>
+                <div className="text-[15px] text-slate-400">{copy.pricing.free.period}</div>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
                 {copy.pricing.free.features.map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm text-slate-400">
+                  <li key={i} className="flex items-center gap-3 text-[15px] text-slate-400">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                     {f}
                   </li>
@@ -443,24 +443,24 @@ export default function Landing() {
               className="relative bg-slate-950 border-2 border-accent/30 rounded-3xl p-8 flex flex-col shadow-2xl shadow-accent/20"
             >
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <span className="bg-accent text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-accent/30 flex items-center gap-1.5 whitespace-nowrap">
+                <span className="bg-accent text-white text-[13px] font-bold px-5 py-1.5 rounded-full shadow-lg shadow-accent/30 flex items-center gap-1.5 whitespace-nowrap">
                   <CreditCard className="h-3.5 w-3.5" /> {copy.pricing.paid.ribbon}
                 </span>
               </div>
               <div className="mb-6">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/70 text-xs font-semibold text-slate-300 mb-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/70 text-[13px] font-semibold text-slate-300 mb-3">
                   <Brain className="h-3.5 w-3.5" />
                   {copy.pricing.paid.badge}
                 </div>
                 <div className="flex items-end gap-2 mb-1">
                   <div className="text-5xl font-display font-black text-white">{copy.pricing.paid.price}</div>
-                  <div className="text-white/50 text-sm mb-1">{copy.pricing.paid.perUnit}</div>
+                  <div className="text-white/55 text-[15px] mb-1">{copy.pricing.paid.perUnit}</div>
                 </div>
-                <div className="text-sm text-white/50">{copy.pricing.paid.sublabel}</div>
+                <div className="text-[15px] text-white/55">{copy.pricing.paid.sublabel}</div>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
                 {copy.pricing.paid.features.map((f, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm text-white/80">
+                  <li key={i} className="flex items-center gap-3 text-[15px] text-white/82">
                     <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                     {f}
                   </li>
@@ -487,7 +487,7 @@ export default function Landing() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <span className="text-xs font-semibold tracking-widest text-accent uppercase mb-3 block">{copy.faq.eyebrow}</span>
+            <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">{copy.faq.eyebrow}</span>
             <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">{copy.faq.title}</h2>
           </motion.div>
 
@@ -505,7 +505,7 @@ export default function Landing() {
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   className={`w-full flex items-center justify-between px-6 py-5 ${isRtl ? "text-right" : "text-left"} hover:bg-slate-900/55 transition-colors`}
                 >
-                  <span className="font-semibold text-slate-100 text-sm leading-relaxed">{item.q}</span>
+                  <span className="font-semibold text-slate-100 text-[15px] leading-relaxed">{item.q}</span>
                   {openFaq === i ? (
                     <ChevronUp className={`h-5 w-5 text-slate-400 shrink-0 ${isRtl ? "mr-3" : "ml-3"}`} />
                   ) : (
@@ -521,7 +521,7 @@ export default function Landing() {
                       transition={{ duration: 0.25 }}
                       className="overflow-hidden"
                     >
-                      <p className="px-6 pb-5 text-sm text-slate-400 leading-relaxed border-t border-slate-400/10 pt-4">{item.a}</p>
+                      <p className="px-6 pb-5 text-[15px] text-slate-400 leading-relaxed border-t border-slate-400/10 pt-4">{item.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -539,7 +539,7 @@ export default function Landing() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent text-xs font-semibold mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent text-[13px] font-semibold mb-6">
               <span className="flex h-2 w-2 rounded-full bg-accent animate-pulse" />
               {copy.finalCta.badge}
             </div>

@@ -27,6 +27,80 @@ async function requireUser(req: Request, _res: Response) {
   return user ?? null;
 }
 
+function isV2AnswerArray(value: unknown): value is Array<{ questionId: string; optionId: string }> {
+  return Array.isArray(value) && value.every(
+    (item) =>
+      item &&
+      typeof item === "object" &&
+      typeof (item as { questionId?: unknown }).questionId === "string" &&
+      typeof (item as { optionId?: unknown }).optionId === "string"
+  );
+}
+
+// ─── GET /api/assessments/:id/reuse-data ─────────────────
+
+router.get(
+  "/assessments/:id/reuse-data",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select({
+        id: assessmentsTable.id,
+        status: assessmentsTable.status,
+        projectName: assessmentsTable.projectName,
+        projectGoal: assessmentsTable.projectGoal,
+        domain: assessmentsTable.domain,
+        customDomain: assessmentsTable.customDomain,
+        domainSpecialization: assessmentsTable.domainSpecialization,
+        projectContext: assessmentsTable.projectContext,
+        reportLanguage: assessmentsTable.reportLanguage,
+        assessmentType: assessmentsTable.assessmentType,
+        behavioralAnswers: assessmentsTable.behavioralAnswers,
+        openAnswer: assessmentsTable.openAnswer,
+      })
+      .from(assessmentsTable)
+      .where(
+        and(
+          eq(assessmentsTable.id, id as string),
+          eq(assessmentsTable.userId, user.id)
+        )
+      );
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    if ((assessment.assessmentType ?? "full") !== "full" || !isV2AnswerArray(assessment.behavioralAnswers)) {
+      res.status(400).json({ success: false, error: "This assessment cannot be reused" });
+      return;
+    }
+
+    res.json({
+      success: true,
+      assessment: {
+        id: assessment.id,
+        status: assessment.status,
+        projectName: assessment.projectName,
+        projectGoal: assessment.projectGoal,
+        domain: assessment.domain,
+        customDomain: assessment.customDomain,
+        domainSpecialization: assessment.domainSpecialization,
+        projectContext: assessment.projectContext,
+        reportLanguage: assessment.reportLanguage,
+        answers: assessment.behavioralAnswers,
+        openAnswer: assessment.openAnswer ?? "",
+      },
+    });
+  }
+);
+
 // ─── POST /api/assessments/start ──────────────────────────
 
 router.post(
@@ -67,30 +141,11 @@ router.post(
       payment_id,
     } = parsed.data;
 
-    // Count completed assessments for this user
-    const [completedRow] = await db
-      .select({ total: count() })
-      .from(assessmentsTable)
-      .where(
-        and(
-          eq(assessmentsTable.userId, user.id),
-          eq(assessmentsTable.status, "completed")
-        )
-      );
-    const _completedCount = Number(completedRow?.total ?? 0);
-
-    // Mini assessments are always free; all full assessments require payment
+    // Full assessments can start before payment. If a completed payment is
+    // supplied for compatibility, link it here; otherwise payment is validated
+    // at final submission before report generation.
     let validatedPaymentId: string | null = null;
-    if (assessment_type !== "mini") {
-      if (!payment_id) {
-        res.status(403).json({
-          success: false,
-          error: "payment_required",
-          message: "المسار الكامل يتطلب دفعًا مكتملًا قبل بدء التقييم.",
-        });
-        return;
-      }
-
+    if (assessment_type !== "mini" && payment_id) {
       const [payment] = await db
         .select()
         .from(paymentsTable)
@@ -103,7 +158,9 @@ router.post(
           )
         );
 
-      if (!payment) {
+      if (payment) {
+        validatedPaymentId = payment.id;
+      } else {
         res.status(403).json({
           success: false,
           error: "invalid_payment",
@@ -111,8 +168,6 @@ router.post(
         });
         return;
       }
-
-      validatedPaymentId = payment.id;
     }
 
     // Validate ownership of previous assessment (must be completed and belong to this user)
@@ -276,7 +331,7 @@ router.post(
       return;
     }
 
-    const { answers, open_answer, completion_time_seconds } = parsed.data;
+    const { answers, open_answer, completion_time_seconds, payment_id } = parsed.data;
 
     // Cross-validate: all 21 required question IDs must be present
     const submittedIds = new Set(answers.map((a) => a.questionId));
@@ -307,15 +362,71 @@ router.post(
       return;
     }
 
+    let validatedPaymentId: string | null = existing.paymentId ?? null;
+    if (!validatedPaymentId) {
+      const [completedRow] = await db
+        .select({ total: count() })
+        .from(assessmentsTable)
+        .where(
+          and(
+            eq(assessmentsTable.userId, user.id),
+            eq(assessmentsTable.status, "completed")
+          )
+        );
+      const completedCount = Number(completedRow?.total ?? 0);
+
+      if (completedCount > 0 && !payment_id) {
+        res.status(403).json({
+          success: false,
+          error: "payment_required",
+          message: "أكمل الدفع قبل توليد التقرير.",
+        });
+        return;
+      }
+
+      if (payment_id) {
+        const [payment] = await db
+          .select()
+          .from(paymentsTable)
+          .where(
+            and(
+              eq(paymentsTable.id, payment_id),
+              eq(paymentsTable.userId, user.id),
+              eq(paymentsTable.status, "completed"),
+              isNull(paymentsTable.assessmentId)
+            )
+          );
+
+        if (!payment) {
+          res.status(403).json({
+            success: false,
+            error: "invalid_payment",
+            message: "الدفع غير صالح أو تم استخدامه مسبقاً.",
+          });
+          return;
+        }
+
+        validatedPaymentId = payment.id;
+      }
+    }
+
     await db
       .update(assessmentsTable)
       .set({
         behavioralAnswers: answers,
         openAnswer: open_answer ?? null,
         completionTimeSeconds: completion_time_seconds,
+        ...(validatedPaymentId ? { paymentId: validatedPaymentId } : {}),
         status: "processing",
       })
       .where(eq(assessmentsTable.id, id as string));
+
+    if (validatedPaymentId && !existing.paymentId) {
+      await db
+        .update(paymentsTable)
+        .set({ assessmentId: id as string })
+        .where(eq(paymentsTable.id, validatedPaymentId));
+    }
 
     res.json({ success: true, status: "processing" });
 

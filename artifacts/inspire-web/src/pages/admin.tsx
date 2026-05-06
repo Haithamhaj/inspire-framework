@@ -32,6 +32,7 @@ interface Stats {
   assessmentsToday: number;
   assessmentsThisWeek: number;
   failedAssessments: number;
+  lowRatingAssessments: number;
 }
 
 interface Assessment {
@@ -47,6 +48,13 @@ interface Assessment {
   retryCount: number;
   nextRetryAt: string | null;
   hasReportContent: boolean;
+  emailSent: boolean;
+  pdfGenerated: boolean;
+  feedbackRating: number | null;
+  feedbackUsefulAnswer: string | null;
+  feedbackMostUseful: string | null;
+  feedbackMissing: string | null;
+  feedbackUpdatedAt: string | null;
   paymentId: string | null;
   paymentStatus: string | null;
   paypalOrderId: string | null;
@@ -439,6 +447,7 @@ export default function Admin() {
         { label: "قيد المعالجة", value: stats.processingAssessments, icon: Loader2, color: "text-yellow-500" },
         { label: "إعادة محاولة", value: stats.pendingRetryAssessments, icon: RefreshCw, color: "text-amber-500" },
         { label: "فشلت", value: stats.failedAssessments, icon: AlertCircle, color: "text-red-500" },
+        { label: "تقييم منخفض", value: stats.lowRatingAssessments, icon: AlertCircle, color: "text-orange-500" },
         { label: "هذا الأسبوع", value: stats.assessmentsThisWeek, icon: Clock, color: "text-accent" },
       ]
     : [];
@@ -534,6 +543,7 @@ export default function Admin() {
             <option value="">كل الحالات</option>
             <option value="needs_attention">تحتاج متابعة</option>
             <option value="paid_no_report">مدفوع بلا تقرير</option>
+            <option value="low_rating">تقييم منخفض</option>
           </select>
         </div>
 
@@ -568,6 +578,7 @@ export default function Admin() {
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">النوع</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">الحالة</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">الدفع</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground">التقييم</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">التعافي</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">إجراء</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">التاريخ</th>
@@ -609,9 +620,42 @@ export default function Admin() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
+                        {a.feedbackRating ? (
+                          <div className="max-w-[220px] text-xs">
+                            <div className={`mb-1 inline-flex rounded-full border px-2 py-1 font-bold ${
+                              a.feedbackRating <= 2
+                                ? "border-orange-500/20 bg-orange-500/10 text-orange-600"
+                                : "border-green-500/20 bg-green-500/10 text-green-600"
+                            }`}>
+                              {a.feedbackRating}/5
+                            </div>
+                            {a.feedbackMostUseful && (
+                              <div className="truncate text-muted-foreground">
+                                مفيد: {a.feedbackMostUseful}
+                              </div>
+                            )}
+                            {a.feedbackMissing && (
+                              <div className="truncate text-muted-foreground">
+                                ناقص: {a.feedbackMissing}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">لا يوجد</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
                         <div className="space-y-1 text-xs text-muted-foreground">
                           <div>محاولات: {a.retryCount}</div>
                           <div>{a.hasReportContent ? "reportContent موجود" : "لا يوجد reportContent"}</div>
+                          <div>{a.emailSent ? "الإيميل أُرسل" : "الإيميل لم يُرسل"}</div>
+                          <div>{a.pdfGenerated ? "PDF موجود" : "PDF غير مولد"}</div>
+                          <div>
+                            وقت التوليد:{" "}
+                            {a.completionTimeSeconds != null
+                              ? `${Math.round(a.completionTimeSeconds / 60)} د`
+                              : "غير متاح"}
+                          </div>
                           {a.nextRetryAt && (
                             <div dir="ltr">
                               {new Date(a.nextRetryAt).toLocaleString()}

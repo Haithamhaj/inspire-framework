@@ -4,9 +4,11 @@ import {
   usersTable,
   paymentsTable,
   discountCodesTable,
+  assessmentsTable,
 } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, count, isNull } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
+import { randomBytes } from "crypto";
 
 const router: IRouter = Router();
 
@@ -64,6 +66,83 @@ function getAssessmentPrice(): number {
   return isNaN(parsed) || parsed <= 0 ? 10.0 : parsed;
 }
 
+type DiscountCodeRecord = typeof discountCodesTable.$inferSelect;
+
+function isDiscountUsableForUser(discount: DiscountCodeRecord, userId: string): boolean {
+  if (!discount.isActive) return false;
+  if (discount.userId && discount.userId !== userId) return false;
+  if (discount.expiresAt && new Date() > discount.expiresAt) return false;
+  if (discount.maxUses !== null && discount.usedCount >= discount.maxUses) return false;
+  return true;
+}
+
+function discountPrice(discountPercent: number) {
+  const originalPrice = getAssessmentPrice();
+  const discountAmount = (originalPrice * discountPercent) / 100;
+  const finalPrice = parseFloat((originalPrice - discountAmount).toFixed(2));
+  return { originalPrice, finalPrice };
+}
+
+async function getCompletedAssessmentCount(userId: string): Promise<number> {
+  const [row] = await db
+    .select({ total: count() })
+    .from(assessmentsTable)
+    .where(and(eq(assessmentsTable.userId, userId), eq(assessmentsTable.status, "completed")));
+  return Number(row?.total ?? 0);
+}
+
+async function getOrCreateNextAssessmentDiscount(userId: string, completedCount: number) {
+  if (completedCount <= 0) return null;
+
+  const [existing] = await db
+    .select()
+    .from(discountCodesTable)
+    .where(
+      and(
+        eq(discountCodesTable.userId, userId),
+        eq(discountCodesTable.discountPercent, 50),
+        eq(discountCodesTable.maxUses, 1),
+        eq(discountCodesTable.usedCount, 0),
+        eq(discountCodesTable.isActive, true),
+        isNull(discountCodesTable.expiresAt)
+      )
+    );
+
+  if (existing) return existing;
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const code = `INSPIRE50-${randomBytes(4).toString("hex").toUpperCase()}`;
+    try {
+      const [created] = await db
+        .insert(discountCodesTable)
+        .values({
+          code,
+          discountPercent: 50,
+          maxUses: 1,
+          usedCount: 0,
+          isActive: true,
+          userId,
+          expiresAt: null,
+        })
+        .returning();
+      return created ?? null;
+    } catch {
+      // Extremely unlikely code collision; retry with a new token.
+    }
+  }
+
+  throw new Error("Could not create personalized discount code");
+}
+
+async function findUsableDiscountForUser(code: string, userId: string) {
+  const [discount] = await db
+    .select()
+    .from(discountCodesTable)
+    .where(eq(discountCodesTable.code, code.toUpperCase().trim()));
+  if (!discount || !isDiscountUsableForUser(discount, userId)) return null;
+  return discount;
+}
+
 // ─── GET /api/billing/paypal-config ───────────────────────
 
 router.get(
@@ -116,7 +195,7 @@ router.get(
       return;
     }
 
-    if (!discount.isActive) {
+    if (!discount.isActive || (discount.userId && discount.userId !== user.id)) {
       res.json({ success: true, valid: false, reason: "الكود غير مفعّل" });
       return;
     }
@@ -134,11 +213,7 @@ router.get(
       return;
     }
 
-    const originalPrice = getAssessmentPrice();
-    const discountAmount = (originalPrice * discount.discountPercent) / 100;
-    const finalPrice = parseFloat(
-      (originalPrice - discountAmount).toFixed(2)
-    );
+    const { originalPrice, finalPrice } = discountPrice(discount.discountPercent);
 
     res.json({
       success: true,
@@ -166,33 +241,14 @@ router.post(
     const originalPrice = getAssessmentPrice();
     let finalPrice = originalPrice;
     let discountPercent = 0;
-    let codeRecord: typeof discountCodesTable.$inferSelect | null = null;
+    let codeRecord: DiscountCodeRecord | null = null;
 
     if (discountCode) {
-      const [found] = await db
-        .select()
-        .from(discountCodesTable)
-        .where(
-          eq(
-            discountCodesTable.code,
-            discountCode.toUpperCase().trim()
-          )
-        );
-
-      if (found && found.isActive) {
-        const notExpired =
-          !found.expiresAt || new Date() <= found.expiresAt;
-        const hasUses =
-          found.maxUses === null || found.usedCount < found.maxUses;
-
-        if (notExpired && hasUses) {
-          codeRecord = found;
-          discountPercent = found.discountPercent;
-          const discountAmount = (originalPrice * discountPercent) / 100;
-          finalPrice = parseFloat(
-            (originalPrice - discountAmount).toFixed(2)
-          );
-        }
+      const found = await findUsableDiscountForUser(discountCode, user.id);
+      if (found) {
+        codeRecord = found;
+        discountPercent = found.discountPercent;
+        finalPrice = discountPrice(discountPercent).finalPrice;
       }
     }
 
@@ -392,15 +448,8 @@ router.post(
       .from(discountCodesTable)
       .where(eq(discountCodesTable.code, discountCode.toUpperCase().trim()));
 
-    if (!found || !found.isActive) {
+    if (!found || !isDiscountUsableForUser(found, user.id)) {
       res.status(400).json({ success: false, error: "كود غير صالح" });
-      return;
-    }
-
-    const notExpired = !found.expiresAt || new Date() <= found.expiresAt;
-    const hasUses = found.maxUses === null || found.usedCount < found.maxUses;
-    if (!notExpired || !hasUses) {
-      res.status(400).json({ success: false, error: "كود منتهي الصلاحية أو استُنفد" });
       return;
     }
 
@@ -455,22 +504,25 @@ router.get(
       return;
     }
 
-    const { assessmentsTable: at } = await import("@workspace/db/schema");
-    const { count } = await import("drizzle-orm");
-
-    const [row] = await db
-      .select({ total: count() })
-      .from(at)
-      .where(and(eq(at.userId, user.id), eq(at.status, "completed")));
-
-    const completedCount = Number(row?.total ?? 0);
+    const completedCount = await getCompletedAssessmentCount(user.id);
     const price = getAssessmentPrice();
+    const personalizedDiscount = await getOrCreateNextAssessmentDiscount(user.id, completedCount);
+    const discountPayload = personalizedDiscount
+      ? {
+          code: personalizedDiscount.code,
+          discountPercent: personalizedDiscount.discountPercent,
+          maxUses: personalizedDiscount.maxUses,
+          usedCount: personalizedDiscount.usedCount,
+          ...discountPrice(personalizedDiscount.discountPercent),
+        }
+      : null;
 
     res.json({
       success: true,
       completedAssessments: completedCount,
       freeUsed: true,
       price,
+      nextAssessmentDiscount: discountPayload,
     });
   }
 );
