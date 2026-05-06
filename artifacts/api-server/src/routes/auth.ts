@@ -38,7 +38,14 @@ router.post(
       return;
     }
 
-    const parsed = RegisterSchema.safeParse(req.body);
+    const requestBody = req.body as unknown;
+    const parsed = RegisterSchema.safeParse(
+      requestBody &&
+      typeof requestBody === "object" &&
+      "data" in requestBody
+        ? (requestBody as { data?: unknown }).data
+        : requestBody
+    );
     if (!parsed.success) {
       req.log.warn({ validationErrors: parsed.error.flatten() }, "Registration validation failed");
       res.status(400).json({
