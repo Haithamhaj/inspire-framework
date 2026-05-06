@@ -206,18 +206,26 @@ export async function processRetryQueue(): Promise<void> {
         answers: storedAnswers,
         openAnswer: assessment.openAnswer ?? undefined,
       };
-      const generationResult = await tryGenerateV2InstructionAndReport(promptDataV2);
-      if (generationResult.success) {
-        await finishV2(
-          assessment.id,
-          generationResult.reportText!,
-          generationResult.instructionText!,
-          promptDataV2.reportLanguage,
-          promptDataV2.projectName,
-          generationResult.provider!,
-          generationResult.model!
+      let generationResult: Awaited<ReturnType<typeof tryGenerateV2InstructionAndReport>>;
+      try {
+        generationResult = await tryGenerateV2InstructionAndReport(promptDataV2);
+        if (generationResult.success) {
+          await finishV2(
+            assessment.id,
+            generationResult.reportText!,
+            generationResult.instructionText!,
+            promptDataV2.reportLanguage,
+            promptDataV2.projectName,
+            generationResult.provider!,
+            generationResult.model!
+          );
+          continue;
+        }
+      } catch (err) {
+        logger.error(
+          { assessmentId: assessment.id, err },
+          "V2 retry generation or validation failed before completion"
         );
-        continue;
       }
 
       const nextCount = count + 1;
