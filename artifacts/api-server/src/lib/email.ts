@@ -71,6 +71,26 @@ export async function sendResultsEmail(assessmentId: string): Promise<void> {
   }
 }
 
+export async function sendRecoveryEmail(toEmail: string, toName: string): Promise<void> {
+  if (!process.env["RESEND_API_KEY"]) {
+    logger.warn("RESEND_API_KEY not set — skipping recovery email");
+    return;
+  }
+  const appUrl = getAppUrl();
+  try {
+    await getResend().emails.send({
+      from: getFrom(),
+      to: toEmail,
+      subject: "INSPIRE — أكمل تقييمك مجاناً",
+      html: buildRecoveryEmailHtml(toName, appUrl),
+    });
+    logger.info({ email: toEmail }, "Recovery email sent");
+  } catch (err) {
+    logger.error({ email: toEmail, err }, "Failed to send recovery email");
+    throw err;
+  }
+}
+
 export async function sendFailureEmail(email: string, name: string): Promise<void> {
   if (!process.env["RESEND_API_KEY"]) return;
   try {
@@ -139,6 +159,49 @@ export async function sendAdminAlertEmail({
   } catch (err) {
     logger.error({ assessmentId, err }, "Failed to send admin alert email");
   }
+}
+
+function buildRecoveryEmailHtml(name: string, appUrl: string) {
+  return `<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INSPIRE — أكمل تقييمك</title></head>
+<body style="margin:0;padding:0;background:#f8f9fc;font-family:'Segoe UI',Arial,sans-serif;direction:rtl;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fc;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        <tr><td style="background:#1a1a2e;padding:40px 40px 32px;text-align:center;">
+          <h1 style="color:#e94560;margin:0;font-size:26px;font-weight:700;letter-spacing:2px;" dir="ltr">INSPIRE</h1>
+          <p style="color:rgba(255,255,255,0.5);margin:8px 0 0;font-size:13px;">إطار التقييم السلوكي للذكاء الاصطناعي</p>
+        </td></tr>
+        <tr><td style="padding:40px;">
+          <h2 style="color:#1a1a2e;margin:0 0 16px;font-size:20px;">مرحباً ${name}،</h2>
+          <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">
+            نعتذر عن المشكلة التي واجهتك أثناء إتمام عملية الدفع. <strong>التقييم مجاني بالكامل</strong> — يمكنك العودة وإكمال استبيانك الآن دون أي رسوم.
+          </p>
+          <div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:12px;padding:20px;margin-bottom:24px;">
+            <p style="color:#166534;font-size:15px;font-weight:600;margin:0 0 8px;">📋 خطوات الاسترداد:</p>
+            <ol style="color:#374151;font-size:14px;line-height:2.2;margin:0;padding-right:20px;">
+              <li>اضغط على الرابط أدناه للدخول إلى المنصة</li>
+              <li>سجّل دخولك بنفس البريد الإلكتروني والكلمة السرية</li>
+              <li>ابدأ التقييم من جديد — لن يُطلب منك الدفع هذه المرة</li>
+              <li>أكمل الأسئلة وستصلك نتيجتك مباشرةً</li>
+            </ol>
+          </div>
+          <div style="text-align:center;margin-bottom:24px;">
+            <a href="${appUrl}/assess" style="display:inline-block;background:#e94560;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:10px;font-weight:700;font-size:16px;">
+              أبدأ التقييم الآن
+            </a>
+          </div>
+          <p style="color:#9ca3af;font-size:13px;text-align:center;margin:0;">إذا واجهتك أي مشكلة، تواصل معنا مباشرةً عبر الرد على هذا البريد.</p>
+        </td></tr>
+        <tr><td style="background:#f8f9fc;padding:24px 40px;text-align:center;border-top:1px solid #eee;">
+          <p style="color:#9ca3af;font-size:12px;margin:0;">INSPIRE — تقرير نمط التشغيل وتعليمات الذكاء الاصطناعي</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 }
 
 function buildResultsEmailHtml({

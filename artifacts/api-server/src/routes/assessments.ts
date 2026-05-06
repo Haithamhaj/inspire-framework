@@ -362,6 +362,17 @@ router.post(
       return;
     }
 
+    // Pre-save answers so they are recoverable even if payment check fails or user abandons.
+    // This enables admin Retry to work for interrupted-payment scenarios.
+    await db
+      .update(assessmentsTable)
+      .set({
+        behavioralAnswers: answers,
+        openAnswer: open_answer ?? null,
+        completionTimeSeconds: completion_time_seconds,
+      })
+      .where(eq(assessmentsTable.id, id as string));
+
     let validatedPaymentId: string | null = existing.paymentId ?? null;
     if (!validatedPaymentId) {
       const [completedRow] = await db
@@ -413,9 +424,6 @@ router.post(
     await db
       .update(assessmentsTable)
       .set({
-        behavioralAnswers: answers,
-        openAnswer: open_answer ?? null,
-        completionTimeSeconds: completion_time_seconds,
         ...(validatedPaymentId ? { paymentId: validatedPaymentId } : {}),
         status: "processing",
       })

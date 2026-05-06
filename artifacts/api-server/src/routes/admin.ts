@@ -3,7 +3,7 @@ import { db } from "@workspace/db";
 import { assessmentFeedbackTable, assessmentsTable, usersTable, discountCodesTable, paymentsTable } from "@workspace/db/schema";
 import { eq, and, gte, lte, or, desc, count, avg, type SQL } from "drizzle-orm";
 import { logger } from "../lib/logger";
-import { sendResultsEmail } from "../lib/email";
+import { sendResultsEmail, sendRecoveryEmail } from "../lib/email";
 import { generateReportV2 } from "../lib/ai-engine";
 
 const router: IRouter = Router();
@@ -347,6 +347,43 @@ router.post(
     });
 
     res.json({ success: true, status: "processing" });
+  }
+);
+
+// ─── POST /api/admin/assessments/:id/send-recovery-email ──────────────────────
+
+router.post(
+  "/admin/assessments/:id/send-recovery-email",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select()
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, assessment.userId));
+
+    if (!user) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    try {
+      await sendRecoveryEmail(user.email, user.name);
+      res.json({ success: true, email: user.email });
+    } catch {
+      res.status(500).json({ success: false, error: "Failed to send email" });
+    }
   }
 );
 

@@ -554,6 +554,40 @@ export default function Assess() {
 
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
 
+  // ── localStorage autosave — persists answers across refreshes/payment interruptions ──
+  const LS_KEY = user ? `inspire_draft_answers_${user.id}` : null;
+
+  // Restore saved answers on first load (only if no reuse mode and no pending answers).
+  // Uses queueMicrotask to defer setState outside the effect body (avoids cascading-render lint rule).
+  useEffect(() => {
+    if (!LS_KEY || previousAssessmentId) return;
+    const key = LS_KEY;
+    queueMicrotask(() => {
+      try {
+        const saved = localStorage.getItem(key);
+        if (!saved) return;
+        const parsed = JSON.parse(saved) as { answers?: Answer[]; openAnswer?: string };
+        if (parsed.answers && parsed.answers.length > 0) {
+          setAnswers((prev) => (prev.length > 0 ? prev : parsed.answers!));
+          if (parsed.openAnswer) setOpenAnswer((prev) => prev || parsed.openAnswer!);
+        }
+      } catch {
+        // ignore corrupt data
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [LS_KEY]);
+
+  // Autosave answers + openAnswer whenever they change
+  useEffect(() => {
+    if (!LS_KEY || answers.length === 0) return;
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({ answers, openAnswer }));
+    } catch {
+      // ignore quota errors
+    }
+  }, [answers, openAnswer, LS_KEY]);
+
   useEffect(() => {
     if (paymentStatus !== "required" || paypalConfig) {
       return;
@@ -1021,6 +1055,10 @@ export default function Assess() {
           return;
         }
         throw new Error(data.message || data.error || "فشل الإرسال");
+      }
+      // Clear autosaved draft now that submission is successful
+      if (LS_KEY) {
+        try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
       }
       setPhase("processing");
       pollRef.current = setInterval(async () => {

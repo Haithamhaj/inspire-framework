@@ -99,6 +99,7 @@ export default function Admin() {
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [retryingId, setRetryingId] = useState<string | null>(null);
+  const [sendingRecoveryId, setSendingRecoveryId] = useState<string | null>(null);
   const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const PAGE_SIZE = 20;
@@ -344,6 +345,28 @@ export default function Admin() {
       setError("فشل التصدير");
     } finally {
       setExporting(false);
+    }
+  }
+
+  async function handleSendRecoveryEmail(assessmentId: string, userEmail: string) {
+    if (!confirm(`إرسال بريد الاسترداد إلى ${userEmail}؟`)) return;
+    setSendingRecoveryId(assessmentId);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/admin/assessments/${assessmentId}/send-recovery-email`), {
+        method: "POST",
+        headers: { "x-admin-password": password },
+      });
+      const d = await res.json() as { success: boolean; error?: string; email?: string };
+      if (!d.success) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل إرسال البريد" });
+        return;
+      }
+      setActionMsg({ ok: true, text: `تم إرسال بريد الاسترداد إلى ${d.email}` });
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setSendingRecoveryId(null);
     }
   }
 
@@ -685,6 +708,20 @@ export default function Admin() {
                                 <RefreshCw className="h-3.5 w-3.5" />
                               )}
                               Retry
+                            </button>
+                          )}
+                          {a.status === "draft" && (
+                            <button
+                              onClick={() => handleSendRecoveryEmail(a.id, a.userEmail)}
+                              disabled={sendingRecoveryId === a.id}
+                              className="inline-flex items-center justify-center gap-1 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-600 transition-colors hover:bg-amber-500/20 disabled:opacity-60"
+                            >
+                              {sendingRecoveryId === a.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                "📧"
+                              )}
+                              بريد الاسترداد
                             </button>
                           )}
                         </div>
