@@ -25,7 +25,7 @@ router.post(
   "/auth/register",
   async (req: Request, res: Response): Promise<void> => {
     const ip = getClientIp(req);
-    const registerLimit = rateLimit(ip, "register", 5, 60 * 60 * 1000);
+    const registerLimit = rateLimit(ip, "register", 30, 60 * 60 * 1000);
     if (!registerLimit.allowed) {
       res
         .status(429)
