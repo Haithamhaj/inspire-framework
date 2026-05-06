@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
 import { assessmentsTable, usersTable, paymentsTable } from "@workspace/db/schema";
-import { eq, and, count, isNull } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import {
   AssessmentStartSchema,
@@ -375,17 +375,6 @@ router.post(
 
     let validatedPaymentId: string | null = existing.paymentId ?? null;
     if (!validatedPaymentId) {
-      const [completedRow] = await db
-        .select({ total: count() })
-        .from(assessmentsTable)
-        .where(
-          and(
-            eq(assessmentsTable.userId, user.id),
-            eq(assessmentsTable.status, "completed")
-          )
-        );
-      const completedCount = Number(completedRow?.total ?? 0);
-
       if (!payment_id) {
         res.status(403).json({
           success: false,
