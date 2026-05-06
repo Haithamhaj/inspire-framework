@@ -1,0 +1,85 @@
+You are working on the INSPIRE project in Replit.
+
+Goal:
+Make sure the Replit runtime is running the latest pulled main commit correctly, then verify API/admin/database readiness.
+
+Current state:
+- Repo is reset to origin/main at commit 715826c.
+- pnpm install succeeded.
+- typecheck:libs passed.
+- api-server typecheck passed.
+- inspire-web typecheck passed.
+- API build passed.
+- Web build passed.
+- DB connection succeeded.
+- Migrations 0001_add_assessment_domain.sql and 0002_add_report_content.sql were applied.
+- report_content now exists as jsonb.
+- /api/healthz returns ok.
+- But admin recovery filters returned all assessments:
+  - /api/admin/assessments?recovery=needs_attention returned total 9
+  - /api/admin/assessments?recovery=paid_no_report returned total 9
+This likely means the process currently listening on port 8080 is an older runtime/build.
+
+Important:
+Do not change product behavior.
+Do not change scoring, matrix, questions, prompts, Instruction Writer, Report Writer, reportContent schema, or UI.
+Do not print secrets.
+Do not reset or wipe the database.
+Do not run destructive DB commands.
+
+Tasks:
+
+1. Identify the process currently using port 8080.
+- Determine whether it is the latest API server build or an old process.
+- Stop only the stale Replit API process if needed.
+- Do not kill unrelated system processes.
+
+2. Rebuild in correct order:
+- pnpm run typecheck:libs
+- pnpm --filter @workspace/api-server run build
+- PORT=5173 BASE_PATH=/ pnpm --filter @workspace/inspire-web run build
+
+3. Start the API server from the latest build:
+- PORT=8080 pnpm --filter @workspace/api-server run start
+- Confirm server logs show it is listening.
+
+4. Runtime smoke:
+Run:
+- curl -sS http://localhost:8080/api/healthz
+
+Expected:
+{"status":"ok"}
+
+5. Admin stats smoke:
+Use ADMIN_PASSWORD from env without printing it:
+node --input-type=module -e 'const res=await fetch("http://localhost:8080/api/admin/stats",{headers:{"x-admin-password":process.env.ADMIN_PASSWORD||""}}); console.log(res.status); console.log(await res.text());'
+
+Expected:
+- HTTP 200
+- success true
+
+6. Admin recovery filters smoke:
+Run:
+node --input-type=module -e 'for (const recovery of ["needs_attention","paid_no_report"]) { const res=await fetch(`http://localhost:8080/api/admin/assessments?recovery=${recovery}`,{headers:{"x-admin-password":process.env.ADMIN_PASSWORD||""}}); const json=await res.json(); console.log(recovery, JSON.stringify({status:res.status,success:json.success,total:json.total,count:json.assessments?.length,statuses:[...new Set((json.assessments||[]).map(a=>`${a.status}/${a.paymentStatus||"no_payment"}/report:${a.hasReportContent}`))]},null,2)); }'
+
+Expected:
+- It should NOT return all assessments unless every assessment truly needs attention.
+- paid_no_report should only include paid completed payments where assessment status is not completed.
+- needs_attention should include failed, pending_retry, or paid completed but not completed.
+
+7. If recovery filters still return all assessments:
+Inspect the built/dist code or route source used by runtime.
+Confirm that the code applies:
+if (recovery === "paid_no_report") { ... }
+else if (recovery === "needs_attention") { ... }
+
+8. Final report:
+Return:
+- What process was using 8080
+- Whether it was restarted
+- Build results
+- /api/healthz result
+- /admin/stats result
+- recovery filters result
+- Whether Replit is now running latest main correctly
+- Any blockers before custom domain setup
