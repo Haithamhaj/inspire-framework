@@ -48,6 +48,7 @@ interface Assessment {
   retryCount: number;
   nextRetryAt: string | null;
   hasReportContent: boolean;
+  hasAnswers: boolean;
   emailSent: boolean;
   pdfGenerated: boolean;
   feedbackRating: number | null;
@@ -100,6 +101,7 @@ export default function Admin() {
   const [exporting, setExporting] = useState(false);
   const [retryingId, setRetryingId] = useState<string | null>(null);
   const [sendingRecoveryId, setSendingRecoveryId] = useState<string | null>(null);
+  const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const PAGE_SIZE = 20;
@@ -345,6 +347,29 @@ export default function Admin() {
       setError("فشل التصدير");
     } finally {
       setExporting(false);
+    }
+  }
+
+  async function handleGenerateReport(assessmentId: string) {
+    if (!confirm("توليد التقرير لهذا التقييم بدون دفع؟")) return;
+    setGeneratingId(assessmentId);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/admin/assessments/${assessmentId}/generate-report`), {
+        method: "POST",
+        headers: { "x-admin-password": password },
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (!d.success) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل التوليد" });
+        return;
+      }
+      setActionMsg({ ok: true, text: "بدأ توليد التقرير — سيظهر في صفحة المستخدم خلال دقائق" });
+      setTimeout(() => loadAssessments(page, status, password), 4000);
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setGeneratingId(null);
     }
   }
 
@@ -708,6 +733,20 @@ export default function Admin() {
                                 <RefreshCw className="h-3.5 w-3.5" />
                               )}
                               Retry
+                            </button>
+                          )}
+                          {a.status === "draft" && a.hasAnswers && (
+                            <button
+                              onClick={() => handleGenerateReport(a.id)}
+                              disabled={generatingId === a.id}
+                              className="inline-flex items-center justify-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
+                            >
+                              {generatingId === a.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                "⚡"
+                              )}
+                              توليد التقرير
                             </button>
                           )}
                           {a.status === "draft" && (

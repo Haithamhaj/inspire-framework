@@ -133,6 +133,7 @@ router.get(
         nextRetryAt: assessmentsTable.nextRetryAt,
         paymentId: assessmentsTable.paymentId,
         reportContent: assessmentsTable.reportContent,
+        behavioralAnswers: assessmentsTable.behavioralAnswers,
         createdAt: assessmentsTable.createdAt,
         userId: assessmentsTable.userId,
       })
@@ -255,6 +256,7 @@ router.get(
       retryCount: a.retryCount,
       nextRetryAt: a.nextRetryAt,
       hasReportContent: Boolean(a.reportContent),
+      hasAnswers: isV2Answers(a.behavioralAnswers),
       feedbackRating: a.feedback?.rating ?? null,
       feedbackUsefulAnswer: a.feedback?.usefulAnswer ?? null,
       feedbackMostUseful: a.feedback?.mostUseful ?? null,
@@ -343,6 +345,75 @@ router.post(
         });
       } catch (err) {
         logger.error({ assessmentId: assessment.id, err }, "Admin retry generation threw unexpectedly");
+      }
+    });
+
+    res.json({ success: true, status: "processing" });
+  }
+);
+
+// ─── POST /api/admin/assessments/:id/generate-report ──────────────────────────
+
+router.post(
+  "/admin/assessments/:id/generate-report",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select()
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    if (assessment.status === "completed") {
+      res.status(409).json({ success: false, error: "Assessment is already completed" });
+      return;
+    }
+
+    if ((assessment.assessmentType ?? "full") !== "full" || !isV2Answers(assessment.behavioralAnswers)) {
+      res.status(400).json({ success: false, error: "No saved answers found for this assessment" });
+      return;
+    }
+
+    const answers = assessment.behavioralAnswers;
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, assessment.userId));
+
+    if (!user) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    await db
+      .update(assessmentsTable)
+      .set({ status: "processing", retryCount: 0, nextRetryAt: null })
+      .where(eq(assessmentsTable.id, assessment.id));
+
+    setImmediate(async () => {
+      try {
+        await generateReportV2(assessment.id, {
+          name: user.name,
+          jobTitle: user.jobTitle ?? undefined,
+          projectName: assessment.projectName,
+          projectGoal: assessment.projectGoal,
+          domain: assessment.domain ?? assessment.projectName,
+          customDomain: assessment.customDomain ?? undefined,
+          domainSpecialization: assessment.domainSpecialization ?? undefined,
+          projectContext: assessment.projectContext ?? assessment.projectGoal,
+          reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
+          answers,
+          openAnswer: assessment.openAnswer ?? undefined,
+        });
+      } catch (err) {
+        logger.error({ assessmentId: assessment.id, err }, "Admin generate-report threw unexpectedly");
       }
     });
 

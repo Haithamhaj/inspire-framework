@@ -376,11 +376,8 @@ router.post(
     let validatedPaymentId: string | null = existing.paymentId ?? null;
     if (!validatedPaymentId) {
       if (!payment_id) {
-        res.status(403).json({
-          success: false,
-          error: "payment_required",
-          message: "أكمل الدفع قبل توليد التقرير.",
-        });
+        // Answers are already saved above — user can now proceed to payment
+        res.json({ success: true, status: "pending_payment" });
         return;
       }
 

@@ -1048,13 +1048,14 @@ export default function Assess() {
       });
       const data = await res.json();
       if (!data.success) {
-        if (data.error === "payment_required") {
-          setPaymentStatus("required");
-          setPendingPayment(true);
-          setSubmitting(false);
-          return;
-        }
         throw new Error(data.message || data.error || "فشل الإرسال");
+      }
+      // Answers saved — payment required before generating the report
+      if (data.status === "pending_payment") {
+        setPaymentStatus("required");
+        setPendingPayment(true);
+        setSubmitting(false);
+        return;
       }
       // Clear autosaved draft now that submission is successful
       if (LS_KEY) {
@@ -1136,11 +1137,7 @@ export default function Assess() {
 
   async function handleFinalSubmit() {
     if (!assessmentId || submitting) return;
-    if (paymentStatus === "required") {
-      setPaymentError("");
-      setPendingPayment(true);
-      return;
-    }
+    setPaymentError("");
     await submitAssessment(assessmentId, answers, openAnswer);
   }
 
