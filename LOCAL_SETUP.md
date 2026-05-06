@@ -17,6 +17,7 @@ Edit `.env.local` manually for local development. Do not paste real secrets into
 - AI report generation: `OPENAI_API_KEY`
 - AI fallback: `ANTHROPIC_API_KEY`
 - Email delivery: `RESEND_API_KEY`, `FROM_NAME`, `FROM_EMAIL`, `APP_URL`
+- Internal failure alerts: `ADMIN_ALERT_EMAIL`
 - PayPal checkout: `PAYPAL_ENV`, `PAYPAL_CLIENT_ID`, `PAYPAL_SECRET`,
   `ASSESSMENT_PRICE`
 
