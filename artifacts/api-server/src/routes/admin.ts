@@ -379,8 +379,19 @@ router.post(
     }
 
     try {
-      await sendRecoveryEmail(user.email, user.name);
-      res.json({ success: true, email: user.email });
+      // Generate a unique 100% personal discount code for this user
+      const code = `RECOVER-${user.id.slice(0, 8).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+      await db.insert(discountCodesTable).values({
+        code,
+        discountPercent: 100,
+        maxUses: 1,
+        usedCount: 0,
+        isActive: true,
+        userId: user.id,
+      });
+
+      await sendRecoveryEmail(user.email, user.name, code);
+      res.json({ success: true, email: user.email, code });
     } catch {
       res.status(500).json({ success: false, error: "Failed to send email" });
     }

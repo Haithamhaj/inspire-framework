@@ -386,7 +386,7 @@ router.post(
         );
       const completedCount = Number(completedRow?.total ?? 0);
 
-      if (completedCount > 0 && !payment_id) {
+      if (!payment_id) {
         res.status(403).json({
           success: false,
           error: "payment_required",

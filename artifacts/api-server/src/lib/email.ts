@@ -71,7 +71,7 @@ export async function sendResultsEmail(assessmentId: string): Promise<void> {
   }
 }
 
-export async function sendRecoveryEmail(toEmail: string, toName: string): Promise<void> {
+export async function sendRecoveryEmail(toEmail: string, toName: string, discountCode: string): Promise<void> {
   if (!process.env["RESEND_API_KEY"]) {
     logger.warn("RESEND_API_KEY not set — skipping recovery email");
     return;
@@ -81,8 +81,8 @@ export async function sendRecoveryEmail(toEmail: string, toName: string): Promis
     await getResend().emails.send({
       from: getFrom(),
       to: toEmail,
-      subject: "INSPIRE — أكمل تقييمك مجاناً",
-      html: buildRecoveryEmailHtml(toName, appUrl),
+      subject: "INSPIRE — كود خصم 100% لإعادة تقييمك",
+      html: buildRecoveryEmailHtml(toName, appUrl, discountCode),
     });
     logger.info({ email: toEmail }, "Recovery email sent");
   } catch (err) {
@@ -161,10 +161,10 @@ export async function sendAdminAlertEmail({
   }
 }
 
-function buildRecoveryEmailHtml(name: string, appUrl: string) {
+function buildRecoveryEmailHtml(name: string, appUrl: string, discountCode: string) {
   return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INSPIRE — أكمل تقييمك</title></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INSPIRE — كود خصم لإعادة التقييم</title></head>
 <body style="margin:0;padding:0;background:#f8f9fc;font-family:'Segoe UI',Arial,sans-serif;direction:rtl;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fc;padding:40px 20px;">
     <tr><td align="center">
@@ -176,20 +176,26 @@ function buildRecoveryEmailHtml(name: string, appUrl: string) {
         <tr><td style="padding:40px;">
           <h2 style="color:#1a1a2e;margin:0 0 16px;font-size:20px;">مرحباً ${name}،</h2>
           <p style="color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px;">
-            نعتذر عن المشكلة التي واجهتك أثناء إتمام عملية الدفع. <strong>التقييم مجاني بالكامل</strong> — يمكنك العودة وإكمال استبيانك الآن دون أي رسوم.
+            نعتذر عن المشكلة التي واجهتك أثناء إتمام عملية الدفع. تفضّل بكود خصم <strong>100%</strong> صالح لاستخدام واحد فقط — أدخله عند الدفع وستُعفى من الرسوم بالكامل.
           </p>
-          <div style="background:#f0fff4;border:1px solid #bbf7d0;border-radius:12px;padding:20px;margin-bottom:24px;">
-            <p style="color:#166534;font-size:15px;font-weight:600;margin:0 0 8px;">📋 خطوات الاسترداد:</p>
+          <div style="background:#fff7ed;border:2px dashed #e94560;border-radius:12px;padding:24px;margin-bottom:24px;text-align:center;">
+            <p style="color:#9ca3af;font-size:13px;margin:0 0 8px;">كود الخصم الخاص بك</p>
+            <p style="color:#1a1a2e;font-size:28px;font-weight:700;letter-spacing:4px;margin:0;" dir="ltr">${discountCode}</p>
+            <p style="color:#e94560;font-size:12px;margin:8px 0 0;">صالح لاستخدام واحد فقط · خصم 100%</p>
+          </div>
+          <div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:12px;padding:20px;margin-bottom:24px;">
+            <p style="color:#3730a3;font-size:15px;font-weight:600;margin:0 0 8px;">📋 خطوات إعادة التقييم:</p>
             <ol style="color:#374151;font-size:14px;line-height:2.2;margin:0;padding-right:20px;">
               <li>اضغط على الرابط أدناه للدخول إلى المنصة</li>
               <li>سجّل دخولك بنفس البريد الإلكتروني والكلمة السرية</li>
-              <li>ابدأ التقييم من جديد — لن يُطلب منك الدفع هذه المرة</li>
-              <li>أكمل الأسئلة وستصلك نتيجتك مباشرةً</li>
+              <li>ابدأ التقييم وأجب على الأسئلة</li>
+              <li>عند شاشة الدفع، أدخل الكود أعلاه في خانة "كود الخصم"</li>
+              <li>اضغط تطبيق — ستصبح الرسوم صفراً وتكمل مجاناً</li>
             </ol>
           </div>
           <div style="text-align:center;margin-bottom:24px;">
             <a href="${appUrl}/assess" style="display:inline-block;background:#e94560;color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:10px;font-weight:700;font-size:16px;">
-              أبدأ التقييم الآن
+              ابدأ التقييم الآن
             </a>
           </div>
           <p style="color:#9ca3af;font-size:13px;text-align:center;margin:0;">إذا واجهتك أي مشكلة، تواصل معنا مباشرةً عبر الرد على هذا البريد.</p>

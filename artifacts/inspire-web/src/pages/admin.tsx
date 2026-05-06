@@ -349,7 +349,7 @@ export default function Admin() {
   }
 
   async function handleSendRecoveryEmail(assessmentId: string, userEmail: string) {
-    if (!confirm(`إرسال بريد الاسترداد إلى ${userEmail}؟`)) return;
+    if (!confirm(`إنشاء كود خصم 100% وإرساله إلى ${userEmail}؟`)) return;
     setSendingRecoveryId(assessmentId);
     setActionMsg(null);
     try {
@@ -357,12 +357,12 @@ export default function Admin() {
         method: "POST",
         headers: { "x-admin-password": password },
       });
-      const d = await res.json() as { success: boolean; error?: string; email?: string };
+      const d = await res.json() as { success: boolean; error?: string; email?: string; code?: string };
       if (!d.success) {
         setActionMsg({ ok: false, text: d.error ?? "فشل إرسال البريد" });
         return;
       }
-      setActionMsg({ ok: true, text: `تم إرسال بريد الاسترداد إلى ${d.email}` });
+      setActionMsg({ ok: true, text: `تم إرسال كود الخصم ${d.code ?? ""} إلى ${d.email}` });
     } catch {
       setActionMsg({ ok: false, text: "فشل الاتصال" });
     } finally {
@@ -719,9 +719,9 @@ export default function Admin() {
                               {sendingRecoveryId === a.id ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                               ) : (
-                                "📧"
+                                "🎟️"
                               )}
-                              بريد الاسترداد
+                              كود استرداد
                             </button>
                           )}
                         </div>
