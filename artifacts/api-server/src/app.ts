@@ -29,7 +29,8 @@ app.use(
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 
-app.use(express.json());
+// Accept application/json AND text/plain (some proxies change content-type)
+app.use(express.json({ type: ["application/json", "text/plain", "application/x-www-form-urlencoded"] }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
