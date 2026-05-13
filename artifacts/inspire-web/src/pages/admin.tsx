@@ -16,6 +16,7 @@ import {
   Trash2,
   ToggleLeft,
   ToggleRight,
+  Eye,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -82,6 +83,92 @@ interface DiscountCode {
   createdAt: string;
 }
 
+interface AdminAssessmentDetail {
+  id: string;
+  projectName: string;
+  projectGoal: string;
+  domain: string | null;
+  customDomain: string | null;
+  domainSpecialization: string | null;
+  projectContext: string | null;
+  reportLanguage: string;
+  assessmentType: string;
+  behavioralAnswers: unknown;
+  scenarioAnswers: unknown;
+  openAnswer: string | null;
+  reportContent: unknown;
+  systemInstruction: string | null;
+  status: string;
+  aiProvider: string | null;
+  aiModel: string | null;
+  retryCount: number;
+  nextRetryAt: string | null;
+  completionTimeSeconds: number | null;
+  createdAt: string;
+  user: {
+    name: string;
+    email: string;
+    jobTitle: string | null;
+    emailVerified: boolean;
+    lastLoginAt: string | null;
+  } | null;
+  payment: {
+    status: string;
+    amount: string;
+    originalAmount: string;
+    discountCode: string | null;
+    paypalOrderId: string | null;
+  } | null;
+  feedback: {
+    rating: number;
+    usefulAnswer: string | null;
+    mostUseful: string | null;
+    missing: string | null;
+  } | null;
+  decisionSnapshot: {
+    decisionEngineVersion: string;
+    answersSnapshot: unknown;
+    matrixSnapshot: unknown;
+    scoringSnapshot: unknown;
+    selectedRules: unknown;
+    selectedRoles: unknown;
+    selectedRedLines: unknown;
+    selectedOutputRules: unknown;
+  } | null;
+  generationRuns: Array<{
+    id: string;
+    status: string;
+    provider: string | null;
+    model: string | null;
+    promptVersion: string;
+    attemptNumber: number;
+    startedAt: string;
+    completedAt: string | null;
+    errorMessage: string | null;
+    inputSnapshot: unknown;
+    outputSnapshot: unknown;
+  }>;
+}
+
+function formatJson(value: unknown): string {
+  if (value === null || value === undefined) return "Not available";
+  return JSON.stringify(value, null, 2);
+}
+
+function DetailBlock({ title, value }: { title: string; value: unknown }) {
+  return (
+    <section className="rounded-xl border border-border bg-background/60 p-4">
+      <h3 className="mb-3 text-sm font-bold text-foreground">{title}</h3>
+      <pre
+        className="max-h-80 overflow-auto rounded-lg border border-border bg-secondary/50 p-3 text-xs leading-5 text-muted-foreground"
+        dir="ltr"
+      >
+        {typeof value === "string" ? value || "Not available" : formatJson(value)}
+      </pre>
+    </section>
+  );
+}
+
 export default function Admin() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -102,6 +189,8 @@ export default function Admin() {
   const [retryingId, setRetryingId] = useState<string | null>(null);
   const [sendingRecoveryId, setSendingRecoveryId] = useState<string | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
+  const [detailLoadingId, setDetailLoadingId] = useState<string | null>(null);
+  const [selectedDetail, setSelectedDetail] = useState<AdminAssessmentDetail | null>(null);
   const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const PAGE_SIZE = 20;
@@ -347,6 +436,33 @@ export default function Admin() {
       setError("فشل التصدير");
     } finally {
       setExporting(false);
+    }
+  }
+
+  async function handleOpenDetail(assessmentId: string) {
+    setDetailLoadingId(assessmentId);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/admin/assessments/${assessmentId}`), {
+        headers: { "x-admin-password": password },
+      });
+      const d = await res.json() as {
+        success: boolean;
+        assessment?: AdminAssessmentDetail;
+        error?: string;
+      };
+      if (!d.success || !d.assessment) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل تحميل التفاصيل" });
+        return;
+      }
+      setSelectedDetail(d.assessment);
+      window.requestAnimationFrame(() => {
+        document.getElementById("assessment-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setDetailLoadingId(null);
     }
   }
 
@@ -609,6 +725,79 @@ export default function Admin() {
           </div>
         )}
 
+        {selectedDetail && (
+          <div id="assessment-detail" className="mb-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  {statusBadge(selectedDetail.status)}
+                  <span className="rounded-full border border-border bg-secondary px-2 py-1 text-xs text-muted-foreground">
+                    {selectedDetail.assessmentType}
+                  </span>
+                  <span className="rounded-full border border-border bg-secondary px-2 py-1 text-xs text-muted-foreground">
+                    {selectedDetail.reportLanguage}
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold text-primary">{selectedDetail.projectName}</h2>
+                <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{selectedDetail.projectGoal}</p>
+              </div>
+              <button
+                onClick={() => setSelectedDetail(null)}
+                className="rounded-xl border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-primary/30"
+              >
+                إغلاق التفاصيل
+              </button>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              <div className="rounded-xl border border-border bg-background/60 p-4">
+                <h3 className="mb-3 text-sm font-bold text-foreground">العميل</h3>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <div>{selectedDetail.user?.name ?? "غير متاح"}</div>
+                  <div dir="ltr">{selectedDetail.user?.email ?? "غير متاح"}</div>
+                  <div>{selectedDetail.user?.jobTitle ?? "بدون مسمى وظيفي"}</div>
+                  <div>{selectedDetail.user?.emailVerified ? "الإيميل مفعّل" : "الإيميل غير مفعّل"}</div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border bg-background/60 p-4">
+                <h3 className="mb-3 text-sm font-bold text-foreground">المجال والدفع</h3>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <div>{selectedDetail.domain ?? "بدون مجال"}</div>
+                  <div>{selectedDetail.domainSpecialization ?? "بدون تخصص"}</div>
+                  <div>{selectedDetail.payment?.status ?? "بدون دفع"}</div>
+                  <div dir="ltr">
+                    {selectedDetail.payment ? `$${selectedDetail.payment.amount} / $${selectedDetail.payment.originalAmount}` : ""}
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border bg-background/60 p-4">
+                <h3 className="mb-3 text-sm font-bold text-foreground">التوليد والتقييم</h3>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <div>{selectedDetail.aiProvider ?? "لا يوجد مزود"} {selectedDetail.aiModel ? `/${selectedDetail.aiModel}` : ""}</div>
+                  <div>محاولات: {selectedDetail.retryCount}</div>
+                  <div>Generation runs: {selectedDetail.generationRuns.length}</div>
+                  <div>Feedback: {selectedDetail.feedback?.rating ? `${selectedDetail.feedback.rating}/5` : "لا يوجد"}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-4 xl:grid-cols-2">
+              <DetailBlock title="الإجابات المحفوظة" value={selectedDetail.behavioralAnswers} />
+              <DetailBlock title="Decision / Matrix Snapshot" value={selectedDetail.decisionSnapshot} />
+              <DetailBlock title="التقرير النهائي reportContent" value={selectedDetail.reportContent} />
+              <DetailBlock title="التعليمات النهائية systemInstruction" value={selectedDetail.systemInstruction} />
+              <DetailBlock title="Generation Runs" value={selectedDetail.generationRuns} />
+              <DetailBlock title="Open Answer / Project Context" value={{
+                openAnswer: selectedDetail.openAnswer,
+                projectContext: selectedDetail.projectContext,
+                customDomain: selectedDetail.customDomain,
+              }} />
+            </div>
+          </div>
+        )}
+
         <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
           {loading ? (
             <div className="flex items-center justify-center py-16">
@@ -713,6 +902,18 @@ export default function Admin() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col gap-2">
+                          <button
+                            onClick={() => handleOpenDetail(a.id)}
+                            disabled={detailLoadingId === a.id}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
+                          >
+                            {detailLoadingId === a.id ? (
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Eye className="h-3.5 w-3.5" />
+                            )}
+                            تفاصيل
+                          </button>
                           <a
                             href={`/results/${a.id}`}
                             target="_blank"

@@ -10,6 +10,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Lemon Squeezy approval is not complete yet; the site needs review readiness before payment integration.
 - Phase 1 technical audit is documented in `project-state/TECHNICAL_AUDIT.md`.
 - Phase 2 DB v2 foundation has started with schema and migration files for decision snapshots and generation runs.
+- Admin now has an API and first UI panel for assessment evidence detail.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -28,7 +29,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Build the first admin assessment detail view on top of `GET /api/admin/assessments/:id`.
+Apply the DB v2 migration in the target database, then test a full V2 assessment flow to confirm snapshots and generation runs are written.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
