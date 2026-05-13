@@ -72,14 +72,19 @@ Do not commit real values. Store production/staging values only in the deploymen
 ## Current Migration Files
 
 Existing migrations:
+- `lib/db/migrations/0000_create_inspire_core_schema.sql`
 - `lib/db/migrations/0001_add_assessment_domain.sql`
 - `lib/db/migrations/0002_add_report_content.sql`
 - `lib/db/migrations/0003_add_assessment_feedback.sql`
 - `lib/db/migrations/0004_add_discount_code_owner.sql`
 - `lib/db/migrations/0005_add_assessment_evidence_tables.sql`
+- `lib/db/migrations/0006_add_foreign_key_indexes.sql`
 
 Important:
-- This repo currently contains SQL migration files, but it does not yet include a formal checked-in migration runner script.
+- Supabase staging currently has MCP migrations applied:
+  - `create_inspire_core_schema`
+  - `add_inspire_foreign_key_indexes`
+- This repo now contains SQL files matching the applied staging schema, but it does not yet include a formal checked-in migration runner script.
 - `pnpm --filter @workspace/db run push` uses Drizzle Kit to push schema from code. This may be acceptable for a fresh Supabase database, but migration history should be tightened before production.
 
 ## Recommended Migration Approach For Fresh Supabase
@@ -97,6 +102,7 @@ For production after launch:
 ## Verification Checklist
 
 After Supabase is connected:
+- Confirm local or staging `DATABASE_URL` points to the Supabase Postgres connection string.
 - Register a new user.
 - Login.
 - Start a full assessment.
@@ -112,6 +118,16 @@ After Supabase is connected:
   - final report
   - final instruction
   - generation runs
+
+## Security Notes
+
+Supabase reported that Row Level Security is disabled for the new `public` tables. This matters if the Supabase Data API exposes the tables through anon/authenticated keys.
+
+Current app architecture uses the Express API and direct Postgres connection rather than direct browser access to these tables. Before production, choose one of these:
+- Enable RLS on all app tables and add only the policies actually needed.
+- Keep all table access server-side and ensure browser clients do not use Supabase keys for these tables.
+
+Do not enable RLS blindly in production without testing the API flow, because missing policies can block expected access depending on the database role used by the deployment connection string.
 
 ## Lemon Squeezy Review Mode
 

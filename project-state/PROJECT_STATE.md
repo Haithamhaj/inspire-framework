@@ -13,6 +13,10 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Admin now has an API and first UI panel for assessment evidence detail.
 - PayPal can now be disabled for review/staging with `BILLING_PROVIDER=disabled`, and the assessment payment page shows a clear checkout-unavailable message instead of an endless loading state.
 - Supabase/deployment preparation notes are documented in `project-state/SUPABASE_DEPLOYMENT_NOTES.md`.
+- Supabase MCP is connected to staging project `duncakyzabwlrvvnjmmq`.
+- Supabase staging has the INSPIRE core schema applied through MCP migrations:
+  - `create_inspire_core_schema`
+  - `add_inspire_foreign_key_indexes`
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -23,7 +27,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 ## Active Risks
 - Billing copy now mentions Lemon Squeezy, while the current backend billing implementation still uses PayPal.
 - Replit production environment may differ from local `.env.local`.
-- Current assessment storage does not preserve enough decision/matrix evidence for analysis and improvement.
+- Supabase Data API/RLS posture still needs a production decision before launch.
 
 ## Protected Areas
 - Do not expose secrets from `.env.local`.
@@ -31,7 +35,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Apply the DB v2 migration in the target database, then test a full V2 assessment flow with `BILLING_PROVIDER=disabled` to confirm the review path and admin evidence panel.
+Set local/staging `DATABASE_URL` to the Supabase Postgres connection string, then test a full V2 assessment flow with `BILLING_PROVIDER=disabled` to confirm the review path and admin evidence panel.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
