@@ -5,3 +5,5 @@ export * from "./admin-sessions";
 export * from "./payments";
 export * from "./discount-codes";
 export * from "./assessment-feedback";
+export * from "./assessment-decision-snapshots";
+export * from "./assessment-generation-runs";

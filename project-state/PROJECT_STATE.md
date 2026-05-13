@@ -9,6 +9,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - The app currently has a Vite frontend, Express API, PostgreSQL/Drizzle database, and legacy PayPal billing code.
 - Lemon Squeezy approval is not complete yet; the site needs review readiness before payment integration.
 - Phase 1 technical audit is documented in `project-state/TECHNICAL_AUDIT.md`.
+- Phase 2 DB v2 foundation has started with schema and migration files for decision snapshots and generation runs.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -27,7 +28,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Start Phase 2 by designing DB v2 migrations for assessment decision snapshots and generation run history.
+Expose the new DB v2 evidence in admin APIs and build the first admin assessment detail view.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

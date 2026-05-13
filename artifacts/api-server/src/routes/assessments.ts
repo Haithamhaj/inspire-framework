@@ -1,6 +1,11 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { assessmentsTable, usersTable, paymentsTable } from "@workspace/db/schema";
+import {
+  assessmentDecisionSnapshotsTable,
+  assessmentsTable,
+  usersTable,
+  paymentsTable,
+} from "@workspace/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import {
@@ -13,8 +18,10 @@ import { rateLimit, getClientIp } from "../lib/rate-limit";
 import { logger } from "../lib/logger";
 import { REQUIRED_V2_QUESTION_IDS } from "../data/questions-v2";
 import { VALID_OPTION_IDS_BY_QUESTION } from "../data/option-routing";
+import { computeInspireV2Profile } from "../lib/inspire-v2-decision-engine";
 
 const router: IRouter = Router();
+const DECISION_ENGINE_VERSION = "inspire-v2-decision-engine@1";
 
 async function requireUser(req: Request, _res: Response) {
   const authHeader = req.headers["authorization"] as string | undefined;
@@ -372,6 +379,88 @@ router.post(
         completionTimeSeconds: completion_time_seconds,
       })
       .where(eq(assessmentsTable.id, id as string));
+
+    const decisionSnapshot = computeInspireV2Profile({
+      answers,
+      domain: existing.domain ?? existing.projectName,
+      customDomain: existing.customDomain ?? undefined,
+      domainSpecialization: existing.domainSpecialization ?? undefined,
+      projectContext: existing.projectContext ?? existing.projectGoal,
+      openAnswer: open_answer ?? undefined,
+    });
+
+    await db
+      .insert(assessmentDecisionSnapshotsTable)
+      .values({
+        assessmentId: id as string,
+        userId: user.id,
+        decisionEngineVersion: DECISION_ENGINE_VERSION,
+        answersSnapshot: answers,
+        matrixSnapshot: {
+          selectedAnswers: decisionSnapshot.selectedAnswers,
+          topEvidenceLabels: decisionSnapshot.topEvidenceLabels,
+          thinkingModeProfile: decisionSnapshot.thinkingModeProfile,
+        },
+        scoringSnapshot: {
+          inspireSectionScores: decisionSnapshot.inspireSectionScores,
+          inspireSectionPercentages: decisionSnapshot.inspireSectionPercentages,
+          lowCoverageNotes: decisionSnapshot.lowCoverageNotes,
+          roleScores: decisionSnapshot.roleScores,
+          contradictionTags: decisionSnapshot.contradictionTags,
+          contradictionRulesGenerated: decisionSnapshot.contradictionRulesGenerated,
+          confidenceIndex: decisionSnapshot.confidenceIndex,
+        },
+        selectedRules: {
+          instructionRules: decisionSnapshot.selectedInstructionRules,
+          riskGuards: decisionSnapshot.selectedRiskGuards,
+        },
+        selectedRoles: {
+          primaryOperatingArchetype: decisionSnapshot.primaryOperatingArchetype,
+          secondaryOperatingMode: decisionSnapshot.secondaryOperatingMode,
+          operatingModeTriggers: decisionSnapshot.operatingModeTriggers,
+          domainRole: decisionSnapshot.domainRole,
+          domainSource: decisionSnapshot.domainSource,
+          domainConfidence: decisionSnapshot.domainConfidence,
+        },
+        selectedRedLines: decisionSnapshot.selectedRedLines,
+        selectedOutputRules: decisionSnapshot.selectedOutputRules,
+      })
+      .onConflictDoUpdate({
+        target: assessmentDecisionSnapshotsTable.assessmentId,
+        set: {
+          updatedAt: new Date(),
+          decisionEngineVersion: DECISION_ENGINE_VERSION,
+          answersSnapshot: answers,
+          matrixSnapshot: {
+            selectedAnswers: decisionSnapshot.selectedAnswers,
+            topEvidenceLabels: decisionSnapshot.topEvidenceLabels,
+            thinkingModeProfile: decisionSnapshot.thinkingModeProfile,
+          },
+          scoringSnapshot: {
+            inspireSectionScores: decisionSnapshot.inspireSectionScores,
+            inspireSectionPercentages: decisionSnapshot.inspireSectionPercentages,
+            lowCoverageNotes: decisionSnapshot.lowCoverageNotes,
+            roleScores: decisionSnapshot.roleScores,
+            contradictionTags: decisionSnapshot.contradictionTags,
+            contradictionRulesGenerated: decisionSnapshot.contradictionRulesGenerated,
+            confidenceIndex: decisionSnapshot.confidenceIndex,
+          },
+          selectedRules: {
+            instructionRules: decisionSnapshot.selectedInstructionRules,
+            riskGuards: decisionSnapshot.selectedRiskGuards,
+          },
+          selectedRoles: {
+            primaryOperatingArchetype: decisionSnapshot.primaryOperatingArchetype,
+            secondaryOperatingMode: decisionSnapshot.secondaryOperatingMode,
+            operatingModeTriggers: decisionSnapshot.operatingModeTriggers,
+            domainRole: decisionSnapshot.domainRole,
+            domainSource: decisionSnapshot.domainSource,
+            domainConfidence: decisionSnapshot.domainConfidence,
+          },
+          selectedRedLines: decisionSnapshot.selectedRedLines,
+          selectedOutputRules: decisionSnapshot.selectedOutputRules,
+        },
+      });
 
     let validatedPaymentId: string | null = existing.paymentId ?? null;
     if (!validatedPaymentId) {

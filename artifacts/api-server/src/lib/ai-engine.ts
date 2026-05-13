@@ -1,7 +1,11 @@
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { db } from "@workspace/db";
-import { assessmentsTable, usersTable } from "@workspace/db/schema";
+import {
+  assessmentGenerationRunsTable,
+  assessmentsTable,
+  usersTable,
+} from "@workspace/db/schema";
 import { eq, lte, lt, and } from "drizzle-orm";
 import {
   buildInspireInstructionPromptV2,
@@ -21,6 +25,7 @@ import { logger } from "./logger";
 
 const OPENAI_MODEL_DEFAULT = "gpt-5.4";
 const CLAUDE_MODEL_DEFAULT = "claude-sonnet-4-6";
+const V2_PROMPT_VERSION = "inspire-v2-instruction+report@1";
 
 type V2Answer = { questionId: string; optionId: string };
 
@@ -109,8 +114,27 @@ export async function generateReportV2(
   assessmentId: string,
   promptData: PromptDataV2
 ): Promise<void> {
+  const [assessment] = await db
+    .select({
+      id: assessmentsTable.id,
+      userId: assessmentsTable.userId,
+      assessmentType: assessmentsTable.assessmentType,
+    })
+    .from(assessmentsTable)
+    .where(eq(assessmentsTable.id, assessmentId));
+
+  if (!assessment) {
+    logger.error({ assessmentId }, "Cannot generate V2 report for missing assessment");
+    return;
+  }
+
   try {
-    const generationResult = await tryGenerateV2InstructionAndReport(promptData);
+    const generationResult = await runV2GenerationWithEvidence({
+      assessmentId,
+      userId: assessment.userId,
+      assessmentType: assessment.assessmentType ?? "full",
+      promptData,
+    });
     if (generationResult.success) {
       await finishV2(
         assessmentId,
@@ -208,7 +232,13 @@ export async function processRetryQueue(): Promise<void> {
       };
       let generationResult: Awaited<ReturnType<typeof tryGenerateV2InstructionAndReport>>;
       try {
-        generationResult = await tryGenerateV2InstructionAndReport(promptDataV2);
+        generationResult = await runV2GenerationWithEvidence({
+          assessmentId: assessment.id,
+          userId: assessment.userId,
+          assessmentType: assessment.assessmentType ?? "full",
+          promptData: promptDataV2,
+          attemptNumber: count + 1,
+        });
         if (generationResult.success) {
           await finishV2(
             assessment.id,
@@ -422,6 +452,78 @@ async function tryGenerateV2InstructionAndReport(
       : `${instructionResult.provider}+${reportResult.provider}`,
     model: sameModel ? instructionResult.model : `${instructionResult.model}+${reportResult.model}`,
   };
+}
+
+async function runV2GenerationWithEvidence(params: {
+  assessmentId: string;
+  userId: string;
+  assessmentType: string;
+  promptData: PromptDataV2;
+  attemptNumber?: number;
+}): Promise<{
+  success: boolean;
+  instructionText?: string;
+  reportText?: string;
+  provider?: string;
+  model?: string;
+}> {
+  const [run] = await db
+    .insert(assessmentGenerationRunsTable)
+    .values({
+      assessmentId: params.assessmentId,
+      userId: params.userId,
+      assessmentType: params.assessmentType,
+      status: "processing",
+      promptVersion: V2_PROMPT_VERSION,
+      attemptNumber: params.attemptNumber ?? 1,
+      inputSnapshot: {
+        promptData: params.promptData,
+        promptVersion: V2_PROMPT_VERSION,
+      },
+    })
+    .returning({ id: assessmentGenerationRunsTable.id });
+
+  try {
+    const result = await tryGenerateV2InstructionAndReport(params.promptData);
+    if (result.success) {
+      await db
+        .update(assessmentGenerationRunsTable)
+        .set({
+          status: "completed",
+          provider: result.provider ?? null,
+          model: result.model ?? null,
+          completedAt: new Date(),
+          outputSnapshot: {
+            reportText: result.reportText,
+            instructionText: result.instructionText,
+          },
+        })
+        .where(eq(assessmentGenerationRunsTable.id, run!.id));
+      return result;
+    }
+
+    await db
+      .update(assessmentGenerationRunsTable)
+      .set({
+        status: "failed",
+        completedAt: new Date(),
+        errorMessage: "No provider returned valid V2 report and instruction output.",
+      })
+      .where(eq(assessmentGenerationRunsTable.id, run!.id));
+
+    return result;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await db
+      .update(assessmentGenerationRunsTable)
+      .set({
+        status: "failed",
+        completedAt: new Date(),
+        errorMessage: message,
+      })
+      .where(eq(assessmentGenerationRunsTable.id, run!.id));
+    throw err;
+  }
 }
 
 // ─── SAVE (v1 / mini) ─────────────────────────────────────────────────────────
