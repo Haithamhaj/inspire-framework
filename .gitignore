@@ -48,6 +48,9 @@ Thumbs.db
 .cache/
 .local/
 
+# Local browser automation artifacts
+.playwright-mcp/
+
 # Environment variables — NEVER commit real secrets
 .env
 .env.local

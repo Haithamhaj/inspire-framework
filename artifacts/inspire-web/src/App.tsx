@@ -5,10 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import { I18nProvider } from "@/i18n";
 import { Navbar } from "@/components/layout/Navbar";
+import { LegalFooter } from "@/components/layout/LegalFooter";
 
 // Pages
 import Landing from "@/pages/landing";
 import PrivacyConsent from "@/pages/privacy-consent";
+import { PrivacyPage, RefundPolicyPage, TermsPage } from "@/pages/legal";
 import Register from "@/pages/register";
 import Login from "@/pages/login";
 import Assess from "@/pages/assess";
@@ -28,6 +30,9 @@ function Router() {
   const premiumNavPaths = new Set([
     "/",
     "/privacy-consent",
+    "/terms",
+    "/privacy",
+    "/refund-policy",
     "/register",
     "/login",
     "/assess",
@@ -43,6 +48,9 @@ function Router() {
         <Switch>
           <Route path="/" component={Landing} />
           <Route path="/privacy-consent" component={PrivacyConsent} />
+          <Route path="/terms" component={TermsPage} />
+          <Route path="/privacy" component={PrivacyPage} />
+          <Route path="/refund-policy" component={RefundPolicyPage} />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
           <Route path="/assess" component={Assess} />
@@ -56,6 +64,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
+      <LegalFooter />
     </div>
   );
 }
