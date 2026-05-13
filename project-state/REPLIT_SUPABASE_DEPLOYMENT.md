@@ -1,0 +1,143 @@
+# Replit + Supabase Deployment Plan
+
+Branch: `codex/platform-migration`
+
+## Decision
+
+Use Replit as the temporary deployment host and Supabase as the production-style database.
+
+This is the safest next move because:
+- Replit is already paid for and configured.
+- The current app already deploys successfully there.
+- Supabase staging is already created and verified locally.
+- Moving hosting and database at the same time would add unnecessary risk before Lemon Squeezy review.
+
+Replit should be treated as a staging/early-production host, not as the long-term architecture decision.
+
+## Current Replit Reality
+
+From the Replit audit:
+- Replit deploys from the current Replit workspace snapshot, not automatically from GitHub pushes.
+- The current Replit workspace is on `main`.
+- Deployment target is Autoscale.
+- Frontend and API are deployed as separate Replit services in one monorepo deployment.
+- API listens on port `8080`.
+- Frontend is served statically from `artifacts/inspire-web/dist/public`.
+- Existing `DATABASE_URL` is probably Neon or another hosted Postgres, not Supabase.
+- `NODE_EXTRA_CA_CERTS` is not currently configured.
+
+## Required Replit Secrets
+
+Keep values private. Store values only in Replit Secrets.
+
+Required:
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `ADMIN_PASSWORD`
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
+- `ANTHROPIC_API_KEY`
+- `ANTHROPIC_MODEL`
+- `RESEND_API_KEY`
+- `FROM_NAME`
+- `FROM_EMAIL`
+- `APP_URL`
+- `ADMIN_ALERT_EMAIL`
+- `ASSESSMENT_PRICE`
+- `BILLING_PROVIDER`
+
+Recommended for Replit + Supabase:
+- `PG_POOL_MAX=5`
+- `PG_IDLE_TIMEOUT_MS=30000`
+- `PG_CONNECTION_TIMEOUT_MS=10000`
+
+For Lemon Squeezy review mode before approval:
+- `BILLING_PROVIDER=disabled`
+
+Legacy PayPal values can remain temporarily, but should not be used in the review path while `BILLING_PROVIDER=disabled`.
+
+## Supabase Connection Choice
+
+Use Supabase Session Pooler first:
+- Host pattern: `aws-...pooler.supabase.com`
+- Port: `5432`
+- User format: `postgres.<project_ref>`
+- Database: `postgres`
+
+Reason:
+- The API is a persistent Express service using `pg.Pool`.
+- Session Pooler was verified locally.
+- Transaction Pooler on `6543` is better for short-lived serverless/edge workloads and has more restrictions.
+
+Add SSL mode in the connection string if Supabase gives a string without it:
+- Prefer `sslmode=verify-full` if Replit trusts the Supabase CA.
+- Use `sslmode=require` only if `verify-full` fails and the risk is accepted for the temporary Replit staging period.
+
+If Replit fails with a certificate chain error, add a durable CA setup instead of relying on `/tmp`.
+
+## Safe Deployment Sequence
+
+1. Do not change the current Replit production secrets until the workspace code is on `codex/platform-migration`.
+2. In Replit, create a checkpoint or duplicate Repl if available.
+3. Update the Replit workspace code to `codex/platform-migration`.
+4. Confirm these files are present in Replit:
+   - `lib/db/migrations/0000_create_inspire_core_schema.sql`
+   - `lib/db/migrations/0005_add_assessment_evidence_tables.sql`
+   - `lib/db/migrations/0006_add_foreign_key_indexes.sql`
+   - `project-state/REPLIT_SUPABASE_DEPLOYMENT.md`
+5. Set Replit secrets:
+   - `DATABASE_URL=<Supabase Session Pooler connection string>`
+   - `BILLING_PROVIDER=disabled`
+   - `PG_POOL_MAX=5`
+   - `PG_IDLE_TIMEOUT_MS=30000`
+   - `PG_CONNECTION_TIMEOUT_MS=10000`
+6. Ensure `APP_URL` points to the deployed Replit URL, not the old development URL.
+7. Deploy from Replit.
+8. Verify:
+   - `/api/healthz`
+   - `/terms`
+   - `/privacy`
+   - `/refund-policy`
+   - registration
+   - login
+   - assessment submit
+   - admin manual generation
+   - admin detail view
+   - shared result page
+   - checkout-disabled message in the payment step
+
+## Prompt For Replit Agent
+
+Use this prompt before changing Replit:
+
+```text
+Audit and prepare only. Do not deploy, change secrets, or modify files unless I approve after your answer.
+
+This Replit workspace currently deploys INSPIRE Framework from the workspace snapshot. I want to update it to the GitHub branch `codex/platform-migration` and keep Replit as the host while using Supabase as the database.
+
+Please inspect the workspace and answer:
+
+1. What branch is currently checked out?
+2. Are there uncommitted Replit workspace changes?
+3. Can this workspace safely switch to `codex/platform-migration` without losing local-only changes?
+4. Is there a checkpoint or duplicate-Repl option available before switching?
+5. What exact command would you run to fetch and switch to `codex/platform-migration`?
+6. After switching, would deployment still use the same API and frontend artifact configuration?
+7. Which secrets need to be changed or added for Supabase, by name only?
+8. Does Replit support setting `PG_POOL_MAX`, `PG_IDLE_TIMEOUT_MS`, and `PG_CONNECTION_TIMEOUT_MS` as secrets/env vars for deployment?
+9. Is `APP_URL` currently deployment-only or development-only, and where should it be set for production?
+10. Are there any warnings about using Supabase Session Pooler on port 5432 from this Replit Autoscale deployment?
+
+Do not print secret values.
+Do not modify anything.
+Return a concise checklist with risks and exact next recommended action.
+```
+
+## Rollback Plan
+
+If Replit deployment fails after switching to Supabase:
+1. Do not overwrite Supabase data.
+2. Revert only Replit `DATABASE_URL` to the previous database secret if needed.
+3. Re-deploy the previous Replit workspace snapshot or switch back to `main`.
+4. Keep `codex/platform-migration` unchanged on GitHub.
+

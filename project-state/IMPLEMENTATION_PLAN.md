@@ -248,13 +248,14 @@ Expected result:
 
 ## Phase 9: Deployment Outside Replit
 
-Goal: Run the new version from GitHub on a cleaner deployment platform.
+Goal: Run the new version from a controlled deployment path while keeping Replit as the temporary host.
 
 Tasks:
-- [ ] Decide deployment shape:
-  - one Node service for frontend build plus API, or
-  - separate frontend and API services.
-- [ ] Choose platform after audit.
+- [x] Decide deployment shape:
+  - keep Replit's current separate static frontend and API services for now.
+- [x] Choose platform after audit: keep Replit temporarily, use Supabase for the database.
+- [x] Add configurable Postgres pool settings for Replit/Supabase.
+- [x] Document Replit + Supabase deployment sequence.
 - [ ] Configure build commands.
 - [ ] Configure environment variables.
 - [ ] Configure durable Supabase CA/SSL handling for Node hosting.
@@ -263,9 +264,9 @@ Tasks:
 - [ ] Document deployment process.
 
 Expected result:
-- A staging deployment independent from Replit.
+- A staging/early-production deployment on Replit that uses Supabase instead of the old database.
 - GitHub remains the source of truth.
-- Replit becomes legacy/backup.
+- Replit remains temporary hosting until there is a clear reason to move.
 
 ## Phase 10: Final QA And Launch Decision
 
@@ -302,7 +303,7 @@ Expected result:
 7. [x] Set up Supabase.
 8. [x] Complete local Supabase end-to-end flow through admin-generated report and admin detail API review.
 9. [x] Fix shared result page to display V2 `reportContent` without exposing system instruction.
-10. [ ] Decide deployment platform and configure durable Supabase CA/SSL.
+10. [x] Decide deployment platform: keep Replit temporarily and configure Supabase readiness.
 11. [ ] Deploy staging.
 12. [ ] Polish Lemon Squeezy review flow.
 13. [ ] Integrate Lemon Squeezy after approval.

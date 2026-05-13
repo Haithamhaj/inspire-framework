@@ -12,14 +12,18 @@ Recommended target shape:
 - Frontend: either served by the same Node service after Vite build, or hosted separately on Vercel.
 
 Initial recommendation:
-- Use one backend service for the API first.
-- Decide frontend hosting after confirming whether the chosen platform should serve `artifacts/inspire-web/dist/public`.
+- Keep Replit temporarily because it is already configured and paid for.
+- Keep the current Replit shape: static frontend plus API service.
+- Move the database connection to Supabase after the Replit workspace is updated to `codex/platform-migration`.
 
 ## Required Environment Variables
 
 API service:
 - `DATABASE_URL`
 - `PORT`
+- `PG_POOL_MAX`
+- `PG_IDLE_TIMEOUT_MS`
+- `PG_CONNECTION_TIMEOUT_MS`
 - `JWT_SECRET`
 - `ADMIN_PASSWORD`
 - `OPENAI_API_KEY`
@@ -185,18 +189,10 @@ After Lemon approval:
 
 ## Open Deployment Decision
 
-Choose one:
+Decision:
+- Use Replit temporarily.
+- Keep the current two-service Replit deployment: static frontend plus API.
+- Use Supabase for Postgres.
+- Revisit Render/Railway/Fly/Vercel only if Replit deployment, SSL, cost, or performance becomes a real blocker.
 
-Option A: One service
-- API and built frontend served from one Node host.
-- Simpler operations.
-- Good for early launch.
-
-Option B: Two services
-- Frontend on Vercel.
-- API on Render/Railway/Fly.
-- Better frontend deployment ergonomics.
-- More environment and CORS coordination.
-
-Recommendation:
-- Start with Option A unless the hosting platform makes static frontend serving awkward.
+See `project-state/REPLIT_SUPABASE_DEPLOYMENT.md` for the execution sequence and Replit agent prompt.

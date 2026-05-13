@@ -25,16 +25,19 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Admin detail API is verified for the completed test assessment: it returns 21 answers, decision snapshot, final report, final instruction, and generation run history.
 - Admin page visual verification is complete for stats, completed assessment row, saved answers, decision/matrix snapshot, and generation run count.
 - Public shared results initially displayed only the header for V2 reports; this is fixed by returning and rendering safe `reportContent` sections while still excluding the private system instruction.
+- Deployment decision: keep Replit temporarily as the host and switch its database to Supabase after the Replit workspace is updated to `codex/platform-migration`.
+- Database pool settings are now configurable through `PG_POOL_MAX`, `PG_IDLE_TIMEOUT_MS`, and `PG_CONNECTION_TIMEOUT_MS`.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
 - Treat Replit as the old running environment for now.
 - Use this branch for DB v2, admin improvements, Supabase readiness, deployment planning, and Lemon Squeezy review preparation.
 - Historical data is not critical; a clean Supabase database is acceptable if migration becomes costly.
+- Replit remains the temporary deployment target because it is already paid for and configured.
 
 ## Active Risks
 - Billing copy now mentions Lemon Squeezy, while the current backend billing implementation still uses PayPal.
-- Replit production environment may differ from local `.env.local`.
+- Replit production environment may differ from local `.env.local`; deployment uses the Replit workspace snapshot, not automatic GitHub push deploys.
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Local verified command uses `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`; production needs a durable certificate setup.
 - Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
@@ -45,7 +48,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Decide the staging deployment platform and durable Supabase CA setup, then deploy the migration branch outside Replit.
+Ask Replit to prepare the workspace switch to `codex/platform-migration`, then set Supabase/Replit secrets and deploy.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
@@ -56,3 +59,4 @@ Decide the staging deployment platform and durable Supabase CA setup, then deplo
 - Technical audit: `project-state/TECHNICAL_AUDIT.md`
 - Visual system map: `project-state/SYSTEM_MAP.html`
 - Supabase/deployment notes: `project-state/SUPABASE_DEPLOYMENT_NOTES.md`
+- Replit deployment plan: `project-state/REPLIT_SUPABASE_DEPLOYMENT.md`
