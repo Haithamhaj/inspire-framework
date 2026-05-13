@@ -20,6 +20,7 @@ export const discountCodesTable = pgTable("discount_codes", {
   maxUses: integer("max_uses"),
   usedCount: integer("used_count").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
+  startsAt: timestamp("starts_at"),
   expiresAt: timestamp("expires_at"),
   userId: uuid("user_id").references(() => usersTable.id, {
     onDelete: "cascade",

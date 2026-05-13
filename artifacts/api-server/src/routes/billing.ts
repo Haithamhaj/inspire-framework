@@ -79,6 +79,7 @@ type DiscountCodeRecord = typeof discountCodesTable.$inferSelect;
 function isDiscountUsableForUser(discount: DiscountCodeRecord, userId: string): boolean {
   if (!discount.isActive) return false;
   if (discount.userId && discount.userId !== userId) return false;
+  if (discount.startsAt && new Date() < discount.startsAt) return false;
   if (discount.expiresAt && new Date() > discount.expiresAt) return false;
   if (discount.maxUses !== null && discount.usedCount >= discount.maxUses) return false;
   return true;
@@ -214,6 +215,11 @@ router.get(
 
     if (!discount.isActive || (discount.userId && discount.userId !== user.id)) {
       res.json({ success: true, valid: false, reason: "الكود غير مفعّل" });
+      return;
+    }
+
+    if (discount.startsAt && new Date() < discount.startsAt) {
+      res.json({ success: true, valid: false, reason: "الكود لم يبدأ بعد" });
       return;
     }
 

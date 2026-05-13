@@ -660,7 +660,22 @@ router.get(
       .from(discountCodesTable)
       .orderBy(desc(discountCodesTable.createdAt));
 
-    res.json({ success: true, codes });
+    const userIds = [...new Set(codes.map((code) => code.userId).filter(Boolean))] as string[];
+    const users = userIds.length > 0
+      ? await db
+          .select({ id: usersTable.id, email: usersTable.email })
+          .from(usersTable)
+          .where(or(...userIds.map((id) => eq(usersTable.id, id))))
+      : [];
+    const userEmailById = Object.fromEntries(users.map((user) => [user.id, user.email]));
+
+    res.json({
+      success: true,
+      codes: codes.map((code) => ({
+        ...code,
+        userEmail: code.userId ? userEmailById[code.userId] ?? null : null,
+      })),
+    });
   }
 );
 
@@ -671,10 +686,12 @@ router.post(
   async (req: Request, res: Response): Promise<void> => {
     if (!requireAdmin(req, res)) return;
 
-    const { code, discountPercent, maxUses, expiresAt } = req.body as {
+    const { code, discountPercent, maxUses, userEmail, startsAt, expiresAt } = req.body as {
       code: string;
       discountPercent: number;
       maxUses?: number | null;
+      userEmail?: string | null;
+      startsAt?: string | null;
       expiresAt?: string | null;
     };
 
@@ -690,6 +707,39 @@ router.post(
     }
 
     const normalizedCode = code.trim().toUpperCase();
+    const normalizedEmail = userEmail?.trim().toLowerCase() || null;
+    const normalizedMaxUses = maxUses === undefined || maxUses === null ? null : Number(maxUses);
+    const startsDate = startsAt ? new Date(startsAt) : null;
+    const expiresDate = expiresAt ? new Date(expiresAt) : null;
+
+    if (normalizedMaxUses !== null && (!Number.isInteger(normalizedMaxUses) || normalizedMaxUses < 1)) {
+      res.status(400).json({ success: false, error: "maxUses must be a positive number" });
+      return;
+    }
+
+    if ((startsDate && Number.isNaN(startsDate.getTime())) || (expiresDate && Number.isNaN(expiresDate.getTime()))) {
+      res.status(400).json({ success: false, error: "Invalid date" });
+      return;
+    }
+
+    if (startsDate && expiresDate && startsDate >= expiresDate) {
+      res.status(400).json({ success: false, error: "تاريخ البداية يجب أن يكون قبل تاريخ النهاية" });
+      return;
+    }
+
+    let userId: string | null = null;
+    if (normalizedEmail) {
+      const [targetUser] = await db
+        .select({ id: usersTable.id })
+        .from(usersTable)
+        .where(eq(usersTable.email, normalizedEmail));
+
+      if (!targetUser) {
+        res.status(404).json({ success: false, error: "لا يوجد مستخدم بهذا الإيميل" });
+        return;
+      }
+      userId = targetUser.id;
+    }
 
     try {
       const [created] = await db
@@ -697,12 +747,14 @@ router.post(
         .values({
           code: normalizedCode,
           discountPercent: pct,
-          maxUses: maxUses ?? null,
-          expiresAt: expiresAt ? new Date(expiresAt) : null,
+          maxUses: normalizedMaxUses,
+          startsAt: startsDate,
+          expiresAt: expiresDate,
+          userId,
         })
         .returning();
 
-      res.status(201).json({ success: true, code: created });
+      res.status(201).json({ success: true, code: { ...created, userEmail: normalizedEmail } });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Unknown error";
       if (msg.includes("unique") || msg.includes("duplicate")) {

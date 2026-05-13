@@ -299,6 +299,7 @@ Tasks:
 - [x] Make submitted unpaid assessments use `pending_payment` instead of remaining `draft`, and show that state in admin.
 - [x] Add an admin preset for a 100% Lemon Squeezy review discount code.
 - [x] Add a user-facing way to resume payment for saved `pending_payment` assessments from "My reports".
+- [x] Expand admin discount-code creation with optional user email, usage limit, start date, and expiration date.
 - [ ] Test mobile and desktop.
 - [ ] Review copy.
 - [ ] Record Lemon Squeezy video.

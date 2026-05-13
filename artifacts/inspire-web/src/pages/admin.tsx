@@ -79,7 +79,9 @@ interface DiscountCode {
   maxUses: number | null;
   usedCount: number;
   isActive: boolean;
+  startsAt: string | null;
   expiresAt: string | null;
+  userEmail: string | null;
   createdAt: string;
 }
 
@@ -217,6 +219,9 @@ export default function Admin() {
   const [newCode, setNewCode] = useState("");
   const [newPct, setNewPct] = useState("10");
   const [newMaxUses, setNewMaxUses] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [newStartsAt, setNewStartsAt] = useState("");
+  const [newExpiresAt, setNewExpiresAt] = useState("");
   const [creatingCode, setCreatingCode] = useState(false);
   const [codeError, setCodeError] = useState("");
 
@@ -308,12 +313,19 @@ export default function Admin() {
       const res = await fetch(apiUrl("/admin/discount-codes"), {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-admin-password": password },
-        body: JSON.stringify({ code, discountPercent: pct, maxUses: newMaxUses ? parseInt(newMaxUses) : null }),
+        body: JSON.stringify({
+          code,
+          discountPercent: pct,
+          maxUses: newMaxUses ? parseInt(newMaxUses) : null,
+          userEmail: newUserEmail.trim() || null,
+          startsAt: newStartsAt || null,
+          expiresAt: newExpiresAt || null,
+        }),
       });
       const d = await res.json() as { success: boolean; code?: DiscountCode; error?: string };
       if (!d.success) { setCodeError(d.error ?? "فشل الإنشاء"); return; }
       setDiscountCodes(prev => [d.code!, ...prev]);
-      setNewCode(""); setNewPct("10"); setNewMaxUses("");
+      setNewCode(""); setNewPct("10"); setNewMaxUses(""); setNewUserEmail(""); setNewStartsAt(""); setNewExpiresAt("");
     } catch {
       setCodeError("فشل الاتصال");
     } finally {
@@ -325,6 +337,19 @@ export default function Admin() {
     setNewCode("LEMONREVIEW100");
     setNewPct("100");
     setNewMaxUses("20");
+    setNewUserEmail("");
+    setNewStartsAt("");
+    setNewExpiresAt("");
+    setCodeError("");
+  }
+
+  function prepareSingleUseCode() {
+    setNewCode(`INSPIRE-${Math.random().toString(36).slice(2, 8).toUpperCase()}`);
+    setNewPct("100");
+    setNewMaxUses("1");
+    setNewUserEmail("");
+    setNewStartsAt("");
+    setNewExpiresAt("");
     setCodeError("");
   }
 
@@ -1147,6 +1172,13 @@ export default function Admin() {
               >
                 تجهيز كود مراجعة 100%
               </button>
+              <button
+                type="button"
+                onClick={prepareSingleUseCode}
+                className="inline-flex items-center justify-center rounded-xl border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-secondary/80"
+              >
+                كود شخصي لمرة واحدة
+              </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
               <div>
@@ -1172,6 +1204,17 @@ export default function Admin() {
                 />
               </div>
               <div>
+                <label className="block text-xs text-muted-foreground mb-1">إيميل مستخدم محدد (اختياري)</label>
+                <input
+                  type="email"
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  dir="ltr"
+                />
+              </div>
+              <div>
                 <label className="block text-xs text-muted-foreground mb-1">حد الاستخدام (اختياري)</label>
                 <input
                   type="number"
@@ -1179,6 +1222,26 @@ export default function Admin() {
                   onChange={(e) => setNewMaxUses(e.target.value)}
                   placeholder="غير محدود"
                   className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  dir="ltr"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">يبدأ من (اختياري)</label>
+                <input
+                  type="datetime-local"
+                  value={newStartsAt}
+                  onChange={(e) => setNewStartsAt(e.target.value)}
+                  className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  dir="ltr"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1">ينتهي في (اختياري)</label>
+                <input
+                  type="datetime-local"
+                  value={newExpiresAt}
+                  onChange={(e) => setNewExpiresAt(e.target.value)}
+                  className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                   dir="ltr"
                 />
               </div>
@@ -1208,7 +1271,9 @@ export default function Admin() {
                   <tr className="bg-secondary/50 border-b border-border text-right">
                     <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الكود</th>
                     <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الخصم</th>
+                    <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">النطاق</th>
                     <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الاستخدام</th>
+                    <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الصلاحية</th>
                     <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">الحالة</th>
                     <th className="px-4 py-3 font-semibold text-muted-foreground text-xs">إجراءات</th>
                   </tr>
@@ -1218,8 +1283,15 @@ export default function Admin() {
                     <tr key={code.id} className="border-b border-border last:border-0 hover:bg-secondary/20">
                       <td className="px-4 py-3 font-mono font-bold text-primary" dir="ltr">{code.code}</td>
                       <td className="px-4 py-3 text-green-600 font-semibold">{code.discountPercent}%</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs" dir="ltr">
+                        {code.userEmail ?? "عام"}
+                      </td>
                       <td className="px-4 py-3 text-muted-foreground text-xs">
                         {code.usedCount} / {code.maxUses ?? "∞"}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">
+                        <div>{code.startsAt ? `من ${new Date(code.startsAt).toLocaleDateString("ar-SA")}` : "يبدأ فوراً"}</div>
+                        <div>{code.expiresAt ? `إلى ${new Date(code.expiresAt).toLocaleDateString("ar-SA")}` : "بدون انتهاء"}</div>
                       </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${code.isActive ? "bg-green-100 text-green-700" : "bg-secondary text-muted-foreground"}`}>
