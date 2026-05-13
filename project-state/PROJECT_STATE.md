@@ -8,6 +8,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Active work branch: `codex/platform-migration`.
 - The app currently has a Vite frontend, Express API, PostgreSQL/Drizzle database, and legacy PayPal billing code.
 - Lemon Squeezy approval is not complete yet; the site needs review readiness before payment integration.
+- Phase 1 technical audit is documented in `project-state/TECHNICAL_AUDIT.md`.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -26,7 +27,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Clean the current branch, commit the legal page work separately, then begin the technical audit described in `project-state/IMPLEMENTATION_PLAN.md`.
+Start Phase 2 by designing DB v2 migrations for assessment decision snapshots and generation run history.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
@@ -34,3 +35,5 @@ Clean the current branch, commit the legal page work separately, then begin the 
 - DB schema: `lib/db/src/schema`
 - Legal pages added on this branch: `/terms`, `/privacy`, `/refund-policy`
 - Execution plan: `project-state/IMPLEMENTATION_PLAN.md`
+- Technical audit: `project-state/TECHNICAL_AUDIT.md`
+- Visual system map: `project-state/SYSTEM_MAP.html`

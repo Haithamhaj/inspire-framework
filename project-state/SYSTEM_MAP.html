@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>INSPIRE Platform Migration System Map</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #070817;
+        --panel: #101323;
+        --panel-2: #15192c;
+        --line: #2d3348;
+        --text: #eef2ff;
+        --muted: #a6adbb;
+        --rose: #fb7185;
+        --amber: #fbbf24;
+        --green: #34d399;
+        --blue: #60a5fa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 15px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 36px 20px 56px;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: clamp(30px, 5vw, 52px);
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+      h2 {
+        margin-top: 34px;
+        font-size: 22px;
+      }
+      h3 {
+        font-size: 15px;
+      }
+      .lead {
+        margin-top: 14px;
+        max-width: 780px;
+        color: var(--muted);
+      }
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+      .cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, var(--panel), var(--panel-2));
+        padding: 16px;
+      }
+      .card p,
+      li {
+        color: var(--muted);
+      }
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 2px 9px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .tag.good {
+        color: var(--green);
+        border-color: color-mix(in srgb, var(--green), transparent 65%);
+      }
+      .tag.warn {
+        color: var(--amber);
+        border-color: color-mix(in srgb, var(--amber), transparent 65%);
+      }
+      .tag.risk {
+        color: var(--rose);
+        border-color: color-mix(in srgb, var(--rose), transparent 65%);
+      }
+      .flow {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(150px, 1fr));
+        gap: 10px;
+        align-items: stretch;
+      }
+      .node {
+        position: relative;
+        min-height: 116px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: #0d1020;
+      }
+      .node:not(:last-child)::after {
+        content: "→";
+        position: absolute;
+        right: -17px;
+        top: 42%;
+        color: var(--blue);
+        font-weight: 900;
+        z-index: 2;
+      }
+      .node strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+      .node span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .small {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      @media (max-width: 900px) {
+        .cols-4,
+        .cols-3,
+        .split,
+        .flow {
+          grid-template-columns: 1fr;
+        }
+        .node:not(:last-child)::after {
+          content: "↓";
+          right: 16px;
+          top: auto;
+          bottom: -20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="tag good">Branch: codex/platform-migration</span>
+      <h1>INSPIRE System Map</h1>
+      <p class="lead">
+        Operational map for the migration branch. It shows the current system boundaries, customer flow,
+        database responsibilities, and the main upgrade targets before Supabase deployment and Lemon Squeezy review.
+      </p>
+
+      <h2>Current System</h2>
+      <section class="grid cols-4">
+        <article class="card">
+          <h3>Frontend</h3>
+          <p>Vite React app in <strong>artifacts/inspire-web</strong>. Uses Wouter routes and fetches the API through <strong>/api</strong>.</p>
+        </article>
+        <article class="card">
+          <h3>API</h3>
+          <p>Express server in <strong>artifacts/api-server</strong>. Mounted under <strong>/api</strong>.</p>
+        </article>
+        <article class="card">
+          <h3>Database</h3>
+          <p>PostgreSQL through Drizzle in <strong>lib/db</strong>. Ready in principle for Supabase.</p>
+        </article>
+        <article class="card">
+          <h3>Legacy Deploy</h3>
+          <p>Replit remains the existing running path. New work should be built from this branch first.</p>
+        </article>
+      </section>
+
+      <h2>Customer Flow</h2>
+      <section class="flow">
+        <div class="node">
+          <strong>Landing</strong>
+          <span>User sees product, price, legal links, and starts assessment.</span>
+        </div>
+        <div class="node">
+          <strong>Auth</strong>
+          <span>User consents, registers, logs in, and receives token/cookie auth.</span>
+        </div>
+        <div class="node">
+          <strong>Assessment</strong>
+          <span>Draft is created, answers are saved, and open answer is stored.</span>
+        </div>
+        <div class="node">
+          <strong>Generation</strong>
+          <span>AI creates report and final copy-ready instructions.</span>
+        </div>
+        <div class="node">
+          <strong>Results</strong>
+          <span>User views result, shares it, downloads PDF, or submits feedback.</span>
+        </div>
+      </section>
+
+      <h2>Database Responsibilities</h2>
+      <section class="grid cols-3">
+        <article class="card">
+          <h3>Already Stored</h3>
+          <ul>
+            <li>Users and password hashes</li>
+            <li>Assessment answers</li>
+            <li>Final report content</li>
+            <li>Final system instruction</li>
+            <li>Payments and discounts</li>
+            <li>Feedback and share tokens</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Missing For Improvement</h3>
+          <ul>
+            <li>Decision/matrix snapshot</li>
+            <li>Scoring snapshot</li>
+            <li>Prompt version</li>
+            <li>Generation run history</li>
+            <li>Structured failure evidence</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>DB V2 Target</h3>
+          <ul>
+            <li><strong>assessment_generation_runs</strong></li>
+            <li><strong>assessment_decision_snapshots</strong></li>
+            <li>Admin evidence review</li>
+            <li>Future customer comparison</li>
+          </ul>
+        </article>
+      </section>
+
+      <h2>Risk And Migration Focus</h2>
+      <section class="split">
+        <article class="card">
+          <span class="tag risk">Mismatch</span>
+          <h3>Payment</h3>
+          <p>
+            Legal pages now mention Lemon Squeezy, but the current billing implementation is PayPal.
+            PayPal should be hidden from the review path before Lemon Squeezy resubmission.
+          </p>
+        </article>
+        <article class="card">
+          <span class="tag warn">Priority</span>
+          <h3>Admin Review</h3>
+          <p>
+            Admin needs an assessment detail view that connects answers, matrix decisions, generation evidence,
+            final report, final instruction, payment state, and feedback.
+          </p>
+        </article>
+      </section>
+
+      <h2>Next Build Direction</h2>
+      <section class="grid cols-4">
+        <article class="card">
+          <h3>1. DB V2</h3>
+          <p>Add generation runs and decision snapshots.</p>
+        </article>
+        <article class="card">
+          <h3>2. Pipeline</h3>
+          <p>Save evidence during generation and retry flows.</p>
+        </article>
+        <article class="card">
+          <h3>3. Admin V2</h3>
+          <p>Expose evidence and final outputs in one review surface.</p>
+        </article>
+        <article class="card">
+          <h3>4. Review Ready</h3>
+          <p>Hide broken checkout and prepare Lemon Squeezy video flow.</p>
+        </article>
+      </section>
+
+      <p class="small" style="margin-top: 28px">
+        Source references: project-state/TECHNICAL_AUDIT.md and project-state/IMPLEMENTATION_PLAN.md.
+      </p>
+    </main>
+  </body>
+</html>
