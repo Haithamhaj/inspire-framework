@@ -121,7 +121,8 @@ After Supabase is connected:
   - final report
   - final instruction
   - generation runs
-- [ ] Confirm the admin detail panel visually in the browser.
+- [x] Confirm the admin detail panel visually in the browser.
+- [x] Confirm the public shared results page displays V2 report content.
 
 ## Local Supabase Connection Notes
 
@@ -149,6 +150,8 @@ Verified on May 13, 2026 against Supabase staging:
 - Supabase row check showed the completed assessment has provider/model metadata, final instruction, and report content.
 - Supabase row check showed one completed `assessment_generation_runs` row with input/output snapshots.
 - Admin detail API returned answers, decision snapshot, final report, final instruction, and generation run history.
+- Admin page visual check showed stats, the completed assessment row, saved answers, decision/matrix snapshot, and generation run count.
+- Shared result page now displays V2 report sections from `reportContent` while keeping the private system instruction excluded.
 
 Expected limitation:
 - The normal customer paid-completion path is still not verified because billing is intentionally disabled until the Lemon Squeezy path is ready.

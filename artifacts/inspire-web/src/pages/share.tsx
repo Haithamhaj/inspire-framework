@@ -24,6 +24,21 @@ interface InspireRow {
   note?: string;
 }
 
+interface ReportSection {
+  include?: boolean;
+  bullets?: string[];
+}
+
+interface ReportContent {
+  language?: "ar" | "en" | "both";
+  sections?: {
+    operatingSnapshot?: ReportSection;
+    personalizedRecommendations?: ReportSection;
+    customAiUsageTips?: ReportSection;
+    instructionExplanation?: ReportSection;
+  };
+}
+
 interface PublicAssessmentDto {
   id: string;
   projectName: string;
@@ -33,6 +48,7 @@ interface PublicAssessmentDto {
   aiProvider: string | null;
   aiModel: string | null;
   createdAt: string;
+  reportContent: ReportContent | null;
   inspireTable: InspireRow[] | null;
   roleAnalysis: string | null;
   redLines: string[] | null;
@@ -109,6 +125,36 @@ export default function Share() {
     );
   }
 
+  const reportSections = assessment.reportContent?.sections;
+  const v2Sections = [
+    {
+      key: "operatingSnapshot",
+      title: "ملخص نمط التشغيل",
+      icon: Brain,
+      bullets: reportSections?.operatingSnapshot?.bullets,
+    },
+    {
+      key: "personalizedRecommendations",
+      title: "توصيات مخصصة",
+      icon: TrendingUp,
+      bullets: reportSections?.personalizedRecommendations?.bullets,
+    },
+    {
+      key: "customAiUsageTips",
+      title: "نصائح استخدام AI",
+      icon: MessageSquare,
+      bullets: reportSections?.customAiUsageTips?.bullets,
+    },
+    {
+      key: "instructionExplanation",
+      title: "شرح التعليمات الجاهزة",
+      icon: ClipboardList,
+      bullets: reportSections?.instructionExplanation?.include === false
+        ? []
+        : reportSections?.instructionExplanation?.bullets,
+    },
+  ].filter((section) => Array.isArray(section.bullets) && section.bullets.length > 0);
+
   return (
     <div className="min-h-screen py-12 px-4 flex justify-center">
       <motion.div
@@ -143,6 +189,26 @@ export default function Share() {
             )}
           </div>
         </div>
+
+        {/* V2 Report Content */}
+        {v2Sections.map((section) => {
+          const Icon = section.icon;
+          return (
+            <div key={section.key} className="bg-card rounded-2xl border border-border p-6">
+              <h2 className="font-display font-bold text-xl text-foreground mb-4 flex items-center gap-2">
+                <Icon className="h-5 w-5 text-accent" /> {section.title}
+              </h2>
+              <ul className="space-y-3">
+                {section.bullets!.map((bullet, i) => (
+                  <li key={i} className="flex items-start gap-2 text-foreground text-sm leading-7">
+                    <CheckCircle2 className="h-4 w-4 mt-1 shrink-0 text-accent" />
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
 
         {/* Role Analysis */}
         {assessment.roleAnalysis && (

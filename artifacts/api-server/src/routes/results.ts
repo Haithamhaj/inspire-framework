@@ -432,6 +432,7 @@ router.get(
         aiProvider: assessment.aiProvider,
         aiModel: assessment.aiModel,
         createdAt: assessment.createdAt,
+        reportContent: assessment.reportContent,
         inspireTable: assessment.inspireTable,
         roleAnalysis: assessment.roleAnalysis,
         redLines: assessment.redLines,

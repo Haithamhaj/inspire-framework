@@ -23,6 +23,8 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - The tested full assessment initially stopped at `pending_payment` because `BILLING_PROVIDER=disabled`, then the existing admin manual generation endpoint completed it successfully.
 - Supabase generation evidence is verified: the completed test assessment has a final report, final instruction, and one completed `assessment_generation_runs` row with input/output snapshots.
 - Admin detail API is verified for the completed test assessment: it returns 21 answers, decision snapshot, final report, final instruction, and generation run history.
+- Admin page visual verification is complete for stats, completed assessment row, saved answers, decision/matrix snapshot, and generation run count.
+- Public shared results initially displayed only the header for V2 reports; this is fixed by returning and rendering safe `reportContent` sections while still excluding the private system instruction.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -43,7 +45,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Visually verify the admin page and customer result page in the browser, then decide the staging deployment platform and durable Supabase CA setup.
+Decide the staging deployment platform and durable Supabase CA setup, then deploy the migration branch outside Replit.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

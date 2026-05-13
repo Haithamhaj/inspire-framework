@@ -277,9 +277,9 @@ Tasks:
 - [ ] Test logout.
 - [x] Test assessment flow through submit/pending-payment.
 - [x] Test generation through admin manual generation.
-- [ ] Test results page.
+- [x] Test public shared results page for V2 report content.
 - [x] Test admin detail API.
-- [ ] Test admin page visually in the browser.
+- [x] Test admin page visually in the browser.
 - [x] Test legal pages locally.
 - [ ] Test mobile and desktop.
 - [ ] Review copy.
@@ -301,7 +301,8 @@ Expected result:
 6. [x] Hide or disable PayPal from the review path.
 7. [x] Set up Supabase.
 8. [x] Complete local Supabase end-to-end flow through admin-generated report and admin detail API review.
-9. [ ] Decide deployment platform and configure durable Supabase CA/SSL.
-10. [ ] Deploy staging.
-11. [ ] Polish Lemon Squeezy review flow.
-12. [ ] Integrate Lemon Squeezy after approval.
+9. [x] Fix shared result page to display V2 `reportContent` without exposing system instruction.
+10. [ ] Decide deployment platform and configure durable Supabase CA/SSL.
+11. [ ] Deploy staging.
+12. [ ] Polish Lemon Squeezy review flow.
+13. [ ] Integrate Lemon Squeezy after approval.
