@@ -102,22 +102,37 @@ For production after launch:
 ## Verification Checklist
 
 After Supabase is connected:
-- Confirm local or staging `DATABASE_URL` points to the Supabase Postgres connection string.
-- Register a new user.
-- Login.
-- Start a full assessment.
-- Submit answers.
-- Confirm `assessments.behavioral_answers` is saved.
-- Confirm `assessment_decision_snapshots` receives one row.
-- With `BILLING_PROVIDER=disabled`, confirm the user sees the checkout-unavailable message instead of PayPal.
-- Use admin manual generation or a test payment path to generate a report.
-- Confirm `assessment_generation_runs` receives a row.
-- Confirm the admin detail panel shows:
+- [x] Confirm local or staging `DATABASE_URL` points to the Supabase Postgres connection string.
+- [x] Use Session Pooler locally because direct connection is IPv6-only.
+- [x] Register a new user.
+- [x] Confirm the user row exists in Supabase.
+- [ ] Login.
+- [ ] Start a full assessment.
+- [ ] Submit answers.
+- [ ] Confirm `assessments.behavioral_answers` is saved.
+- [ ] Confirm `assessment_decision_snapshots` receives one row.
+- [ ] With `BILLING_PROVIDER=disabled`, confirm the user sees the checkout-unavailable message instead of PayPal.
+- [ ] Use admin manual generation or a test payment path to generate a report.
+- [ ] Confirm `assessment_generation_runs` receives a row.
+- [ ] Confirm the admin detail panel shows:
   - answers
   - decision snapshot
   - final report
   - final instruction
   - generation runs
+
+## Local Supabase Connection Notes
+
+The direct Supabase database host is IPv6-only for this project, so local development currently uses the Session Pooler:
+- Host: `aws-1-ap-northeast-2.pooler.supabase.com`
+- Port: `5432`
+- User format: `postgres.<project_ref>`
+- Database: `postgres`
+
+Node's `pg` driver rejected the Supabase pooler certificate chain until the Supabase CA was added. The local verified run used:
+- `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`
+
+This `/tmp` certificate file is only a local working setup. Before staging/production deployment, add a durable Supabase CA certificate file or platform-level certificate configuration. Do not switch to insecure SSL verification without an explicit risk decision.
 
 ## Security Notes
 

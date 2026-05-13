@@ -17,6 +17,8 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Supabase staging has the INSPIRE core schema applied through MCP migrations:
   - `create_inspire_core_schema`
   - `add_inspire_foreign_key_indexes`
+- Local `.env.local` now points to Supabase Session Pooler, because the direct connection is IPv6-only.
+- Local API was verified against Supabase by registering a test user and confirming the `users` row count increased.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -28,6 +30,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Billing copy now mentions Lemon Squeezy, while the current backend billing implementation still uses PayPal.
 - Replit production environment may differ from local `.env.local`.
 - Supabase Data API/RLS posture still needs a production decision before launch.
+- Node/Postgres requires Supabase CA handling for the pooler. Local verified command uses `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`; production needs a durable certificate setup.
 
 ## Protected Areas
 - Do not expose secrets from `.env.local`.
@@ -35,7 +38,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Set local/staging `DATABASE_URL` to the Supabase Postgres connection string, then test a full V2 assessment flow with `BILLING_PROVIDER=disabled` to confirm the review path and admin evidence panel.
+Continue the local Supabase end-to-end test: login, assessment start, assessment submit, report generation, and admin evidence review with `BILLING_PROVIDER=disabled`.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

@@ -10,11 +10,12 @@ Build the next production-ready INSPIRE version on a safe branch before moving a
 Goal: Work safely without disrupting `main` or the current Replit baseline.
 
 Tasks:
-- Keep large migration work off `main`.
-- Use `codex/platform-migration` as the active working branch.
-- Review uncommitted files and classify them as required changes, unrelated existing changes, or temporary files.
-- Update `.gitignore` if temporary tooling files should not be committed.
-- Commit the legal page work separately from unrelated changes.
+- [x] Keep large migration work off `main`.
+- [x] Use `codex/platform-migration` as the active working branch.
+- [x] Review uncommitted files and classify them as required changes, unrelated existing changes, or temporary files.
+- [x] Update `.gitignore` if temporary tooling files should not be committed.
+- [x] Commit the legal page work separately from unrelated changes.
+- [!] Unrelated existing local changes still remain in the working tree and should not be mixed into migration commits unless explicitly approved.
 
 Expected result:
 - A clean working branch.
@@ -26,16 +27,16 @@ Expected result:
 Goal: Understand what currently works, what depends on Replit, and what depends on PayPal or the current database.
 
 Tasks:
-- Map frontend routes.
-- Map API routes.
-- Map database tables and write paths.
-- Map authentication flow.
-- Map assessment generation flow.
-- Map payment flow.
-- List required environment variables by name only.
-- Identify Replit-specific assumptions.
-- Identify PayPal-specific assumptions.
-- Identify Lemon Squeezy review gaps.
+- [x] Map frontend routes.
+- [x] Map API routes.
+- [x] Map database tables and write paths.
+- [x] Map authentication flow.
+- [x] Map assessment generation flow.
+- [x] Map payment flow.
+- [x] List required environment variables by name only.
+- [x] Identify Replit-specific assumptions.
+- [x] Identify PayPal-specific assumptions.
+- [x] Identify Lemon Squeezy review gaps.
 
 Expected result:
 - A practical system map.
@@ -47,12 +48,13 @@ Expected result:
 Goal: Store enough evidence to understand why each customer result was generated.
 
 Tasks:
-- Design and add database changes for generation evidence.
-- Preserve final customer-facing outputs.
-- Preserve user answers and open answers.
-- Preserve decision/matrix/scoring snapshots.
-- Preserve prompt/model/provider metadata.
-- Preserve generation errors and retry state.
+- [x] Design and add database changes for generation evidence.
+- [x] Preserve final customer-facing outputs.
+- [x] Preserve user answers and open answers.
+- [x] Preserve decision/matrix/scoring snapshots.
+- [x] Preserve prompt/model/provider metadata.
+- [x] Preserve generation errors and retry state.
+- [!] Add a formal migration runner before production; SQL migration files exist, but release execution is still manual/MCP-driven.
 
 Likely additions:
 - `assessment_generation_runs`
@@ -87,8 +89,8 @@ Expected result:
 Goal: Save generation evidence every time the system creates or retries a report.
 
 Tasks:
-- Update the decision engine to return a structured decision snapshot.
-- Update V2 generation to save:
+- [x] Update the decision engine to return a structured decision snapshot.
+- [x] Update V2 generation to save:
   - answers snapshot
   - decision snapshot
   - prompt/input metadata
@@ -96,7 +98,7 @@ Tasks:
   - report content
   - model/provider details
   - failure details when generation fails
-- Make retry/failure states easier to inspect.
+- [ ] Make retry/failure states easier to inspect beyond the first admin detail panel.
 
 Expected result:
 - No completed report is a black box.
@@ -107,13 +109,13 @@ Expected result:
 Goal: Turn admin from a basic management page into a practical review and operations dashboard.
 
 Tasks:
-- Add a dashboard with:
+- [x] Add a dashboard with:
   - users count
   - assessments by status
   - payments by status
   - failed and pending retry counts
   - latest assessments
-- Improve assessment detail view with:
+- [x] Improve assessment detail view with:
   - user summary
   - project details
   - answers
@@ -124,18 +126,19 @@ Tasks:
   - generation runs
   - payment state
   - feedback
-- Add admin tools:
+- [ ] Add admin tools:
   - regenerate report
   - retry failed assessment
   - resend email
   - enable or disable share
   - export JSON/CSV
-- Add filters:
+- [ ] Add filters:
   - status
   - language
   - domain
   - model/provider
   - failed/completed
+- [!] Admin detail panel exists, but admin operations and filtering still need work before this is a strong operator dashboard.
 
 Expected result:
 - The operator can inspect and improve real customer outputs.
@@ -146,12 +149,13 @@ Expected result:
 Goal: Keep authentication sufficient and avoid unnecessary complexity before migration.
 
 Tasks:
-- Review current email/password flow.
-- Review refresh token behavior.
-- Review cookie security.
-- Review admin session behavior.
-- Add small security improvements only if needed.
-- Defer Google login unless there is a clear product need.
+- [x] Review current email/password flow.
+- [x] Review refresh token behavior.
+- [x] Review cookie security.
+- [x] Review admin session behavior.
+- [ ] Add small security improvements only if needed.
+- [x] Defer Google login unless there is a clear product need.
+- [!] Current auth is acceptable for early staging, but production cookie/session settings should be rechecked after the final hosting choice.
 
 Expected result:
 - Current auth remains usable and safe enough for early launch.
@@ -162,21 +166,22 @@ Expected result:
 Goal: Prepare the site and demo flow before requesting Lemon Squeezy approval.
 
 Tasks:
-- Confirm `/terms`, `/privacy`, and `/refund-policy`.
-- Confirm footer legal links.
-- Remove or hide broken PayPal checkout from the customer review path.
-- Make product, price, delivery, and digital nature clear.
-- Prepare a review/demo flow:
+- [x] Confirm `/terms`, `/privacy`, and `/refund-policy`.
+- [x] Confirm footer legal links.
+- [x] Remove or hide broken PayPal checkout from the customer review path.
+- [ ] Make product, price, delivery, and digital nature clear across the full review path.
+- [ ] Prepare a review/demo flow:
   - landing page
   - start assessment
   - complete assessment
   - view generated or demo result
   - legal pages
-- Prepare video talking points:
+- [ ] Prepare video talking points:
   - product is digital
   - no physical shipping
   - no professional advice
   - Lemon Squeezy will process payments after approval
+- [!] Local legal page verification passed on `http://localhost:5173`, but the full review/demo path still needs end-to-end recording preparation.
 
 Expected result:
 - Reviewers see a coherent digital product.
@@ -188,22 +193,23 @@ Expected result:
 Goal: Stop relying on broken PayPal flow and prepare clean Lemon Squeezy integration after approval.
 
 Before approval:
-- Hide PayPal from the main customer experience.
-- Keep payment state internally ready.
-- Use admin/free/manual completion only for testing if needed.
+- [x] Hide PayPal from the main customer experience with `BILLING_PROVIDER=disabled`.
+- [x] Keep payment state internally ready.
+- [ ] Use admin/free/manual completion only for testing if needed.
 
 After approval:
-- Add Lemon Squeezy checkout.
-- Add Lemon Squeezy webhook.
-- Update payment records to support:
+- [ ] Add Lemon Squeezy checkout.
+- [ ] Add Lemon Squeezy webhook.
+- [ ] Update payment records to support:
   - `processor`
   - `processor_order_id`
   - `checkout_id`
   - `customer_email`
   - `currency`
   - `refund_status`
-- Link webhook payment confirmation to assessment/report generation.
-- Test successful payment, duplicate webhook, failed payment, and refund states.
+- [ ] Link webhook payment confirmation to assessment/report generation.
+- [ ] Test successful payment, duplicate webhook, failed payment, and refund states.
+- [!] Current schema still has PayPal-specific fields; general payment schema should be part of the Lemon Squeezy integration phase.
 
 Expected result:
 - A reliable payment path.
@@ -215,17 +221,21 @@ Expected result:
 Goal: Move to a clean Supabase PostgreSQL database.
 
 Tasks:
-- Create a Supabase project.
-- Run migrations.
-- Update local `DATABASE_URL`.
-- Test:
-  - register
-  - login
-  - assessment start
-  - assessment submit
-  - report generation
-  - admin review
-- Decide whether any old data is worth manually importing.
+- [x] Create a Supabase project.
+- [x] Connect Supabase MCP to staging project `duncakyzabwlrvvnjmmq`.
+- [x] Run migrations through Supabase MCP.
+- [x] Update local `DATABASE_URL` to Supabase Session Pooler.
+- [x] Set `BILLING_PROVIDER=disabled` locally.
+- [x] Test API read path with `/api/questions`.
+- [x] Test register path and confirm a user row was saved in Supabase.
+- [ ] Test login.
+- [ ] Test assessment start.
+- [ ] Test assessment submit.
+- [ ] Test report generation.
+- [ ] Test admin review.
+- [x] Decide whether any old data is worth manually importing: not critical before launch.
+- [!] Direct Supabase connection is IPv6-only in this project. Local/typical hosting should use Session Pooler.
+- [!] Node/Postgres needs Supabase CA configured. Local API currently works with `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`; production needs a durable CA setup.
 
 Expected result:
 - The app works against Supabase.
@@ -236,15 +246,16 @@ Expected result:
 Goal: Run the new version from GitHub on a cleaner deployment platform.
 
 Tasks:
-- Decide deployment shape:
+- [ ] Decide deployment shape:
   - one Node service for frontend build plus API, or
   - separate frontend and API services.
-- Choose platform after audit.
-- Configure build commands.
-- Configure environment variables.
-- Deploy staging URL.
-- Test end to end on staging.
-- Document deployment process.
+- [ ] Choose platform after audit.
+- [ ] Configure build commands.
+- [ ] Configure environment variables.
+- [ ] Configure durable Supabase CA/SSL handling for Node hosting.
+- [ ] Deploy staging URL.
+- [ ] Test end to end on staging.
+- [ ] Document deployment process.
 
 Expected result:
 - A staging deployment independent from Replit.
@@ -256,17 +267,17 @@ Expected result:
 Goal: Confirm the migrated version is ready for early users and Lemon Squeezy review.
 
 Tasks:
-- Test registration.
-- Test login/logout.
-- Test assessment flow.
-- Test generation.
-- Test results page.
-- Test admin page.
-- Test legal pages.
-- Test mobile and desktop.
-- Review copy.
-- Record Lemon Squeezy video.
-- Submit Lemon Squeezy review.
+- [x] Test registration locally against Supabase.
+- [ ] Test login/logout.
+- [ ] Test assessment flow.
+- [ ] Test generation.
+- [ ] Test results page.
+- [ ] Test admin page.
+- [x] Test legal pages locally.
+- [ ] Test mobile and desktop.
+- [ ] Review copy.
+- [ ] Record Lemon Squeezy video.
+- [ ] Submit Lemon Squeezy review.
 
 Expected result:
 - A stable review-ready website.
@@ -275,13 +286,15 @@ Expected result:
 
 ## Recommended Execution Order
 
-1. Clean current branch and commit legal pages.
-2. Complete technical audit.
-3. Design DB v2 and migrations.
-4. Save generation and decision snapshots.
-5. Build admin assessment detail.
-6. Hide or disable PayPal from the review path.
-7. Set up Supabase.
-8. Deploy staging.
-9. Polish Lemon Squeezy review flow.
-10. Integrate Lemon Squeezy after approval.
+1. [x] Clean current branch and commit legal pages.
+2. [x] Complete technical audit.
+3. [x] Design DB v2 and migrations.
+4. [x] Save generation and decision snapshots.
+5. [x] Build admin assessment detail.
+6. [x] Hide or disable PayPal from the review path.
+7. [x] Set up Supabase.
+8. [ ] Complete local Supabase end-to-end flow: login, assessment submit, generation, admin review.
+9. [ ] Decide deployment platform and configure durable Supabase CA/SSL.
+10. [ ] Deploy staging.
+11. [ ] Polish Lemon Squeezy review flow.
+12. [ ] Integrate Lemon Squeezy after approval.
