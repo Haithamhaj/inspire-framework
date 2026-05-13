@@ -139,10 +139,24 @@ Verified on May 13, 2026:
   - `https://inspire.next-stepai.com/privacy` returned `200`.
   - `https://inspire.next-stepai.com/refund-policy` returned `200`.
   - A production registration smoke test returned `201`, confirming the deployed API can write to Supabase.
+- Later verification found Replit still injected its managed Neon `DATABASE_URL` into production. The durable fix is now:
+  - `artifacts/api-server/start-prod.sh`
+  - `SUPABASE_DATABASE_URL` secret
+  - production run command `sh artifacts/api-server/start-prod.sh`
+- After adding `SUPABASE_DATABASE_URL`, production registration was verified to appear in Supabase project `duncakyzabwlrvvnjmmq`.
+- Production full-flow verification passed:
+  - user registration and login
+  - 21 V2 questions loaded
+  - full assessment created
+  - 21 answers submitted
+  - expected `pending_payment` response while billing is disabled
+  - Supabase confirmed 21 saved answers and one decision snapshot
+  - admin manual generation completed the report
+  - Supabase confirmed completed report content, final instruction, and completed generation run
 
 Remaining:
-- Run one fresh production assessment and generate its report through admin.
-- Verify the new production shared result URL from that generated assessment.
+- Remove the unused Replit/Neon production database resource when convenient. The startup wrapper already prevents it from receiving writes.
+- Verify a share-enabled production result URL if needed for the Lemon Squeezy video.
 - Verify the checkout-disabled customer message visually on production.
 
 ## Prompt For Replit Agent

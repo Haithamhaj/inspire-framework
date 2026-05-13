@@ -135,8 +135,9 @@ After Supabase is connected:
   - `/privacy`
   - `/refund-policy`
 - [x] Confirm production registration returns `201` and writes through the deployed API to Supabase.
-- [ ] Run a fresh production assessment and generate the report through admin.
-- [ ] Confirm a fresh production shared result page.
+- [x] Run a fresh production assessment and generate the report through admin.
+- [x] Confirm production answers, decision snapshot, final report, final instruction, and generation run in Supabase.
+- [ ] Confirm a fresh production shared result page after enabling sharing for a completed production assessment.
 
 ## Local Supabase Connection Notes
 
@@ -186,9 +187,23 @@ Verified on May 13, 2026:
 - Core tables exist in the connected Supabase database, including `users`, `assessments`, `assessment_decision_snapshots`, and `assessment_generation_runs`.
 - Production domain `https://inspire.next-stepai.com` returned `200` for `/api/healthz`, `/terms`, `/privacy`, and `/refund-policy`.
 - A production registration smoke test returned `201`, confirming the deployed API can write to Supabase.
+- Replit's managed Neon database was later found to override `DATABASE_URL` in production. The API now starts through `artifacts/api-server/start-prod.sh`, which maps `SUPABASE_DATABASE_URL` to `DATABASE_URL` at process startup.
+- After `SUPABASE_DATABASE_URL` was added, a live production registration appeared in Supabase project `duncakyzabwlrvvnjmmq`.
+- Production full-flow verification passed:
+  - registration
+  - login
+  - assessment start
+  - 21-question submit
+  - expected `pending_payment` response while billing is disabled
+  - 21 saved answers in `assessments.behavioral_answers`
+  - decision snapshot in `assessment_decision_snapshots`
+  - admin manual report generation
+  - final report/instruction in `assessments`
+  - completed run in `assessment_generation_runs`
 
 Expected limitation:
-- The old test share token is not available on the current production database. A fresh production-generated assessment should be used for the next shared-result verification.
+- The old test share token is not available on the current production database.
+- The latest production-generated assessment has sharing disabled by default; enable sharing before verifying a fresh production share URL.
 
 ## Security Notes
 

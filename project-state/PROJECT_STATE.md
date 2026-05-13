@@ -38,7 +38,18 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
   - `/api/healthz` returned `200`.
   - `/terms`, `/privacy`, and `/refund-policy` returned `200`.
   - A production registration request returned `201`, confirming the deployed API can write to Supabase.
-- The old test share token is not available on the current production database; this is expected for non-migrated test data and should be replaced by a fresh production/demo generated result.
+- Replit initially kept injecting its managed Neon `DATABASE_URL`; this is now bypassed by the API production startup wrapper using `SUPABASE_DATABASE_URL`.
+- Production Supabase write verification passed after the wrapper: a live registration appeared in Supabase project `duncakyzabwlrvvnjmmq`.
+- Production full-flow verification passed:
+  - registered and logged in a new user
+  - loaded 21 V2 questions
+  - created a full assessment
+  - submitted 21 answers
+  - received expected `pending_payment` response because billing is disabled
+  - confirmed 21 answers, open answer, and decision snapshot in Supabase
+  - generated the report through the admin manual generation endpoint
+  - confirmed completed report, final instruction, report content, and completed generation run in Supabase
+- The old test share token is not available on the current production database; this is expected for non-migrated test data. The latest generated production report has sharing disabled by default.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -54,6 +65,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
 - Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
 - The Replit workspace is currently on a feature branch. Later, decide whether to merge `codex/platform-migration` into `main` or keep Replit intentionally pinned to this branch until review is complete.
+- Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
 
 ## Protected Areas
 - Do not expose secrets from `.env.local`.
@@ -61,7 +73,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Run a fresh production demo flow on `https://inspire.next-stepai.com`: register/login, complete an assessment, generate the report through admin, verify admin evidence, and verify the new shared result page.
+Clean up the unused Replit/Neon production database resource when convenient, then polish the Lemon Squeezy review flow and payment-disabled customer messaging.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

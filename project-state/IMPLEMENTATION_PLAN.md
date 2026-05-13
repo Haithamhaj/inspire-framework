@@ -269,8 +269,9 @@ Tasks:
 - [x] Configure environment variables.
 - [x] Configure durable Supabase CA/SSL handling for Replit Node hosting.
 - [x] Deploy staging/early-production URL on Replit.
-- [!] Test end to end on staging: health, legal pages, Supabase DB connection, and production registration are verified; full customer assessment through generated share result still remains.
+- [x] Test end to end on staging/early production through admin-generated report.
 - [x] Document deployment process.
+- [!] Replit's managed Neon production database may still be connected as an unused resource. The startup wrapper now overrides it with `SUPABASE_DATABASE_URL`; later cleanup should remove the old resource completely.
 
 Expected result:
 - A staging/early-production deployment on Replit that uses Supabase instead of the old database.
@@ -293,6 +294,8 @@ Tasks:
 - [x] Test legal pages locally.
 - [x] Test legal pages on production domain.
 - [x] Test production registration writes through the deployed Replit API to Supabase.
+- [x] Test production full flow through registration, login, 21-question submit, Supabase evidence persistence, and admin manual generation.
+- [!] Latest production-generated report has sharing disabled by default; a share-enabled production result still needs explicit verification if that feature is required for the Lemon Squeezy video.
 - [ ] Test mobile and desktop.
 - [ ] Review copy.
 - [ ] Record Lemon Squeezy video.
@@ -316,6 +319,6 @@ Expected result:
 9. [x] Fix shared result page to display V2 `reportContent` without exposing system instruction.
 10. [x] Decide deployment platform: keep Replit temporarily and configure Supabase readiness.
 11. [x] Deploy staging/early-production on Replit with Supabase.
-12. [ ] Run fresh production demo assessment and generated share result verification.
+12. [x] Run fresh production demo assessment through admin-generated report.
 13. [ ] Polish Lemon Squeezy review flow.
 14. [ ] Integrate Lemon Squeezy after approval.
