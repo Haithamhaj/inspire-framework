@@ -17,6 +17,8 @@ const FeedbackSchema = z.object({
   useful_answer: z.string().trim().max(1000).optional().nullable(),
   most_useful: z.string().trim().max(1000).optional().nullable(),
   missing: z.string().trim().max(1000).optional().nullable(),
+  copied_instructions: z.boolean().optional(),
+  feedback_source: z.enum(["after_report", "after_copy"]).optional(),
 });
 
 async function requireUser(req: Request, _res: Response) {
@@ -65,6 +67,8 @@ router.get(
         usefulAnswer: assessmentFeedbackTable.usefulAnswer,
         mostUseful: assessmentFeedbackTable.mostUseful,
         missing: assessmentFeedbackTable.missing,
+        copiedInstructions: assessmentFeedbackTable.copiedInstructions,
+        feedbackSource: assessmentFeedbackTable.feedbackSource,
         createdAt: assessmentFeedbackTable.createdAt,
         updatedAt: assessmentFeedbackTable.updatedAt,
       })
@@ -180,6 +184,8 @@ router.post(
         usefulAnswer: clean(parsed.data.useful_answer),
         mostUseful: clean(parsed.data.most_useful),
         missing: clean(parsed.data.missing),
+        copiedInstructions: Boolean(parsed.data.copied_instructions),
+        feedbackSource: parsed.data.feedback_source ?? "after_report",
       })
       .onConflictDoUpdate({
         target: [
@@ -191,6 +197,8 @@ router.post(
           usefulAnswer: clean(parsed.data.useful_answer),
           mostUseful: clean(parsed.data.most_useful),
           missing: clean(parsed.data.missing),
+          copiedInstructions: Boolean(parsed.data.copied_instructions),
+          feedbackSource: parsed.data.feedback_source ?? "after_report",
           updatedAt: new Date(),
         },
       })
@@ -200,6 +208,8 @@ router.post(
         usefulAnswer: assessmentFeedbackTable.usefulAnswer,
         mostUseful: assessmentFeedbackTable.mostUseful,
         missing: assessmentFeedbackTable.missing,
+        copiedInstructions: assessmentFeedbackTable.copiedInstructions,
+        feedbackSource: assessmentFeedbackTable.feedbackSource,
         createdAt: assessmentFeedbackTable.createdAt,
         updatedAt: assessmentFeedbackTable.updatedAt,
       });

@@ -56,6 +56,8 @@ interface Assessment {
   feedbackUsefulAnswer: string | null;
   feedbackMostUseful: string | null;
   feedbackMissing: string | null;
+  feedbackCopiedInstructions: boolean | null;
+  feedbackSource: string | null;
   feedbackUpdatedAt: string | null;
   paymentId: string | null;
   paymentStatus: string | null;
@@ -126,6 +128,8 @@ interface AdminAssessmentDetail {
     usefulAnswer: string | null;
     mostUseful: string | null;
     missing: string | null;
+    copiedInstructions: boolean;
+    feedbackSource: string | null;
   } | null;
   decisionSnapshot: {
     decisionEngineVersion: string;
@@ -814,6 +818,7 @@ export default function Admin() {
                   <div>محاولات: {selectedDetail.retryCount}</div>
                   <div>Generation runs: {selectedDetail.generationRuns.length}</div>
                   <div>Feedback: {selectedDetail.feedback?.rating ? `${selectedDetail.feedback.rating}/5` : "لا يوجد"}</div>
+                  <div>{selectedDetail.feedback?.copiedInstructions ? "نسخ التعليمات قبل التقييم" : "لم ينسخ التعليمات قبل التقييم"}</div>
                 </div>
               </div>
             </div>
@@ -911,6 +916,9 @@ export default function Admin() {
                                 ناقص: {a.feedbackMissing}
                               </div>
                             )}
+                            <div className="mt-1 text-muted-foreground">
+                              {a.feedbackCopiedInstructions ? "بعد النسخ" : a.feedbackSource === "after_report" ? "بعد التقرير" : ""}
+                            </div>
                           </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">لا يوجد</span>

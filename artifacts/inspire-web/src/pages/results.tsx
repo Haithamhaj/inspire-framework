@@ -111,6 +111,8 @@ interface AssessmentFeedbackDto {
   usefulAnswer: string | null;
   mostUseful: string | null;
   missing: string | null;
+  copiedInstructions: boolean;
+  feedbackSource: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -373,17 +375,20 @@ function CopyButton({
   successLabel,
   variant = "ghost",
   size = "sm",
+  onCopied,
 }: {
   text: string;
   label: string;
   successLabel: string;
   variant?: "ghost" | "primary";
   size?: "sm" | "md" | "lg";
+  onCopied?: () => void;
 }) {
   const [copied, setCopied] = useState(false);
   function onClick() {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
+      onCopied?.();
       setTimeout(() => setCopied(false), 1800);
     });
   }
@@ -441,10 +446,12 @@ function ReportFeedbackPanel({
   assessmentId,
   initialFeedback,
   displayLanguage,
+  copiedInstructions,
 }: {
   assessmentId: string;
   initialFeedback: AssessmentFeedbackDto | null;
   displayLanguage: SingleReportLanguage;
+  copiedInstructions: boolean;
 }) {
   const [rating, setRating] = useState(initialFeedback?.rating ?? 0);
   const [usefulAnswer, setUsefulAnswer] = useState(initialFeedback?.usefulAnswer ?? "");
@@ -464,6 +471,8 @@ function ReportFeedbackPanel({
     submit: localizedOperatingReportText(displayLanguage, "Send feedback", "إرسال feedback"),
     saved: localizedOperatingReportText(displayLanguage, "Feedback saved. Thank you.", "تم حفظ التقييم. شكراً لك."),
     choose: localizedOperatingReportText(displayLanguage, "Choose a rating first.", "اختر التقييم أولاً."),
+    afterCopy: localizedOperatingReportText(displayLanguage, "Instructions copied before feedback", "تم نسخ التعليمات قبل التقييم"),
+    beforeCopy: localizedOperatingReportText(displayLanguage, "Feedback before copying instructions", "التقييم قبل نسخ التعليمات"),
   };
 
   async function submitFeedback() {
@@ -482,6 +491,8 @@ function ReportFeedbackPanel({
           useful_answer: usefulAnswer,
           most_useful: mostUseful,
           missing,
+          copied_instructions: copiedInstructions,
+          feedback_source: copiedInstructions ? "after_copy" : "after_report",
         }),
       });
       const data = await res.json();
@@ -506,6 +517,9 @@ function ReportFeedbackPanel({
         <div>
           <h2 className="text-xl font-black text-white">{copy.title}</h2>
           <p className="mt-1 text-sm leading-6 text-white/55">{copy.useful}</p>
+          <p className="mt-2 text-xs font-semibold text-white/45">
+            {copiedInstructions || initialFeedback?.copiedInstructions ? copy.afterCopy : copy.beforeCopy}
+          </p>
         </div>
         <div className="flex items-center gap-1" aria-label={copy.title}>
           {[1, 2, 3, 4, 5].map((value) => (
@@ -875,10 +889,12 @@ function OperatingPatternReportSections({
   reportContent,
   profileText,
   displayLanguage,
+  onInstructionsCopied,
 }: {
   reportContent: OperatingPatternReportContentV1;
   profileText: string;
   displayLanguage: SingleReportLanguage;
+  onInstructionsCopied: () => void;
 }) {
   const labels = {
     operatingSnapshot: localizedOperatingReportText(
@@ -1062,6 +1078,7 @@ function OperatingPatternReportSections({
                 successLabel={labels.copied}
                 variant="primary"
                 size="md"
+                onCopied={onInstructionsCopied}
               />
             </div>
             <div className="p-4 md:p-6">
@@ -1170,6 +1187,7 @@ export default function Results() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
+  const [copiedInstructionsForFeedback, setCopiedInstructionsForFeedback] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [sharingLoading, setSharingLoading] = useState(false);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
@@ -1727,6 +1745,7 @@ export default function Results() {
                 successLabel={headerCtaPrimarySuccess}
                 variant="primary"
                 size="lg"
+                onCopied={() => setCopiedInstructionsForFeedback(true)}
               />
             )}
 	            <a
@@ -1909,6 +1928,7 @@ export default function Results() {
                 reportContent={operatingReport}
                 profileText={profileText}
                 displayLanguage={operatingDisplayLanguage}
+                onInstructionsCopied={() => setCopiedInstructionsForFeedback(true)}
               />
             </div>
           </motion.div>
@@ -2163,6 +2183,7 @@ export default function Results() {
                   successLabel={t("results.profile.copyAllSuccess")}
                   variant="primary"
                   size="md"
+                  onCopied={() => setCopiedInstructionsForFeedback(true)}
                 />
               </div>
 
@@ -2324,6 +2345,7 @@ export default function Results() {
           assessmentId={assessment.id}
           initialFeedback={assessment.feedback}
           displayLanguage={operatingDisplayLanguage}
+          copiedInstructions={copiedInstructionsForFeedback || Boolean(assessment.feedback?.copiedInstructions)}
         />
 
 	        {/* ── CTA ─────────────────────────────────────────────────────── */}

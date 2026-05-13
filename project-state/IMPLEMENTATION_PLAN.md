@@ -300,6 +300,7 @@ Tasks:
 - [x] Add an admin preset for a 100% Lemon Squeezy review discount code.
 - [x] Add a user-facing way to resume payment for saved `pending_payment` assessments from "My reports".
 - [x] Expand admin discount-code creation with optional user email, usage limit, start date, and expiration date.
+- [x] Capture report feedback context, including whether the user copied the final AI instructions before rating.
 - [ ] Test mobile and desktop.
 - [ ] Review copy.
 - [ ] Record Lemon Squeezy video.

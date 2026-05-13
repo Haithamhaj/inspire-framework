@@ -199,6 +199,8 @@ router.get(
             usefulAnswer: assessmentFeedbackTable.usefulAnswer,
             mostUseful: assessmentFeedbackTable.mostUseful,
             missing: assessmentFeedbackTable.missing,
+            copiedInstructions: assessmentFeedbackTable.copiedInstructions,
+            feedbackSource: assessmentFeedbackTable.feedbackSource,
             updatedAt: assessmentFeedbackTable.updatedAt,
           })
           .from(assessmentFeedbackTable)
@@ -269,6 +271,8 @@ router.get(
       feedbackUsefulAnswer: a.feedback?.usefulAnswer ?? null,
       feedbackMostUseful: a.feedback?.mostUseful ?? null,
       feedbackMissing: a.feedback?.missing ?? null,
+      feedbackCopiedInstructions: a.feedback?.copiedInstructions ?? null,
+      feedbackSource: a.feedback?.feedbackSource ?? null,
       feedbackUpdatedAt: a.feedback?.updatedAt ?? null,
       paymentId: a.payment?.id ?? a.paymentId,
       paymentStatus: a.payment?.status ?? null,

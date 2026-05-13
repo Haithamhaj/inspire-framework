@@ -5,6 +5,7 @@ import {
   uuid,
   integer,
   uniqueIndex,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { usersTable } from "./users";
 import { assessmentsTable } from "./assessments";
@@ -28,6 +29,8 @@ export const assessmentFeedbackTable = pgTable(
     usefulAnswer: text("useful_answer"),
     mostUseful: text("most_useful"),
     missing: text("missing"),
+    copiedInstructions: boolean("copied_instructions").default(false).notNull(),
+    feedbackSource: text("feedback_source"),
   },
   (table) => ({
     assessmentUserUnique: uniqueIndex("assessment_feedback_assessment_user_idx").on(
