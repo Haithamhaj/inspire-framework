@@ -18,13 +18,13 @@ Replit should be treated as a staging/early-production host, not as the long-ter
 
 From the Replit audit:
 - Replit deploys from the current Replit workspace snapshot, not automatically from GitHub pushes.
-- The current Replit workspace is on `main`.
+- The Replit workspace was switched from `main` to `codex/platform-migration` for the current deployment work.
 - Deployment target is Autoscale.
 - Frontend and API are deployed as separate Replit services in one monorepo deployment.
 - API listens on port `8080`.
 - Frontend is served statically from `artifacts/inspire-web/dist/public`.
-- Existing `DATABASE_URL` is probably Neon or another hosted Postgres, not Supabase.
-- `NODE_EXTRA_CA_CERTS` is not currently configured.
+- Existing automatic Replit database variables were bypassed by adding a manual `DATABASE_URL` secret.
+- `DATABASE_URL` is now verified in Replit shell as a Supabase Session Pooler URL with `sslmode=verify-full`.
 - This branch now includes a durable Supabase CA chain at `certs/supabase-ca-chain.pem`.
 - The API Replit artifact sets `NODE_EXTRA_CA_CERTS=certs/supabase-ca-chain.pem` for production runs.
 
@@ -112,6 +112,38 @@ Do not rely on `/tmp` for certificates in Replit.
    - admin detail view
    - shared result page
    - checkout-disabled message in the payment step
+
+## Deployment Verification Status
+
+Verified on May 13, 2026:
+- Replit workspace branch: `codex/platform-migration`.
+- API build passed.
+- Frontend build passed with `PORT=24301 BASE_PATH=/`.
+- Replit secrets added or updated:
+  - `DATABASE_URL`
+  - `BILLING_PROVIDER=disabled`
+  - `PG_POOL_MAX=5`
+  - `PG_IDLE_TIMEOUT_MS=30000`
+  - `PG_CONNECTION_TIMEOUT_MS=10000`
+  - `APP_URL=https://inspire.next-stepai.com`
+- Replit shell confirmed the active `DATABASE_URL` points to Supabase, uses the pooler, and includes `sslmode=verify-full`.
+- Replit shell confirmed Postgres connectivity with `NODE_EXTRA_CA_CERTS=/home/runner/workspace/certs/supabase-ca-chain.pem`.
+- Replit shell confirmed these Supabase tables exist:
+  - `users`
+  - `assessments`
+  - `assessment_decision_snapshots`
+  - `assessment_generation_runs`
+- Production domain verification:
+  - `https://inspire.next-stepai.com/api/healthz` returned `200`.
+  - `https://inspire.next-stepai.com/terms` returned `200`.
+  - `https://inspire.next-stepai.com/privacy` returned `200`.
+  - `https://inspire.next-stepai.com/refund-policy` returned `200`.
+  - A production registration smoke test returned `201`, confirming the deployed API can write to Supabase.
+
+Remaining:
+- Run one fresh production assessment and generate its report through admin.
+- Verify the new production shared result URL from that generated assessment.
+- Verify the checkout-disabled customer message visually on production.
 
 ## Prompt For Replit Agent
 
@@ -204,7 +236,7 @@ Set these in Replit Secrets after the branch switch is confirmed:
 - `PG_POOL_MAX`: `5`
 - `PG_IDLE_TIMEOUT_MS`: `30000`
 - `PG_CONNECTION_TIMEOUT_MS`: `10000`
-- `APP_URL`: the final deployed Replit URL.
+- `APP_URL`: `https://inspire.next-stepai.com`.
 
 Do not send secret values through Replit agent chat or Codex chat.
 

@@ -238,7 +238,7 @@ Tasks:
 - [x] Test admin review API for answers, decision snapshot, final report, final instruction, and generation runs.
 - [x] Decide whether any old data is worth manually importing: not critical before launch.
 - [!] Direct Supabase connection is IPv6-only in this project. Local/typical hosting should use Session Pooler.
-- [!] Node/Postgres needs Supabase CA configured. Local API currently works with `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`; production needs a durable CA setup.
+- [x] Node/Postgres Supabase CA handling is configured with `certs/supabase-ca-chain.pem` and verified from Replit shell.
 - [x] Use existing admin manual generation path to complete one pending-payment assessment for staging verification.
 - [!] Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
 
@@ -258,12 +258,12 @@ Tasks:
 - [x] Add durable Supabase CA chain and Replit `NODE_EXTRA_CA_CERTS` production setting.
 - [x] Document Replit + Supabase deployment sequence.
 - [x] Add Replit audit and execution-preparation prompts.
-- [ ] Configure build commands.
-- [ ] Configure environment variables.
+- [x] Configure build commands.
+- [x] Configure environment variables.
 - [x] Configure durable Supabase CA/SSL handling for Replit Node hosting.
-- [ ] Deploy staging URL.
-- [ ] Test end to end on staging.
-- [ ] Document deployment process.
+- [x] Deploy staging/early-production URL on Replit.
+- [!] Test end to end on staging: health, legal pages, Supabase DB connection, and production registration are verified; full customer assessment through generated share result still remains.
+- [x] Document deployment process.
 
 Expected result:
 - A staging/early-production deployment on Replit that uses Supabase instead of the old database.
@@ -284,6 +284,8 @@ Tasks:
 - [x] Test admin detail API.
 - [x] Test admin page visually in the browser.
 - [x] Test legal pages locally.
+- [x] Test legal pages on production domain.
+- [x] Test production registration writes through the deployed Replit API to Supabase.
 - [ ] Test mobile and desktop.
 - [ ] Review copy.
 - [ ] Record Lemon Squeezy video.
@@ -306,6 +308,7 @@ Expected result:
 8. [x] Complete local Supabase end-to-end flow through admin-generated report and admin detail API review.
 9. [x] Fix shared result page to display V2 `reportContent` without exposing system instruction.
 10. [x] Decide deployment platform: keep Replit temporarily and configure Supabase readiness.
-11. [ ] Deploy staging.
-12. [ ] Polish Lemon Squeezy review flow.
-13. [ ] Integrate Lemon Squeezy after approval.
+11. [x] Deploy staging/early-production on Replit with Supabase.
+12. [ ] Run fresh production demo assessment and generated share result verification.
+13. [ ] Polish Lemon Squeezy review flow.
+14. [ ] Integrate Lemon Squeezy after approval.

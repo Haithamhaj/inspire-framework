@@ -1,10 +1,10 @@
 # INSPIRE Platform Migration State
 
 ## Current Goal
-Move INSPIRE development work off the live `main`/Replit path and build the next production-ready version on `codex/platform-migration`.
+Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, then finish the customer demo/review path for Lemon Squeezy.
 
 ## Current Reality
-- `main` remains the current GitHub/Replit baseline.
+- `main` remains the old GitHub baseline, but the Replit workspace has been switched to `codex/platform-migration` for the current deployment work.
 - Active work branch: `codex/platform-migration`.
 - The app currently has a Vite frontend, Express API, PostgreSQL/Drizzle database, and legacy PayPal billing code.
 - Lemon Squeezy approval is not complete yet; the site needs review readiness before payment integration.
@@ -29,6 +29,16 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Database pool settings are now configurable through `PG_POOL_MAX`, `PG_IDLE_TIMEOUT_MS`, and `PG_CONNECTION_TIMEOUT_MS`.
 - Durable Supabase CA setup is now included for Replit production via `certs/supabase-ca-chain.pem` and `NODE_EXTRA_CA_CERTS`.
 - Replit deployment handoff now includes both an audit-only prompt and an execution-preparation prompt.
+- Replit production is republished from `codex/platform-migration`.
+- Official production domain: `https://inspire.next-stepai.com`.
+- Replit `APP_URL` is set to `https://inspire.next-stepai.com`.
+- Replit `DATABASE_URL` is set manually as a secret and verified to point to Supabase Session Pooler with `sslmode=verify-full`.
+- Replit Supabase connectivity was verified from the Replit shell with the checked-in CA chain.
+- Replit production smoke verification passed:
+  - `/api/healthz` returned `200`.
+  - `/terms`, `/privacy`, and `/refund-policy` returned `200`.
+  - A production registration request returned `201`, confirming the deployed API can write to Supabase.
+- The old test share token is not available on the current production database; this is expected for non-migrated test data and should be replaced by a fresh production/demo generated result.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -39,10 +49,11 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 
 ## Active Risks
 - Billing copy now mentions Lemon Squeezy, while the current backend billing implementation still uses PayPal.
-- Replit production environment may differ from local `.env.local`; deployment uses the Replit workspace snapshot, not automatic GitHub push deploys.
+- Replit production deploys from the Replit workspace snapshot, not automatic GitHub push deploys.
 - Supabase Data API/RLS posture still needs a production decision before launch.
-- Node/Postgres requires Supabase CA handling for the pooler. Local verified command used `/tmp`, and Replit production now has a durable checked-in CA path.
+- Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
 - Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
+- The Replit workspace is currently on a feature branch. Later, decide whether to merge `codex/platform-migration` into `main` or keep Replit intentionally pinned to this branch until review is complete.
 
 ## Protected Areas
 - Do not expose secrets from `.env.local`.
@@ -50,7 +61,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Send the Replit audit-only prompt. If it confirms the workspace can safely switch, send the execution-preparation prompt and then update Replit Secrets manually.
+Run a fresh production demo flow on `https://inspire.next-stepai.com`: register/login, complete an assessment, generate the report through admin, verify admin evidence, and verify the new shared result page.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

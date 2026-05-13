@@ -128,6 +128,15 @@ After Supabase is connected:
   - generation runs
 - [x] Confirm the admin detail panel visually in the browser.
 - [x] Confirm the public shared results page displays V2 report content.
+- [x] Confirm Replit shell can connect to Supabase using the checked-in CA chain.
+- [x] Confirm production `/api/healthz` on `https://inspire.next-stepai.com`.
+- [x] Confirm production legal pages:
+  - `/terms`
+  - `/privacy`
+  - `/refund-policy`
+- [x] Confirm production registration returns `201` and writes through the deployed API to Supabase.
+- [ ] Run a fresh production assessment and generate the report through admin.
+- [ ] Confirm a fresh production shared result page.
 
 ## Local Supabase Connection Notes
 
@@ -166,6 +175,20 @@ Verified on May 13, 2026 against Supabase staging:
 
 Expected limitation:
 - The normal customer paid-completion path is still not verified because billing is intentionally disabled until the Lemon Squeezy path is ready.
+
+## Latest Replit Production Verification
+
+Verified on May 13, 2026:
+- Replit workspace is on `codex/platform-migration`.
+- Replit is using Supabase Session Pooler via a manual `DATABASE_URL` secret.
+- `DATABASE_URL` was verified to include Supabase, the pooler host, and `sslmode=verify-full`.
+- Replit shell database connectivity passed with `NODE_EXTRA_CA_CERTS=/home/runner/workspace/certs/supabase-ca-chain.pem`.
+- Core tables exist in the connected Supabase database, including `users`, `assessments`, `assessment_decision_snapshots`, and `assessment_generation_runs`.
+- Production domain `https://inspire.next-stepai.com` returned `200` for `/api/healthz`, `/terms`, `/privacy`, and `/refund-policy`.
+- A production registration smoke test returned `201`, confirming the deployed API can write to Supabase.
+
+Expected limitation:
+- The old test share token is not available on the current production database. A fresh production-generated assessment should be used for the next shared-result verification.
 
 ## Security Notes
 
