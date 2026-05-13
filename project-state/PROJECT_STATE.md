@@ -27,6 +27,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Public shared results initially displayed only the header for V2 reports; this is fixed by returning and rendering safe `reportContent` sections while still excluding the private system instruction.
 - Deployment decision: keep Replit temporarily as the host and switch its database to Supabase after the Replit workspace is updated to `codex/platform-migration`.
 - Database pool settings are now configurable through `PG_POOL_MAX`, `PG_IDLE_TIMEOUT_MS`, and `PG_CONNECTION_TIMEOUT_MS`.
+- Durable Supabase CA setup is now included for Replit production via `certs/supabase-ca-chain.pem` and `NODE_EXTRA_CA_CERTS`.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -39,7 +40,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Billing copy now mentions Lemon Squeezy, while the current backend billing implementation still uses PayPal.
 - Replit production environment may differ from local `.env.local`; deployment uses the Replit workspace snapshot, not automatic GitHub push deploys.
 - Supabase Data API/RLS posture still needs a production decision before launch.
-- Node/Postgres requires Supabase CA handling for the pooler. Local verified command uses `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`; production needs a durable certificate setup.
+- Node/Postgres requires Supabase CA handling for the pooler. Local verified command used `/tmp`, and Replit production now has a durable checked-in CA path.
 - Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
 
 ## Protected Areas

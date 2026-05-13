@@ -255,10 +255,11 @@ Tasks:
   - keep Replit's current separate static frontend and API services for now.
 - [x] Choose platform after audit: keep Replit temporarily, use Supabase for the database.
 - [x] Add configurable Postgres pool settings for Replit/Supabase.
+- [x] Add durable Supabase CA chain and Replit `NODE_EXTRA_CA_CERTS` production setting.
 - [x] Document Replit + Supabase deployment sequence.
 - [ ] Configure build commands.
 - [ ] Configure environment variables.
-- [ ] Configure durable Supabase CA/SSL handling for Node hosting.
+- [x] Configure durable Supabase CA/SSL handling for Replit Node hosting.
 - [ ] Deploy staging URL.
 - [ ] Test end to end on staging.
 - [ ] Document deployment process.

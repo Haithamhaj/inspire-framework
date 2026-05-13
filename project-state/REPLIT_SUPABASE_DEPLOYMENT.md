@@ -25,6 +25,8 @@ From the Replit audit:
 - Frontend is served statically from `artifacts/inspire-web/dist/public`.
 - Existing `DATABASE_URL` is probably Neon or another hosted Postgres, not Supabase.
 - `NODE_EXTRA_CA_CERTS` is not currently configured.
+- This branch now includes a durable Supabase CA chain at `certs/supabase-ca-chain.pem`.
+- The API Replit artifact sets `NODE_EXTRA_CA_CERTS=certs/supabase-ca-chain.pem` for production runs.
 
 ## Required Replit Secrets
 
@@ -51,6 +53,9 @@ Recommended for Replit + Supabase:
 - `PG_IDLE_TIMEOUT_MS=30000`
 - `PG_CONNECTION_TIMEOUT_MS=10000`
 
+Configured in the API Replit artifact, not as a secret:
+- `NODE_EXTRA_CA_CERTS=certs/supabase-ca-chain.pem`
+
 For Lemon Squeezy review mode before approval:
 - `BILLING_PROVIDER=disabled`
 
@@ -70,10 +75,11 @@ Reason:
 - Transaction Pooler on `6543` is better for short-lived serverless/edge workloads and has more restrictions.
 
 Add SSL mode in the connection string if Supabase gives a string without it:
-- Prefer `sslmode=verify-full` if Replit trusts the Supabase CA.
+- Prefer `sslmode=verify-full`.
+- The checked-in Supabase CA chain is available to Node through `NODE_EXTRA_CA_CERTS`.
 - Use `sslmode=require` only if `verify-full` fails and the risk is accepted for the temporary Replit staging period.
 
-If Replit fails with a certificate chain error, add a durable CA setup instead of relying on `/tmp`.
+Do not rely on `/tmp` for certificates in Replit.
 
 ## Safe Deployment Sequence
 
@@ -85,8 +91,9 @@ If Replit fails with a certificate chain error, add a durable CA setup instead o
    - `lib/db/migrations/0005_add_assessment_evidence_tables.sql`
    - `lib/db/migrations/0006_add_foreign_key_indexes.sql`
    - `project-state/REPLIT_SUPABASE_DEPLOYMENT.md`
+   - `certs/supabase-ca-chain.pem`
 5. Set Replit secrets:
-   - `DATABASE_URL=<Supabase Session Pooler connection string>`
+   - `DATABASE_URL=<Supabase Session Pooler connection string with sslmode=verify-full>`
    - `BILLING_PROVIDER=disabled`
    - `PG_POOL_MAX=5`
    - `PG_IDLE_TIMEOUT_MS=30000`
@@ -125,8 +132,9 @@ Please inspect the workspace and answer:
 6. After switching, would deployment still use the same API and frontend artifact configuration?
 7. Which secrets need to be changed or added for Supabase, by name only?
 8. Does Replit support setting `PG_POOL_MAX`, `PG_IDLE_TIMEOUT_MS`, and `PG_CONNECTION_TIMEOUT_MS` as secrets/env vars for deployment?
-9. Is `APP_URL` currently deployment-only or development-only, and where should it be set for production?
-10. Are there any warnings about using Supabase Session Pooler on port 5432 from this Replit Autoscale deployment?
+9. Confirm that `certs/supabase-ca-chain.pem` exists after switching branches and that API production has `NODE_EXTRA_CA_CERTS=certs/supabase-ca-chain.pem`.
+10. Is `APP_URL` currently deployment-only or development-only, and where should it be set for production?
+11. Are there any warnings about using Supabase Session Pooler on port 5432 from this Replit Autoscale deployment?
 
 Do not print secret values.
 Do not modify anything.
@@ -140,4 +148,3 @@ If Replit deployment fails after switching to Supabase:
 2. Revert only Replit `DATABASE_URL` to the previous database secret if needed.
 3. Re-deploy the previous Replit workspace snapshot or switch back to `main`.
 4. Keep `codex/platform-migration` unchanged on GitHub.
-

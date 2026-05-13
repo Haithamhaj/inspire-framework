@@ -24,6 +24,7 @@ API service:
 - `PG_POOL_MAX`
 - `PG_IDLE_TIMEOUT_MS`
 - `PG_CONNECTION_TIMEOUT_MS`
+- `NODE_EXTRA_CA_CERTS`
 - `JWT_SECRET`
 - `ADMIN_PASSWORD`
 - `OPENAI_API_KEY`
@@ -139,7 +140,13 @@ The direct Supabase database host is IPv6-only for this project, so local develo
 Node's `pg` driver rejected the Supabase pooler certificate chain until the Supabase CA was added. The local verified run used:
 - `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`
 
-This `/tmp` certificate file is only a local working setup. Before staging/production deployment, add a durable Supabase CA certificate file or platform-level certificate configuration. Do not switch to insecure SSL verification without an explicit risk decision.
+This branch now includes a durable public CA chain:
+- `certs/supabase-ca-chain.pem`
+
+The Replit API production artifact sets:
+- `NODE_EXTRA_CA_CERTS=certs/supabase-ca-chain.pem`
+
+Do not switch to insecure SSL verification without an explicit risk decision.
 
 ## Latest Local Verification
 
