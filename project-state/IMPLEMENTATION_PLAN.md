@@ -296,6 +296,7 @@ Tasks:
 - [x] Test production registration writes through the deployed Replit API to Supabase.
 - [x] Test production full flow through registration, login, 21-question submit, Supabase evidence persistence, and admin manual generation.
 - [!] Latest production-generated report has sharing disabled by default; a share-enabled production result still needs explicit verification if that feature is required for the Lemon Squeezy video.
+- [x] Make submitted unpaid assessments use `pending_payment` instead of remaining `draft`, and show that state in admin.
 - [ ] Test mobile and desktop.
 - [ ] Review copy.
 - [ ] Record Lemon Squeezy video.

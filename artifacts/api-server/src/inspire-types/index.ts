@@ -4,6 +4,7 @@ export type ReportLanguage = "ar" | "en" | "both";
 export type AssessmentType = "full" | "mini";
 export type AssessmentStatus =
   | "draft"
+  | "pending_payment"
   | "processing"
   | "pending_retry"
   | "completed"

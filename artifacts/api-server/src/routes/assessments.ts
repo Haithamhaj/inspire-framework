@@ -267,7 +267,7 @@ router.post(
       return;
     }
 
-    if (existing.status !== "draft") {
+    if (existing.status !== "draft" && existing.status !== "pending_payment") {
       res.status(409).json({ success: false, error: "Assessment already submitted" });
       return;
     }
@@ -466,6 +466,10 @@ router.post(
     if (!validatedPaymentId) {
       if (!payment_id) {
         // Answers are already saved above — user can now proceed to payment
+        await db
+          .update(assessmentsTable)
+          .set({ status: "pending_payment" })
+          .where(eq(assessmentsTable.id, id as string));
         res.json({ success: true, status: "pending_payment" });
         return;
       }

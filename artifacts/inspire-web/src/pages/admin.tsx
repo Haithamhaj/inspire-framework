@@ -539,6 +539,7 @@ export default function Admin() {
     const map: Record<string, string> = {
       completed: "bg-green-500/10 text-green-600 border-green-500/20",
       processing: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+      pending_payment: "bg-sky-500/10 text-sky-600 border-sky-500/20",
       pending_retry: "bg-amber-500/10 text-amber-600 border-amber-500/20",
       draft: "bg-secondary text-muted-foreground border-border",
       failed: "bg-destructive/10 text-destructive border-destructive/20",
@@ -546,6 +547,7 @@ export default function Admin() {
     const ar: Record<string, string> = {
       completed: "مكتمل",
       processing: "جارٍ",
+      pending_payment: "بانتظار الدفع",
       pending_retry: "إعادة محاولة",
       draft: "مسودة",
       failed: "فشل",
@@ -692,6 +694,7 @@ export default function Admin() {
             <option value="">الكل</option>
             <option value="completed">مكتمل</option>
             <option value="processing">جارٍ</option>
+            <option value="pending_payment">بانتظار الدفع</option>
             <option value="pending_retry">إعادة محاولة</option>
             <option value="draft">مسودة</option>
             <option value="failed">فشل</option>
@@ -936,7 +939,7 @@ export default function Admin() {
                               Retry
                             </button>
                           )}
-                          {a.status === "draft" && a.hasAnswers && (
+                          {(a.status === "draft" || a.status === "pending_payment") && a.hasAnswers && (
                             <button
                               onClick={() => handleGenerateReport(a.id)}
                               disabled={generatingId === a.id}
@@ -950,7 +953,7 @@ export default function Admin() {
                               توليد التقرير
                             </button>
                           )}
-                          {a.status === "draft" && (
+                          {(a.status === "draft" || a.status === "pending_payment") && (
                             <button
                               onClick={() => handleSendRecoveryEmail(a.id, a.userEmail)}
                               disabled={sendingRecoveryId === a.id}
