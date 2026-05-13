@@ -28,7 +28,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Expose the new DB v2 evidence in admin APIs and build the first admin assessment detail view.
+Build the first admin assessment detail view on top of `GET /api/admin/assessments/:id`.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

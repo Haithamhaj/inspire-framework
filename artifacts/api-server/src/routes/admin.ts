@@ -1,6 +1,14 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { assessmentFeedbackTable, assessmentsTable, usersTable, discountCodesTable, paymentsTable } from "@workspace/db/schema";
+import {
+  assessmentDecisionSnapshotsTable,
+  assessmentFeedbackTable,
+  assessmentGenerationRunsTable,
+  assessmentsTable,
+  usersTable,
+  discountCodesTable,
+  paymentsTable,
+} from "@workspace/db/schema";
 import { eq, and, gte, lte, or, desc, count, avg, type SQL } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { sendResultsEmail, sendRecoveryEmail } from "../lib/email";
@@ -276,6 +284,79 @@ router.get(
       page: pageNum,
       pageSize: limitNum,
       totalPages: Math.ceil(totalFiltered / limitNum),
+    });
+  }
+);
+
+// ─── GET /api/admin/assessments/:id ───────────────────────
+
+router.get(
+  "/admin/assessments/:id",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select()
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    const [[user], [feedback], [decisionSnapshot], generationRuns] = await Promise.all([
+      db
+        .select({
+          id: usersTable.id,
+          name: usersTable.name,
+          email: usersTable.email,
+          jobTitle: usersTable.jobTitle,
+          plan: usersTable.plan,
+          emailVerified: usersTable.emailVerified,
+          consentGiven: usersTable.consentGiven,
+          consentAt: usersTable.consentAt,
+          isActive: usersTable.isActive,
+          lastLoginAt: usersTable.lastLoginAt,
+          createdAt: usersTable.createdAt,
+        })
+        .from(usersTable)
+        .where(eq(usersTable.id, assessment.userId)),
+      db
+        .select()
+        .from(assessmentFeedbackTable)
+        .where(eq(assessmentFeedbackTable.assessmentId, assessment.id)),
+      db
+        .select()
+        .from(assessmentDecisionSnapshotsTable)
+        .where(eq(assessmentDecisionSnapshotsTable.assessmentId, assessment.id)),
+      db
+        .select()
+        .from(assessmentGenerationRunsTable)
+        .where(eq(assessmentGenerationRunsTable.assessmentId, assessment.id))
+        .orderBy(desc(assessmentGenerationRunsTable.createdAt)),
+    ]);
+
+    const paymentConditions: SQL[] = [eq(paymentsTable.assessmentId, assessment.id)];
+    if (assessment.paymentId) paymentConditions.push(eq(paymentsTable.id, assessment.paymentId));
+    const payments = await db
+      .select()
+      .from(paymentsTable)
+      .where(or(...paymentConditions))
+      .orderBy(desc(paymentsTable.createdAt));
+
+    res.json({
+      success: true,
+      assessment: {
+        ...assessment,
+        user: user ?? null,
+        feedback: feedback ?? null,
+        payment: payments[0] ?? null,
+        payments,
+        decisionSnapshot: decisionSnapshot ?? null,
+        generationRuns,
+      },
     });
   }
 );
