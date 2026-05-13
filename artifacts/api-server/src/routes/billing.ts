@@ -14,6 +14,14 @@ const router: IRouter = Router();
 
 // ─── PayPal helpers ────────────────────────────────────────
 
+function getBillingProvider(): string {
+  return process.env["BILLING_PROVIDER"] ?? "paypal";
+}
+
+function isPayPalEnabled(): boolean {
+  return getBillingProvider() === "paypal";
+}
+
 function getPayPalBase(): string {
   const env = process.env["PAYPAL_ENV"] ?? "sandbox";
   return env === "live"
@@ -154,6 +162,15 @@ router.get(
       return;
     }
 
+    if (!isPayPalEnabled()) {
+      res.status(503).json({
+        success: false,
+        error: "Checkout is temporarily disabled",
+        provider: getBillingProvider(),
+      });
+      return;
+    }
+
     const clientId = process.env["PAYPAL_CLIENT_ID"];
     if (!clientId) {
       res.status(503).json({
@@ -233,6 +250,11 @@ router.post(
     const user = await requireUser(req, res);
     if (!user) {
       res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    if (!isPayPalEnabled()) {
+      res.status(503).json({ success: false, error: "Checkout is temporarily disabled" });
       return;
     }
 
@@ -330,6 +352,11 @@ router.post(
     const user = await requireUser(req, res);
     if (!user) {
       res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    if (!isPayPalEnabled()) {
+      res.status(503).json({ success: false, error: "Checkout is temporarily disabled" });
       return;
     }
 

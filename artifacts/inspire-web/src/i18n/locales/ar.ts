@@ -78,6 +78,9 @@ export const ar = {
       freeActivateRetry: "أنشئ تقرير إعادة التقييم مجاناً",
       activating: "جارٍ التفعيل...",
       paypalLoading: "جارٍ تحميل بوابة الدفع...",
+      gatewayUnavailableTitle: "الدفع الإلكتروني قيد التجهيز",
+      gatewayUnavailableText:
+        "تم حفظ إجاباتك، لكن الدفع بالبطاقة غير متاح مؤقتاً إلى حين تجهيز موافقة Lemon Squeezy. يمكنك العودة لاحقاً أو التواصل معنا للوصول اليدوي.",
       previewTitle: "مثال سريع على النتيجة الكاملة",
       previewSubtitle: "لتعرف بالضبط ماذا ستحصل عليه قبل الدفع",
       previewTagQuestions: "21 سؤالاً",

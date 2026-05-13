@@ -80,6 +80,9 @@ export const en: Dictionary = {
       freeActivateRetry: "Create reassessment report for free",
       activating: "Activating...",
       paypalLoading: "Loading payment gateway...",
+      gatewayUnavailableTitle: "Online checkout is being prepared",
+      gatewayUnavailableText:
+        "Your answers are saved, but card checkout is temporarily unavailable while INSPIRE prepares Lemon Squeezy approval. Please check back soon or contact support for manual access.",
       previewTitle: "A quick preview of the complete result",
       previewSubtitle: "Know exactly what you receive before payment",
       previewTagQuestions: "21 questions",

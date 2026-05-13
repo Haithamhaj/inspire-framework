@@ -542,6 +542,7 @@ export default function Assess() {
   const [paymentStatus, setPaymentStatus] = useState<"loading" | "free" | "required" | "paid">("loading");
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [paypalConfig, setPaypalConfig] = useState<PayPalConfig | null>(null);
+  const [paymentGatewayUnavailable, setPaymentGatewayUnavailable] = useState(false);
   const [discountCode, setDiscountCode] = useState("");
   const [discountInfo, setDiscountInfo] = useState<DiscountInfo | null>(null);
   const [checkingDiscount, setCheckingDiscount] = useState(false);
@@ -596,8 +597,9 @@ export default function Assess() {
       .then((r) => r.json() as Promise<{ success: boolean; clientId: string; env: string; price: number }>)
       .then((config) => {
         if (config.success) setPaypalConfig(config);
+        else setPaymentGatewayUnavailable(true);
       })
-      .catch(() => undefined);
+      .catch(() => setPaymentGatewayUnavailable(true));
   }, [paymentStatus, paypalConfig]);
 
   // Fetch questions from API
@@ -640,8 +642,9 @@ export default function Assess() {
             .then((r) => r.json() as Promise<{ success: boolean; clientId: string; env: string; price: number }>)
             .then((config) => {
               if (config.success) setPaypalConfig(config);
+              else setPaymentGatewayUnavailable(true);
             })
-            .catch(() => undefined);
+            .catch(() => setPaymentGatewayUnavailable(true));
         } else {
           setPaymentStatus("free");
         }
@@ -884,7 +887,7 @@ export default function Assess() {
                       ? t("assessment.payment.freeActivateRetry")
                       : t("assessment.payment.freeActivate")}
                 </JourneyPrimaryButton>
-              ) : paypalConfig ? (
+              ) : paypalConfig && !paymentGatewayUnavailable ? (
                 <div className="rounded-3xl border border-slate-400/10 bg-slate-950/45 p-3">
                   <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
                     <PayPalButtons
@@ -923,6 +926,15 @@ export default function Assess() {
                       }}
                     />
                   </PayPalScriptProvider>
+                </div>
+              ) : paymentGatewayUnavailable ? (
+                <div className="rounded-3xl border border-amber-300/20 bg-amber-500/[0.08] p-5 text-center">
+                  <p className="text-sm font-black text-amber-100">
+                    {t("assessment.payment.gatewayUnavailableTitle")}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-amber-100/75">
+                    {t("assessment.payment.gatewayUnavailableText")}
+                  </p>
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2 py-4 text-sm text-slate-400">

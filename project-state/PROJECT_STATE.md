@@ -11,6 +11,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Phase 1 technical audit is documented in `project-state/TECHNICAL_AUDIT.md`.
 - Phase 2 DB v2 foundation has started with schema and migration files for decision snapshots and generation runs.
 - Admin now has an API and first UI panel for assessment evidence detail.
+- PayPal can now be disabled for review/staging with `BILLING_PROVIDER=disabled`, and the assessment payment page shows a clear checkout-unavailable message instead of an endless loading state.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -29,7 +30,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Apply the DB v2 migration in the target database, then test a full V2 assessment flow to confirm snapshots and generation runs are written.
+Apply the DB v2 migration in the target database, then test a full V2 assessment flow with `BILLING_PROVIDER=disabled` to confirm the review path and admin evidence panel.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
