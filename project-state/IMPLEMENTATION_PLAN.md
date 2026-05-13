@@ -228,14 +228,17 @@ Tasks:
 - [x] Set `BILLING_PROVIDER=disabled` locally.
 - [x] Test API read path with `/api/questions`.
 - [x] Test register path and confirm a user row was saved in Supabase.
-- [ ] Test login.
-- [ ] Test assessment start.
-- [ ] Test assessment submit.
+- [x] Test login.
+- [x] Test assessment start.
+- [x] Test assessment submit.
+- [x] Confirm `assessments.behavioral_answers` stores the 21-answer V2 payload.
+- [x] Confirm `assessment_decision_snapshots` receives one row for the submitted assessment.
 - [ ] Test report generation.
 - [ ] Test admin review.
 - [x] Decide whether any old data is worth manually importing: not critical before launch.
 - [!] Direct Supabase connection is IPv6-only in this project. Local/typical hosting should use Session Pooler.
 - [!] Node/Postgres needs Supabase CA configured. Local API currently works with `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`; production needs a durable CA setup.
+- [!] Current local submit test stops at `pending_payment` because `BILLING_PROVIDER=disabled`; generation needs a manual/admin test path or a completed payment simulation.
 
 Expected result:
 - The app works against Supabase.
@@ -268,8 +271,9 @@ Goal: Confirm the migrated version is ready for early users and Lemon Squeezy re
 
 Tasks:
 - [x] Test registration locally against Supabase.
-- [ ] Test login/logout.
-- [ ] Test assessment flow.
+- [x] Test login.
+- [ ] Test logout.
+- [x] Test assessment flow through submit/pending-payment.
 - [ ] Test generation.
 - [ ] Test results page.
 - [ ] Test admin page.
@@ -293,7 +297,7 @@ Expected result:
 5. [x] Build admin assessment detail.
 6. [x] Hide or disable PayPal from the review path.
 7. [x] Set up Supabase.
-8. [ ] Complete local Supabase end-to-end flow: login, assessment submit, generation, admin review.
+8. [!] Complete local Supabase end-to-end flow: login and assessment submit are verified; generation and admin review remain.
 9. [ ] Decide deployment platform and configure durable Supabase CA/SSL.
 10. [ ] Deploy staging.
 11. [ ] Polish Lemon Squeezy review flow.

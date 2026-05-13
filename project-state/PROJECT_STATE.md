@@ -19,6 +19,8 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
   - `add_inspire_foreign_key_indexes`
 - Local `.env.local` now points to Supabase Session Pooler, because the direct connection is IPv6-only.
 - Local API was verified against Supabase by registering a test user and confirming the `users` row count increased.
+- Local Supabase assessment persistence is verified: login works, full assessment start works, V2 submit saves 21 answers into `assessments.behavioral_answers`, and one `assessment_decision_snapshots` row is created.
+- The tested full assessment currently stops at `pending_payment` because `BILLING_PROVIDER=disabled`, so report generation and generation-run evidence still need a manual/admin or payment-simulated test path.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -31,6 +33,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Replit production environment may differ from local `.env.local`.
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Local verified command uses `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`; production needs a durable certificate setup.
+- Report generation has not yet been verified on Supabase because the review-safe billing mode prevents normal paid completion.
 
 ## Protected Areas
 - Do not expose secrets from `.env.local`.
@@ -38,7 +41,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Continue the local Supabase end-to-end test: login, assessment start, assessment submit, report generation, and admin evidence review with `BILLING_PROVIDER=disabled`.
+Add a controlled non-production generation path for testing, then verify report generation and admin evidence review against Supabase.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

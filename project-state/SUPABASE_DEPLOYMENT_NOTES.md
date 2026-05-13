@@ -106,12 +106,13 @@ After Supabase is connected:
 - [x] Use Session Pooler locally because direct connection is IPv6-only.
 - [x] Register a new user.
 - [x] Confirm the user row exists in Supabase.
-- [ ] Login.
-- [ ] Start a full assessment.
-- [ ] Submit answers.
-- [ ] Confirm `assessments.behavioral_answers` is saved.
-- [ ] Confirm `assessment_decision_snapshots` receives one row.
-- [ ] With `BILLING_PROVIDER=disabled`, confirm the user sees the checkout-unavailable message instead of PayPal.
+- [x] Login.
+- [x] Start a full assessment.
+- [x] Submit answers.
+- [x] Confirm `assessments.behavioral_answers` is saved.
+- [x] Confirm `assessment_decision_snapshots` receives one row.
+- [x] With `BILLING_PROVIDER=disabled`, confirm the billing API disables PayPal checkout instead of returning PayPal config.
+- [ ] Confirm the user-facing checkout-unavailable message visually in the assessment payment step.
 - [ ] Use admin manual generation or a test payment path to generate a report.
 - [ ] Confirm `assessment_generation_runs` receives a row.
 - [ ] Confirm the admin detail panel shows:
@@ -133,6 +134,19 @@ Node's `pg` driver rejected the Supabase pooler certificate chain until the Supa
 - `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`
 
 This `/tmp` certificate file is only a local working setup. Before staging/production deployment, add a durable Supabase CA certificate file or platform-level certificate configuration. Do not switch to insecure SSL verification without an explicit risk decision.
+
+## Latest Local Verification
+
+Verified on May 13, 2026 against Supabase staging:
+- API login succeeded.
+- Full assessment start succeeded.
+- V2 assessment submit succeeded and returned `pending_payment`.
+- Supabase row check showed the submitted assessment stored 21 behavioral answers.
+- Supabase row check showed one decision snapshot for the submitted assessment.
+- Billing config check returned `503` with provider `disabled`, confirming PayPal is not exposed by the API in review mode.
+
+Expected limitation:
+- `assessment_generation_runs` remains empty in this test because billing is disabled and no completed payment was attached.
 
 ## Security Notes
 
