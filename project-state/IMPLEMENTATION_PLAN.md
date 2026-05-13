@@ -154,9 +154,16 @@ Tasks:
 - [x] Review refresh token behavior.
 - [x] Review cookie security.
 - [x] Review admin session behavior.
+- [ ] Add password reset flow:
+  - forgot-password request
+  - secure reset token
+  - reset email
+  - new-password form
+  - token expiry and reuse protection
 - [ ] Add small security improvements only if needed.
 - [x] Defer Google login unless there is a clear product need.
-- [!] Current auth is acceptable for early staging, but production cookie/session settings should be rechecked after the final hosting choice.
+- [!] Current auth is acceptable for early staging, but password reset is needed before wider customer use.
+- [!] Production cookie/session settings should be rechecked after the final hosting choice.
 
 Expected result:
 - Current auth remains usable and safe enough for early launch.
