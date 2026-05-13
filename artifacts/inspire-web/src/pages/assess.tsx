@@ -510,7 +510,9 @@ export default function Assess() {
   const { user, isLoading } = useAuth();
   const { dir, locale, t } = useI18n();
 
-  const previousAssessmentId = new URLSearchParams(window.location.search).get("prev");
+  const searchParams = new URLSearchParams(window.location.search);
+  const previousAssessmentId = searchParams.get("prev");
+  const resumeAssessmentId = searchParams.get("resume");
 
   const [step, setStep] = useState(0);
   const [domainChoice, setDomainChoice] = useState("");
@@ -561,7 +563,7 @@ export default function Assess() {
   // Restore saved answers on first load (only if no reuse mode and no pending answers).
   // Uses queueMicrotask to defer setState outside the effect body (avoids cascading-render lint rule).
   useEffect(() => {
-    if (!LS_KEY || previousAssessmentId) return;
+    if (!LS_KEY || previousAssessmentId || resumeAssessmentId) return;
     const key = LS_KEY;
     queueMicrotask(() => {
       try {
@@ -636,7 +638,9 @@ export default function Assess() {
             originalPrice: d.nextAssessmentDiscount.originalPrice,
           });
         }
-        if (d.freeUsed) {
+        if (resumeAssessmentId) {
+          setPaymentStatus("required");
+        } else if (d.freeUsed) {
           setPaymentStatus("required");
           fetch(apiUrl("/billing/paypal-config"))
             .then((r) => r.json() as Promise<{ success: boolean; clientId: string; env: string; price: number }>)
@@ -650,7 +654,50 @@ export default function Assess() {
         }
       })
       .catch(() => setPaymentStatus("free"));
-  }, [user]);
+  }, [user, resumeAssessmentId]);
+
+  useEffect(() => {
+    if (!resumeAssessmentId || !user) return;
+
+    fetch(apiUrl(`/assessments/${resumeAssessmentId}/reuse-data`))
+      .then((r) => r.json() as Promise<{
+        success: boolean;
+        assessment?: {
+          id: string;
+          status: string;
+          domain: string;
+          customDomain: string | null;
+          domainSpecialization: string | null;
+          projectContext: string | null;
+          reportLanguage: "ar" | "en" | "both";
+          answers: Answer[];
+          openAnswer: string;
+        };
+        error?: string;
+      }>)
+      .then((d) => {
+        if (!d.success || !d.assessment) {
+          throw new Error(d.error ?? "تعذر تحميل التقييم المحفوظ");
+        }
+        if (d.assessment.status !== "pending_payment" && d.assessment.status !== "draft") {
+          navigate(`/results/${d.assessment.id}`);
+          return;
+        }
+        setAssessmentId(d.assessment.id);
+        setDomainChoice(d.assessment.domain);
+        setCustomDomain(d.assessment.customDomain ?? "");
+        setDomainSpecialization(d.assessment.domainSpecialization ?? "");
+        setProjectContext(d.assessment.projectContext ?? "");
+        setReportLanguage(d.assessment.reportLanguage);
+        setAnswers(d.assessment.answers);
+        setOpenAnswer(d.assessment.openAnswer ?? "");
+        setPendingPayment(true);
+        setPaymentStatus("required");
+      })
+      .catch((err: unknown) => {
+        setSetupError(err instanceof Error ? err.message : "تعذر تحميل التقييم المحفوظ");
+      });
+  }, [navigate, resumeAssessmentId, user]);
 
   useEffect(() => {
     if (!previousAssessmentId || !user) {

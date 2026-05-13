@@ -34,6 +34,7 @@ function statusLabel(status: string) {
   switch (status) {
     case "completed": return { label: "مكتمل", color: "text-teal-200 bg-teal-500/[0.08] border-teal-300/20" };
     case "processing": return { label: "قيد المعالجة", color: "text-sky-200 bg-sky-500/[0.08] border-sky-300/20" };
+    case "pending_payment": return { label: "بانتظار الدفع", color: "text-indigo-200 bg-indigo-500/[0.08] border-indigo-300/20" };
     case "pending_retry": return { label: "قيد الإعادة", color: "text-amber-200 bg-amber-500/[0.08] border-amber-300/20" };
     case "failed": return { label: "فشل", color: "text-rose-200 bg-rose-500/[0.08] border-rose-300/20" };
     default: return { label: "مسودة", color: "text-slate-300 bg-slate-900/60 border-slate-400/10" };
@@ -491,6 +492,19 @@ export default function MyAssessments() {
                               طلبك محفوظ، ويمكنك الرجوع لهذه الصفحة لاحقًا.
                             </span>
                           </div>
+                        )}
+                        {a.status === "pending_payment" && (
+                          <>
+                            <button
+                              onClick={() => navigate(`/assess?resume=${a.id}`)}
+                              className="col-span-2 flex items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-l from-rose-500 to-orange-500 px-4 py-2 text-sm font-black text-slate-950 transition-colors hover:from-rose-400 hover:to-orange-400 sm:col-span-1"
+                            >
+                              <CreditCard className="h-3.5 w-3.5" /> إكمال الدفع
+                            </button>
+                            <div className="col-span-2 rounded-2xl border border-indigo-300/20 bg-indigo-500/[0.08] px-4 py-2 text-center text-xs font-medium leading-5 text-indigo-100/75 sm:col-span-1">
+                              أجوبتك محفوظة، ويمكنك إكمال الدفع بدون إعادة التقييم.
+                            </div>
+                          </>
                         )}
                         {a.status === "failed" && (
                           <div className="col-span-2 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] px-4 py-2 text-center text-sm font-bold text-rose-200 sm:col-span-1">
