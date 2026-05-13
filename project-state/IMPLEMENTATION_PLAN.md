@@ -257,6 +257,7 @@ Tasks:
 - [x] Add configurable Postgres pool settings for Replit/Supabase.
 - [x] Add durable Supabase CA chain and Replit `NODE_EXTRA_CA_CERTS` production setting.
 - [x] Document Replit + Supabase deployment sequence.
+- [x] Add Replit audit and execution-preparation prompts.
 - [ ] Configure build commands.
 - [ ] Configure environment variables.
 - [x] Configure durable Supabase CA/SSL handling for Replit Node hosting.

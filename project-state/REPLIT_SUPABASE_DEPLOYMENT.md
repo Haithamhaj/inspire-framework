@@ -115,7 +115,7 @@ Do not rely on `/tmp` for certificates in Replit.
 
 ## Prompt For Replit Agent
 
-Use this prompt before changing Replit:
+Use this prompt before changing Replit. This is the audit-only prompt:
 
 ```text
 Audit and prepare only. Do not deploy, change secrets, or modify files unless I approve after your answer.
@@ -140,6 +140,73 @@ Do not print secret values.
 Do not modify anything.
 Return a concise checklist with risks and exact next recommended action.
 ```
+
+## Execution Prompt For Replit Agent
+
+Use this only after the audit confirms the workspace can safely switch branches.
+
+```text
+Proceed with the Replit workspace preparation for deployment. Follow these rules:
+
+- Do not print secret values.
+- Do not change DATABASE_URL or any secret values unless I explicitly do it in the Secrets UI or explicitly approve a separate secret-change step.
+- Do not deploy until I approve after your preparation report.
+- Do not delete local files.
+- If the workspace has uncommitted changes, stop and report them before switching.
+
+Goal:
+Update this Replit workspace from `main` to the GitHub branch `codex/platform-migration` so the Replit deployment can use the new INSPIRE Framework code with Supabase readiness.
+
+Steps:
+1. Confirm the current branch and git status.
+2. Fetch the latest GitHub refs from `origin`.
+3. Switch to `codex/platform-migration`.
+4. Confirm the latest commit is `2316692` or newer.
+5. Confirm these files exist:
+   - `certs/supabase-ca-chain.pem`
+   - `project-state/REPLIT_SUPABASE_DEPLOYMENT.md`
+   - `lib/db/migrations/0000_create_inspire_core_schema.sql`
+   - `lib/db/migrations/0005_add_assessment_evidence_tables.sql`
+   - `lib/db/migrations/0006_add_foreign_key_indexes.sql`
+6. Confirm API production env includes:
+   - `NODE_EXTRA_CA_CERTS=certs/supabase-ca-chain.pem`
+7. Run validation without deploying:
+   - `pnpm --filter @workspace/api-server run build`
+   - `pnpm --filter @workspace/inspire-web run build`
+8. Report whether both builds pass.
+9. List the Replit secrets that I must update or add by name only:
+   - `DATABASE_URL`
+   - `BILLING_PROVIDER`
+   - `PG_POOL_MAX`
+   - `PG_IDLE_TIMEOUT_MS`
+   - `PG_CONNECTION_TIMEOUT_MS`
+   - `APP_URL`
+10. Stop and wait for my approval before deployment.
+
+Expected DATABASE_URL shape, do not ask me to paste it into chat:
+Use the Supabase Session Pooler connection string from the Supabase dashboard, port `5432`, user format `postgres.<project_ref>`, with `sslmode=verify-full`.
+
+Return:
+- branch before and after
+- build results
+- files confirmed
+- secrets to update by name only
+- exact next manual action for me in Replit Secrets
+- whether it is ready to deploy after secrets are set
+```
+
+## Manual Secret Values To Set In Replit
+
+Set these in Replit Secrets after the branch switch is confirmed:
+
+- `DATABASE_URL`: Supabase Session Pooler URL from Supabase dashboard, with `sslmode=verify-full`.
+- `BILLING_PROVIDER`: `disabled`
+- `PG_POOL_MAX`: `5`
+- `PG_IDLE_TIMEOUT_MS`: `30000`
+- `PG_CONNECTION_TIMEOUT_MS`: `10000`
+- `APP_URL`: the final deployed Replit URL.
+
+Do not send secret values through Replit agent chat or Codex chat.
 
 ## Rollback Plan
 

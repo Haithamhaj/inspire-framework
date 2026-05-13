@@ -28,6 +28,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Deployment decision: keep Replit temporarily as the host and switch its database to Supabase after the Replit workspace is updated to `codex/platform-migration`.
 - Database pool settings are now configurable through `PG_POOL_MAX`, `PG_IDLE_TIMEOUT_MS`, and `PG_CONNECTION_TIMEOUT_MS`.
 - Durable Supabase CA setup is now included for Replit production via `certs/supabase-ca-chain.pem` and `NODE_EXTRA_CA_CERTS`.
+- Replit deployment handoff now includes both an audit-only prompt and an execution-preparation prompt.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -49,7 +50,7 @@ Move INSPIRE development work off the live `main`/Replit path and build the next
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Ask Replit to prepare the workspace switch to `codex/platform-migration`, then set Supabase/Replit secrets and deploy.
+Send the Replit audit-only prompt. If it confirms the workspace can safely switch, send the execution-preparation prompt and then update Replit Secrets manually.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
