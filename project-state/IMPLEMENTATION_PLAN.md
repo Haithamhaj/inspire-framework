@@ -98,6 +98,7 @@ Tasks:
   - report content
   - model/provider details
   - failure details when generation fails
+- [x] Verify generation-run evidence is created during manual admin generation on Supabase.
 - [ ] Make retry/failure states easier to inspect beyond the first admin detail panel.
 
 Expected result:
@@ -233,12 +234,13 @@ Tasks:
 - [x] Test assessment submit.
 - [x] Confirm `assessments.behavioral_answers` stores the 21-answer V2 payload.
 - [x] Confirm `assessment_decision_snapshots` receives one row for the submitted assessment.
-- [ ] Test report generation.
-- [ ] Test admin review.
+- [x] Test report generation through the existing admin manual generation endpoint.
+- [x] Test admin review API for answers, decision snapshot, final report, final instruction, and generation runs.
 - [x] Decide whether any old data is worth manually importing: not critical before launch.
 - [!] Direct Supabase connection is IPv6-only in this project. Local/typical hosting should use Session Pooler.
 - [!] Node/Postgres needs Supabase CA configured. Local API currently works with `NODE_EXTRA_CA_CERTS=/tmp/supabase-ca-chain.pem`; production needs a durable CA setup.
-- [!] Current local submit test stops at `pending_payment` because `BILLING_PROVIDER=disabled`; generation needs a manual/admin test path or a completed payment simulation.
+- [x] Use existing admin manual generation path to complete one pending-payment assessment for staging verification.
+- [!] Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
 
 Expected result:
 - The app works against Supabase.
@@ -274,9 +276,10 @@ Tasks:
 - [x] Test login.
 - [ ] Test logout.
 - [x] Test assessment flow through submit/pending-payment.
-- [ ] Test generation.
+- [x] Test generation through admin manual generation.
 - [ ] Test results page.
-- [ ] Test admin page.
+- [x] Test admin detail API.
+- [ ] Test admin page visually in the browser.
 - [x] Test legal pages locally.
 - [ ] Test mobile and desktop.
 - [ ] Review copy.
@@ -297,7 +300,7 @@ Expected result:
 5. [x] Build admin assessment detail.
 6. [x] Hide or disable PayPal from the review path.
 7. [x] Set up Supabase.
-8. [!] Complete local Supabase end-to-end flow: login and assessment submit are verified; generation and admin review remain.
+8. [x] Complete local Supabase end-to-end flow through admin-generated report and admin detail API review.
 9. [ ] Decide deployment platform and configure durable Supabase CA/SSL.
 10. [ ] Deploy staging.
 11. [ ] Polish Lemon Squeezy review flow.

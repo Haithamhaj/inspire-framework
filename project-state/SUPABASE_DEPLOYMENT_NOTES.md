@@ -113,14 +113,15 @@ After Supabase is connected:
 - [x] Confirm `assessment_decision_snapshots` receives one row.
 - [x] With `BILLING_PROVIDER=disabled`, confirm the billing API disables PayPal checkout instead of returning PayPal config.
 - [ ] Confirm the user-facing checkout-unavailable message visually in the assessment payment step.
-- [ ] Use admin manual generation or a test payment path to generate a report.
-- [ ] Confirm `assessment_generation_runs` receives a row.
-- [ ] Confirm the admin detail panel shows:
+- [x] Use admin manual generation or a test payment path to generate a report.
+- [x] Confirm `assessment_generation_runs` receives a row.
+- [x] Confirm the admin detail API shows:
   - answers
   - decision snapshot
   - final report
   - final instruction
   - generation runs
+- [ ] Confirm the admin detail panel visually in the browser.
 
 ## Local Supabase Connection Notes
 
@@ -144,9 +145,13 @@ Verified on May 13, 2026 against Supabase staging:
 - Supabase row check showed the submitted assessment stored 21 behavioral answers.
 - Supabase row check showed one decision snapshot for the submitted assessment.
 - Billing config check returned `503` with provider `disabled`, confirming PayPal is not exposed by the API in review mode.
+- Existing admin manual generation endpoint completed the submitted assessment.
+- Supabase row check showed the completed assessment has provider/model metadata, final instruction, and report content.
+- Supabase row check showed one completed `assessment_generation_runs` row with input/output snapshots.
+- Admin detail API returned answers, decision snapshot, final report, final instruction, and generation run history.
 
 Expected limitation:
-- `assessment_generation_runs` remains empty in this test because billing is disabled and no completed payment was attached.
+- The normal customer paid-completion path is still not verified because billing is intentionally disabled until the Lemon Squeezy path is ready.
 
 ## Security Notes
 
