@@ -59,6 +59,9 @@ const sourceLinksAr = [
   },
 ];
 
+const smartPromptCoachUrl =
+  "https://chatgpt.com/g/g-67fe5939b39c8191a7ad597fd6fb0192-smart-prompt-engineer-mhnds-lmtlbt-ldhky";
+
 const guides: Guide[] = [
   {
     slug: "how-to-write-better-prompts",
@@ -708,6 +711,26 @@ function GuideDetail({ guide }: { guide: Guide }) {
               <p className="mt-3 text-sm leading-7 text-slate-300">{localizedGuide.example.stronger}</p>
             </div>
           </div>
+        </section>
+
+        <section className="mt-10 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] p-6">
+          <h2 className="text-2xl font-black text-white">
+            {locale === "ar" ? "طبّق CRAFTS على مطالبتك" : "Apply CRAFTS to your prompt"}
+          </h2>
+          <p className="mt-3 text-base leading-8 text-slate-300">
+            {locale === "ar"
+              ? "استخدم مهندس المطالبات الذكي لترتيب السياق، الدور، الجمهور، الشكل، النبرة، والهدف في مطالبة واضحة قابلة للتجربة."
+              : "Use Smart Prompt Coach to organize context, role, audience, format, tone, and goal into a clear prompt you can test with ChatGPT, Claude, Gemini, or another AI model."}
+          </p>
+          <a
+            href={smartPromptCoachUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl border border-rose-300/25 bg-slate-950/65 px-5 py-3 text-sm font-black text-rose-100 hover:border-rose-200/40 hover:bg-slate-900/80"
+          >
+            {locale === "ar" ? "افتح مهندس المطالبات الذكي" : "Open Smart Prompt Coach"}
+            <ExternalLink className="h-4 w-4" />
+          </a>
         </section>
 
         <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">

@@ -50,6 +50,7 @@ Tasks:
 - [x] Add stronger internal links from guide pages to the free quick assessment and pricing page.
 - [x] Add natural source/method notes so examples feel credible without defensive AI-written disclaimers.
 - [x] Localize visible guide hub and guide detail content for Arabic users while preserving the existing URL structure.
+- [x] Add a secondary Smart Prompt Coach CTA to help readers apply CRAFTS after reading the guide example.
 
 Expected result:
 - The guide hub becomes useful enough to rank for practical prompt-engineering searches, not just exist as thin SEO content.
