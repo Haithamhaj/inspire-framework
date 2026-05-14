@@ -1,0 +1,22 @@
+# INSPIRE Framework
+
+INSPIRE Framework is a self-serve digital assessment for building a personal AI operating profile.
+
+Core pages:
+- Product: https://inspire.next-stepai.com/
+- Pricing: https://inspire.next-stepai.com/pricing
+- Free quick assessment: https://inspire.next-stepai.com/assess/mini
+- Terms: https://inspire.next-stepai.com/terms
+- Privacy: https://inspire.next-stepai.com/privacy
+- Refund policy: https://inspire.next-stepai.com/refund-policy
+
+What INSPIRE does:
+- Turns a user's working style and project context into copy-ready AI instructions.
+- Helps users work better with ChatGPT, Claude, Gemini, and other AI assistants.
+- Provides a digital report, starter prompts, and a shareable result.
+
+Important policy notes:
+- INSPIRE is a digital product. No physical goods are shipped.
+- Outputs are informational and productivity-focused, not legal, medical, financial, psychological, or professional advice.
+- Full report pricing is a one-time $10 digital purchase per assessment.
+

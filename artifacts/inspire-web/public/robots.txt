@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /profile
+Disallow: /my-assessments
+Disallow: /results/
+Disallow: /share/
+Disallow: /billing/
+Disallow: /reset-password
+
+Sitemap: https://inspire.next-stepai.com/sitemap.xml
+

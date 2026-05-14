@@ -1,4 +1,5 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +7,7 @@ import { AuthProvider } from "@/hooks/use-auth";
 import { I18nProvider } from "@/i18n";
 import { Navbar } from "@/components/layout/Navbar";
 import { LegalFooter } from "@/components/layout/LegalFooter";
+import { applySeo, getSeoForPath } from "@/lib/seo";
 
 // Pages
 import Landing from "@/pages/landing";
@@ -30,6 +32,10 @@ const queryClient = new QueryClient();
 
 function Router() {
   const [location] = useLocation();
+  useEffect(() => {
+    applySeo(getSeoForPath(location));
+  }, [location]);
+
   const premiumNavPaths = new Set([
     "/",
     "/privacy-consent",

@@ -182,6 +182,14 @@ Tasks:
 - [x] Make product, price, delivery, and digital nature clear across the full review path.
 - [x] Add a direct `/pricing` route so Lemon reviewers do not hit a SPA 404 when looking for pricing.
 - [x] Verify production `/pricing` after Replit update.
+- [x] Add core SEO/review trust signals:
+  - `robots.txt`
+  - `sitemap.xml`
+  - canonical URL
+  - Open Graph/Twitter metadata
+  - Organization/WebSite/SoftwareApplication structured data
+  - route-aware titles/descriptions
+  - SEO strategy and keyword clusters for Saudi/GCC positioning
 - [ ] Prepare a review/demo flow:
   - landing page
   - start assessment
