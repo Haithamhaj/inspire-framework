@@ -531,6 +531,46 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ─── SEO CONTENT HUB ──────────────────────────────── */}
+      <section className="px-6 py-20 bg-slate-950/20 backdrop-blur-[1px]">
+        <div className="container max-w-5xl mx-auto">
+          <div className="grid gap-8 md:grid-cols-[1fr_1.2fr] md:items-center">
+            <div>
+              <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">
+                {locale === "ar" ? "دليل عملي" : "Practical guides"}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-50 mb-4">
+                {locale === "ar" ? "تعلم كيف تكتب تعليمات أفضل للذكاء الاصطناعي" : "Learn how to write better AI prompts and instructions"}
+              </h2>
+              <p className="text-[15px] leading-7 text-slate-400">
+                {locale === "ar"
+                  ? "قبل أن تبدأ التقييم، اقرأ أدلة مختصرة عن هندسة الأوامر، تعليمات ChatGPT، واستخدام الذكاء الاصطناعي في العمل داخل السعودية والخليج."
+                  : "Before taking the assessment, explore focused guides on prompt engineering, ChatGPT custom instructions, and AI productivity for Saudi Arabia and GCC work contexts."}
+              </p>
+              <Link
+                href="/guides"
+                className="mt-6 inline-flex items-center gap-2 rounded-xl border border-slate-400/15 bg-slate-900/70 px-5 py-3 text-sm font-black text-white transition-colors hover:border-rose-300/30"
+              >
+                {locale === "ar" ? "اقرأ الأدلة" : "Read the guides"}
+                <ForwardArrow className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="grid gap-3">
+              {[
+                locale === "ar" ? "كيف أكتب برومبت أفضل؟" : "How do I write better prompts?",
+                locale === "ar" ? "ماذا أضع في تعليمات ChatGPT؟" : "What should I put in ChatGPT custom instructions?",
+                locale === "ar" ? "ما هو ملف تشغيل الذكاء الاصطناعي؟" : "What is an AI operating profile?",
+              ].map((item) => (
+                <div key={item} className="rounded-2xl border border-slate-400/10 bg-slate-950/55 p-4 text-sm font-bold text-slate-200">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── FINAL CTA ────────────────────────────────────── */}
       <section className="py-20 px-6 bg-slate-950/50 backdrop-blur-[1px]">
         <div className="container max-w-3xl mx-auto text-center">

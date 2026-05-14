@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 
 const legalLinks = [
+  { href: "/pricing", label: "Pricing" },
+  { href: "/guides", label: "Guides" },
   { href: "/terms", label: "Terms" },
   { href: "/privacy", label: "Privacy" },
   { href: "/refund-policy", label: "Refund Policy" },

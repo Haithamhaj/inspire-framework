@@ -112,13 +112,20 @@ Create a small, high-quality content hub after Lemon review:
 - Added Organization, WebSite, and SoftwareApplication structured data.
 - Added route-aware document title, description, canonical, robots, and social metadata.
 - Marked private/auth pages as `noindex, nofollow` in client-side SEO metadata.
+- Added `/guides` content hub.
+- Added initial guide pages:
+  - `/guides/how-to-write-better-prompts`
+  - `/guides/chatgpt-custom-instructions`
+  - `/guides/prompt-engineering-for-work`
+  - `/guides/ai-operating-profile`
+  - `/guides/arabic-ai-prompts`
+- Added internal links from landing and footer to the guide hub.
 
 ## Remaining SEO Improvements
 
 - Move the marketing pages to SSR/SSG or prerendered HTML when leaving temporary Replit hosting.
-- Add real content pages under `/guides`.
+- Expand the guide pages from short foundational articles into long-form, example-rich pages after Lemon review.
 - Add Arabic/English localized URLs with `hreflang` when the language strategy is stable.
 - Remove Replit production badge/script if the hosting setup allows it.
 - Submit sitemap in Google Search Console after production review path is stable.
 - Monitor Search Console queries after indexing, then refine content around real impressions.
-

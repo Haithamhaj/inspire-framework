@@ -190,6 +190,7 @@ Tasks:
   - Organization/WebSite/SoftwareApplication structured data
   - route-aware titles/descriptions
   - SEO strategy and keyword clusters for Saudi/GCC positioning
+  - initial `/guides` content hub for prompt engineering, ChatGPT instructions, AI operating profile, workplace AI, and Arabic AI prompts
 - [ ] Prepare a review/demo flow:
   - landing page
   - start assessment

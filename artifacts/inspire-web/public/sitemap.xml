@@ -19,6 +19,42 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://inspire.next-stepai.com/guides</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/how-to-write-better-prompts</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/chatgpt-custom-instructions</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/prompt-engineering-for-work</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/ai-operating-profile</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/arabic-ai-prompts</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://inspire.next-stepai.com/terms</loc>
     <lastmod>2026-05-14</lastmod>
     <changefreq>yearly</changefreq>
@@ -37,4 +73,3 @@
     <priority>0.4</priority>
   </url>
 </urlset>
-

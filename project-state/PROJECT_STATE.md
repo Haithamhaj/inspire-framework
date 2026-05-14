@@ -56,6 +56,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Production QA found `/pricing` rendered the SPA 404; a dedicated `/pricing` route has been added with product, price, digital delivery, no-subscription, Lemon Squeezy processor, and legal-link copy for review readiness.
 - Replit was updated to commit `920e831`, and production `/pricing` was verified on May 14, 2026: it no longer renders 404 and includes the $0 quick assessment, $10 full report, digital delivery, Lemon Squeezy processor, no-subscription, and legal-link copy.
 - SEO audit found missing real `robots.txt`/`sitemap.xml`, thin static metadata, missing canonical/social tags, and no structured data. Technical SEO improvements have been added in code, with keyword and content strategy captured in `project-state/SEO_STRATEGY.md`.
+- SEO topical authority work has started with a `/guides` hub and five initial guide pages targeting prompt writing, ChatGPT custom instructions, prompt engineering for work, AI operating profiles, and Arabic/bilingual AI prompts.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
