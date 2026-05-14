@@ -685,16 +685,16 @@ export const en: Dictionary = {
     pricing: {
       eyebrow: "Pricing",
       title: "Simple and transparent",
-      subtitle: "Start free and upgrade when you're ready",
+      subtitle: "Start with a free quick assessment, then upgrade to the full report when you're ready",
       free: {
         badge: "Quick assessment",
         price: "$0",
-        period: "Free forever",
-        cta: "Start for free",
+        period: "Free quick version",
+        cta: "Start quick assessment",
         features: [
           "Free quick assessment (5 minutes)",
-          "Instant starter prompts",
-          "Intro to the seven profile components",
+          "3 instant AI starter prompts",
+          "Initial snapshot of how you work with AI",
           "No credit card",
         ],
       },
