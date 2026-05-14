@@ -10,6 +10,7 @@ import {
   paymentsTable,
 } from "@workspace/db/schema";
 import { eq, and, gte, lte, or, desc, count, avg, type SQL } from "drizzle-orm";
+import { randomBytes } from "crypto";
 import { logger } from "../lib/logger";
 import { sendResultsEmail, sendRecoveryEmail } from "../lib/email";
 import { generateReportV2 } from "../lib/ai-engine";
@@ -39,6 +40,27 @@ function isV2Answers(value: unknown): value is Array<{ questionId: string; optio
       typeof (item as { questionId?: unknown }).questionId === "string" &&
       typeof (item as { optionId?: unknown }).optionId === "string"
   );
+}
+
+function applyAssessmentListFilters(
+  query: Record<string, string>,
+  conditions: SQL[]
+) {
+  const { status, language, domain, provider, model, outcome, dateFrom, dateTo } = query;
+
+  if (status) conditions.push(eq(assessmentsTable.status, status));
+  if (language) conditions.push(eq(assessmentsTable.reportLanguage, language));
+  if (domain) conditions.push(eq(assessmentsTable.domain, domain));
+  if (provider) conditions.push(eq(assessmentsTable.aiProvider, provider));
+  if (model) conditions.push(eq(assessmentsTable.aiModel, model));
+  if (outcome === "failed") conditions.push(eq(assessmentsTable.status, "failed"));
+  if (outcome === "completed") conditions.push(eq(assessmentsTable.status, "completed"));
+  if (dateFrom) conditions.push(gte(assessmentsTable.createdAt, new Date(dateFrom)));
+  if (dateTo) {
+    const end = new Date(dateTo);
+    end.setHours(23, 59, 59, 999);
+    conditions.push(lte(assessmentsTable.createdAt, end));
+  }
 }
 
 // ─── GET /api/admin/stats ─────────────────────────────────
@@ -101,12 +123,8 @@ router.get(
     const {
       page = "1",
       limit = "25",
-      status,
-      language,
       search,
       recovery,
-      dateFrom,
-      dateTo,
     } = req.query as Record<string, string>;
 
     const pageNum = Math.max(1, parseInt(page));
@@ -114,21 +132,14 @@ router.get(
     const offset = (pageNum - 1) * limitNum;
 
     const conditions: SQL[] = [];
-
-    if (status) conditions.push(eq(assessmentsTable.status, status));
-    if (language) conditions.push(eq(assessmentsTable.reportLanguage, language));
-    if (dateFrom) conditions.push(gte(assessmentsTable.createdAt, new Date(dateFrom)));
-    if (dateTo) {
-      const end = new Date(dateTo);
-      end.setHours(23, 59, 59, 999);
-      conditions.push(lte(assessmentsTable.createdAt, end));
-    }
+    applyAssessmentListFilters(req.query as Record<string, string>, conditions);
 
     const allAssessments = await db
       .select({
         id: assessmentsTable.id,
         projectName: assessmentsTable.projectName,
         projectGoal: assessmentsTable.projectGoal,
+        domain: assessmentsTable.domain,
         assessmentType: assessmentsTable.assessmentType,
         reportLanguage: assessmentsTable.reportLanguage,
         status: assessmentsTable.status,
@@ -140,6 +151,8 @@ router.get(
         retryCount: assessmentsTable.retryCount,
         nextRetryAt: assessmentsTable.nextRetryAt,
         paymentId: assessmentsTable.paymentId,
+        shareToken: assessmentsTable.shareToken,
+        shareEnabled: assessmentsTable.shareEnabled,
         reportContent: assessmentsTable.reportContent,
         behavioralAnswers: assessmentsTable.behavioralAnswers,
         createdAt: assessmentsTable.createdAt,
@@ -255,6 +268,7 @@ router.get(
       userName: a.user?.name ?? "",
       userEmail: a.user?.email ?? "",
       projectName: a.projectName,
+      domain: a.domain,
       assessmentType: a.assessmentType,
       reportLanguage: a.reportLanguage,
       status: a.status,
@@ -278,6 +292,8 @@ router.get(
       paymentStatus: a.payment?.status ?? null,
       paypalOrderId: a.payment?.paypalOrderId ?? null,
       paymentAmount: a.payment?.amount ?? null,
+      shareToken: a.shareToken,
+      shareEnabled: a.shareEnabled,
       createdAt: a.createdAt,
     }));
 
@@ -464,7 +480,6 @@ router.post(
       res.status(400).json({ success: false, error: "No saved answers found for this assessment" });
       return;
     }
-
     const answers = assessment.behavioralAnswers;
 
     const [user] = await db
@@ -503,6 +518,117 @@ router.post(
     });
 
     res.json({ success: true, status: "processing" });
+  }
+);
+
+// ─── POST /api/admin/assessments/:id/regenerate-report ────────────────────────
+
+router.post(
+  "/admin/assessments/:id/regenerate-report",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select()
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    if ((assessment.assessmentType ?? "full") !== "full" || !isV2Answers(assessment.behavioralAnswers)) {
+      res.status(400).json({ success: false, error: "No saved answers found for this assessment" });
+      return;
+    }
+    const answers = assessment.behavioralAnswers;
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, assessment.userId));
+
+    if (!user) {
+      res.status(404).json({ success: false, error: "User not found" });
+      return;
+    }
+
+    await db
+      .update(assessmentsTable)
+      .set({ status: "processing", retryCount: 0, nextRetryAt: null })
+      .where(eq(assessmentsTable.id, assessment.id));
+
+    setImmediate(async () => {
+      try {
+        await generateReportV2(assessment.id, {
+          name: user.name,
+          jobTitle: user.jobTitle ?? undefined,
+          projectName: assessment.projectName,
+          projectGoal: assessment.projectGoal,
+          domain: assessment.domain ?? assessment.projectName,
+          customDomain: assessment.customDomain ?? undefined,
+          domainSpecialization: assessment.domainSpecialization ?? undefined,
+          projectContext: assessment.projectContext ?? assessment.projectGoal,
+          reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
+          answers,
+          openAnswer: assessment.openAnswer ?? undefined,
+        });
+      } catch (err) {
+        logger.error({ assessmentId: assessment.id, err }, "Admin regenerate-report threw unexpectedly");
+      }
+    });
+
+    res.json({ success: true, status: "processing" });
+  }
+);
+
+// ─── PATCH /api/admin/assessments/:id/share ───────────────────────────────────
+
+router.patch(
+  "/admin/assessments/:id/share",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const { enabled } = req.body as { enabled?: boolean };
+    if (typeof enabled !== "boolean") {
+      res.status(400).json({ success: false, error: "enabled boolean required" });
+      return;
+    }
+
+    const [assessment] = await db
+      .select({
+        id: assessmentsTable.id,
+        status: assessmentsTable.status,
+        shareToken: assessmentsTable.shareToken,
+      })
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    if (enabled && assessment.status !== "completed") {
+      res.status(400).json({ success: false, error: "Only completed assessments can be shared" });
+      return;
+    }
+
+    const shareToken = enabled ? assessment.shareToken ?? randomBytes(24).toString("hex") : null;
+    const [updated] = await db
+      .update(assessmentsTable)
+      .set({ shareToken, shareEnabled: enabled })
+      .where(eq(assessmentsTable.id, assessment.id))
+      .returning({
+        id: assessmentsTable.id,
+        shareToken: assessmentsTable.shareToken,
+        shareEnabled: assessmentsTable.shareEnabled,
+      });
+
+    res.json({ success: true, assessment: updated });
   }
 );
 
@@ -561,20 +687,30 @@ router.get(
   async (req: Request, res: Response): Promise<void> => {
     if (!requireAdmin(req, res)) return;
 
+    const conditions: SQL[] = [];
+    applyAssessmentListFilters(req.query as Record<string, string>, conditions);
+    const format = ((req.query as Record<string, string>).format ?? "csv").toLowerCase();
+
     const assessments = await db
       .select({
         id: assessmentsTable.id,
         projectName: assessmentsTable.projectName,
+        projectGoal: assessmentsTable.projectGoal,
+        domain: assessmentsTable.domain,
         assessmentType: assessmentsTable.assessmentType,
         reportLanguage: assessmentsTable.reportLanguage,
         status: assessmentsTable.status,
         aiProvider: assessmentsTable.aiProvider,
+        aiModel: assessmentsTable.aiModel,
         completionTimeSeconds: assessmentsTable.completionTimeSeconds,
         emailSent: assessmentsTable.emailSent,
+        shareEnabled: assessmentsTable.shareEnabled,
+        shareToken: assessmentsTable.shareToken,
         createdAt: assessmentsTable.createdAt,
         userId: assessmentsTable.userId,
       })
       .from(assessmentsTable)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(assessmentsTable.createdAt));
 
     const userIds = [...new Set(assessments.map((a) => a.userId))];
@@ -587,6 +723,20 @@ router.get(
 
     const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
 
+    if (format === "json") {
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
+      res.setHeader("Content-Disposition", `attachment; filename="inspire-assessments-${Date.now()}.json"`);
+      res.json({
+        exportedAt: new Date().toISOString(),
+        count: assessments.length,
+        assessments: assessments.map((a) => ({
+          ...a,
+          user: userMap[a.userId] ?? null,
+        })),
+      });
+      return;
+    }
+
     const rows = assessments.map((a) => {
       const u = userMap[a.userId];
       return [
@@ -594,17 +744,20 @@ router.get(
         u?.name ?? "",
         u?.email ?? "",
         a.projectName,
+        a.domain ?? "",
         a.assessmentType,
         a.reportLanguage,
         a.status,
         a.aiProvider ?? "",
+        a.aiModel ?? "",
         a.completionTimeSeconds != null ? Math.round(a.completionTimeSeconds / 60) + " دقيقة" : "",
         a.emailSent ? "نعم" : "لا",
+        a.shareEnabled ? "نعم" : "لا",
         a.createdAt ? new Date(a.createdAt).toISOString() : "",
       ];
     });
 
-    const header = ["ID", "الاسم", "البريد", "المشروع", "النوع", "اللغة", "الحالة", "AI", "المدة", "بريد أُرسل", "التاريخ"];
+    const header = ["ID", "الاسم", "البريد", "المشروع", "المجال", "النوع", "اللغة", "الحالة", "المزود", "النموذج", "المدة", "بريد أُرسل", "المشاركة", "التاريخ"];
     const csv = [header, ...rows]
       .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
       .join("\n");

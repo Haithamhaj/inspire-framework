@@ -3,8 +3,10 @@ import { db } from "@workspace/db";
 import {
   usersTable,
   adminSessionsTable,
+  refreshTokensTable,
 } from "@workspace/db/schema";
 import { eq, and, gt } from "drizzle-orm";
+import { randomBytes } from "crypto";
 import {
   hashPassword,
   verifyPassword,
@@ -14,8 +16,9 @@ import {
   revokeRefreshToken,
   getAuthUser,
 } from "../lib/auth";
-import { RegisterSchema, LoginSchema, ProfileUpdateSchema } from "../lib/validators";
+import { RegisterSchema, LoginSchema, ProfileUpdateSchema, ForgotPasswordSchema, ResetPasswordSchema } from "../lib/validators";
 import { rateLimit, getClientIp } from "../lib/rate-limit";
+import { sendPasswordResetEmail } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -137,6 +140,122 @@ router.get(
 
     req.log.info({ userId: user.id }, "Email verified");
     res.json({ success: true, message: "Email verified. You can now log in." });
+  }
+);
+
+// ─── POST /api/auth/forgot-password ─────────────────────
+
+router.post(
+  "/auth/forgot-password",
+  async (req: Request, res: Response): Promise<void> => {
+    const ip = getClientIp(req);
+    const forgotLimit = rateLimit(ip, "forgot-password", 5, 15 * 60 * 1000);
+    if (!forgotLimit.allowed) {
+      res
+        .status(429)
+        .set("Retry-After", String(forgotLimit.retryAfterSeconds))
+        .json({
+          success: false,
+          error: "Too many reset requests. Try again later.",
+          retryAfter: forgotLimit.retryAfterSeconds,
+        });
+      return;
+    }
+
+    const parsed = ForgotPasswordSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        success: false,
+        error: "Validation failed",
+        details: parsed.error.flatten(),
+      });
+      return;
+    }
+
+    const email = parsed.data.email.toLowerCase().trim();
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, email));
+
+    const publicMessage = "If an account exists, a reset link has been sent.";
+    if (!user || !user.isActive) {
+      res.json({ success: true, message: publicMessage });
+      return;
+    }
+
+    const token = randomBytes(32).toString("hex");
+    const expires = new Date(Date.now() + 60 * 60 * 1000);
+
+    await db
+      .update(usersTable)
+      .set({
+        passwordResetToken: token,
+        passwordResetExpires: expires,
+      })
+      .where(eq(usersTable.id, user.id));
+
+    try {
+      await sendPasswordResetEmail(user.email, user.name, token);
+    } catch {
+      res.status(500).json({ success: false, error: "Failed to send reset email" });
+      return;
+    }
+
+    req.log.info({ userId: user.id }, "Password reset requested");
+    res.json({ success: true, message: publicMessage });
+  }
+);
+
+// ─── POST /api/auth/reset-password ──────────────────────
+
+router.post(
+  "/auth/reset-password",
+  async (req: Request, res: Response): Promise<void> => {
+    const parsed = ResetPasswordSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        success: false,
+        error: "Validation failed",
+        details: parsed.error.flatten(),
+      });
+      return;
+    }
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(
+        and(
+          eq(usersTable.passwordResetToken, parsed.data.token),
+          gt(usersTable.passwordResetExpires, new Date())
+        )
+      );
+
+    if (!user || !user.isActive) {
+      res.status(400).json({ success: false, error: "Invalid or expired reset link" });
+      return;
+    }
+
+    const passwordHash = await hashPassword(parsed.data.password);
+
+    await db
+      .update(usersTable)
+      .set({
+        passwordHash,
+        passwordResetToken: null,
+        passwordResetExpires: null,
+        emailVerified: true,
+      })
+      .where(eq(usersTable.id, user.id));
+
+    await db
+      .update(refreshTokensTable)
+      .set({ revoked: true })
+      .where(eq(refreshTokensTable.userId, user.id));
+
+    req.log.info({ userId: user.id }, "Password reset completed");
+    res.json({ success: true, message: "Password reset complete. You can now log in." });
   }
 );
 

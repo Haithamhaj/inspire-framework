@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Clock,
   Download,
+  FileJson,
   Search,
   RefreshCw,
   Shield,
@@ -17,6 +18,8 @@ import {
   ToggleLeft,
   ToggleRight,
   Eye,
+  Mail,
+  Share2,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -42,9 +45,12 @@ interface Assessment {
   userName: string;
   userEmail: string;
   projectName: string;
+  domain: string | null;
   assessmentType: string;
+  reportLanguage: string;
   status: string;
   aiProvider: string | null;
+  aiModel: string | null;
   completionTimeSeconds: number | null;
   retryCount: number;
   nextRetryAt: string | null;
@@ -63,6 +69,8 @@ interface Assessment {
   paymentStatus: string | null;
   paypalOrderId: string | null;
   paymentAmount: string | null;
+  shareToken: string | null;
+  shareEnabled: boolean;
   createdAt: string;
 }
 
@@ -107,6 +115,8 @@ interface AdminAssessmentDetail {
   aiModel: string | null;
   retryCount: number;
   nextRetryAt: string | null;
+  shareToken: string | null;
+  shareEnabled: boolean;
   completionTimeSeconds: number | null;
   createdAt: string;
   user: {
@@ -187,6 +197,11 @@ export default function Admin() {
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
+  const [language, setLanguage] = useState("");
+  const [domain, setDomain] = useState("");
+  const [provider, setProvider] = useState("");
+  const [model, setModel] = useState("");
+  const [outcome, setOutcome] = useState("");
   const [recovery, setRecovery] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -195,6 +210,9 @@ export default function Admin() {
   const [retryingId, setRetryingId] = useState<string | null>(null);
   const [sendingRecoveryId, setSendingRecoveryId] = useState<string | null>(null);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
+  const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
+  const [resendingId, setResendingId] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
   const [detailLoadingId, setDetailLoadingId] = useState<string | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<AdminAssessmentDetail | null>(null);
   const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -259,7 +277,13 @@ export default function Admin() {
       try {
         const params = new URLSearchParams({ page: String(p), limit: String(PAGE_SIZE) });
         if (s) params.set("status", s);
+        if (language) params.set("language", language);
+        if (domain) params.set("domain", domain);
+        if (provider) params.set("provider", provider);
+        if (model) params.set("model", model);
+        if (outcome) params.set("outcome", outcome);
         if (recoveryFilter) params.set("recovery", recoveryFilter);
+        if (search.trim()) params.set("search", search.trim());
         const res = await fetch(apiUrl(`/admin/assessments?${params}`), {
           headers: { "x-admin-password": pw },
         });
@@ -275,7 +299,7 @@ export default function Admin() {
         setLoading(false);
       }
     },
-    [recovery]
+    [domain, language, model, outcome, provider, recovery, search]
   );
 
   async function loadStats() {
@@ -455,17 +479,32 @@ export default function Admin() {
     }
   }
 
-  async function handleExport() {
+  function buildListParams(p = page) {
+    const params = new URLSearchParams({ page: String(p), limit: String(PAGE_SIZE) });
+    if (status) params.set("status", status);
+    if (language) params.set("language", language);
+    if (domain) params.set("domain", domain);
+    if (provider) params.set("provider", provider);
+    if (model) params.set("model", model);
+    if (outcome) params.set("outcome", outcome);
+    if (recovery) params.set("recovery", recovery);
+    if (search.trim()) params.set("search", search.trim());
+    return params;
+  }
+
+  async function handleExport(format: "csv" | "json" = "csv") {
     setExporting(true);
     try {
-      const res = await fetch(apiUrl("/admin/export"), {
+      const params = buildListParams();
+      params.set("format", format);
+      const res = await fetch(apiUrl(`/admin/export?${params}`), {
         headers: { "x-admin-password": password },
       });
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `inspire-export-${Date.now()}.csv`;
+      a.download = `inspire-export-${Date.now()}.${format}`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -522,6 +561,98 @@ export default function Admin() {
       setActionMsg({ ok: false, text: "فشل الاتصال" });
     } finally {
       setGeneratingId(null);
+    }
+  }
+
+  async function handleRegenerateReport(assessmentId: string) {
+    if (!confirm("إعادة توليد التقرير المكتمل؟ سيستبدل المحتوى الحالي بعد انتهاء التوليد.")) return;
+    setRegeneratingId(assessmentId);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/admin/assessments/${assessmentId}/regenerate-report`), {
+        method: "POST",
+        headers: { "x-admin-password": password },
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (!d.success) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل إعادة التوليد" });
+        return;
+      }
+      setActionMsg({ ok: true, text: "بدأت إعادة توليد التقرير" });
+      await loadAssessments(page, status, password);
+      await loadStats();
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setRegeneratingId(null);
+    }
+  }
+
+  async function handleResendResultsEmail(assessmentId: string, userEmail: string) {
+    if (!confirm(`إعادة إرسال تقرير النتائج إلى ${userEmail}؟`)) return;
+    setResendingId(assessmentId);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/admin/resend-email/${assessmentId}`), {
+        method: "POST",
+        headers: { "x-admin-password": password },
+      });
+      const d = await res.json() as { success: boolean; error?: string; message?: string };
+      if (!d.success) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل إرسال البريد" });
+        return;
+      }
+      setActionMsg({ ok: true, text: d.message ?? "تم إرسال البريد" });
+      await loadAssessments(page, status, password);
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setResendingId(null);
+    }
+  }
+
+  async function handleToggleShare(assessment: Assessment) {
+    const enabled = !assessment.shareEnabled;
+    setSharingId(assessment.id);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl(`/admin/assessments/${assessment.id}/share`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ enabled }),
+      });
+      const d = await res.json() as {
+        success: boolean;
+        error?: string;
+        assessment?: { shareToken: string | null; shareEnabled: boolean };
+      };
+      if (!d.success || !d.assessment) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل تحديث المشاركة" });
+        return;
+      }
+      setAssessments((prev) =>
+        prev.map((item) =>
+          item.id === assessment.id
+            ? { ...item, shareToken: d.assessment!.shareToken, shareEnabled: d.assessment!.shareEnabled }
+            : item
+        )
+      );
+      if (selectedDetail?.id === assessment.id) {
+        setSelectedDetail({
+          ...selectedDetail,
+          shareToken: d.assessment.shareToken,
+          shareEnabled: d.assessment.shareEnabled,
+        });
+      }
+      const shareUrl = d.assessment.shareToken ? `${window.location.origin}/share/${d.assessment.shareToken}` : "";
+      setActionMsg({
+        ok: true,
+        text: enabled ? `تم تفعيل رابط المشاركة: ${shareUrl}` : "تم تعطيل رابط المشاركة",
+      });
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setSharingId(null);
     }
   }
 
@@ -681,12 +812,20 @@ export default function Admin() {
               تحديث
             </button>
             <button
-              onClick={handleExport}
+              onClick={() => handleExport("csv")}
               disabled={exporting}
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-accent-foreground text-sm font-medium transition-all hover:bg-accent/90"
             >
               {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
               تصدير CSV
+            </button>
+            <button
+              onClick={() => handleExport("json")}
+              disabled={exporting}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm font-medium transition-all hover:border-primary/30 disabled:opacity-60"
+            >
+              {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileJson className="h-4 w-4" />}
+              JSON
             </button>
           </div>
         </div>
@@ -717,6 +856,7 @@ export default function Admin() {
               placeholder="بحث بالاسم أو البريد أو المشروع..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && loadAssessments(1, status, password)}
             />
           </div>
           <select
@@ -737,6 +877,55 @@ export default function Admin() {
           </select>
           <select
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+            value={language}
+            onChange={(e) => {
+              setLanguage(e.target.value);
+              window.setTimeout(() => loadAssessments(1, status, password), 0);
+            }}
+          >
+            <option value="">كل اللغات</option>
+            <option value="ar">عربي</option>
+            <option value="en">إنجليزي</option>
+            <option value="both">الاثنان</option>
+          </select>
+          <input
+            className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+            placeholder="Domain"
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && loadAssessments(1, status, password)}
+            dir="ltr"
+          />
+          <input
+            className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+            placeholder="Provider"
+            value={provider}
+            onChange={(e) => setProvider(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && loadAssessments(1, status, password)}
+            dir="ltr"
+          />
+          <input
+            className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+            placeholder="Model"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && loadAssessments(1, status, password)}
+            dir="ltr"
+          />
+          <select
+            className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
+            value={outcome}
+            onChange={(e) => {
+              setOutcome(e.target.value);
+              window.setTimeout(() => loadAssessments(1, status, password), 0);
+            }}
+          >
+            <option value="">كل النتائج</option>
+            <option value="completed">Completed</option>
+            <option value="failed">Failed</option>
+          </select>
+          <select
+            className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
             value={recovery}
             onChange={(e) => {
               setRecovery(e.target.value);
@@ -748,6 +937,12 @@ export default function Admin() {
             <option value="paid_no_report">مدفوع بلا تقرير</option>
             <option value="low_rating">تقييم منخفض</option>
           </select>
+          <button
+            onClick={() => loadAssessments(1, status, password)}
+            className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            تطبيق
+          </button>
         </div>
 
         {/* Table */}
@@ -819,6 +1014,8 @@ export default function Admin() {
                   <div>Generation runs: {selectedDetail.generationRuns.length}</div>
                   <div>Feedback: {selectedDetail.feedback?.rating ? `${selectedDetail.feedback.rating}/5` : "لا يوجد"}</div>
                   <div>{selectedDetail.feedback?.copiedInstructions ? "نسخ التعليمات قبل التقييم" : "لم ينسخ التعليمات قبل التقييم"}</div>
+                  <div>{selectedDetail.shareEnabled ? "Share enabled" : "Share disabled"}</div>
+                  {selectedDetail.shareToken && <div className="truncate" dir="ltr">/share/{selectedDetail.shareToken}</div>}
                 </div>
               </div>
             </div>
@@ -871,7 +1068,10 @@ export default function Admin() {
                         <div className="font-medium text-primary">{a.userName}</div>
                         <div className="text-xs text-muted-foreground" dir="ltr">{a.userEmail}</div>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground max-w-[200px] truncate">{a.projectName}</td>
+                      <td className="px-4 py-3 text-muted-foreground max-w-[220px]">
+                        <div className="truncate">{a.projectName}</div>
+                        {a.domain && <div className="truncate text-xs text-muted-foreground/70" dir="ltr">{a.domain}</div>}
+                      </td>
                       <td className="px-4 py-3">
                         <span className={`text-xs px-2 py-1 rounded-full border font-medium ${a.assessmentType === "mini" ? "bg-accent/10 text-accent border-accent/20" : "bg-secondary border-border text-muted-foreground"}`}>
                           {a.assessmentType === "mini" ? "سريع" : "كامل"}
@@ -929,7 +1129,9 @@ export default function Admin() {
                           <div>محاولات: {a.retryCount}</div>
                           <div>{a.hasReportContent ? "reportContent موجود" : "لا يوجد reportContent"}</div>
                           <div>{a.emailSent ? "الإيميل أُرسل" : "الإيميل لم يُرسل"}</div>
+                          <div>{a.shareEnabled ? "المشاركة مفعلة" : "المشاركة معطلة"}</div>
                           <div>{a.pdfGenerated ? "PDF موجود" : "PDF غير مولد"}</div>
+                          <div dir="ltr">{a.aiProvider ?? "no provider"}{a.aiModel ? `/${a.aiModel}` : ""}</div>
                           <div>
                             وقت التوليد:{" "}
                             {a.completionTimeSeconds != null
@@ -979,6 +1181,20 @@ export default function Admin() {
                               Retry
                             </button>
                           )}
+                          {a.status === "completed" && a.assessmentType !== "mini" && (
+                            <button
+                              onClick={() => handleRegenerateReport(a.id)}
+                              disabled={regeneratingId === a.id}
+                              className="inline-flex items-center justify-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                            >
+                              {regeneratingId === a.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <RefreshCw className="h-3.5 w-3.5" />
+                              )}
+                              Regenerate
+                            </button>
+                          )}
                           {(a.status === "draft" || a.status === "pending_payment") && a.hasAnswers && (
                             <button
                               onClick={() => handleGenerateReport(a.id)}
@@ -992,6 +1208,34 @@ export default function Admin() {
                               )}
                               توليد التقرير
                             </button>
+                          )}
+                          {a.status === "completed" && (
+                            <>
+                              <button
+                                onClick={() => handleResendResultsEmail(a.id, a.userEmail)}
+                                disabled={resendingId === a.id}
+                                className="inline-flex items-center justify-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
+                              >
+                                {resendingId === a.id ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                  <Mail className="h-3.5 w-3.5" />
+                                )}
+                                Resend
+                              </button>
+                              <button
+                                onClick={() => handleToggleShare(a)}
+                                disabled={sharingId === a.id}
+                                className="inline-flex items-center justify-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
+                              >
+                                {sharingId === a.id ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                  <Share2 className="h-3.5 w-3.5" />
+                                )}
+                                {a.shareEnabled ? "Disable share" : "Enable share"}
+                              </button>
+                            </>
                           )}
                           {(a.status === "draft" || a.status === "pending_payment") && (
                             <button

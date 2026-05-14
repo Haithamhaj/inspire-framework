@@ -13,6 +13,8 @@ import PrivacyConsent from "@/pages/privacy-consent";
 import { PrivacyPage, RefundPolicyPage, TermsPage } from "@/pages/legal";
 import Register from "@/pages/register";
 import Login from "@/pages/login";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 import Assess from "@/pages/assess";
 import AssessMini from "@/pages/assess-mini";
 import Results from "@/pages/results";
@@ -35,6 +37,8 @@ function Router() {
     "/refund-policy",
     "/register",
     "/login",
+    "/forgot-password",
+    "/reset-password",
     "/assess",
     "/assess/mini",
     "/billing/success",
@@ -53,6 +57,8 @@ function Router() {
           <Route path="/refund-policy" component={RefundPolicyPage} />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
+          <Route path="/forgot-password" component={ForgotPassword} />
+          <Route path="/reset-password" component={ResetPassword} />
           <Route path="/assess" component={Assess} />
           <Route path="/assess/mini" component={AssessMini} />
           <Route path="/results/:id" component={Results} />

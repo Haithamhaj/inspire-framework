@@ -91,6 +91,27 @@ export async function sendRecoveryEmail(toEmail: string, toName: string, discoun
   }
 }
 
+export async function sendPasswordResetEmail(toEmail: string, toName: string, resetToken: string): Promise<void> {
+  if (!process.env["RESEND_API_KEY"]) {
+    logger.warn("RESEND_API_KEY not set — skipping password reset email");
+    return;
+  }
+  const appUrl = getAppUrl();
+  const resetUrl = `${appUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
+  try {
+    await getResend().emails.send({
+      from: getFrom(),
+      to: toEmail,
+      subject: "INSPIRE — Reset your password",
+      html: buildPasswordResetEmailHtml(toName, resetUrl, appUrl),
+    });
+    logger.info({ email: toEmail }, "Password reset email sent");
+  } catch (err) {
+    logger.error({ email: toEmail, err }, "Failed to send password reset email");
+    throw err;
+  }
+}
+
 export async function sendFailureEmail(email: string, name: string): Promise<void> {
   if (!process.env["RESEND_API_KEY"]) return;
   try {
@@ -202,6 +223,45 @@ function buildRecoveryEmailHtml(name: string, appUrl: string, discountCode: stri
         </td></tr>
         <tr><td style="background:#f8f9fc;padding:24px 40px;text-align:center;border-top:1px solid #eee;">
           <p style="color:#9ca3af;font-size:12px;margin:0;">INSPIRE — تقرير نمط التشغيل وتعليمات الذكاء الاصطناعي</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildPasswordResetEmailHtml(name: string, resetUrl: string, appUrl: string) {
+  return `<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INSPIRE password reset</title></head>
+<body style="margin:0;padding:0;background:#f8f9fc;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fc;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        <tr><td style="background:#1a1a2e;padding:36px 40px;text-align:center;">
+          <h1 style="color:#e94560;margin:0;font-size:26px;font-weight:700;letter-spacing:2px;">INSPIRE</h1>
+          <p style="color:rgba(255,255,255,0.55);margin:8px 0 0;font-size:13px;">Operating Pattern Report</p>
+        </td></tr>
+        <tr><td style="padding:40px;">
+          <h2 style="color:#1a1a2e;margin:0 0 16px;font-size:20px;">Hi ${name},</h2>
+          <p style="color:#4a5568;font-size:16px;line-height:1.7;margin:0 0 20px;">
+            We received a request to reset your INSPIRE password. This link expires in one hour and can be used once.
+          </p>
+          <div style="text-align:center;margin:30px 0;">
+            <a href="${resetUrl}" style="display:inline-block;background:#e94560;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:16px;">
+              Reset password
+            </a>
+          </div>
+          <p style="color:#718096;font-size:14px;line-height:1.7;margin:0 0 12px;">
+            If you did not request this, you can ignore this email.
+          </p>
+          <p style="color:#9ca3af;font-size:12px;line-height:1.6;margin:0;word-break:break-all;">
+            ${resetUrl}
+          </p>
+        </td></tr>
+        <tr><td style="background:#f8f9fc;padding:22px 40px;text-align:center;border-top:1px solid #eee;">
+          <p style="color:#9ca3af;font-size:12px;margin:0;">${appUrl}</p>
         </td></tr>
       </table>
     </td></tr>

@@ -129,18 +129,18 @@ Tasks:
   - payment state
   - feedback
 - [ ] Add admin tools:
-  - regenerate report
-  - retry failed assessment
-  - resend email
-  - enable or disable share
-  - export JSON/CSV
+  - [x] regenerate report
+  - [x] retry failed assessment
+  - [x] resend email
+  - [x] enable or disable share
+  - [x] export JSON/CSV
 - [ ] Add filters:
-  - status
-  - language
-  - domain
-  - model/provider
-  - failed/completed
-- [!] Admin detail panel exists, but admin operations and filtering still need work before this is a strong operator dashboard.
+  - [x] status
+  - [x] language
+  - [x] domain
+  - [x] model/provider
+  - [x] failed/completed
+- [!] Admin operations and filtering are now implemented in the API and UI; run final browser QA on production-like data before treating the dashboard as review-ready.
 
 Expected result:
 - The operator can inspect and improve real customer outputs.
@@ -155,15 +155,15 @@ Tasks:
 - [x] Review refresh token behavior.
 - [x] Review cookie security.
 - [x] Review admin session behavior.
-- [ ] Add password reset flow:
-  - forgot-password request
-  - secure reset token
-  - reset email
-  - new-password form
-  - token expiry and reuse protection
+- [x] Add password reset flow:
+  - [x] forgot-password request
+  - [x] secure reset token
+  - [x] reset email
+  - [x] new-password form
+  - [x] token expiry and reuse protection
 - [ ] Add small security improvements only if needed.
 - [x] Defer Google login unless there is a clear product need.
-- [!] Current auth is acceptable for early staging, but password reset is needed before wider customer use.
+- [!] Password reset exists in code and requires applying migration `0009_add_password_reset_fields.sql` before deployment.
 - [!] Production cookie/session settings should be rechecked after the final hosting choice.
 
 Expected result:

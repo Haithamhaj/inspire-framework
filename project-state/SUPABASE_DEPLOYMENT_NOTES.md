@@ -84,6 +84,9 @@ Existing migrations:
 - `lib/db/migrations/0004_add_discount_code_owner.sql`
 - `lib/db/migrations/0005_add_assessment_evidence_tables.sql`
 - `lib/db/migrations/0006_add_foreign_key_indexes.sql`
+- `lib/db/migrations/0007_add_discount_code_start_date.sql`
+- `lib/db/migrations/0008_add_feedback_context.sql`
+- `lib/db/migrations/0009_add_password_reset_fields.sql`
 
 Important:
 - Supabase staging currently has MCP migrations applied:
@@ -138,6 +141,8 @@ After Supabase is connected:
 - [x] Run a fresh production assessment and generate the report through admin.
 - [x] Confirm production answers, decision snapshot, final report, final instruction, and generation run in Supabase.
 - [ ] Confirm a fresh production shared result page after enabling sharing for a completed production assessment.
+- [ ] Apply `0009_add_password_reset_fields.sql` before deploying password reset.
+- [ ] Verify forgot-password and reset-password against the deployed Supabase database.
 
 ## Local Supabase Connection Notes
 

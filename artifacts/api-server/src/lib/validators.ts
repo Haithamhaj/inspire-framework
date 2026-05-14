@@ -33,6 +33,19 @@ export const LoginSchema = z.object({
   password: z.string().min(1),
 });
 
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+export const ResetPasswordSchema = z.object({
+  token: z.string().min(32).max(200),
+  password: z
+    .string()
+    .min(8)
+    .regex(/[a-zA-Z]/, "Password must contain at least one letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+});
+
 export const AssessmentStartSchema = z.object({
   project_name: z.string().min(2).max(500).optional(),
   project_goal: z.string().min(10).max(2000).optional(),
@@ -108,6 +121,8 @@ export const ProfileUpdateSchema = z.object({
 
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
+export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 export type ProfileUpdateInput = z.infer<typeof ProfileUpdateSchema>;
 export type AssessmentStartInput = z.infer<typeof AssessmentStartSchema>;
 export type MiniSubmitInput = z.infer<typeof MiniSubmitSchema>;
