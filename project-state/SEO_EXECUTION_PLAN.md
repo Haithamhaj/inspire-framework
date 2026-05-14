@@ -27,12 +27,7 @@ Use sources by confidence level:
 
 Do not publish unsupported AI-generated statistics. GPT, Claude, and Gemini can help generate keyword and content ideas, but they are not treated as factual sources unless backed by official or primary references.
 
-All examples published on the site should be clearly labeled as one of:
-- Original INSPIRE examples based on product logic.
-- Examples adapted from the user's own product/research material.
-- Quoted or paraphrased source examples with a visible source link.
-
-Do not make examples look sourced from OpenAI, Anthropic, Google, SSRN, or Next-stepAI unless the source actually contains that exact example or supports the claim being made.
+Examples should read like useful product education, not defensive disclaimers. When a page uses an example, explain the method behind it in natural language and include relevant references nearby when they help the reader trust the guidance. Do not make examples look sourced from OpenAI, Anthropic, Google, SSRN, or Next-stepAI unless the source actually contains that exact example or supports the claim being made.
 
 ## Phase 1: Trust And Entity Foundation
 
@@ -53,7 +48,7 @@ Tasks:
 - [x] Add FAQ blocks to guide pages.
 - [x] Add `FAQPage`, `Article`, and `BreadcrumbList` structured data where appropriate.
 - [x] Add stronger internal links from guide pages to the free quick assessment and pricing page.
-- [x] Add visible source/method notes so original INSPIRE examples are not confused with quoted source material.
+- [x] Add natural source/method notes so examples feel credible without defensive AI-written disclaimers.
 
 Expected result:
 - The guide hub becomes useful enough to rank for practical prompt-engineering searches, not just exist as thin SEO content.

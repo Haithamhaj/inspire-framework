@@ -406,9 +406,9 @@ function GuideDetail({ guide }: { guide: Guide }) {
         <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
           <h2 className="text-2xl font-black text-white">Example prompt upgrade</h2>
           <p className="mt-3 text-sm leading-7 text-slate-400">
-            These examples are original INSPIRE examples, not copied from OpenAI, Anthropic, Google,
-            or the SSRN paper. They apply INSPIRE's product logic and common prompt-engineering
-            principles: clear role, task, context, constraints, output format, and quality rules.
+            Each upgrade shows the same pattern INSPIRE uses when turning a vague request into a
+            usable instruction: clarify the role, task, context, constraints, output format, and
+            quality rules.
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-red-300/10 bg-red-500/[0.05] p-4">
@@ -423,12 +423,10 @@ function GuideDetail({ guide }: { guide: Guide }) {
         </section>
 
         <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
-          <h2 className="text-2xl font-black text-white">Sources and method</h2>
+          <h2 className="text-2xl font-black text-white">Method and references</h2>
           <p className="mt-3 text-base leading-8 text-slate-300">
-            Guide explanations are based on INSPIRE's own product method, the INSPIRE & CRAFTS
-            research background, and official prompt-design guidance from AI platform providers.
-            The examples are adapted for INSPIRE users and should be treated as practical
-            illustrations, not quoted source material.
+            This guide combines INSPIRE's product method with the INSPIRE & CRAFTS research
+            background and official prompt-design guidance from AI platform providers.
           </p>
           <div className="mt-5 grid gap-3">
             {sourceLinks.map((source) => (

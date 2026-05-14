@@ -60,7 +60,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - SEO execution is now tracked in `project-state/SEO_EXECUTION_PLAN.md`.
 - The first SEO trust/entity page set has been added locally: `/about`, `/research`, and `/contact`, with footer links, route metadata, sitemap coverage, `llms.txt` coverage, and route-level structured data.
 - The initial guide pages have been expanded locally with practical prompt upgrade examples, FAQ sections, and route-level Article/FAQ structured data.
-- Guide pages now label example prompts as original INSPIRE examples and include visible source/method links to SSRN, OpenAI, Anthropic, and Google prompt-design references.
+- Guide pages now explain the example-upgrade method in natural reader-facing language and include visible reference links to SSRN, OpenAI, Anthropic, and Google prompt-design resources.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
