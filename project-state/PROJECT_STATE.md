@@ -53,6 +53,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Admin dashboard now has operator actions for regenerate report, retry failed/pending generation, resend results email, enable/disable share links, and CSV/JSON exports with status/language/domain/provider/model/completed/failed filters.
 - Customer password reset has been added in code with forgot-password request, one-hour reset token, reset email, new-password form, token clearing after use, and refresh-token revocation after reset.
 - Supabase migration `add_password_reset_fields` was applied on May 14, 2026 and verified to add `password_reset_token` and `password_reset_expires` to `public.users`.
+- Production QA found `/pricing` rendered the SPA 404; a dedicated `/pricing` route has been added with product, price, digital delivery, no-subscription, Lemon Squeezy processor, and legal-link copy for review readiness.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.

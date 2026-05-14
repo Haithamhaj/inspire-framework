@@ -179,7 +179,8 @@ Tasks:
 - [x] Confirm footer legal links.
 - [x] Remove or hide broken PayPal checkout from the customer review path.
 - [x] Clarify that the free offer is the quick assessment, not the full report.
-- [ ] Make product, price, delivery, and digital nature clear across the full review path.
+- [x] Make product, price, delivery, and digital nature clear across the full review path.
+- [x] Add a direct `/pricing` route so Lemon reviewers do not hit a SPA 404 when looking for pricing.
 - [ ] Prepare a review/demo flow:
   - landing page
   - start assessment
