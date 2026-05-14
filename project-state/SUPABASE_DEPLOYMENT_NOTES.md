@@ -141,7 +141,7 @@ After Supabase is connected:
 - [x] Run a fresh production assessment and generate the report through admin.
 - [x] Confirm production answers, decision snapshot, final report, final instruction, and generation run in Supabase.
 - [ ] Confirm a fresh production shared result page after enabling sharing for a completed production assessment.
-- [ ] Apply `0009_add_password_reset_fields.sql` before deploying password reset.
+- [x] Apply `0009_add_password_reset_fields.sql` before deploying password reset.
 - [ ] Verify forgot-password and reset-password against the deployed Supabase database.
 
 ## Local Supabase Connection Notes
@@ -209,6 +209,13 @@ Verified on May 13, 2026:
 Expected limitation:
 - The old test share token is not available on the current production database.
 - The latest production-generated assessment has sharing disabled by default; enable sharing before verifying a fresh production share URL.
+
+## Latest Supabase Schema Update
+
+Verified on May 14, 2026:
+- Applied migration `add_password_reset_fields`.
+- Confirmed `public.users.password_reset_token` exists as nullable `text`.
+- Confirmed `public.users.password_reset_expires` exists as nullable `timestamp without time zone`.
 
 ## Security Notes
 

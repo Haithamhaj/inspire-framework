@@ -163,7 +163,7 @@ Tasks:
   - [x] token expiry and reuse protection
 - [ ] Add small security improvements only if needed.
 - [x] Defer Google login unless there is a clear product need.
-- [!] Password reset exists in code and requires applying migration `0009_add_password_reset_fields.sql` before deployment.
+- [x] Supabase migration `add_password_reset_fields` was applied on May 14, 2026 and verified to add `password_reset_token` and `password_reset_expires`.
 - [!] Production cookie/session settings should be rechecked after the final hosting choice.
 
 Expected result:

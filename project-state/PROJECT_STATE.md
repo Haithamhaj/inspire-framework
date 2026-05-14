@@ -52,7 +52,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - The old test share token is not available on the current production database; this is expected for non-migrated test data. The latest generated production report has sharing disabled by default.
 - Admin dashboard now has operator actions for regenerate report, retry failed/pending generation, resend results email, enable/disable share links, and CSV/JSON exports with status/language/domain/provider/model/completed/failed filters.
 - Customer password reset has been added in code with forgot-password request, one-hour reset token, reset email, new-password form, token clearing after use, and refresh-token revocation after reset.
-- Database migration `0009_add_password_reset_fields.sql` is required before deploying the password reset endpoints.
+- Supabase migration `add_password_reset_fields` was applied on May 14, 2026 and verified to add `password_reset_token` and `password_reset_expires` to `public.users`.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -76,7 +76,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Apply and verify the password-reset migration locally/staging, then run final QA across logout, desktop/mobile, payment-disabled messaging, legal pages, and a fresh share-enabled result path before preparing the Lemon Squeezy review video.
+Update the Replit workspace from GitHub, then run final QA across logout, desktop/mobile, payment-disabled messaging, legal pages, password reset, and a fresh share-enabled result path before preparing the Lemon Squeezy review video.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
