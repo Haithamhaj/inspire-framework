@@ -133,6 +133,7 @@ Create a small, high-quality content hub after Lemon review:
 - Expand the guide pages from short foundational articles into long-form, example-rich pages after Lemon review.
 - Added FAQ and article structured data to guide pages after expanding the content.
 - Explain example methodology in natural reader-facing language and show source/method links where they improve trust.
+- Localize guide hub and detail content for Arabic users before adding separate Arabic URL structures.
 - Add Arabic/English localized URLs with `hreflang` when the language strategy is stable.
 - Remove Replit production badge/script if the hosting setup allows it.
 - Submit sitemap in Google Search Console after production review path is stable.

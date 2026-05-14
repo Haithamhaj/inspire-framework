@@ -1,5 +1,6 @@
 import { Link, useRoute } from "wouter";
 import { ArrowRight, BookOpen, CheckCircle2, ExternalLink, FileText, Sparkles } from "lucide-react";
+import { useI18n, type Locale } from "@/i18n";
 
 type Guide = {
   slug: string;
@@ -35,6 +36,25 @@ const sourceLinks = [
   },
   {
     label: "Google Vertex AI prompt design strategies",
+    href: "https://cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/prompt-design-strategies",
+  },
+];
+
+const sourceLinksAr = [
+  {
+    label: "ورقة INSPIRE & CRAFTS البحثية",
+    href: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5358595",
+  },
+  {
+    label: "دليل OpenAI لهندسة المطالبات",
+    href: "https://platform.openai.com/docs/guides/prompt-engineering/strategy",
+  },
+  {
+    label: "توثيق Anthropic Claude لهندسة المطالبات",
+    href: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering",
+  },
+  {
+    label: "استراتيجيات تصميم المطالبات من Google Vertex AI",
     href: "https://cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/prompt-design-strategies",
   },
 ];
@@ -312,11 +332,270 @@ const guides: Guide[] = [
   },
 ];
 
+const guideArabic: Record<string, Omit<Guide, "slug">> = {
+  "how-to-write-better-prompts": {
+    title: "كيف تكتب مطالبات أفضل للذكاء الاصطناعي",
+    description: "دليل عملي لكتابة مطالبات أوضح مع ChatGPT وClaude وGemini وأدوات الذكاء الاصطناعي المشابهة.",
+    keywords: ["كيف أكتب برومبت", "مطالبات الذكاء الاصطناعي", "مطالبات ChatGPT", "هندسة المطالبات"],
+    example: {
+      weak: "اكتب خطة لمشروعي.",
+      stronger:
+        "تصرف كشريك تخطيط عملي. أنشئ خطة إطلاق لمدة أسبوعين لمؤسس منفرد يبني منتج إنتاجية بالذكاء الاصطناعي. اذكر الأولويات والمخاطر والخطوات التالية، واجعل الإجابة مختصرة مع توضيح الافتراضات.",
+    },
+    sections: [
+      {
+        title: "ابدأ بالنتيجة، لا بالأداة",
+        body: [
+          "المطالبة القوية تبدأ بالنتيجة التي تريدها: قرار، خطة، مسودة، مراجعة، تحليل، أو خطوة تالية.",
+          "بدلاً من سؤال واسع، حدّد المهمة والجمهور والقيود وشكل المخرجات ومعيار الجودة.",
+        ],
+      },
+      {
+        title: "أعط المساعد دوراً واضحاً",
+        body: [
+          "المطالبات العامة تنتج إجابات عامة. حدّد دوراً يناسب المهمة: مراجع استراتيجي، محرر كتابة، شريك تخطيط، أو محلل دعم عملاء.",
+          "INSPIRE يحول هذا الدور إلى ملف تشغيل قابل لإعادة الاستخدام حتى لا تعيد كتابة نفس السياق كل مرة.",
+        ],
+      },
+      {
+        title: "أضف القيود وخطوط الجودة",
+        body: [
+          "المطالبة الجيدة توضّح ما يجب تجنبه: الإطالة، الادعاءات غير المدعومة، اللغة العامة، أو تجاهل المخاطر.",
+          "هذه القواعد مهمة في العمل عندما تكون الجودة والنبرة والانضباط في القرار عناصر مؤثرة.",
+        ],
+      },
+      {
+        title: "استخدم الأمثلة لضبط الجودة",
+        body: [
+          "إذا كنت تعرف شكل الإجابة المفيدة، أضف مثالاً قصيراً. المثال يساعد النموذج على فهم البنية والنبرة والعمق بسرعة.",
+          "هذا مفيد عندما تريد صيغة محددة مثل ملخص تنفيذي، رسالة ثنائية اللغة، مذكرة قرار، أو قائمة إجراءات.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "ما الذي يجعل المطالبة أفضل؟",
+        answer: "المطالبة الأفضل توضّح النتيجة والدور والسياق والقيود وشكل المخرجات ومعيار الجودة، فتقلل التخمين.",
+      },
+      {
+        question: "هل أحتاج مطالبة مختلفة لكل أداة ذكاء اصطناعي؟",
+        answer: "قد تختلف الصياغة قليلاً، لكن نفس التعليمات الأساسية غالباً تعمل مع ChatGPT وClaude وGemini وأدوات مشابهة.",
+      },
+    ],
+  },
+  "chatgpt-custom-instructions": {
+    title: "ماذا تضع في تعليمات ChatGPT المخصصة",
+    description: "دليل عملي لبناء تعليمات تساعد أدوات الذكاء الاصطناعي على فهم هدفك وأسلوبك وتوقعاتك.",
+    keywords: ["تعليمات ChatGPT", "تعليمات شات جي بي تي", "تعليمات المساعد", "تخصيص الذكاء الاصطناعي"],
+    example: {
+      weak: "كن مفيداً ومختصراً.",
+      stronger:
+        "ابدأ بالإجابة المباشرة، ثم وضّح الخيارات والمفاضلات. اسأل سؤال توضيح فقط عندما تؤثر المعلومة الناقصة على التوصية. تجنب النصائح العامة واربط الاقتراحات بالهدف الحالي.",
+    },
+    sections: [
+      {
+        title: "التعليمات تصف طريقة عملك",
+        body: [
+          "أفضل تعليمات مخصصة ليست سيرة ذاتية. هي توضّح أهدافك، أسلوبك المفضل، عادات القرار، ونوع المخرجات التي تساعدك.",
+          "مثلاً: هل تفضل الإجابات المباشرة، الخيارات، المفاضلات، الأمثلة، القوائم، أو الشرح خطوة بخطوة.",
+        ],
+      },
+      {
+        title: "افصل السياق الثابت عن تفاصيل المشروع",
+        body: [
+          "التفضيلات الثابتة مكانها في التعليمات المخصصة. أما تفاصيل المشروع المؤقتة فالأفضل أن تبقى داخل المحادثة الحالية.",
+          "INSPIRE يساعدك على فصل هذه الطبقات عبر ملف تشغيل ثابت ومطالبات بداية مرتبطة بسياقك.",
+        ],
+      },
+      {
+        title: "حوّل التعليمات إلى نظام جودة",
+        body: [
+          "مجموعة التعليمات الجيدة تخبر المساعد كيف يتعامل مع عدم اليقين، متى يسأل، وكيف يرتّب الإجابة.",
+          "هذا يحسن الاتساق عبر ChatGPT وClaude وGemini وأدوات مشابهة.",
+        ],
+      },
+      {
+        title: "حافظ على التعليمات خفيفة وواضحة",
+        body: [
+          "التعليمات الدائمة يجب أن تشمل نمط الإجابة، النبرة، الشكل، مستوى التفصيل، وحدود الجودة.",
+          "تجنب تكديس معلومات مؤقتة تجعل التعليمات أقل دقة مع الوقت.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "ماذا أضع في تعليمات ChatGPT؟",
+        answer: "ضع أهدافك، أسلوب الإجابة المفضل، شكل المخرجات، قواعد الجودة، وما تريد من المساعد أن يتجنبه.",
+      },
+      {
+        question: "هل أضع معلومات شخصية كثيرة؟",
+        answer: "ضع فقط المعلومات التي تحسن جودة العمل. تجنب التفاصيل الحساسة التي لا يحتاجها المساعد.",
+      },
+    ],
+  },
+  "prompt-engineering-for-work": {
+    title: "هندسة المطالبات للعمل في السعودية والخليج",
+    description: "دليل عملي لاستخدام هندسة المطالبات في التخطيط والكتابة والتحليل والإنتاجية داخل فرق العمل.",
+    keywords: ["هندسة المطالبات للعمل", "الذكاء الاصطناعي في السعودية", "إنتاجية الذكاء الاصطناعي", "استخدام AI في العمل"],
+    example: {
+      weak: "لخّص هذا الاجتماع.",
+      stronger:
+        "لخّص هذا الاجتماع لفريق عمليات في السعودية. افصل بين القرارات، الأسئلة المفتوحة، المخاطر، والخطوات التالية حسب المسؤول. حافظ على الأسماء العربية كما هي، وأبقِ المصطلحات التقنية الإنجليزية عند الحاجة.",
+    },
+    sections: [
+      {
+        title: "مطالبات العمل تحتاج سياقاً تجارياً",
+        body: [
+          "في العمل، المطالبة يجب أن تشمل الهدف والجمهور والقيود ومعايير القرار وشكل المخرجات المتوقع.",
+          "هذا مهم في السعودية والخليج حيث يستخدم الذكاء الاصطناعي في التواصل والتحليل والتدريب والتخطيط والعمل التشغيلي.",
+        ],
+      },
+      {
+        title: "أعلى الاستخدامات قيمة",
+        body: [
+          "من الاستخدامات المفيدة: تلخيص المستندات، تجهيز ملخصات الاجتماعات، مراجعة العروض، صياغة رسائل ثنائية اللغة، بناء الخطط، واختبار الافتراضات.",
+          "القيمة الحقيقية تأتي من تعليمات قابلة للتكرار، لا من حيل مؤقتة في صياغة المطالبة.",
+        ],
+      },
+      {
+        title: "ابنِ ملف تشغيل قابل لإعادة الاستخدام",
+        body: [
+          "ملف التشغيل الشخصي أو الجماعي يجعل مخرجات الذكاء الاصطناعي أكثر اتساقاً، لأنه يحدد النبرة والبنية والمخاطر ومستوى التفصيل.",
+          "INSPIRE مصمم لتوليد هذا الملف من تقييم منظّم بدلاً من التخمين.",
+        ],
+      },
+      {
+        title: "استخدم التعليمات ثنائية اللغة بوعي",
+        body: [
+          "كثير من بيئات العمل في الخليج تتحرك بين العربية والإنجليزية. لذلك يجب تحديد متى نترجم، ومتى نحافظ على المصطلح، ولمن تُكتب المخرجات.",
+          "هذا يحافظ على طبيعية التواصل ويقلل الترجمة الحرفية الضعيفة.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "لماذا تهم هندسة المطالبات في العمل؟",
+        answer: "لأن مخرجات العمل تؤثر على قرارات وعملاء وتنسيق داخلي. وضوح السياق والقيود يرفع جودة النتائج.",
+      },
+      {
+        question: "ما أفضل استخدامات الذكاء الاصطناعي في العمل؟",
+        answer: "ملخصات الاجتماعات، تلخيص المستندات، مراجعة العروض، التواصل ثنائي اللغة، التخطيط، وتجميع البحث لدعم القرار.",
+      },
+    ],
+  },
+  "ai-operating-profile": {
+    title: "ما هو ملف تشغيل الذكاء الاصطناعي؟",
+    description: "ملف التشغيل هو طبقة تعليمات قابلة لإعادة الاستخدام توضّح للذكاء الاصطناعي كيف يعمل مع أهدافك وأسلوبك وقيودك.",
+    keywords: ["ملف تشغيل الذكاء الاصطناعي", "تعليمات مخصصة للذكاء الاصطناعي", "تقييم أسلوب العمل", "AI operating profile"],
+    example: {
+      weak: "أجب بأسلوبي.",
+      stronger:
+        "اعمل كشريك استراتيجي مختصر. ابدأ بالتوصية، ثم وضّح المنطق والمفاضلات والخطوة التالية. تجنب الحشو والادعاءات غير المدعومة والقوائم الطويلة.",
+    },
+    sections: [
+      {
+        title: "الملف أكثر من مطالبة واحدة",
+        body: [
+          "المطالبة تطلب مخرجاً واحداً غالباً. أما ملف التشغيل فيحدد كيف يفكر المساعد ويرد ويرتب العمل ويتجنب الأخطاء عبر مهام متعددة.",
+          "هو أشبه بدليل تشغيل خفيف لمساعدك الذكي.",
+        ],
+      },
+      {
+        title: "ماذا يحتوي؟",
+        body: [
+          "الملف المفيد يشمل سياق الهدف، أسلوب التواصل المفضل، أنماط التفكير، معايير الجودة، الخطوط الحمراء، وأمثلة على المخرجات المفيدة.",
+          "INSPIRE يرتب هذه الإشارات في تعليمات قابلة للنسخ وتقرير واضح.",
+        ],
+      },
+      {
+        title: "لماذا يهم؟",
+        body: [
+          "كثير من الناس يضيعون وقتاً لأن كل محادثة تبدأ من الصفر. ملف التشغيل يقلل التكرار ويساعد المساعد على التكيف أسرع.",
+          "وبالنسبة للفرق، يسهل شرح طريقة التعاون مع الذكاء الاصطناعي ومشاركتها.",
+        ],
+      },
+      {
+        title: "كيف يختلف عن مكتبة المطالبات؟",
+        body: [
+          "مكتبة المطالبات تعطيك قوالب للمهام. ملف التشغيل يعطي المساعد فهماً متكرراً لطريقة العمل معك.",
+          "يمكن الجمع بين الاثنين: الملف يحدد السلوك، والمطالبة تصف المهمة الحالية.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "هل ملف التشغيل هو نفسه البرومبت؟",
+        answer: "لا. البرومبت يطلب غالباً نتيجة واحدة، أما ملف التشغيل فيحدد سلوكاً متكرراً عبر مهام ومحادثات كثيرة.",
+      },
+      {
+        question: "هل أستطيع استخدام ملف واحد مع أكثر من أداة؟",
+        answer: "نعم. يمكن تكييف الملف الجيد مع ChatGPT وClaude وGemini، مع مراعاة اختلاف مكان إدخال التعليمات في كل أداة.",
+      },
+    ],
+  },
+  "arabic-ai-prompts": {
+    title: "مطالبات عربية وتعليمات ثنائية اللغة للذكاء الاصطناعي",
+    description: "كيف يكتب المستخدم العربي مطالبات أوضح ويستخدم تعليمات ثنائية اللغة مع ChatGPT وClaude وGemini.",
+    keywords: ["برومبت عربي", "مطالبات عربية", "تعليمات شات جي بي تي", "هندسة الأوامر"],
+    example: {
+      weak: "اكتب لي برومبت للتسويق.",
+      stronger:
+        "تصرف كخبير تسويق عملي. اكتب برومبت يساعدني أجهز حملة لمنتج رقمي في السعودية. اذكر الجمهور، الرسالة، القنوات، المخاطر، وخطوات التنفيذ. استخدم العربية الواضحة وحافظ على المصطلحات التقنية الإنجليزية عند الحاجة.",
+    },
+    sections: [
+      {
+        title: "المطالبات العربية تحتاج وضوحاً لا ترجمة حرفية",
+        body: [
+          "المطالبة العربية الجيدة توضّح المهمة والنبرة والجمهور وشكل المخرجات. الترجمة الحرفية من قوالب إنجليزية قد تضعف النتيجة.",
+          "استخدم لغة مباشرة، حدّد الدور، واذكر هل تريد الإجابة بالعربية أو الإنجليزية أو باللغتين.",
+        ],
+      },
+      {
+        title: "العمل ثنائي اللغة يستفيد من تعليمات ثابتة",
+        body: [
+          "كثير من مستخدمي الخليج ينتقلون بين العربية والإنجليزية في العمل. التعليمات الثابتة تحدد متى نحافظ على المصطلحات الإنجليزية ومتى نشرح بالعربية.",
+          "هذا مفيد في الأعمال والتقنية والتعليم والعمليات.",
+        ],
+      },
+      {
+        title: "INSPIRE يدعم استخداماً ثنائي اللغة",
+        body: [
+          "يمكن لـ INSPIRE توليد تقارير وتعليمات لمستخدمين يعملون بين العربية والإنجليزية.",
+          "الهدف ليس الترجمة فقط، بل مواءمة طريقة عملك مع طريقة استجابة الذكاء الاصطناعي.",
+        ],
+      },
+      {
+        title: "تجنب الأوامر العربية العامة",
+        body: [
+          "أوامر قصيرة مثل “اكتب لي برومبت” تنتج غالباً إجابات عامة. أضف الجمهور والهدف والسياق والنبرة وشكل المخرجات والحدود.",
+          "إذا كان العمل ثنائي اللغة، قل بوضوح أي المصطلحات تبقى بالإنجليزية وما لغة النتيجة النهائية.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "هل الأفضل أكتب البرومبت بالعربي أم بالإنجليزي؟",
+        answer: "اكتب باللغة التي تناسب المخرجات المطلوبة. إذا كان العمل عربياً أو موجهاً لجمهور عربي، فالوضوح بالعربية أهم من الترجمة الحرفية.",
+      },
+      {
+        question: "كيف أحسن نتائج ChatGPT بالعربي؟",
+        answer: "حدد الدور، الهدف، الجمهور، النبرة، شكل المخرجات، والكلمات التي يجب الحفاظ عليها بالإنجليزية عند الحاجة.",
+      },
+    ],
+  },
+};
+
+function getLocalizedGuide(guide: Guide, locale: Locale): Guide {
+  if (locale !== "ar") return guide;
+  const localized = guideArabic[guide.slug];
+  return localized ? { slug: guide.slug, ...localized } : guide;
+}
+
 export function getGuideBySlug(slug: string) {
   return guides.find((guide) => guide.slug === slug) ?? null;
 }
 
-function GuideCard({ guide }: { guide: Guide }) {
+function GuideCard({ guide, locale }: { guide: Guide; locale: Locale }) {
   return (
     <Link
       href={`/guides/${guide.slug}`}
@@ -326,7 +605,7 @@ function GuideCard({ guide }: { guide: Guide }) {
       <h2 className="text-xl font-black text-white group-hover:text-rose-100">{guide.title}</h2>
       <p className="mt-3 text-sm leading-6 text-slate-400">{guide.description}</p>
       <div className="mt-4 flex items-center gap-2 text-sm font-bold text-rose-200">
-        Read guide
+        {locale === "ar" ? "للمزيد" : "Read guide"}
         <ArrowRight className="h-4 w-4" />
       </div>
     </Link>
@@ -334,25 +613,30 @@ function GuideCard({ guide }: { guide: Guide }) {
 }
 
 function GuidesIndex() {
+  const { locale, dir } = useI18n();
+  const localizedGuides = guides.map((guide) => getLocalizedGuide(guide, locale));
+
   return (
-    <div className="min-h-screen bg-[#070817] px-4 py-14 text-slate-100 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#070817] px-4 py-14 text-slate-100 sm:px-6 lg:px-8" dir={dir}>
       <div className="mx-auto max-w-6xl">
         <header className="max-w-3xl">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-500/[0.08] px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-rose-100">
             <Sparkles className="h-4 w-4" />
-            AI prompt guides
+            {locale === "ar" ? "أدلة عملية" : "AI prompt guides"}
           </p>
           <h1 className="font-display text-4xl font-black tracking-normal text-white sm:text-5xl">
-            Practical guides for better AI prompts and instructions
+            {locale === "ar" ? "أدلة عملية لكتابة تعليمات أفضل للذكاء الاصطناعي" : "Practical guides for better AI prompts and instructions"}
           </h1>
           <p className="mt-5 text-base leading-8 text-slate-300">
-            Learn how to write better prompts, use ChatGPT custom instructions, and build an AI operating profile for work in Saudi Arabia, the GCC, and bilingual Arabic/English contexts.
+            {locale === "ar"
+              ? "تعرّف على طريقة كتابة مطالبات أوضح، واستخدام تعليمات ChatGPT، وبناء ملف تشغيل للذكاء الاصطناعي يناسب العمل في السعودية والخليج والسياقات العربية/الإنجليزية."
+              : "Learn how to write better prompts, use ChatGPT custom instructions, and build an AI operating profile for work in Saudi Arabia, the GCC, and bilingual Arabic/English contexts."}
           </p>
         </header>
 
         <section className="mt-10 grid gap-5 md:grid-cols-2">
-          {guides.map((guide) => (
-            <GuideCard key={guide.slug} guide={guide} />
+          {localizedGuides.map((guide) => (
+            <GuideCard key={guide.slug} guide={guide} locale={locale} />
           ))}
         </section>
       </div>
@@ -361,27 +645,31 @@ function GuidesIndex() {
 }
 
 function GuideDetail({ guide }: { guide: Guide }) {
+  const { locale, dir } = useI18n();
+  const localizedGuide = getLocalizedGuide(guide, locale);
+  const links = locale === "ar" ? sourceLinksAr : sourceLinks;
+
   return (
-    <article className="min-h-screen bg-[#070817] px-4 py-14 text-slate-100 sm:px-6 lg:px-8">
+    <article className="min-h-screen bg-[#070817] px-4 py-14 text-slate-100 sm:px-6 lg:px-8" dir={dir}>
       <div className="mx-auto max-w-3xl">
         <Link href="/guides" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-rose-200">
           <ArrowRight className="h-4 w-4 rotate-180" />
-          All guides
+          {locale === "ar" ? "كل الأدلة" : "All guides"}
         </Link>
 
         <header>
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-500/[0.08] px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-rose-100">
             <FileText className="h-4 w-4" />
-            INSPIRE guide
+            {locale === "ar" ? "دليل INSPIRE" : "INSPIRE guide"}
           </p>
           <h1 className="font-display text-4xl font-black tracking-normal text-white sm:text-5xl">
-            {guide.title}
+            {localizedGuide.title}
           </h1>
-          <p className="mt-5 text-base leading-8 text-slate-300">{guide.description}</p>
+          <p className="mt-5 text-base leading-8 text-slate-300">{localizedGuide.description}</p>
         </header>
 
         <div className="mt-8 flex flex-wrap gap-2">
-          {guide.keywords.map((keyword) => (
+          {localizedGuide.keywords.map((keyword) => (
             <span key={keyword} className="rounded-full border border-slate-400/10 bg-slate-950/55 px-3 py-1 text-xs font-bold text-slate-300">
               {keyword}
             </span>
@@ -389,7 +677,7 @@ function GuideDetail({ guide }: { guide: Guide }) {
         </div>
 
         <div className="mt-10 space-y-8">
-          {guide.sections.map((section) => (
+          {localizedGuide.sections.map((section) => (
             <section key={section.title} className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
               <h2 className="text-2xl font-black text-white">{section.title}</h2>
               <div className="mt-4 space-y-4">
@@ -404,32 +692,33 @@ function GuideDetail({ guide }: { guide: Guide }) {
         </div>
 
         <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
-          <h2 className="text-2xl font-black text-white">Example prompt upgrade</h2>
+          <h2 className="text-2xl font-black text-white">{locale === "ar" ? "مثال على تحسين المطالبة" : "Example prompt upgrade"}</h2>
           <p className="mt-3 text-sm leading-7 text-slate-400">
-            Each upgrade shows the same pattern INSPIRE uses when turning a vague request into a
-            usable instruction: clarify the role, task, context, constraints, output format, and
-            quality rules.
+            {locale === "ar"
+              ? "كل مثال يوضح النمط نفسه الذي يستخدمه INSPIRE لتحويل الطلب العام إلى تعليمات قابلة للاستخدام: توضيح الدور، المهمة، السياق، القيود، شكل المخرجات، وقواعد الجودة."
+              : "Each upgrade shows the same pattern INSPIRE uses when turning a vague request into a usable instruction: clarify the role, task, context, constraints, output format, and quality rules."}
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-red-300/10 bg-red-500/[0.05] p-4">
-              <h3 className="text-sm font-black uppercase tracking-[0.16em] text-red-200">Weak prompt</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-300">{guide.example.weak}</p>
+              <h3 className="text-sm font-black uppercase tracking-[0.16em] text-red-200">{locale === "ar" ? "طلب عام" : "Weak prompt"}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{localizedGuide.example.weak}</p>
             </div>
             <div className="rounded-xl border border-emerald-300/10 bg-emerald-500/[0.06] p-4">
-              <h3 className="text-sm font-black uppercase tracking-[0.16em] text-emerald-200">Stronger prompt</h3>
-              <p className="mt-3 text-sm leading-7 text-slate-300">{guide.example.stronger}</p>
+              <h3 className="text-sm font-black uppercase tracking-[0.16em] text-emerald-200">{locale === "ar" ? "تعليمات أقوى" : "Stronger prompt"}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{localizedGuide.example.stronger}</p>
             </div>
           </div>
         </section>
 
         <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
-          <h2 className="text-2xl font-black text-white">Method and references</h2>
+          <h2 className="text-2xl font-black text-white">{locale === "ar" ? "المنهج والمراجع" : "Method and references"}</h2>
           <p className="mt-3 text-base leading-8 text-slate-300">
-            This guide combines INSPIRE's product method with the INSPIRE & CRAFTS research
-            background and official prompt-design guidance from AI platform providers.
+            {locale === "ar"
+              ? "يجمع هذا الدليل بين منهج INSPIRE، والخلفية البحثية لـ INSPIRE & CRAFTS، وإرشادات تصميم المطالبات من مزودي منصات الذكاء الاصطناعي."
+              : "This guide combines INSPIRE's product method with the INSPIRE & CRAFTS research background and official prompt-design guidance from AI platform providers."}
           </p>
           <div className="mt-5 grid gap-3">
-            {sourceLinks.map((source) => (
+            {links.map((source) => (
               <a
                 key={source.href}
                 href={source.href}
@@ -445,9 +734,9 @@ function GuideDetail({ guide }: { guide: Guide }) {
         </section>
 
         <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
-          <h2 className="text-2xl font-black text-white">FAQ</h2>
+          <h2 className="text-2xl font-black text-white">{locale === "ar" ? "أسئلة شائعة" : "FAQ"}</h2>
           <div className="mt-5 space-y-5">
-            {guide.faqs.map((faq) => (
+            {localizedGuide.faqs.map((faq) => (
               <div key={faq.question}>
                 <h3 className="text-lg font-black text-white">{faq.question}</h3>
                 <p className="mt-2 text-base leading-8 text-slate-300">{faq.answer}</p>
@@ -457,16 +746,18 @@ function GuideDetail({ guide }: { guide: Guide }) {
         </section>
 
         <section className="mt-10 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] p-6">
-          <h2 className="text-2xl font-black text-white">Turn this into your own AI instructions</h2>
+          <h2 className="text-2xl font-black text-white">{locale === "ar" ? "حوّل هذا إلى تعليماتك الخاصة" : "Turn this into your own AI instructions"}</h2>
           <p className="mt-3 text-base leading-8 text-slate-300">
-            INSPIRE converts your goals, work style, preferences, and red lines into a reusable AI operating profile.
+            {locale === "ar"
+              ? "INSPIRE يحوّل أهدافك وأسلوب عملك وتفضيلاتك وحدودك إلى ملف تشغيل قابل للاستخدام مع الذكاء الاصطناعي."
+              : "INSPIRE converts your goals, work style, preferences, and red lines into a reusable AI operating profile."}
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Link href="/assess/mini" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">
-              Try the free quick assessment
+              {locale === "ar" ? "جرّب التقييم السريع المجاني" : "Try the free quick assessment"}
             </Link>
             <Link href="/pricing" className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
-              View pricing
+              {locale === "ar" ? "عرض الأسعار" : "View pricing"}
               <CheckCircle2 className="h-4 w-4" />
             </Link>
           </div>

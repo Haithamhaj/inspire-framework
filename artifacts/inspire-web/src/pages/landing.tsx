@@ -551,7 +551,7 @@ export default function Landing() {
                 href="/guides"
                 className="mt-6 inline-flex items-center gap-2 rounded-xl border border-slate-400/15 bg-slate-900/70 px-5 py-3 text-sm font-black text-white transition-colors hover:border-rose-300/30"
               >
-                {locale === "ar" ? "اقرأ الأدلة" : "Read the guides"}
+                {locale === "ar" ? "للمزيد" : "Read the guides"}
                 <ForwardArrow className="h-4 w-4" />
               </Link>
             </div>

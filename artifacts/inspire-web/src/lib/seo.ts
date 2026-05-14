@@ -5,6 +5,7 @@ export type SeoConfig = {
   robots?: string;
   jsonLd?: Record<string, unknown>;
 };
+type Locale = "ar" | "en";
 
 const siteUrl = "https://inspire.next-stepai.com";
 const imageUrl = `${siteUrl}/opengraph.jpg`;
@@ -201,6 +202,39 @@ const guideSeo: Record<string, SeoConfig> = {
   },
 };
 
+const guideSeoAr: Record<string, SeoConfig> = {
+  "how-to-write-better-prompts": {
+    path: "/guides/how-to-write-better-prompts",
+    title: "كيف تكتب مطالبات أفضل للذكاء الاصطناعي — INSPIRE",
+    description:
+      "دليل عملي لكتابة مطالبات أوضح مع ChatGPT وClaude وGemini باستخدام الدور والسياق والقيود وشكل المخرجات.",
+  },
+  "chatgpt-custom-instructions": {
+    path: "/guides/chatgpt-custom-instructions",
+    title: "تعليمات ChatGPT المخصصة: ماذا تضع فيها — INSPIRE",
+    description:
+      "دليل عملي لبناء تعليمات ChatGPT تساعد أدوات الذكاء الاصطناعي على فهم أهدافك وأسلوبك وقواعد الجودة.",
+  },
+  "prompt-engineering-for-work": {
+    path: "/guides/prompt-engineering-for-work",
+    title: "هندسة المطالبات للعمل في السعودية والخليج — INSPIRE",
+    description:
+      "استخدم هندسة المطالبات في التخطيط والكتابة والتحليل والتواصل ثنائي اللغة داخل فرق العمل في السعودية والخليج.",
+  },
+  "ai-operating-profile": {
+    path: "/guides/ai-operating-profile",
+    title: "ما هو ملف تشغيل الذكاء الاصطناعي؟ — INSPIRE",
+    description:
+      "ملف تشغيل الذكاء الاصطناعي هو طبقة تعليمات قابلة لإعادة الاستخدام تساعد ChatGPT وClaude وGemini على العمل وفق أهدافك وأسلوبك.",
+  },
+  "arabic-ai-prompts": {
+    path: "/guides/arabic-ai-prompts",
+    title: "مطالبات عربية وتعليمات ثنائية اللغة للذكاء الاصطناعي — INSPIRE",
+    description:
+      "تعلم كيف تكتب مطالبات عربية أوضح وتعليمات ثنائية اللغة مع ChatGPT وClaude وGemini.",
+  },
+};
+
 export const defaultSeo: SeoConfig = {
   path: "/",
   title: "INSPIRE Framework — AI Operating Profile & Prompt Instructions",
@@ -208,7 +242,7 @@ export const defaultSeo: SeoConfig = {
     "Build a personal AI operating profile for ChatGPT, Claude, and Gemini. INSPIRE turns your working style into copy-ready AI instructions, starter prompts, and a digital report.",
 };
 
-export function getSeoForPath(pathname: string): SeoConfig {
+export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfig {
   if (pathname === "/pricing") {
     return {
       path: "/pricing",
@@ -315,6 +349,19 @@ export function getSeoForPath(pathname: string): SeoConfig {
   }
 
   if (pathname === "/guides") {
+    if (locale === "ar") {
+      return {
+        path: "/guides",
+        title: "أدلة عملية لكتابة تعليمات أفضل للذكاء الاصطناعي — INSPIRE",
+        description:
+          "أدلة عملية عن كتابة مطالبات أفضل، تعليمات ChatGPT، هندسة المطالبات، المطالبات العربية، وملفات تشغيل الذكاء الاصطناعي.",
+        jsonLd: breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Guides", path: "/guides" },
+        ]),
+      };
+    }
+
     return {
       path: "/guides",
       title: "AI Prompt Guides for Work — INSPIRE Framework",
@@ -329,6 +376,14 @@ export function getSeoForPath(pathname: string): SeoConfig {
 
   if (pathname.startsWith("/guides/")) {
     const slug = pathname.replace("/guides/", "");
+    if (locale === "ar" && guideSeoAr[slug]) {
+      return {
+        ...guideSeo[slug],
+        ...guideSeoAr[slug],
+        jsonLd: guideSeo[slug]?.jsonLd,
+      };
+    }
+
     return guideSeo[slug] ?? {
       path: "/guides",
       title: "AI Prompt Guides — INSPIRE Framework",

@@ -8,6 +8,7 @@ import { I18nProvider } from "@/i18n";
 import { Navbar } from "@/components/layout/Navbar";
 import { LegalFooter } from "@/components/layout/LegalFooter";
 import { applySeo, getSeoForPath } from "@/lib/seo";
+import { useI18n } from "@/i18n";
 
 // Pages
 import Landing from "@/pages/landing";
@@ -36,9 +37,10 @@ const queryClient = new QueryClient();
 
 function Router() {
   const [location] = useLocation();
+  const { locale } = useI18n();
   useEffect(() => {
-    applySeo(getSeoForPath(location));
-  }, [location]);
+    applySeo(getSeoForPath(location, locale));
+  }, [location, locale]);
 
   const premiumNavPaths = new Set([
     "/",
