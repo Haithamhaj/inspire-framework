@@ -1,5 +1,5 @@
 import { Link, useRoute } from "wouter";
-import { ArrowRight, BookOpen, CheckCircle2, FileText, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, ExternalLink, FileText, Sparkles } from "lucide-react";
 
 type Guide = {
   slug: string;
@@ -19,6 +19,25 @@ type Guide = {
     answer: string;
   }>;
 };
+
+const sourceLinks = [
+  {
+    label: "INSPIRE & CRAFTS research paper",
+    href: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5358595",
+  },
+  {
+    label: "OpenAI prompt engineering guide",
+    href: "https://platform.openai.com/docs/guides/prompt-engineering/strategy",
+  },
+  {
+    label: "Anthropic Claude prompt engineering docs",
+    href: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering",
+  },
+  {
+    label: "Google Vertex AI prompt design strategies",
+    href: "https://cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/prompt-design-strategies",
+  },
+];
 
 const guides: Guide[] = [
   {
@@ -386,6 +405,11 @@ function GuideDetail({ guide }: { guide: Guide }) {
 
         <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
           <h2 className="text-2xl font-black text-white">Example prompt upgrade</h2>
+          <p className="mt-3 text-sm leading-7 text-slate-400">
+            These examples are original INSPIRE examples, not copied from OpenAI, Anthropic, Google,
+            or the SSRN paper. They apply INSPIRE's product logic and common prompt-engineering
+            principles: clear role, task, context, constraints, output format, and quality rules.
+          </p>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-red-300/10 bg-red-500/[0.05] p-4">
               <h3 className="text-sm font-black uppercase tracking-[0.16em] text-red-200">Weak prompt</h3>
@@ -395,6 +419,30 @@ function GuideDetail({ guide }: { guide: Guide }) {
               <h3 className="text-sm font-black uppercase tracking-[0.16em] text-emerald-200">Stronger prompt</h3>
               <p className="mt-3 text-sm leading-7 text-slate-300">{guide.example.stronger}</p>
             </div>
+          </div>
+        </section>
+
+        <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
+          <h2 className="text-2xl font-black text-white">Sources and method</h2>
+          <p className="mt-3 text-base leading-8 text-slate-300">
+            Guide explanations are based on INSPIRE's own product method, the INSPIRE & CRAFTS
+            research background, and official prompt-design guidance from AI platform providers.
+            The examples are adapted for INSPIRE users and should be treated as practical
+            illustrations, not quoted source material.
+          </p>
+          <div className="mt-5 grid gap-3">
+            {sourceLinks.map((source) => (
+              <a
+                key={source.href}
+                href={source.href}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-black text-rose-200 hover:text-rose-100"
+              >
+                {source.label}
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            ))}
           </div>
         </section>
 

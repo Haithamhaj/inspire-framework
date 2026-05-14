@@ -132,6 +132,7 @@ Create a small, high-quality content hub after Lemon review:
 - Move the marketing pages to SSR/SSG or prerendered HTML when leaving temporary Replit hosting.
 - Expand the guide pages from short foundational articles into long-form, example-rich pages after Lemon review.
 - Added FAQ and article structured data to guide pages after expanding the content.
+- Label original examples clearly and show source/method links anywhere examples or educational claims could be confused with quoted external material.
 - Add Arabic/English localized URLs with `hreflang` when the language strategy is stable.
 - Remove Replit production badge/script if the hosting setup allows it.
 - Submit sitemap in Google Search Console after production review path is stable.
