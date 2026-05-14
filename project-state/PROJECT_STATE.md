@@ -57,6 +57,8 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Replit was updated to commit `920e831`, and production `/pricing` was verified on May 14, 2026: it no longer renders 404 and includes the $0 quick assessment, $10 full report, digital delivery, Lemon Squeezy processor, no-subscription, and legal-link copy.
 - SEO audit found missing real `robots.txt`/`sitemap.xml`, thin static metadata, missing canonical/social tags, and no structured data. Technical SEO improvements have been added in code, with keyword and content strategy captured in `project-state/SEO_STRATEGY.md`.
 - SEO topical authority work has started with a `/guides` hub and five initial guide pages targeting prompt writing, ChatGPT custom instructions, prompt engineering for work, AI operating profiles, and Arabic/bilingual AI prompts.
+- SEO execution is now tracked in `project-state/SEO_EXECUTION_PLAN.md`.
+- The first SEO trust/entity page set has been added locally: `/about`, `/research`, and `/contact`, with footer links, route metadata, sitemap coverage, `llms.txt` coverage, and route-level structured data.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -80,7 +82,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Update the Replit workspace from GitHub, then run final QA across logout, desktop/mobile, payment-disabled messaging, legal pages, password reset, and a fresh share-enabled result path before preparing the Lemon Squeezy review video.
+Push the first SEO trust/entity page set, update the Replit workspace from GitHub, then verify `/about`, `/research`, `/contact`, sitemap, and `llms.txt` in production before expanding the guide pages.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
@@ -93,3 +95,4 @@ Update the Replit workspace from GitHub, then run final QA across logout, deskto
 - Supabase/deployment notes: `project-state/SUPABASE_DEPLOYMENT_NOTES.md`
 - Replit deployment plan: `project-state/REPLIT_SUPABASE_DEPLOYMENT.md`
 - SEO strategy: `project-state/SEO_STRATEGY.md`
+- SEO execution plan: `project-state/SEO_EXECUTION_PLAN.md`

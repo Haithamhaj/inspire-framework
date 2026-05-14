@@ -191,6 +191,14 @@ Tasks:
   - route-aware titles/descriptions
   - SEO strategy and keyword clusters for Saudi/GCC positioning
   - initial `/guides` content hub for prompt engineering, ChatGPT instructions, AI operating profile, workplace AI, and Arabic AI prompts
+- [x] Add first SEO trust/entity pages:
+  - `/about`
+  - `/research`
+  - `/contact`
+  - footer links, sitemap entries, `llms.txt` entries, route metadata, and route structured data
+- [x] Add `project-state/SEO_EXECUTION_PLAN.md` to track SEO source strategy, phases, and remaining tasks.
+- [ ] Expand guide pages with deeper examples, FAQ sections, and article/FAQ structured data.
+- [ ] Add Arabic/GCC-focused content after the English trust/entity foundation is stable.
 - [ ] Prepare a review/demo flow:
   - landing page
   - start assessment

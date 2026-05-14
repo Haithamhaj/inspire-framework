@@ -18,6 +18,9 @@ import Login from "@/pages/login";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import Pricing from "@/pages/pricing";
+import About from "@/pages/about";
+import Contact from "@/pages/contact";
+import Research from "@/pages/research";
 import Guides from "@/pages/guides";
 import Assess from "@/pages/assess";
 import AssessMini from "@/pages/assess-mini";
@@ -48,6 +51,9 @@ function Router() {
     "/forgot-password",
     "/reset-password",
     "/pricing",
+    "/about",
+    "/contact",
+    "/research",
     "/guides",
     "/assess",
     "/assess/mini",
@@ -70,6 +76,9 @@ function Router() {
           <Route path="/forgot-password" component={ForgotPassword} />
           <Route path="/reset-password" component={ResetPassword} />
           <Route path="/pricing" component={Pricing} />
+          <Route path="/about" component={About} />
+          <Route path="/contact" component={Contact} />
+          <Route path="/research" component={Research} />
           <Route path="/guides" component={Guides} />
           <Route path="/guides/:slug" component={Guides} />
           <Route path="/assess" component={Assess} />

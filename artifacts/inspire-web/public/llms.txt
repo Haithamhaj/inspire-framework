@@ -5,6 +5,9 @@ INSPIRE Framework is a self-serve digital assessment for building a personal AI 
 Core pages:
 - Product: https://inspire.next-stepai.com/
 - Pricing: https://inspire.next-stepai.com/pricing
+- About: https://inspire.next-stepai.com/about
+- Research background: https://inspire.next-stepai.com/research
+- Contact: https://inspire.next-stepai.com/contact
 - Guides: https://inspire.next-stepai.com/guides
 - How to write better prompts: https://inspire.next-stepai.com/guides/how-to-write-better-prompts
 - ChatGPT custom instructions: https://inspire.next-stepai.com/guides/chatgpt-custom-instructions
@@ -20,6 +23,7 @@ What INSPIRE does:
 - Turns a user's working style and project context into copy-ready AI instructions.
 - Helps users work better with ChatGPT, Claude, Gemini, and other AI assistants.
 - Provides a digital report, starter prompts, and a shareable result.
+- Connects product positioning to the INSPIRE & CRAFTS research background: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5358595
 
 Important policy notes:
 - INSPIRE is a digital product. No physical goods are shipped.

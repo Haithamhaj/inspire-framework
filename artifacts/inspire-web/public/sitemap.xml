@@ -13,6 +13,24 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://inspire.next-stepai.com/about</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/research</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/contact</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://inspire.next-stepai.com/assess/mini</loc>
     <lastmod>2026-05-14</lastmod>
     <changefreq>monthly</changefreq>
