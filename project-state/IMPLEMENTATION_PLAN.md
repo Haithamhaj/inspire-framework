@@ -99,6 +99,7 @@ Tasks:
   - model/provider details
   - failure details when generation fails
 - [x] Verify generation-run evidence is created during manual admin generation on Supabase.
+- [x] Update default OpenAI generation model to `gpt-5.5`.
 - [ ] Make retry/failure states easier to inspect beyond the first admin detail panel.
 
 Expected result:
@@ -177,6 +178,7 @@ Tasks:
 - [x] Confirm `/terms`, `/privacy`, and `/refund-policy`.
 - [x] Confirm footer legal links.
 - [x] Remove or hide broken PayPal checkout from the customer review path.
+- [x] Clarify that the free offer is the quick assessment, not the full report.
 - [ ] Make product, price, delivery, and digital nature clear across the full review path.
 - [ ] Prepare a review/demo flow:
   - landing page
@@ -301,6 +303,8 @@ Tasks:
 - [x] Add a user-facing way to resume payment for saved `pending_payment` assessments from "My reports".
 - [x] Expand admin discount-code creation with optional user email, usage limit, start date, and expiration date.
 - [x] Capture report feedback context, including whether the user copied the final AI instructions before rating.
+- [x] Smoke-test the free quick assessment path on production.
+- [x] Add backend validation that the free quick assessment receives exactly the intended five scenario answers.
 - [ ] Test mobile and desktop.
 - [ ] Review copy.
 - [ ] Record Lemon Squeezy video.
