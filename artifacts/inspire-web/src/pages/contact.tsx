@@ -1,16 +1,22 @@
 import { Link } from "wouter";
-import { ArrowRight, Mail, MessageSquare, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Linkedin, Mail, MessageSquare, ShieldCheck, Sparkles } from "lucide-react";
 import { useI18n } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
+
+const supportEmail = "Haitham.haj@gmail.com";
+const linkedInUrl = "https://www.linkedin.com/in/haithamh";
 
 export default function Contact() {
   const { locale, dir } = useI18n();
   const isAr = locale === "ar";
+  const href = (path: string) => localizePath(path, locale);
   const copy = isAr
     ? {
         eyebrow: "تواصل معنا",
         title: "تواصل مع INSPIRE Framework",
         intro: "للاستفسارات عن المنتج، الدعم، أو مراجعة الطلبات، يمكنك التواصل مع فريق INSPIRE عبر البريد الإلكتروني.",
         support: "بريد الدعم",
+        linkedIn: "حساب LinkedIn",
         supportHint: "اكتب البريد المستخدم في التقييم إذا كان سؤالك متعلقاً بتقرير أو حساب.",
         notes: [
           "INSPIRE منتج رقمي ذاتي يقدم تقييمات وتقارير عبر الموقع.",
@@ -28,6 +34,7 @@ export default function Contact() {
         title: "Contact INSPIRE Framework",
         intro: "For product questions, support, billing questions, or review inquiries, contact the INSPIRE team by email.",
         support: "Support email",
+        linkedIn: "LinkedIn profile",
         supportHint: "Include the email used for your assessment if your question is about a report or account.",
         notes: [
           "INSPIRE is a self-serve digital product for online assessments and reports.",
@@ -57,18 +64,34 @@ export default function Contact() {
           </p>
         </header>
 
-        <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
-          <Mail className="mb-4 h-6 w-6 text-rose-200" />
-          <h2 className="text-2xl font-black text-white">{copy.support}</h2>
-          <a
-            href="mailto:Haitham.haj@gmail.com"
-            className="mt-3 inline-flex text-lg font-black text-rose-200 hover:text-rose-100"
-          >
-            Haitham.haj@gmail.com
-          </a>
-          <p className="mt-4 text-base leading-8 text-slate-300">
-            {copy.supportHint}
-          </p>
+        <section className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
+            <Mail className="mb-4 h-6 w-6 text-rose-200" />
+            <h2 className="text-2xl font-black text-white">{copy.support}</h2>
+            <a
+              href={`mailto:${supportEmail}`}
+              className="mt-3 inline-flex text-lg font-black text-rose-200 hover:text-rose-100"
+            >
+              {supportEmail}
+            </a>
+            <p className="mt-4 text-base leading-8 text-slate-300">
+              {copy.supportHint}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
+            <Linkedin className="mb-4 h-6 w-6 text-rose-200" />
+            <h2 className="text-2xl font-black text-white">{copy.linkedIn}</h2>
+            <a
+              href={linkedInUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex text-lg font-black text-rose-200 hover:text-rose-100"
+              dir="ltr"
+            >
+              linkedin.com/in/haithamh
+            </a>
+          </div>
         </section>
 
         <section className="mt-6 grid gap-5 md:grid-cols-3">
@@ -87,10 +110,10 @@ export default function Contact() {
             {copy.beforeBody}
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Link href="/assess/mini" className="inline-flex items-center justify-center rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
+            <Link href={href("/assess/mini")} className="inline-flex items-center justify-center rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
               {copy.quick}
             </Link>
-            <Link href="/pricing" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">
+            <Link href={href("/pricing")} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">
               {copy.pricing}
               <ArrowRight className="h-4 w-4" />
             </Link>

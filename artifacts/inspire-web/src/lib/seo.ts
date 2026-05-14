@@ -1,3 +1,5 @@
+import { localizePath, stripLocalePrefix } from "@/lib/locale-paths";
+
 export type SeoConfig = {
   title: string;
   description: string;
@@ -243,6 +245,8 @@ export const defaultSeo: SeoConfig = {
 };
 
 export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfig {
+  pathname = stripLocalePrefix(pathname).split("?")[0] || "/";
+
   if (pathname === "/pricing") {
     if (locale === "ar") {
       return {
@@ -583,6 +587,27 @@ function setCanonical(url: string) {
   link.href = url;
 }
 
+function setAlternateLinks(path: string) {
+  document.head.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][data-locale-link="true"]').forEach((link) => {
+    link.remove();
+  });
+
+  const alternatives = [
+    { hreflang: "en", path: localizePath(path, "en") },
+    { hreflang: "ar", path: localizePath(path, "ar") },
+    { hreflang: "x-default", path: localizePath(path, "en") },
+  ];
+
+  for (const item of alternatives) {
+    const link = document.createElement("link");
+    link.rel = "alternate";
+    link.hreflang = item.hreflang;
+    link.href = `${siteUrl}${item.path}`;
+    link.dataset.localeLink = "true";
+    document.head.appendChild(link);
+  }
+}
+
 function setJsonLd(data?: Record<string, unknown>) {
   const id = "route-json-ld";
   let script = document.head.querySelector<HTMLScriptElement>(`script[data-seo="${id}"]`);
@@ -603,11 +628,14 @@ function setJsonLd(data?: Record<string, unknown>) {
 }
 
 export function applySeo(config: SeoConfig) {
-  const canonicalUrl = `${siteUrl}${config.path === "/" ? "/" : config.path}`;
+  const activeLocale = document.documentElement.lang === "ar" ? "ar" : "en";
+  const canonicalPath = localizePath(config.path, activeLocale);
+  const canonicalUrl = `${siteUrl}${canonicalPath}`;
   document.title = config.title;
   setMeta("name", "description", config.description);
   setMeta("name", "robots", config.robots ?? "index, follow");
   setCanonical(canonicalUrl);
+  setAlternateLinks(config.path);
 
   setMeta("property", "og:title", config.title);
   setMeta("property", "og:description", config.description);

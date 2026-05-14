@@ -1,6 +1,7 @@
 import { Link, useRoute } from "wouter";
 import { ArrowRight, BookOpen, CheckCircle2, ExternalLink, FileText, Sparkles } from "lucide-react";
 import { useI18n, type Locale } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
 
 type Guide = {
   slug: string;
@@ -601,7 +602,7 @@ export function getGuideBySlug(slug: string) {
 function GuideCard({ guide, locale }: { guide: Guide; locale: Locale }) {
   return (
     <Link
-      href={`/guides/${guide.slug}`}
+      href={localizePath(`/guides/${guide.slug}`, locale)}
       className="group rounded-2xl border border-slate-400/10 bg-slate-950/50 p-5 transition-colors hover:border-rose-300/30 hover:bg-slate-900/65"
     >
       <BookOpen className="mb-4 h-5 w-5 text-rose-200" />
@@ -651,11 +652,12 @@ function GuideDetail({ guide }: { guide: Guide }) {
   const { locale, dir } = useI18n();
   const localizedGuide = getLocalizedGuide(guide, locale);
   const links = locale === "ar" ? sourceLinksAr : sourceLinks;
+  const href = (path: string) => localizePath(path, locale);
 
   return (
     <article className="min-h-screen bg-[#070817] px-4 py-14 text-slate-100 sm:px-6 lg:px-8" dir={dir}>
       <div className="mx-auto max-w-3xl">
-        <Link href="/guides" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-rose-200">
+        <Link href={href("/guides")} className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-rose-200">
           <ArrowRight className="h-4 w-4 rotate-180" />
           {locale === "ar" ? "كل الأدلة" : "All guides"}
         </Link>
@@ -776,10 +778,10 @@ function GuideDetail({ guide }: { guide: Guide }) {
               : "INSPIRE converts your goals, work style, preferences, and red lines into a reusable AI operating profile."}
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Link href="/assess/mini" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">
+            <Link href={href("/assess/mini")} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">
               {locale === "ar" ? "جرّب التقييم السريع المجاني" : "Try the free quick assessment"}
             </Link>
-            <Link href="/pricing" className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
+            <Link href={href("/pricing")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
               {locale === "ar" ? "عرض الأسعار" : "View pricing"}
               <CheckCircle2 className="h-4 w-4" />
             </Link>
@@ -792,7 +794,8 @@ function GuideDetail({ guide }: { guide: Guide }) {
 
 export default function Guides() {
   const [, params] = useRoute("/guides/:slug");
-  const slug = params?.slug;
+  const [, arParams] = useRoute("/ar/guides/:slug");
+  const slug = params?.slug ?? arParams?.slug;
   if (!slug) return <GuidesIndex />;
 
   const guide = getGuideBySlug(slug);

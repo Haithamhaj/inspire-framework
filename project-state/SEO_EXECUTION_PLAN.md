@@ -61,8 +61,9 @@ Expected result:
 
 Tasks:
 - [ ] Add Arabic-first content targeting Saudi/GCC users.
-- [ ] Decide whether Arabic pages should be separate localized URLs or bilingual pages.
-- [ ] Add `hreflang` only after the language URL strategy is stable.
+- [x] Decide whether Arabic pages should be separate localized URLs or bilingual pages.
+- [x] Add `/ar/...` Arabic URL structure for public pages while keeping `?lang=ar` as a compatibility fallback.
+- [x] Add `hreflang` alternates after stabilizing the language URL strategy.
 - [ ] Add examples for Arabic, English, and bilingual workflows.
 
 Expected result:
@@ -74,7 +75,7 @@ Tasks:
 - [ ] Use Google Trends for Saudi Arabia/GCC keyword comparisons.
 - [ ] Use Google Keyword Planner if Ads access is available.
 - [ ] Connect Google Search Console and Bing Webmaster Tools.
-- [ ] Submit sitemap after production content is stable.
+- [ ] Submit the multilingual sitemap after production content is stable.
 - [ ] Review impressions/queries after indexing and refine content around actual search data.
 
 Expected result:

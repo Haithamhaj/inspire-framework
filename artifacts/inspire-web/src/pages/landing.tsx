@@ -8,6 +8,7 @@ import { InspireExplainerSection } from "@/components/inspire-explainer/InspireE
 import { useI18n } from "@/i18n";
 import { ar } from "@/i18n/locales/ar";
 import { en } from "@/i18n/locales/en";
+import { localizePath } from "@/lib/locale-paths";
 
 // ─── INSPIRE AXES (visual config; copy comes from i18n) ───────────────
 const AXES = [
@@ -58,6 +59,7 @@ export default function Landing() {
   const copy = (locale === "ar" ? ar : en).landing;
   const isRtl = dir === "rtl";
   const ForwardArrow = isRtl ? ArrowLeft : ArrowRight;
+  const href = (path: string) => localizePath(path, locale);
 
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
@@ -76,7 +78,7 @@ export default function Landing() {
       <div className="relative z-10">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <LandingHero primaryHref="/privacy-consent" secondaryAnchorId="how-it-works" />
+      <LandingHero primaryHref={href("/privacy-consent")} secondaryAnchorId="how-it-works" />
 
       {/* ─── EXPLAINER DEMO ───────────────────────────────── */}
       <section className="py-20 px-6 bg-transparent">
@@ -258,7 +260,7 @@ export default function Landing() {
               <p className="font-bold text-slate-50 mb-2">{copy.axes.ctaTitle}</p>
               <p className="text-[13.5px] text-slate-400 mb-5 leading-relaxed">{copy.axes.ctaSubtitle}</p>
               <Link
-                href="/privacy-consent"
+                href={href("/privacy-consent")}
                 className="px-5 py-2.5 bg-accent text-white rounded-xl text-[15px] font-bold hover:bg-accent/90 transition-colors shadow-lg shadow-accent/20"
               >
                 {copy.axes.ctaButton}
@@ -426,7 +428,7 @@ export default function Landing() {
                 ))}
               </ul>
               <Link
-                href="/assess/mini"
+                href={href("/assess/mini")}
                 className="flex items-center justify-center gap-2 border-2 border-slate-400/15 text-slate-100 px-6 py-3 rounded-xl font-semibold hover:border-accent/40 hover:text-accent transition-all"
               >
                 <Zap className="h-4 w-4" />
@@ -467,7 +469,7 @@ export default function Landing() {
                 ))}
               </ul>
               <Link
-                href="/privacy-consent"
+                href={href("/privacy-consent")}
                 className="flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 text-white font-bold px-6 py-4 rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-accent/30 text-base"
               >
                 {copy.pricing.paid.cta}
@@ -548,7 +550,7 @@ export default function Landing() {
                   : "Before taking the assessment, explore focused guides on prompt engineering, ChatGPT custom instructions, and AI productivity for Saudi Arabia and GCC work contexts."}
               </p>
               <Link
-                href="/guides"
+                href={href("/guides")}
                 className="mt-6 inline-flex items-center gap-2 rounded-xl border border-slate-400/15 bg-slate-900/70 px-5 py-3 text-sm font-black text-white transition-colors hover:border-rose-300/30"
               >
                 {locale === "ar" ? "للمزيد" : "Read the guides"}
@@ -592,7 +594,7 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href="/privacy-consent"
+                href={href("/privacy-consent")}
                 className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl shadow-accent/30 transition-all hover:-translate-y-1 w-full sm:w-auto justify-center"
               >
                 {copy.finalCta.primary}

@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ArrowRight, ExternalLink, FileText, Layers, Sparkles } from "lucide-react";
 import { useI18n } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
 
 const researchPoints = [
   "INSPIRE focuses on defining the user's AI interaction preferences and operating style.",
@@ -11,6 +12,7 @@ const researchPoints = [
 export default function Research() {
   const { locale, dir } = useI18n();
   const isAr = locale === "ar";
+  const href = (path: string) => localizePath(path, locale);
   const copy = isAr
     ? {
         eyebrow: "الأساس البحثي",
@@ -116,10 +118,10 @@ export default function Research() {
             {copy.ctaBody}
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <Link href="/about" className="inline-flex items-center justify-center rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
+            <Link href={href("/about")} className="inline-flex items-center justify-center rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
               {copy.about}
             </Link>
-            <Link href="/guides" className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">
+            <Link href={href("/guides")} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">
               {copy.guides}
               <ArrowRight className="h-4 w-4" />
             </Link>

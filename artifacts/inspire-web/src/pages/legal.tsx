@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ArrowLeft, FileText } from "lucide-react";
 import { useI18n } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
 
 type LegalSection = {
   title: string;
@@ -391,7 +392,7 @@ function LegalPage({ content }: { content: LegalPageContent }) {
     <div className="min-h-screen bg-[#070817] px-4 py-12 text-slate-100 sm:px-6 lg:px-8" dir={dir}>
       <div className="mx-auto max-w-3xl">
         <Link
-          href="/"
+          href={localizePath("/", locale)}
           className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-400 transition-colors hover:text-rose-200"
         >
           <ArrowLeft className={`h-4 w-4 ${isAr ? "rotate-180" : ""}`} />

@@ -10,6 +10,7 @@ import {
 } from "react";
 import { ar, type Dictionary } from "./locales/ar";
 import { en } from "./locales/en";
+import { getPathLocale } from "@/lib/locale-paths";
 
 export type Locale = "ar" | "en";
 export type Direction = "rtl" | "ltr";
@@ -17,7 +18,7 @@ export type Direction = "rtl" | "ltr";
 const DICTIONARIES: Record<Locale, Dictionary> = { ar, en };
 const LOCALE_DIR: Record<Locale, Direction> = { ar: "rtl", en: "ltr" };
 const STORAGE_KEY = "inspire.locale";
-const DEFAULT_LOCALE: Locale = "ar";
+const DEFAULT_LOCALE: Locale = "en";
 
 // ─── Type-level path helper ──────────────────────────────────────────────────
 // Builds dotted-path leaf keys from a nested object type.
@@ -35,6 +36,9 @@ export type TKey = Path<Dictionary>;
 // ─── Locale detection ────────────────────────────────────────────────────────
 function readUrlLocale(): Locale | null {
   if (typeof window === "undefined") return null;
+  const pathLocale = getPathLocale(window.location.pathname);
+  if (pathLocale) return pathLocale;
+
   const v = new URLSearchParams(window.location.search).get("lang");
   return v === "ar" || v === "en" ? v : null;
 }

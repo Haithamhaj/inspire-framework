@@ -126,6 +126,8 @@ Create a small, high-quality content hub after Lemon review:
   - `/research`
   - `/contact`
 - Added route metadata, sitemap entries, `llms.txt` entries, footer links, and route-level structured data for the trust/entity pages.
+- Added Arabic `/ar/...` URL coverage for public pages with localized internal links, canonical URLs, `hreflang` alternates, and multilingual sitemap entries.
+- Added LinkedIn as an entity/contact signal alongside the support email.
 
 ## Remaining SEO Improvements
 
@@ -137,7 +139,7 @@ Create a small, high-quality content hub after Lemon review:
 - Use Smart Prompt Coach as a secondary application CTA inside guide pages, while keeping INSPIRE assessment as the primary conversion path.
 - Refine trust and pricing pages with positive, confident Arabic/English copy and localized client-side metadata.
 - Localize legal pages with professional Arabic copy and localized client-side metadata.
-- Add Arabic/English localized URLs with `hreflang` when the language strategy is stable.
+- Connect Google Search Console and Bing Webmaster Tools after production is updated.
 - Remove Replit production badge/script if the hosting setup allows it.
-- Submit sitemap in Google Search Console after production review path is stable.
+- Submit the multilingual sitemap in Google Search Console after production review path is stable.
 - Monitor Search Console queries after indexing, then refine content around real impressions.

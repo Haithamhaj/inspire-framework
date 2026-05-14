@@ -1,8 +1,9 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowRight, Globe2, LogOut, User, ClipboardList, Sparkles } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { localizePath, stripLangParam } from "@/lib/locale-paths";
 
 type NavbarProps = {
   variant?: "default" | "premium";
@@ -11,8 +12,16 @@ type NavbarProps = {
 export function Navbar({ variant = "default" }: NavbarProps) {
   const { user, logout, isLoading } = useAuth();
   const { t, locale, setLocale, dir } = useI18n();
+  const [location, navigate] = useLocation();
   const isPremium = variant === "premium";
   const isRtl = dir === "rtl";
+  const href = (path: string) => localizePath(path, locale);
+
+  function switchLanguage() {
+    const nextLocale = locale === "ar" ? "en" : "ar";
+    setLocale(nextLocale);
+    navigate(localizePath(stripLangParam(location), nextLocale));
+  }
 
   return (
     <nav
@@ -24,7 +33,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
       )}
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex items-center gap-3 transition-opacity hover:opacity-90">
+        <Link href={href("/")} className="group flex items-center gap-3 transition-opacity hover:opacity-90">
           <span className="relative flex h-8 w-8 items-center justify-center rounded-xl border border-rose-300/20 bg-rose-500/[0.08] shadow-lg shadow-rose-950/20 sm:h-9 sm:w-9">
             <Sparkles className="h-[17px] w-[17px] text-rose-200" />
           </span>
@@ -45,7 +54,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <button
-            onClick={() => setLocale(locale === "ar" ? "en" : "ar")}
+            onClick={switchLanguage}
             className={cn(
               "inline-flex h-8 items-center gap-1.5 rounded-xl border px-2.5 text-xs font-black transition-all sm:h-9 sm:gap-2 sm:px-3",
               isPremium
@@ -63,7 +72,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
             user ? (
               <div className="flex items-center gap-2 sm:gap-3">
                 <Link
-                  href="/my-assessments"
+                  href={href("/my-assessments")}
                   className={cn(
                     "hidden h-9 items-center gap-2 rounded-2xl border px-3 text-sm font-bold transition-colors sm:flex",
                     isPremium
@@ -76,7 +85,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
                 </Link>
 
                 <Link
-                  href="/profile"
+                  href={href("/profile")}
                   className={cn(
                     "hidden h-9 max-w-[11rem] items-center gap-2 rounded-2xl border px-3 transition-colors sm:flex",
                     isPremium
@@ -113,7 +122,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
             ) : (
               <div className="flex items-center gap-2 sm:gap-3">
                 <Link
-                  href="/login"
+                  href={href("/login")}
                   className={cn(
                     "hidden h-9 items-center rounded-2xl px-3 text-sm font-bold transition-colors sm:inline-flex",
                     isPremium
@@ -124,7 +133,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
                   {t("common.nav.login")}
                 </Link>
                 <Link
-                  href="/privacy-consent"
+                  href={href("/privacy-consent")}
                   className={cn(
                     "inline-flex h-8 items-center gap-1.5 rounded-xl px-3 text-sm font-black transition-all hover:-translate-y-0.5 active:translate-y-0 sm:h-9 sm:gap-2 sm:px-4",
                     isPremium

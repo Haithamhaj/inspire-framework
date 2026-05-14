@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ArrowRight, Check, CreditCard, FileText, ShieldCheck, Sparkles } from "lucide-react";
 import { useI18n } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
 
 const pricingPlans = [
   {
@@ -35,6 +36,7 @@ const pricingPlans = [
 export default function Pricing() {
   const { locale, dir } = useI18n();
   const isAr = locale === "ar";
+  const href = (path: string) => localizePath(path, locale);
   const plans = isAr
     ? [
         {
@@ -162,7 +164,7 @@ export default function Pricing() {
               </ul>
 
               <Link
-                href={plan.href}
+                href={href(plan.href)}
                 className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-black transition-colors ${
                   plan.highlighted
                     ? "bg-rose-500 text-white hover:bg-rose-400"
@@ -195,9 +197,9 @@ export default function Pricing() {
         </section>
 
         <div className="mt-8 flex flex-wrap gap-4 text-sm font-bold text-slate-400">
-          <Link href="/terms" className="transition-colors hover:text-rose-200">{copy.terms}</Link>
-          <Link href="/privacy" className="transition-colors hover:text-rose-200">{copy.privacy}</Link>
-          <Link href="/refund-policy" className="transition-colors hover:text-rose-200">{copy.refund}</Link>
+          <Link href={href("/terms")} className="transition-colors hover:text-rose-200">{copy.terms}</Link>
+          <Link href={href("/privacy")} className="transition-colors hover:text-rose-200">{copy.privacy}</Link>
+          <Link href={href("/refund-policy")} className="transition-colors hover:text-rose-200">{copy.refund}</Link>
         </div>
       </div>
     </div>

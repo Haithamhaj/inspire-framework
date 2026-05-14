@@ -4,11 +4,16 @@ INSPIRE Framework is a self-serve digital assessment for building a personal AI 
 
 Core pages:
 - Product: https://inspire.next-stepai.com/
+- Arabic product: https://inspire.next-stepai.com/ar
 - Pricing: https://inspire.next-stepai.com/pricing
+- Arabic pricing: https://inspire.next-stepai.com/ar/pricing
 - About: https://inspire.next-stepai.com/about
+- Arabic about: https://inspire.next-stepai.com/ar/about
 - Research background: https://inspire.next-stepai.com/research
 - Contact: https://inspire.next-stepai.com/contact
+- Arabic contact: https://inspire.next-stepai.com/ar/contact
 - Guides: https://inspire.next-stepai.com/guides
+- Arabic guides: https://inspire.next-stepai.com/ar/guides
 - How to write better prompts: https://inspire.next-stepai.com/guides/how-to-write-better-prompts
 - ChatGPT custom instructions: https://inspire.next-stepai.com/guides/chatgpt-custom-instructions
 - Prompt engineering for work: https://inspire.next-stepai.com/guides/prompt-engineering-for-work
@@ -16,8 +21,11 @@ Core pages:
 - Arabic AI prompts: https://inspire.next-stepai.com/guides/arabic-ai-prompts
 - Free quick assessment: https://inspire.next-stepai.com/assess/mini
 - Terms: https://inspire.next-stepai.com/terms
+- Arabic terms: https://inspire.next-stepai.com/ar/terms
 - Privacy: https://inspire.next-stepai.com/privacy
+- Arabic privacy: https://inspire.next-stepai.com/ar/privacy
 - Refund policy: https://inspire.next-stepai.com/refund-policy
+- Arabic refund policy: https://inspire.next-stepai.com/ar/refund-policy
 
 What INSPIRE does:
 - Turns a user's working style and project context into copy-ready AI instructions.

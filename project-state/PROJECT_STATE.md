@@ -66,6 +66,8 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - `/about`, `/research`, `/contact`, and `/pricing` now use more positive, confident Arabic/English copy and Arabic client-side SEO metadata when Arabic is active.
 - Footer navigation labels now switch to Arabic when Arabic is active.
 - `/terms`, `/privacy`, and `/refund-policy` now switch to Arabic professional legal copy and Arabic client-side SEO metadata when Arabic is active.
+- Public Arabic pages now have `/ar/...` URLs, localized internal links, canonical URLs, `hreflang` alternates, and multilingual sitemap coverage. The old `?lang=ar` path still works as a compatibility fallback.
+- The contact page and organization structured data now include the LinkedIn profile alongside the support email.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -89,7 +91,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Push the Arabic legal page localization, update the Replit workspace from GitHub, then verify `/terms?lang=ar`, `/privacy?lang=ar`, and `/refund-policy?lang=ar` in production before preparing the Lemon Squeezy review/demo path.
+Push the localized `/ar/...` SEO URL structure, update the Replit workspace from GitHub, then verify `/ar`, `/ar/pricing`, `/ar/guides`, `/ar/contact`, and the Arabic legal pages in production before connecting Google Search Console and submitting the sitemap.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
@@ -103,3 +105,4 @@ Push the Arabic legal page localization, update the Replit workspace from GitHub
 - Replit deployment plan: `project-state/REPLIT_SUPABASE_DEPLOYMENT.md`
 - SEO strategy: `project-state/SEO_STRATEGY.md`
 - SEO execution plan: `project-state/SEO_EXECUTION_PLAN.md`
+- SEO measurement setup: `project-state/SEO_MEASUREMENT_SETUP.md`
