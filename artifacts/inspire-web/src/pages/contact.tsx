@@ -4,7 +4,7 @@ import { useI18n } from "@/i18n";
 import { localizePath } from "@/lib/locale-paths";
 
 const supportEmail = "Haitham.haj@gmail.com";
-const linkedInUrl = "https://www.linkedin.com/in/haithamh";
+const linkedInUrl = "https://www.linkedin.com/in/haithamhaj/";
 
 export default function Contact() {
   const { locale, dir } = useI18n();
@@ -89,7 +89,7 @@ export default function Contact() {
               className="mt-3 inline-flex text-lg font-black text-rose-200 hover:text-rose-100"
               dir="ltr"
             >
-              linkedin.com/in/haithamh
+              linkedin.com/in/haithamhaj
             </a>
           </div>
         </section>
