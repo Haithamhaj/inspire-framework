@@ -64,6 +64,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - `/guides` and guide detail pages now localize their visible content and client-side page titles when Arabic is the active site language.
 - Guide detail pages now include a secondary Smart Prompt Coach CTA that applies CRAFTS to a user's prompt without competing with the main INSPIRE assessment CTA.
 - `/about`, `/research`, `/contact`, and `/pricing` now use more positive, confident Arabic/English copy and Arabic client-side SEO metadata when Arabic is active.
+- Footer navigation labels now switch to Arabic when Arabic is active.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
