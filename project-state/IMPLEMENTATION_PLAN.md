@@ -181,6 +181,7 @@ Tasks:
 - [x] Clarify that the free offer is the quick assessment, not the full report.
 - [x] Make product, price, delivery, and digital nature clear across the full review path.
 - [x] Add a direct `/pricing` route so Lemon reviewers do not hit a SPA 404 when looking for pricing.
+- [x] Verify production `/pricing` after Replit update.
 - [ ] Prepare a review/demo flow:
   - landing page
   - start assessment
