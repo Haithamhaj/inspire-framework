@@ -488,6 +488,15 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
   }
 
   if (pathname === "/terms") {
+    if (locale === "ar") {
+      return {
+        path: "/terms",
+        title: "شروط الخدمة — INSPIRE Framework",
+        description:
+          "شروط استخدام INSPIRE Framework، المنتج الرقمي الذاتي لإنشاء ملف تشغيل وتعليمات مخصصة للذكاء الاصطناعي.",
+      };
+    }
+
     return {
       path: "/terms",
       title: "Terms of Service — INSPIRE Framework",
@@ -496,6 +505,15 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
   }
 
   if (pathname === "/privacy") {
+    if (locale === "ar") {
+      return {
+        path: "/privacy",
+        title: "سياسة الخصوصية — INSPIRE Framework",
+        description:
+          "كيفية جمع INSPIRE Framework للمعلومات واستخدامها وحمايتها لتقديم تجربة التقييم والتقرير الرقمي المخصص للذكاء الاصطناعي.",
+      };
+    }
+
     return {
       path: "/privacy",
       title: "Privacy Policy — INSPIRE Framework",
@@ -504,6 +522,15 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
   }
 
   if (pathname === "/refund-policy") {
+    if (locale === "ar") {
+      return {
+        path: "/refund-policy",
+        title: "سياسة الاسترداد — INSPIRE Framework",
+        description:
+          "سياسة الاسترداد الخاصة بتقرير INSPIRE Framework الرقمي وطلبات الاسترداد المؤهلة للمنتج الرقمي المخصص للذكاء الاصطناعي.",
+      };
+    }
+
     return {
       path: "/refund-policy",
       title: "Refund Policy — INSPIRE Framework",

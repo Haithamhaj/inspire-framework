@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { ArrowLeft, FileText } from "lucide-react";
+import { useI18n } from "@/i18n";
 
 type LegalSection = {
   title: string;
@@ -199,16 +200,202 @@ const refundContent: LegalPageContent = {
   ],
 };
 
+const termsContentAr: LegalPageContent = {
+  title: "شروط الخدمة",
+  lastUpdated: "مايو 2026",
+  intro:
+    "مرحباً بك في INSPIRE Framework. توضّح شروط الخدمة هذه قواعد الوصول إلى موقع INSPIRE Framework واستخدام المنتج الرقمي التحليلي المقدم من خلاله.",
+  sections: [
+    {
+      title: "1. وصف المنتج",
+      body: [
+        "INSPIRE Framework هو أداة تحليل رقمية ذاتية مدعومة بالذكاء الاصطناعي. يقوم المستخدم بإكمال تقييم عبر الإنترنت، ثم ينشئ النظام تقريراً منظماً لملف التشغيل وتعليمات جاهزة للاستخدام مع الذكاء الاصطناعي بناءً على إجابات المستخدم.",
+      ],
+    },
+    {
+      title: "2. منتج رقمي",
+      body: ["يتم تقديم INSPIRE Framework رقمياً من خلال الموقع. لا يتم شحن أو تسليم أي منتجات مادية."],
+    },
+    {
+      title: "3. عدم تقديم مشورة مهنية",
+      body: [
+        "التقارير والتعليمات التي ينتجها INSPIRE Framework مخصصة لأغراض معلوماتية وتعليمية وإنتاجية فقط. لا تُعد هذه المخرجات مشورة قانونية أو طبية أو مالية أو نفسية أو مهنية. يتحمل المستخدم مسؤولية تفسير المخرجات واستخدامها.",
+      ],
+    },
+    {
+      title: "4. مسؤولية المستخدم",
+      body: [
+        "يتحمل المستخدم مسؤولية تقديم معلومات دقيقة ومناسبة عند إكمال التقييم. تعتمد جودة التقرير الناتج على المعلومات والإجابات التي يقدمها المستخدم.",
+      ],
+    },
+    {
+      title: "5. المدفوعات",
+      body: [
+        "تتم معالجة المدفوعات بشكل آمن عبر Lemon Squeezy. لا يقوم INSPIRE Framework بتخزين بيانات بطاقة الدفع الكاملة مباشرة.",
+      ],
+    },
+    {
+      title: "6. الوصول والتسليم",
+      body: [
+        "بعد إتمام الدفع بنجاح، يحصل المستخدم على الوصول إلى المخرجات الرقمية من خلال الموقع أو مسار التسليم المرتبط. في حال حدوث مشكلة تقنية تمنع الوصول، يمكن للمستخدم التواصل مع الدعم.",
+      ],
+    },
+    {
+      title: "7. الاستخدام المقبول",
+      body: [
+        "لا يجوز للمستخدم إساءة استخدام الموقع، أو محاولة تجاوز الدفع، أو الهندسة العكسية للنظام، أو تعطيل تشغيل الخدمة، أو استخدام المنتج لأغراض غير قانونية.",
+      ],
+    },
+    {
+      title: "8. الملكية الفكرية",
+      body: [
+        "تعود ملكية مفهوم INSPIRE Framework وبنيته ومحتوى الموقع ومسار التقييم وصيغ المخرجات إلى مشغّل INSPIRE Framework ما لم يُذكر خلاف ذلك. يجوز للمستخدم استخدام تقريره وتعليماته الجاهزة للنسخ لأغراضه الشخصية أو المهنية.",
+      ],
+    },
+    {
+      title: "9. التغييرات على الخدمة",
+      body: ["يجوز لنا تحديث أو تحسين أو تعديل الخدمة أو الأسعار أو الميزات أو شروط الخدمة هذه من وقت لآخر."],
+    },
+    {
+      title: "10. التواصل",
+      body: ["للاستفسارات المتعلقة بهذه الشروط، يرجى التواصل عبر:", contactEmail],
+    },
+  ],
+};
+
+const privacyContentAr: LegalPageContent = {
+  title: "سياسة الخصوصية",
+  lastUpdated: "مايو 2026",
+  intro:
+    "توضح سياسة الخصوصية هذه كيفية جمع INSPIRE Framework للمعلومات واستخدامها وحمايتها عند استخدام الموقع والمنتج الرقمي التحليلي.",
+  sections: [
+    {
+      title: "1. المعلومات التي نجمعها",
+      body: ["قد نقوم بجمع المعلومات التالية:"],
+      bullets: [
+        "الاسم وعنوان البريد الإلكتروني",
+        "إجابات التقييم التي يقدمها المستخدم",
+        "معلومات الاستخدام والمعلومات التقنية المتعلقة بالمنتج",
+        "حالة الدفع ومعلومات الطلب الواردة من Lemon Squeezy",
+      ],
+    },
+    {
+      title: "2. معلومات الدفع",
+      body: [
+        "تتم معالجة المدفوعات عبر Lemon Squeezy. نحن لا نخزن مباشرة أرقام بطاقات الائتمان الكاملة أو بيانات بطاقات الدفع الحساسة.",
+      ],
+    },
+    {
+      title: "3. كيفية استخدام المعلومات",
+      body: ["نستخدم المعلومات التي يتم جمعها من أجل:"],
+      bullets: [
+        "إنشاء تقرير ملف التشغيل الخاص بالمستخدم",
+        "توفير الوصول إلى المنتجات الرقمية المشتراة",
+        "تحسين جودة الخدمة وموثوقيتها",
+        "الرد على طلبات الدعم",
+        "الاحتفاظ بسجلات الدفع والطلبات",
+      ],
+    },
+    {
+      title: "4. المخرجات المنشأة بالذكاء الاصطناعي",
+      body: [
+        "تُستخدم إجابات المستخدم في التقييم لإنشاء تقرير رقمي مخصص وتعليمات جاهزة للاستخدام مع الذكاء الاصطناعي. يُنصح المستخدم بتجنب إدخال معلومات شخصية حساسة لا تكون ضرورية للتقييم.",
+      ],
+    },
+    {
+      title: "5. مشاركة المعلومات",
+      body: [
+        "لا نبيع المعلومات الشخصية. قد نشارك معلومات محدودة مع مزودي الخدمات اللازمين لتشغيل الموقع، ومعالجة المدفوعات، وتقديم الاستضافة، والتحليلات، أو الدعم.",
+      ],
+    },
+    {
+      title: "6. أمن البيانات",
+      body: [
+        "نتخذ إجراءات معقولة لحماية معلومات المستخدم. ومع ذلك، لا يمكن ضمان أن أي نظام متصل بالإنترنت آمن بشكل كامل في جميع الظروف.",
+      ],
+    },
+    {
+      title: "7. الاحتفاظ بالبيانات",
+      body: [
+        "نحتفظ بالمعلومات حسب الحاجة لتقديم الخدمة، والاحتفاظ بالسجلات، والامتثال للالتزامات القانونية، وحل النزاعات، وتحسين المنتج.",
+      ],
+    },
+    {
+      title: "8. طلبات المستخدم",
+      body: [
+        "يمكن للمستخدم التواصل معنا لطلب الوصول إلى معلوماته أو تصحيحها أو حذفها، وذلك وفقاً للمتطلبات التشغيلية أو القانونية أو الأمنية ذات الصلة.",
+      ],
+    },
+    {
+      title: "9. التواصل",
+      body: ["للاستفسارات المتعلقة بالخصوصية، يرجى التواصل عبر:", contactEmail],
+    },
+  ],
+};
+
+const refundContentAr: LegalPageContent = {
+  title: "سياسة الاسترداد",
+  lastUpdated: "مايو 2026",
+  intro:
+    "يوفر INSPIRE Framework منتجاً رقمياً تحليلياً ذاتياً يتم إنشاؤه بناءً على تقييم المستخدم عبر الإنترنت.",
+  sections: [
+    {
+      title: "1. تسليم المنتج الرقمي",
+      body: [
+        "نظراً لأن INSPIRE Framework منتج رقمي وقد يتم إنشاء التحليل أو إتاحته بعد الشراء بوقت قصير، فإن عمليات الاسترداد لا تكون متاحة عادةً بعد تسليم التقرير أو المخرجات الرقمية.",
+      ],
+    },
+    {
+      title: "2. الحالات المؤهلة للاسترداد",
+      body: ["يمكن النظر في طلب الاسترداد في الحالات التالية:"],
+      bullets: [
+        "دفع مكرر",
+        "طلب مكرر عن طريق الخطأ",
+        "مشكلة تقنية تمنع تسليم التحليل المشترى",
+        "نجاح عملية الدفع دون حصول المستخدم على الوصول إلى المنتج الرقمي المشترى",
+      ],
+    },
+    {
+      title: "3. الحالات غير القابلة للاسترداد",
+      body: ["لا يتم عادةً تقديم الاسترداد في الحالات التالية:"],
+      bullets: [
+        "تغيير الرأي بعد استلام التقرير",
+        "عدم الرضا بناءً على تفضيل شخصي بعد تسليم المخرجات الرقمية",
+        "تقديم إجابات غير صحيحة أو غير مكتملة من قبل المستخدم",
+        "عدم استخدام التعليمات أو التقرير الناتج",
+      ],
+    },
+    {
+      title: "4. مدة طلب الاسترداد",
+      body: ["يجب تقديم طلبات الاسترداد خلال 7 أيام من تاريخ الشراء."],
+    },
+    {
+      title: "5. كيفية طلب الاسترداد",
+      body: ["لطلب الاسترداد، يرجى التواصل عبر:", contactEmail, "يرجى تضمين المعلومات التالية:"],
+      bullets: ["البريد الإلكتروني المستخدم في الطلب", "رقم الطلب إن وجد", "سبب طلب الاسترداد"],
+    },
+    {
+      title: "6. معالج الدفع",
+      body: [
+        "تتم معالجة المدفوعات وعمليات الاسترداد عبر Lemon Squeezy. قد تستغرق عمليات الاسترداد المعتمدة بعض الوقت حتى تظهر، وذلك بحسب وسيلة الدفع والمؤسسة المالية.",
+      ],
+    },
+  ],
+};
+
 function LegalPage({ content }: { content: LegalPageContent }) {
+  const { locale, dir } = useI18n();
+  const isAr = locale === "ar";
+
   return (
-    <div className="min-h-screen bg-[#070817] px-4 py-12 text-slate-100 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#070817] px-4 py-12 text-slate-100 sm:px-6 lg:px-8" dir={dir}>
       <div className="mx-auto max-w-3xl">
         <Link
           href="/"
           className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-slate-400 transition-colors hover:text-rose-200"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to INSPIRE
+          <ArrowLeft className={`h-4 w-4 ${isAr ? "rotate-180" : ""}`} />
+          {isAr ? "العودة إلى INSPIRE" : "Back to INSPIRE"}
         </Link>
 
         <header className="mb-10 border-b border-slate-400/10 pb-8">
@@ -218,8 +405,8 @@ function LegalPage({ content }: { content: LegalPageContent }) {
           <h1 className="font-display text-4xl font-black tracking-tight text-white sm:text-5xl">
             {content.title}
           </h1>
-          <p className="mt-3 text-sm font-bold uppercase tracking-[0.18em] text-rose-200/80">
-            Last updated: {content.lastUpdated}
+          <p className={`mt-3 text-sm font-bold text-rose-200/80 ${isAr ? "" : "uppercase tracking-[0.18em]"}`}>
+            {isAr ? "آخر تحديث:" : "Last updated:"} {content.lastUpdated}
           </p>
           <p className="mt-6 text-base leading-8 text-slate-300">{content.intro}</p>
         </header>
@@ -234,7 +421,11 @@ function LegalPage({ content }: { content: LegalPageContent }) {
                 </p>
               ))}
               {section.bullets && (
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-[15px] leading-7 text-slate-300">
+                <ul
+                  className={`mt-3 list-disc space-y-2 text-[15px] leading-7 text-slate-300 ${
+                    isAr ? "pr-5" : "pl-5"
+                  }`}
+                >
                   {section.bullets.map((bullet) => (
                     <li key={bullet}>{bullet}</li>
                   ))}
@@ -249,13 +440,16 @@ function LegalPage({ content }: { content: LegalPageContent }) {
 }
 
 export function TermsPage() {
-  return <LegalPage content={termsContent} />;
+  const { locale } = useI18n();
+  return <LegalPage content={locale === "ar" ? termsContentAr : termsContent} />;
 }
 
 export function PrivacyPage() {
-  return <LegalPage content={privacyContent} />;
+  const { locale } = useI18n();
+  return <LegalPage content={locale === "ar" ? privacyContentAr : privacyContent} />;
 }
 
 export function RefundPolicyPage() {
-  return <LegalPage content={refundContent} />;
+  const { locale } = useI18n();
+  return <LegalPage content={locale === "ar" ? refundContentAr : refundContent} />;
 }

@@ -65,6 +65,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Guide detail pages now include a secondary Smart Prompt Coach CTA that applies CRAFTS to a user's prompt without competing with the main INSPIRE assessment CTA.
 - `/about`, `/research`, `/contact`, and `/pricing` now use more positive, confident Arabic/English copy and Arabic client-side SEO metadata when Arabic is active.
 - Footer navigation labels now switch to Arabic when Arabic is active.
+- `/terms`, `/privacy`, and `/refund-policy` now switch to Arabic professional legal copy and Arabic client-side SEO metadata when Arabic is active.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -88,7 +89,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Push the expanded SEO guide pages, update the Replit workspace from GitHub, then verify guide FAQ content and structured metadata in production before starting deeper Arabic/GCC-specific content.
+Push the Arabic legal page localization, update the Replit workspace from GitHub, then verify `/terms?lang=ar`, `/privacy?lang=ar`, and `/refund-policy?lang=ar` in production before preparing the Lemon Squeezy review/demo path.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

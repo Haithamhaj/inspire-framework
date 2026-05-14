@@ -38,6 +38,7 @@ Tasks:
 - [x] Add footer links to these pages.
 - [x] Add metadata, sitemap entries, and `llms.txt` entries.
 - [x] Refine trust/pricing pages with positive Arabic/English copy and Arabic metadata.
+- [x] Localize legal review pages with professional Arabic copy and Arabic metadata.
 
 Expected result:
 - Reviewers and search engines can understand the entity, author, research basis, and support path.

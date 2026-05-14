@@ -136,6 +136,7 @@ Create a small, high-quality content hub after Lemon review:
 - Localize guide hub and detail content for Arabic users before adding separate Arabic URL structures.
 - Use Smart Prompt Coach as a secondary application CTA inside guide pages, while keeping INSPIRE assessment as the primary conversion path.
 - Refine trust and pricing pages with positive, confident Arabic/English copy and localized client-side metadata.
+- Localize legal pages with professional Arabic copy and localized client-side metadata.
 - Add Arabic/English localized URLs with `hreflang` when the language strategy is stable.
 - Remove Replit production badge/script if the hosting setup allows it.
 - Submit sitemap in Google Search Console after production review path is stable.
