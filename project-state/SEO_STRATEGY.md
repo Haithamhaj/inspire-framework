@@ -128,6 +128,7 @@ Create a small, high-quality content hub after Lemon review:
 - Added route metadata, sitemap entries, `llms.txt` entries, footer links, and route-level structured data for the trust/entity pages.
 - Added Arabic `/ar/...` URL coverage for public pages with localized internal links, canonical URLs, `hreflang` alternates, and multilingual sitemap entries.
 - Added LinkedIn as an entity/contact signal alongside the support email.
+- Added `sitemap.txt` as a Search Console fallback because Replit renders `sitemap.xml` as visible text in Chrome.
 
 ## Remaining SEO Improvements
 

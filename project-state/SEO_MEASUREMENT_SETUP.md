@@ -17,7 +17,7 @@ Move keyword and SEO decisions from assumptions to measured search data for Saud
 
 1. Add `https://inspire.next-stepai.com` as a domain or URL-prefix property in Google Search Console.
 2. Verify ownership through DNS, HTML file, or meta tag. DNS is preferred if domain access is available.
-3. Submit `https://inspire.next-stepai.com/sitemap.xml`.
+3. Submit `https://inspire.next-stepai.com/sitemap.txt` first. Keep `sitemap.xml` available for crawlers that read XML correctly.
 4. Add the same site in Bing Webmaster Tools and submit the sitemap.
 5. After indexing starts, review:
    - Arabic queries
@@ -36,4 +36,4 @@ Move keyword and SEO decisions from assumptions to measured search data for Saud
 
 ## Current Blocker
 
-Search Console verification requires access to the Google account or a verification token. The codebase is ready for sitemap submission, but the verification token should come from the owner's Search Console account.
+Search Console verification is complete. Replit currently renders `sitemap.xml` as plain text in Chrome, so `sitemap.txt` is the preferred Search Console submission target.

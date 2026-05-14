@@ -68,6 +68,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - `/terms`, `/privacy`, and `/refund-policy` now switch to Arabic professional legal copy and Arabic client-side SEO metadata when Arabic is active.
 - Public Arabic pages now have `/ar/...` URLs, localized internal links, canonical URLs, `hreflang` alternates, and multilingual sitemap coverage. The old `?lang=ar` path still works as a compatibility fallback.
 - The contact page and organization structured data now include the LinkedIn profile alongside the support email.
+- Google Search Console domain ownership is verified, but the initial `sitemap.xml` submission returned `Couldn't fetch` while Replit rendered the XML as visible plain text in Chrome. A `sitemap.txt` fallback has been added for Search Console submission.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -91,7 +92,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Push the localized `/ar/...` SEO URL structure, update the Replit workspace from GitHub, then verify `/ar`, `/ar/pricing`, `/ar/guides`, `/ar/contact`, and the Arabic legal pages in production before connecting Google Search Console and submitting the sitemap.
+Push the `sitemap.txt` fallback, update the Replit workspace from GitHub, then submit `sitemap.txt` in Google Search Console and recheck sitemap status.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

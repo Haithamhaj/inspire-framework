@@ -75,7 +75,8 @@ Tasks:
 - [ ] Use Google Trends for Saudi Arabia/GCC keyword comparisons.
 - [ ] Use Google Keyword Planner if Ads access is available.
 - [ ] Connect Google Search Console and Bing Webmaster Tools.
-- [ ] Submit the multilingual sitemap after production content is stable.
+- [x] Submit the initial sitemap in Google Search Console.
+- [ ] Submit `sitemap.txt` as the preferred Search Console sitemap if Replit continues serving `sitemap.xml` with an HTML/plain-text response.
 - [ ] Review impressions/queries after indexing and refine content around actual search data.
 
 Expected result:

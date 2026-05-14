@@ -9,4 +9,4 @@ Disallow: /billing/
 Disallow: /reset-password
 
 Sitemap: https://inspire.next-stepai.com/sitemap.xml
-
+Sitemap: https://inspire.next-stepai.com/sitemap.txt
