@@ -205,8 +205,9 @@ Tasks:
 - [x] Localize `/terms`, `/privacy`, and `/refund-policy` with Arabic professional legal copy and Arabic client-side SEO metadata.
 - [x] Add Arabic `/ar/...` public routes with localized internal links, canonical URLs, `hreflang` alternates, and multilingual sitemap entries.
 - [x] Add LinkedIn contact/entity signal alongside the support email.
+- [x] Clarify in review-facing pages that INSPIRE is a premade self-serve digital product, not consultation or custom-service sales.
 - [ ] Add Arabic/GCC-focused content after the English trust/entity foundation is stable.
-- [ ] Connect Google Search Console and submit the multilingual sitemap after production is updated.
+- [x] Connect Google Search Console and submit the multilingual sitemap after production is updated.
 - [ ] Prepare a review/demo flow:
   - landing page
   - start assessment

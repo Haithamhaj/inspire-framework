@@ -69,6 +69,8 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Public Arabic pages now have `/ar/...` URLs, localized internal links, canonical URLs, `hreflang` alternates, and multilingual sitemap coverage. The old `?lang=ar` path still works as a compatibility fallback.
 - The contact page and organization structured data now include the LinkedIn profile alongside the support email.
 - Google Search Console domain ownership is verified, but the initial `sitemap.xml` submission returned `Couldn't fetch` while Replit rendered the XML as visible plain text in Chrome. A `sitemap.txt` fallback has been added for Search Console submission.
+- Google Search Console now accepts `sitemap.xml` and reports 30 discovered pages.
+- Review-facing product copy now explicitly states that INSPIRE is a premade self-serve digital assessment/report product, not consultation or custom-service sales.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -92,7 +94,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Push the `sitemap.txt` fallback, update the Replit workspace from GitHub, then submit `sitemap.txt` in Google Search Console and recheck sitemap status.
+Prepare the Lemon Squeezy demo video and response email covering the requested demo, social URLs, product/legal URLs, self-serve premade-product confirmation, and product-type explanation.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

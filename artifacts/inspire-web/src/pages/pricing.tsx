@@ -80,6 +80,10 @@ export default function Pricing() {
             title: "مخرج إنتاجي عملي",
             body: "التقرير مصمم لمساعدتك على استخدام الذكاء الاصطناعي بوضوح واتساق أعلى.",
           },
+          {
+            title: "منتج ذاتي جاهز",
+            body: "INSPIRE مسار تقييم وتقرير رقمي جاهز. لا يتم بيع استشارات أو خدمات تفصيل مخصصة ضمن هذا المنتج.",
+          },
         ],
         terms: "الشروط",
         privacy: "الخصوصية",
@@ -104,6 +108,10 @@ export default function Pricing() {
           {
             title: "Practical productivity output",
             body: "The report is designed to help you use AI with more clarity and consistency.",
+          },
+          {
+            title: "Self-serve product",
+            body: "INSPIRE is a premade digital assessment and report flow. It is not a consultation or custom-service purchase.",
           },
         ],
         terms: "Terms",
@@ -178,22 +186,18 @@ export default function Pricing() {
           ))}
         </section>
 
-        <section className="mt-8 grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
-            <FileText className="mb-3 h-5 w-5 text-rose-200" />
-            <h3 className="font-black text-white">{copy.cards[0].title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-400">{copy.cards[0].body}</p>
-          </div>
-          <div className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
-            <ShieldCheck className="mb-3 h-5 w-5 text-rose-200" />
-            <h3 className="font-black text-white">{copy.cards[1].title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-400">{copy.cards[1].body}</p>
-          </div>
-          <div className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
-            <Sparkles className="mb-3 h-5 w-5 text-rose-200" />
-            <h3 className="font-black text-white">{copy.cards[2].title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-400">{copy.cards[2].body}</p>
-          </div>
+        <section className="mt-8 grid gap-4 md:grid-cols-4">
+          {copy.cards.map((card, index) => {
+            const Icon = [FileText, ShieldCheck, Sparkles, Check][index] ?? FileText;
+
+            return (
+              <div key={card.title} className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
+                <Icon className="mb-3 h-5 w-5 text-rose-200" />
+                <h3 className="font-black text-white">{card.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{card.body}</p>
+              </div>
+            );
+          })}
         </section>
 
         <div className="mt-8 flex flex-wrap gap-4 text-sm font-bold text-slate-400">

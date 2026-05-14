@@ -22,6 +22,7 @@ export default function Contact() {
           "INSPIRE منتج رقمي ذاتي يقدم تقييمات وتقارير عبر الموقع.",
           "التقرير الكامل يصل رقمياً بعد إكمال المسار وتفعيل الوصول.",
           "المخرجات مصممة لدعم الإنتاجية وبناء تعليمات أفضل للذكاء الاصطناعي.",
+          "لا يبيع INSPIRE استشارات أو خدمات تفصيل مخصصة ضمن هذا المنتج.",
         ],
         beforeTitle: "ابدأ من المسار الأنسب",
         beforeBody:
@@ -40,6 +41,7 @@ export default function Contact() {
           "INSPIRE is a self-serve digital product for online assessments and reports.",
           "The full report is delivered digitally after completion and access activation.",
           "Outputs are designed to support productivity and better AI instructions.",
+          "INSPIRE does not sell consultations or custom services as part of this product.",
         ],
         beforeTitle: "Choose the path that fits your next step",
         beforeBody:
@@ -94,7 +96,7 @@ export default function Contact() {
           </div>
         </section>
 
-        <section className="mt-6 grid gap-5 md:grid-cols-3">
+        <section className="mt-6 grid gap-5 md:grid-cols-4">
           {copy.notes.map((note) => (
             <div key={note} className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
               <ShieldCheck className="mb-4 h-5 w-5 text-rose-200" />
