@@ -42,10 +42,10 @@ Expected result:
 ## Phase 2: Content Hub Expansion
 
 Tasks:
-- [ ] Expand each existing guide into a deeper page with examples, mistakes, and practical templates.
-- [ ] Add FAQ blocks to guide pages.
-- [ ] Add `FAQPage`, `Article`, and `BreadcrumbList` structured data where appropriate.
-- [ ] Add stronger internal links from guide pages to the free quick assessment and pricing page.
+- [x] Expand each existing guide into a deeper page with examples, mistakes, and practical templates.
+- [x] Add FAQ blocks to guide pages.
+- [x] Add `FAQPage`, `Article`, and `BreadcrumbList` structured data where appropriate.
+- [x] Add stronger internal links from guide pages to the free quick assessment and pricing page.
 
 Expected result:
 - The guide hub becomes useful enough to rank for practical prompt-engineering searches, not just exist as thin SEO content.

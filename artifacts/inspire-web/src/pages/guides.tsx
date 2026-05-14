@@ -6,9 +6,17 @@ type Guide = {
   title: string;
   description: string;
   keywords: string[];
+  example: {
+    weak: string;
+    stronger: string;
+  };
   sections: Array<{
     title: string;
     body: string[];
+  }>;
+  faqs: Array<{
+    question: string;
+    answer: string;
   }>;
 };
 
@@ -19,6 +27,11 @@ const guides: Guide[] = [
     description:
       "A practical guide to writing better prompts for ChatGPT, Claude, Gemini, and other AI assistants.",
     keywords: ["how to write better prompts", "AI prompts", "ChatGPT prompts", "كيف أكتب برومبت"],
+    example: {
+      weak: "Write a plan for my project.",
+      stronger:
+        "Act as a practical planning partner. Create a 2-week launch plan for a solo founder building an AI productivity product. Include priorities, risks, and next actions. Keep it concise and flag assumptions.",
+    },
     sections: [
       {
         title: "Start with the outcome, not the tool",
@@ -41,6 +54,25 @@ const guides: Guide[] = [
           "These red lines are especially useful for work contexts where quality, tone, and decision discipline matter.",
         ],
       },
+      {
+        title: "Use examples to calibrate quality",
+        body: [
+          "If you already know what a useful answer looks like, include a short example. Examples help the model understand structure, tone, and depth faster than abstract instructions.",
+          "This is especially effective when you want a specific format: an executive summary, bilingual email, decision memo, customer reply, or action checklist.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What makes a prompt better?",
+        answer:
+          "A better prompt gives the AI a clear outcome, role, context, constraints, format, and quality standard. The goal is to reduce guessing.",
+      },
+      {
+        question: "Do I need a different prompt for every AI tool?",
+        answer:
+          "The exact wording may change, but the same core instructions can usually work across ChatGPT, Claude, Gemini, and similar assistants.",
+      },
     ],
   },
   {
@@ -49,6 +81,11 @@ const guides: Guide[] = [
     description:
       "Learn what to put in ChatGPT custom instructions so AI tools understand your goals, style, and expectations.",
     keywords: ["ChatGPT custom instructions", "تعليمات ChatGPT", "AI assistant instructions"],
+    example: {
+      weak: "Be helpful and concise.",
+      stronger:
+        "Give direct answers first, then explain trade-offs. Ask a clarifying question only when the missing detail changes the recommendation. Avoid generic advice and tie suggestions to my current goal.",
+    },
     sections: [
       {
         title: "Custom instructions should describe how you work",
@@ -71,6 +108,25 @@ const guides: Guide[] = [
           "This improves consistency across ChatGPT, Claude, Gemini, and similar tools.",
         ],
       },
+      {
+        title: "Keep stable preferences separate",
+        body: [
+          "Stable preferences belong in custom instructions: answer length, tone, formatting, risk tolerance, and preferred decision style.",
+          "Temporary project facts should stay in the chat so your permanent instructions do not become cluttered or outdated.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "What should I put in ChatGPT custom instructions?",
+        answer:
+          "Include your goals, preferred answer style, formatting preferences, quality rules, and things the assistant should avoid.",
+      },
+      {
+        question: "Should custom instructions include personal details?",
+        answer:
+          "Only include details that improve the work. Avoid sensitive information that the assistant does not need to answer well.",
+      },
     ],
   },
   {
@@ -79,6 +135,11 @@ const guides: Guide[] = [
     description:
       "A workplace-focused guide to using prompt engineering for planning, writing, analysis, and productivity in GCC teams.",
     keywords: ["prompt engineering for work", "AI productivity GCC", "استخدام الذكاء الاصطناعي في العمل"],
+    example: {
+      weak: "Summarize this meeting.",
+      stronger:
+        "Summarize this meeting for a Saudi operations team. Separate decisions, open questions, risks, and owner-specific next actions. Keep Arabic names as written and preserve English technical terms.",
+    },
     sections: [
       {
         title: "Work prompts need business context",
@@ -101,6 +162,25 @@ const guides: Guide[] = [
           "INSPIRE is designed to generate this profile from a structured assessment rather than guesswork.",
         ],
       },
+      {
+        title: "Use bilingual instructions deliberately",
+        body: [
+          "Many Saudi and GCC workflows move between Arabic and English. Prompt instructions should define when to translate, when to preserve terms, and what audience the output is for.",
+          "This avoids awkward literal translation and keeps business communication more natural.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Why does prompt engineering matter at work?",
+        answer:
+          "Work prompts carry more risk because outputs often affect decisions, customers, or internal alignment. Clear context and constraints improve usefulness.",
+      },
+      {
+        question: "What are good workplace AI use cases?",
+        answer:
+          "Common use cases include meeting briefs, document summaries, proposal reviews, bilingual communication, planning, research synthesis, and decision support.",
+      },
     ],
   },
   {
@@ -109,6 +189,11 @@ const guides: Guide[] = [
     description:
       "An AI operating profile is a reusable instruction layer that tells AI tools how to work with your goals, style, and constraints.",
     keywords: ["AI operating profile", "AI work style assessment", "تعليمات مخصصة للذكاء الاصطناعي"],
+    example: {
+      weak: "Answer in my style.",
+      stronger:
+        "Work as a concise strategy partner. Start with the recommendation, then give reasoning, trade-offs, and the next action. Avoid filler, unsupported claims, and long option lists.",
+    },
     sections: [
       {
         title: "A profile is more than a prompt",
@@ -131,6 +216,25 @@ const guides: Guide[] = [
           "For teams, it can also make AI collaboration easier to explain and share.",
         ],
       },
+      {
+        title: "How it differs from a prompt library",
+        body: [
+          "A prompt library gives you reusable task templates. An operating profile gives the AI a reusable understanding of how to work with you.",
+          "The two can work together: the profile sets behavior, while task prompts describe the current job.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Is an AI operating profile the same as a prompt?",
+        answer:
+          "No. A prompt usually asks for one output. An operating profile defines repeated behavior across many tasks and conversations.",
+      },
+      {
+        question: "Can I use one profile across multiple AI tools?",
+        answer:
+          "Yes. A well-written profile can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
+      },
     ],
   },
   {
@@ -139,6 +243,11 @@ const guides: Guide[] = [
     description:
       "How Arabic-speaking users can write better AI prompts and use bilingual instructions with ChatGPT, Claude, and Gemini.",
     keywords: ["Arabic AI prompts", "برومبت عربي", "تعليمات شات جي بي تي", "هندسة الأوامر"],
+    example: {
+      weak: "اكتب لي برومبت للتسويق.",
+      stronger:
+        "تصرف كخبير تسويق عملي. اكتب برومبت يساعدني أجهز حملة لمنتج رقمي في السعودية. اذكر الجمهور، الرسالة، القنوات، المخاطر، وخطوات التنفيذ. استخدم العربية الواضحة وحافظ على المصطلحات التقنية الإنجليزية عند الحاجة.",
+    },
     sections: [
       {
         title: "Arabic prompts need clarity, not literal translation",
@@ -160,6 +269,25 @@ const guides: Guide[] = [
           "INSPIRE can produce reports and instructions for users who work across Arabic and English contexts.",
           "The goal is not just translation; it is better alignment between your work style and the way AI responds.",
         ],
+      },
+      {
+        title: "Avoid vague Arabic commands",
+        body: [
+          "Short Arabic commands such as “اكتب لي برومبت” often produce generic answers. Add the audience, goal, context, tone, output format, and boundaries.",
+          "If the work is bilingual, say which terms should stay in English and whether the final answer should be Arabic, English, or mixed.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "هل الأفضل أكتب البرومبت بالعربي أم بالإنجليزي؟",
+        answer:
+          "اكتب باللغة التي تناسب المخرجات المطلوبة. إذا كان العمل عربي أو موجه لجمهور عربي، فالوضوح بالعربية أهم من الترجمة الحرفية من الإنجليزية.",
+      },
+      {
+        question: "كيف أحسن نتائج ChatGPT بالعربي؟",
+        answer:
+          "حدد الدور، الهدف، الجمهور، النبرة، شكل المخرجات، والكلمات التي يجب الحفاظ عليها بالإنجليزية إن وجدت.",
       },
     ],
   },
@@ -255,6 +383,32 @@ function GuideDetail({ guide }: { guide: Guide }) {
             </section>
           ))}
         </div>
+
+        <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
+          <h2 className="text-2xl font-black text-white">Example prompt upgrade</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <div className="rounded-xl border border-red-300/10 bg-red-500/[0.05] p-4">
+              <h3 className="text-sm font-black uppercase tracking-[0.16em] text-red-200">Weak prompt</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{guide.example.weak}</p>
+            </div>
+            <div className="rounded-xl border border-emerald-300/10 bg-emerald-500/[0.06] p-4">
+              <h3 className="text-sm font-black uppercase tracking-[0.16em] text-emerald-200">Stronger prompt</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-300">{guide.example.stronger}</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
+          <h2 className="text-2xl font-black text-white">FAQ</h2>
+          <div className="mt-5 space-y-5">
+            {guide.faqs.map((faq) => (
+              <div key={faq.question}>
+                <h3 className="text-lg font-black text-white">{faq.question}</h3>
+                <p className="mt-2 text-base leading-8 text-slate-300">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <section className="mt-10 rounded-2xl border border-rose-300/20 bg-rose-500/[0.08] p-6">
           <h2 className="text-2xl font-black text-white">Turn this into your own AI instructions</h2>

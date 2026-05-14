@@ -24,61 +24,180 @@ function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
   };
 }
 
+function guideJsonLd(config: {
+  title: string;
+  description: string;
+  path: string;
+  breadcrumbName: string;
+  faqs: Array<{ question: string; answer: string }>;
+}) {
+  const url = `${siteUrl}${config.path}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      breadcrumbJsonLd([
+        { name: "Home", path: "/" },
+        { name: "Guides", path: "/guides" },
+        { name: config.breadcrumbName, path: config.path },
+      ]),
+      {
+        "@type": "Article",
+        "@id": `${url}#article`,
+        headline: config.title,
+        description: config.description,
+        url,
+        image: imageUrl,
+        author: {
+          "@type": "Organization",
+          name: "INSPIRE Framework",
+          url: siteUrl,
+        },
+        publisher: { "@id": organizationId },
+        mainEntityOfPage: url,
+        inLanguage: ["en", "ar"],
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${url}#faq`,
+        mainEntity: config.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      },
+    ],
+  };
+}
+
 const guideSeo: Record<string, SeoConfig> = {
   "how-to-write-better-prompts": {
     path: "/guides/how-to-write-better-prompts",
     title: "How to Write Better AI Prompts — INSPIRE Guide",
     description:
       "Learn how to write better prompts for ChatGPT, Claude, and Gemini using goals, roles, constraints, examples, and quality rules.",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Guides", path: "/guides" },
-      { name: "How to Write Better AI Prompts", path: "/guides/how-to-write-better-prompts" },
-    ]),
+    jsonLd: guideJsonLd({
+      path: "/guides/how-to-write-better-prompts",
+      title: "How to Write Better AI Prompts",
+      description:
+        "Learn how to write better prompts for ChatGPT, Claude, and Gemini using goals, roles, constraints, examples, and quality rules.",
+      breadcrumbName: "How to Write Better AI Prompts",
+      faqs: [
+        {
+          question: "What makes a prompt better?",
+          answer:
+            "A better prompt gives the AI a clear outcome, role, context, constraints, format, and quality standard. The goal is to reduce guessing.",
+        },
+        {
+          question: "Do I need a different prompt for every AI tool?",
+          answer:
+            "The exact wording may change, but the same core instructions can usually work across ChatGPT, Claude, Gemini, and similar assistants.",
+        },
+      ],
+    }),
   },
   "chatgpt-custom-instructions": {
     path: "/guides/chatgpt-custom-instructions",
     title: "ChatGPT Custom Instructions: What to Include — INSPIRE",
     description:
       "A practical guide to ChatGPT custom instructions, AI assistant behavior, reusable prompt rules, and personal AI operating profiles.",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Guides", path: "/guides" },
-      { name: "ChatGPT Custom Instructions", path: "/guides/chatgpt-custom-instructions" },
-    ]),
+    jsonLd: guideJsonLd({
+      path: "/guides/chatgpt-custom-instructions",
+      title: "ChatGPT Custom Instructions: What to Include",
+      description:
+        "A practical guide to ChatGPT custom instructions, AI assistant behavior, reusable prompt rules, and personal AI operating profiles.",
+      breadcrumbName: "ChatGPT Custom Instructions",
+      faqs: [
+        {
+          question: "What should I put in ChatGPT custom instructions?",
+          answer:
+            "Include your goals, preferred answer style, formatting preferences, quality rules, and things the assistant should avoid.",
+        },
+        {
+          question: "Should custom instructions include personal details?",
+          answer:
+            "Only include details that improve the work. Avoid sensitive information that the assistant does not need to answer well.",
+        },
+      ],
+    }),
   },
   "prompt-engineering-for-work": {
     path: "/guides/prompt-engineering-for-work",
     title: "Prompt Engineering for Work in Saudi Arabia and the GCC",
     description:
       "Use prompt engineering at work for planning, writing, analysis, bilingual communication, and productivity across Saudi Arabia and GCC teams.",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Guides", path: "/guides" },
-      { name: "Prompt Engineering for Work", path: "/guides/prompt-engineering-for-work" },
-    ]),
+    jsonLd: guideJsonLd({
+      path: "/guides/prompt-engineering-for-work",
+      title: "Prompt Engineering for Work in Saudi Arabia and the GCC",
+      description:
+        "Use prompt engineering at work for planning, writing, analysis, bilingual communication, and productivity across Saudi Arabia and GCC teams.",
+      breadcrumbName: "Prompt Engineering for Work",
+      faqs: [
+        {
+          question: "Why does prompt engineering matter at work?",
+          answer:
+            "Work prompts carry more risk because outputs often affect decisions, customers, or internal alignment. Clear context and constraints improve usefulness.",
+        },
+        {
+          question: "What are good workplace AI use cases?",
+          answer:
+            "Common use cases include meeting briefs, document summaries, proposal reviews, bilingual communication, planning, research synthesis, and decision support.",
+        },
+      ],
+    }),
   },
   "ai-operating-profile": {
     path: "/guides/ai-operating-profile",
     title: "What Is an AI Operating Profile? — INSPIRE Framework",
     description:
       "An AI operating profile is a reusable instruction layer that helps ChatGPT, Claude, and Gemini work with your goals, style, and constraints.",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Guides", path: "/guides" },
-      { name: "AI Operating Profile", path: "/guides/ai-operating-profile" },
-    ]),
+    jsonLd: guideJsonLd({
+      path: "/guides/ai-operating-profile",
+      title: "What Is an AI Operating Profile?",
+      description:
+        "An AI operating profile is a reusable instruction layer that helps ChatGPT, Claude, and Gemini work with your goals, style, and constraints.",
+      breadcrumbName: "AI Operating Profile",
+      faqs: [
+        {
+          question: "Is an AI operating profile the same as a prompt?",
+          answer:
+            "No. A prompt usually asks for one output. An operating profile defines repeated behavior across many tasks and conversations.",
+        },
+        {
+          question: "Can I use one profile across multiple AI tools?",
+          answer:
+            "Yes. A well-written profile can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
+        },
+      ],
+    }),
   },
   "arabic-ai-prompts": {
     path: "/guides/arabic-ai-prompts",
     title: "Arabic AI Prompts and Bilingual AI Instructions — INSPIRE",
     description:
       "Learn how Arabic-speaking users can write better AI prompts and bilingual instructions for ChatGPT, Claude, and Gemini.",
-    jsonLd: breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Guides", path: "/guides" },
-      { name: "Arabic AI Prompts", path: "/guides/arabic-ai-prompts" },
-    ]),
+    jsonLd: guideJsonLd({
+      path: "/guides/arabic-ai-prompts",
+      title: "Arabic AI Prompts and Bilingual AI Instructions",
+      description:
+        "Learn how Arabic-speaking users can write better AI prompts and bilingual instructions for ChatGPT, Claude, and Gemini.",
+      breadcrumbName: "Arabic AI Prompts",
+      faqs: [
+        {
+          question: "هل الأفضل أكتب البرومبت بالعربي أم بالإنجليزي؟",
+          answer:
+            "اكتب باللغة التي تناسب المخرجات المطلوبة. إذا كان العمل عربي أو موجه لجمهور عربي، فالوضوح بالعربية أهم من الترجمة الحرفية من الإنجليزية.",
+        },
+        {
+          question: "كيف أحسن نتائج ChatGPT بالعربي؟",
+          answer:
+            "حدد الدور، الهدف، الجمهور، النبرة، شكل المخرجات، والكلمات التي يجب الحفاظ عليها بالإنجليزية إن وجدت.",
+        },
+      ],
+    }),
   },
 };
 

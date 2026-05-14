@@ -59,6 +59,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - SEO topical authority work has started with a `/guides` hub and five initial guide pages targeting prompt writing, ChatGPT custom instructions, prompt engineering for work, AI operating profiles, and Arabic/bilingual AI prompts.
 - SEO execution is now tracked in `project-state/SEO_EXECUTION_PLAN.md`.
 - The first SEO trust/entity page set has been added locally: `/about`, `/research`, and `/contact`, with footer links, route metadata, sitemap coverage, `llms.txt` coverage, and route-level structured data.
+- The initial guide pages have been expanded locally with practical prompt upgrade examples, FAQ sections, and route-level Article/FAQ structured data.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -82,7 +83,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Push the first SEO trust/entity page set, update the Replit workspace from GitHub, then verify `/about`, `/research`, `/contact`, sitemap, and `llms.txt` in production before expanding the guide pages.
+Push the expanded SEO guide pages, update the Replit workspace from GitHub, then verify guide FAQ content and structured metadata in production before starting deeper Arabic/GCC-specific content.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
