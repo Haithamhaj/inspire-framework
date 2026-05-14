@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { ArrowRight, Check, CreditCard, FileText, ShieldCheck, Sparkles } from "lucide-react";
+import { useI18n } from "@/i18n";
 
 const pricingPlans = [
   {
@@ -32,24 +33,100 @@ const pricingPlans = [
 ];
 
 export default function Pricing() {
+  const { locale, dir } = useI18n();
+  const isAr = locale === "ar";
+  const plans = isAr
+    ? [
+        {
+          name: "التقييم السريع",
+          price: "$0",
+          note: "نسخة مجانية وسريعة",
+          cta: "ابدأ التقييم السريع",
+          href: "/assess/mini",
+          features: ["تقييم سريع مجاني", "لمحة أولية عن أسلوبك مع الذكاء الاصطناعي", "بدون بطاقة دفع"],
+          highlighted: false,
+        },
+        {
+          name: "تقرير INSPIRE الكامل",
+          price: "$10",
+          note: "دفعة واحدة لكل تقييم",
+          cta: "ابدأ التقييم الكامل",
+          href: "/assess",
+          features: ["ملف تشغيل كامل للذكاء الاصطناعي", "تعليمات جاهزة للنسخ", "تقرير PDF ورابط مشاركة", "بدون اشتراك"],
+          highlighted: true,
+        },
+      ]
+    : pricingPlans;
+  const copy = isAr
+    ? {
+        eyebrow: "الأسعار",
+        title: "تسعير واضح لتقرير رقمي مخصص للذكاء الاصطناعي",
+        intro:
+          "INSPIRE يقدّم تجربة رقمية كاملة: تقييم منظم، ملف تشغيل للذكاء الاصطناعي، وتعليمات جاهزة للاستخدام مع أدوات مثل ChatGPT وClaude وGemini.",
+        full: "التقرير الكامل",
+        perAssessment: "/ تقييم",
+        cards: [
+          {
+            title: "تسليم رقمي",
+            body: "يتم إنشاء التقرير والوصول إليه عبر الموقع بعد إكمال المسار.",
+          },
+          {
+            title: "دفع آمن",
+            body: "سيتم تفعيل الدفع بالبطاقة عبر Lemon Squeezy بعد اكتمال الموافقة.",
+          },
+          {
+            title: "مخرج إنتاجي عملي",
+            body: "التقرير مصمم لمساعدتك على استخدام الذكاء الاصطناعي بوضوح واتساق أعلى.",
+          },
+        ],
+        terms: "الشروط",
+        privacy: "الخصوصية",
+        refund: "سياسة الاسترداد",
+      }
+    : {
+        eyebrow: "Pricing",
+        title: "Simple pricing for a digital AI operating profile",
+        intro:
+          "INSPIRE delivers a complete digital experience: a structured assessment, an AI operating profile, and copy-ready instructions for tools such as ChatGPT, Claude, and Gemini.",
+        full: "Full report",
+        perAssessment: "/ assessment",
+        cards: [
+          {
+            title: "Digital delivery",
+            body: "Reports are generated and accessed through the website after completing the flow.",
+          },
+          {
+            title: "Secure checkout",
+            body: "Card checkout will be activated through Lemon Squeezy after approval is complete.",
+          },
+          {
+            title: "Practical productivity output",
+            body: "The report is designed to help you use AI with more clarity and consistency.",
+          },
+        ],
+        terms: "Terms",
+        privacy: "Privacy",
+        refund: "Refund Policy",
+      };
+
   return (
-    <div className="min-h-screen bg-[#070817] px-4 py-14 text-slate-100 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#070817] px-4 py-14 text-slate-100 sm:px-6 lg:px-8" dir={dir}>
       <div className="mx-auto max-w-5xl">
         <header className="max-w-3xl">
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-500/[0.08] px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-rose-100">
             <CreditCard className="h-4 w-4" />
-            Pricing
+            {copy.eyebrow}
           </p>
           <h1 className="font-display text-4xl font-black tracking-normal text-white sm:text-5xl">
-            Simple pricing for a digital AI operating profile
+            {copy.title}
           </h1>
           <p className="mt-5 text-base leading-8 text-slate-300">
-            INSPIRE is delivered online. No physical product is shipped. The full report is a one-time digital purchase that generates a structured operating profile and copy-ready AI instructions.
+            {copy.intro}
           </p>
         </header>
 
         <section className="mt-10 grid gap-5 md:grid-cols-2">
-          {pricingPlans.map((plan) => (
+          {plans.map((plan) => (
             <article
               key={plan.name}
               className={`rounded-2xl border p-6 shadow-2xl shadow-black/20 ${
@@ -65,14 +142,14 @@ export default function Pricing() {
                 </div>
                 {plan.highlighted && (
                   <span className="rounded-full border border-rose-300/20 bg-rose-500/[0.12] px-3 py-1 text-xs font-bold text-rose-100">
-                    Full report
+                    {copy.full}
                   </span>
                 )}
               </div>
 
               <div className="mb-6 flex items-end gap-2">
                 <span className="font-display text-5xl font-black text-white">{plan.price}</span>
-                {plan.highlighted && <span className="pb-2 text-sm text-slate-400">/ assessment</span>}
+                {plan.highlighted && <span className="pb-2 text-sm text-slate-400">{copy.perAssessment}</span>}
               </div>
 
               <ul className="mb-7 space-y-3">
@@ -102,25 +179,25 @@ export default function Pricing() {
         <section className="mt-8 grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
             <FileText className="mb-3 h-5 w-5 text-rose-200" />
-            <h3 className="font-black text-white">Digital delivery</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Reports are generated and accessed through the website. No physical shipping applies.</p>
+            <h3 className="font-black text-white">{copy.cards[0].title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-400">{copy.cards[0].body}</p>
           </div>
           <div className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
             <ShieldCheck className="mb-3 h-5 w-5 text-rose-200" />
-            <h3 className="font-black text-white">Payment processor</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Card payments will be processed by Lemon Squeezy after checkout approval.</p>
+            <h3 className="font-black text-white">{copy.cards[1].title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-400">{copy.cards[1].body}</p>
           </div>
           <div className="rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
             <Sparkles className="mb-3 h-5 w-5 text-rose-200" />
-            <h3 className="font-black text-white">Informational output</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-400">INSPIRE is not legal, medical, financial, psychological, or professional advice.</p>
+            <h3 className="font-black text-white">{copy.cards[2].title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-400">{copy.cards[2].body}</p>
           </div>
         </section>
 
         <div className="mt-8 flex flex-wrap gap-4 text-sm font-bold text-slate-400">
-          <Link href="/terms" className="transition-colors hover:text-rose-200">Terms</Link>
-          <Link href="/privacy" className="transition-colors hover:text-rose-200">Privacy</Link>
-          <Link href="/refund-policy" className="transition-colors hover:text-rose-200">Refund Policy</Link>
+          <Link href="/terms" className="transition-colors hover:text-rose-200">{copy.terms}</Link>
+          <Link href="/privacy" className="transition-colors hover:text-rose-200">{copy.privacy}</Link>
+          <Link href="/refund-policy" className="transition-colors hover:text-rose-200">{copy.refund}</Link>
         </div>
       </div>
     </div>

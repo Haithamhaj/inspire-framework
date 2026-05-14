@@ -200,6 +200,7 @@ Tasks:
 - [x] Expand guide pages with deeper examples, FAQ sections, and article/FAQ structured data.
 - [x] Localize `/guides` and guide detail pages for Arabic UI/content when the active site language is Arabic.
 - [x] Add a positive secondary Smart Prompt Coach CTA to guide detail pages after the prompt-upgrade example.
+- [x] Refine `/about`, `/research`, `/contact`, and `/pricing` with positive Arabic/English copy and Arabic client-side SEO metadata.
 - [ ] Add Arabic/GCC-focused content after the English trust/entity foundation is stable.
 - [ ] Prepare a review/demo flow:
   - landing page

@@ -244,6 +244,19 @@ export const defaultSeo: SeoConfig = {
 
 export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfig {
   if (pathname === "/pricing") {
+    if (locale === "ar") {
+      return {
+        path: "/pricing",
+        title: "أسعار INSPIRE — تقرير ملف تشغيل الذكاء الاصطناعي",
+        description:
+          "تسعير واضح من INSPIRE: تقييم سريع مجاني وتقرير رقمي كامل بقيمة 10 دولارات مع ملف تشغيل وتعليمات جاهزة للنسخ.",
+        jsonLd: breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Pricing", path: "/pricing" },
+        ]),
+      };
+    }
+
     return {
       path: "/pricing",
       title: "INSPIRE Pricing — $10 AI Operating Profile Report",
@@ -257,6 +270,34 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
   }
 
   if (pathname === "/about") {
+    if (locale === "ar") {
+      return {
+        path: "/about",
+        title: "عن INSPIRE Framework — ملف تشغيل وتعليمات شخصية للذكاء الاصطناعي",
+        description:
+          "تعرّف على INSPIRE Framework، تقييم رقمي يحوّل أهدافك وأسلوب عملك إلى ملف تشغيل وتعليمات مخصصة للذكاء الاصطناعي.",
+        jsonLd: {
+          "@context": "https://schema.org",
+          "@graph": [
+            breadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "About", path: "/about" },
+            ]),
+            {
+              "@type": "AboutPage",
+              "@id": `${siteUrl}/about#webpage`,
+              url: `${siteUrl}/about`,
+              name: "About INSPIRE Framework",
+              description:
+                "INSPIRE Framework is a self-serve digital assessment that turns a user's goals, work style, preferences, and constraints into AI operating profile instructions.",
+              isPartOf: { "@id": websiteId },
+              publisher: { "@id": organizationId },
+            },
+          ],
+        },
+      };
+    }
+
     return {
       path: "/about",
       title: "About INSPIRE Framework — AI Operating Profile Research and Product",
@@ -285,6 +326,32 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
   }
 
   if (pathname === "/contact") {
+    if (locale === "ar") {
+      return {
+        path: "/contact",
+        title: "تواصل مع INSPIRE Framework — الدعم والاستفسارات",
+        description:
+          "تواصل مع INSPIRE Framework لأسئلة المنتج، الدعم، الفواتير، أو مراجعة التقرير الرقمي المخصص للذكاء الاصطناعي.",
+        jsonLd: {
+          "@context": "https://schema.org",
+          "@graph": [
+            breadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "Contact", path: "/contact" },
+            ]),
+            {
+              "@type": "ContactPage",
+              "@id": `${siteUrl}/contact#webpage`,
+              url: `${siteUrl}/contact`,
+              name: "Contact INSPIRE Framework",
+              isPartOf: { "@id": websiteId },
+              publisher: { "@id": organizationId },
+            },
+          ],
+        },
+      };
+    }
+
     return {
       path: "/contact",
       title: "Contact INSPIRE Framework — Support and Product Questions",
@@ -311,6 +378,35 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
   }
 
   if (pathname === "/research") {
+    if (locale === "ar") {
+      return {
+        path: "/research",
+        title: "خلفية INSPIRE & CRAFTS البحثية — تخصيص التفاعل مع الذكاء الاصطناعي",
+        description:
+          "اقرأ الخلفية البحثية وراء INSPIRE Framework ومنهج INSPIRE & CRAFTS لتخصيص التفاعل مع الذكاء الاصطناعي.",
+        jsonLd: {
+          "@context": "https://schema.org",
+          "@graph": [
+            breadcrumbJsonLd([
+              { name: "Home", path: "/" },
+              { name: "Research", path: "/research" },
+            ]),
+            {
+              "@type": "ScholarlyArticle",
+              "@id": "https://dx.doi.org/10.2139/ssrn.5358595",
+              name: "Inspire & Crafts: A Dual Framework for Individual AI Interaction Customization",
+              author: {
+                "@type": "Person",
+                name: "Haitham Hamadneh",
+              },
+              url: "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5358595",
+              sameAs: "https://dx.doi.org/10.2139/ssrn.5358595",
+            },
+          ],
+        },
+      };
+    }
+
     return {
       path: "/research",
       title: "INSPIRE & CRAFTS Research — AI Interaction Customization",

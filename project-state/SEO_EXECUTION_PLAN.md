@@ -32,11 +32,12 @@ Examples should read like useful product education, not defensive disclaimers. W
 ## Phase 1: Trust And Entity Foundation
 
 Tasks:
-- [ ] Add `/about` page explaining who created INSPIRE, what problem it solves, and how it relates to the INSPIRE & CRAFTS research.
-- [ ] Add `/research` page summarizing the SSRN paper in plain language and linking to the DOI/SSRN page.
-- [ ] Add `/contact` page with product/support contact and clear digital-product expectations.
-- [ ] Add footer links to these pages.
-- [ ] Add metadata, sitemap entries, and `llms.txt` entries.
+- [x] Add `/about` page explaining who created INSPIRE, what problem it solves, and how it relates to the INSPIRE & CRAFTS research.
+- [x] Add `/research` page summarizing the SSRN paper in plain language and linking to the DOI/SSRN page.
+- [x] Add `/contact` page with product/support contact and clear digital-product expectations.
+- [x] Add footer links to these pages.
+- [x] Add metadata, sitemap entries, and `llms.txt` entries.
+- [x] Refine trust/pricing pages with positive Arabic/English copy and Arabic metadata.
 
 Expected result:
 - Reviewers and search engines can understand the entity, author, research basis, and support path.
