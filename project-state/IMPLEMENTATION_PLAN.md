@@ -209,11 +209,10 @@ Tasks:
 - [ ] Add Arabic/GCC-focused content after the English trust/entity foundation is stable.
 - [x] Connect Google Search Console and submit the multilingual sitemap after production is updated.
 - [ ] Prepare a review/demo flow:
-  - landing page
-  - start assessment
-  - complete assessment
-  - view generated or demo result
-  - legal pages
+  - [x] add hidden noindex `/review-demo` product-flow route for Lemon review video
+  - [x] show assessment setup, question answers, processing, and report delivery using reviewer-safe sample data
+  - [ ] record/upload the final review video link for Lemon
+  - [ ] include legal/product URLs in the Lemon reply
 - [ ] Prepare video talking points:
   - product is digital
   - no physical shipping

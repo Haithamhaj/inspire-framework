@@ -30,6 +30,7 @@ import Results from "@/pages/results";
 import MyAssessments from "@/pages/my-assessments";
 import Profile from "@/pages/profile";
 import Share from "@/pages/share";
+import ReviewDemo from "@/pages/review-demo";
 import Admin from "@/pages/admin";
 import BillingSuccess from "@/pages/billing-success";
 import NotFound from "@/pages/not-found";
@@ -67,6 +68,7 @@ function Router() {
     "/guides",
     "/assess",
     "/assess/mini",
+    "/review-demo",
     "/billing/success",
   ]);
   const isPremium = premiumNavPaths.has(normalizedLocation) || /^\/results\/[^/]+/.test(normalizedLocation);
@@ -118,6 +120,8 @@ function Router() {
           <Route path="/ar/profile" component={Profile} />
           <Route path="/share/:token" component={Share} />
           <Route path="/ar/share/:token" component={Share} />
+          <Route path="/review-demo" component={ReviewDemo} />
+          <Route path="/ar/review-demo" component={ReviewDemo} />
           <Route path="/billing/success" component={BillingSuccess} />
           <Route path="/ar/billing/success" component={BillingSuccess} />
           <Route path="/admin" component={Admin} />

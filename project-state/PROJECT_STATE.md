@@ -71,6 +71,8 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Google Search Console domain ownership is verified, but the initial `sitemap.xml` submission returned `Couldn't fetch` while Replit rendered the XML as visible plain text in Chrome. A `sitemap.txt` fallback has been added for Search Console submission.
 - Google Search Console now accepts `sitemap.xml` and reports 30 discovered pages.
 - Review-facing product copy now explicitly states that INSPIRE is a premade self-serve digital assessment/report product, not consultation or custom-service sales.
+- A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
+- A first MP4 review artifact has been generated at `docs/lemon-review/inspire-assessment-review-demo.mp4`.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -94,7 +96,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Prepare the Lemon Squeezy demo video and response email covering the requested demo, social URLs, product/legal URLs, self-serve premade-product confirmation, and product-type explanation.
+Review the generated Lemon Squeezy demo video, upload/share it if approved, then send the Lemon reply covering the demo, social URLs, product/legal URLs, self-serve premade-product confirmation, and product-type explanation.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

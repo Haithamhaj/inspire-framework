@@ -547,6 +547,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
     pathname.startsWith("/profile") ||
     pathname.startsWith("/my-assessments") ||
     pathname.startsWith("/results") ||
+    pathname.startsWith("/review-demo") ||
     pathname.startsWith("/share") ||
     pathname.startsWith("/billing") ||
     pathname.startsWith("/reset-password") ||
