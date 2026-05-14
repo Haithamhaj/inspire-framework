@@ -72,10 +72,11 @@ function Router() {
     "/billing/success",
   ]);
   const isPremium = premiumNavPaths.has(normalizedLocation) || /^\/results\/[^/]+/.test(normalizedLocation);
+  const isReviewDemo = normalizedLocation === "/review-demo";
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar variant={isPremium ? "premium" : "default"} />
+      {!isReviewDemo && <Navbar variant={isPremium ? "premium" : "default"} />}
       <main className="flex-1">
         <Switch>
           <Route path="/" component={Landing} />
@@ -128,7 +129,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </main>
-      <LegalFooter />
+      {!isReviewDemo && <LegalFooter />}
     </div>
   );
 }

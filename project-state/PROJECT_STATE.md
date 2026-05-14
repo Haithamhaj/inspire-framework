@@ -72,7 +72,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Google Search Console now accepts `sitemap.xml` and reports 30 discovered pages.
 - Review-facing product copy now explicitly states that INSPIRE is a premade self-serve digital assessment/report product, not consultation or custom-service sales.
 - A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
-- A first MP4 review artifact has been generated at `docs/lemon-review/inspire-assessment-review-demo.mp4`.
+- The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
