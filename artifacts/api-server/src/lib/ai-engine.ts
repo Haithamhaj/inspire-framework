@@ -23,7 +23,7 @@ import { buildOperatingPatternReportContentV1 } from "../inspire-types";
 import { sendResultsEmail, sendFailureEmail, sendAdminAlertEmail } from "./email";
 import { logger } from "./logger";
 
-const OPENAI_MODEL_DEFAULT = "gpt-5.4";
+const OPENAI_MODEL_DEFAULT = "gpt-5.5";
 const CLAUDE_MODEL_DEFAULT = "claude-sonnet-4-6";
 const V2_PROMPT_VERSION = "inspire-v2-instruction+report@1";
 

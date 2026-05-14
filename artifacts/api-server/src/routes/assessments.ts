@@ -22,6 +22,7 @@ import { computeInspireV2Profile } from "../lib/inspire-v2-decision-engine";
 
 const router: IRouter = Router();
 const DECISION_ENGINE_VERSION = "inspire-v2-decision-engine@1";
+const MINI_SCENARIO_INDICES = [0, 1, 2, 5, 6] as const;
 
 async function requireUser(req: Request, _res: Response) {
   const authHeader = req.headers["authorization"] as string | undefined;
@@ -292,6 +293,19 @@ router.post(
         open_answer,
         completion_time_seconds,
       } = parsed.data;
+      const submittedScenarioIndices = new Set(scenario_answers.map((answer) => answer.scenario_index));
+      const hasRequiredMiniScenarios =
+        scenario_answers.length === MINI_SCENARIO_INDICES.length &&
+        MINI_SCENARIO_INDICES.every((scenarioIndex) => submittedScenarioIndices.has(scenarioIndex));
+
+      if (!hasRequiredMiniScenarios) {
+        res.status(400).json({
+          success: false,
+          error: "Mini assessment requires exactly the selected five scenario answers",
+          details: { requiredScenarioIndices: MINI_SCENARIO_INDICES },
+        });
+        return;
+      }
 
       await db
         .update(assessmentsTable)
