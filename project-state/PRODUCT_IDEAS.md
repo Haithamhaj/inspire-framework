@@ -956,3 +956,235 @@ Before implementation, decide:
 - whether to add a stronger before/after proof block near the top
 - whether testimonials wait until real approved testimonials exist
 - whether page should prioritize assessment conversion or Lemon review clarity
+
+## Research Notes: Assessment Friction, Static UX, And Result Quality
+
+### Status
+Research notes for product planning. Do not implement yet.
+
+### Sources Reviewed
+- Typeform completion-rate guidance: https://help.typeform.com/hc/en-us/articles/360029615911-What-s-the-average-completion-rate-of-a-typeform
+- Typeform lead-capture tips: https://help.typeform.com/hc/en-us/articles/4406587604116-Research-driven-tips-to-power-up-your-lead-capture-forms
+- Baymard form layout research: https://baymard.com/blog/avoid-multi-column-forms
+- Progress-indicator meta-analysis for web surveys: https://journals.sagepub.com/doi/10.1177/0894439313497468
+- Appcues onboarding principles: https://www.appcues.com/blog/user-onboarding-best-practices
+- ProPrompt custom-instruction guidance: https://www.proprompt.ai/resources/best-practices
+
+### Relevant Findings For INSPIRE
+Conversational and one-question-at-a-time formats can reduce the feeling of a long questionnaire. This supports keeping the INSPIRE assessment visually focused and human, especially on mobile.
+
+Progress indicators are useful but not automatically effective. Research on web surveys suggests that slow early progress can increase drop-off. INSPIRE should avoid making the user feel they are only at 5% after real effort. A section-based progress model or "profile-building" progress may work better than a purely linear question counter.
+
+Multi-column or visually busy form layouts increase misreading and errors. INSPIRE should keep the assessment path single-column and obvious, especially in Arabic/mobile layouts.
+
+Good onboarding communicates what the user will accomplish next, gives one clear action, and personalizes the flow early. INSPIRE should show the value of the assessment before asking for deep thinking.
+
+Custom instructions work best when they include specific context, clear goals, tone preferences, constraints, and iteration after real use. INSPIRE already creates personalized instructions; the next improvement is to help users test and refine them after first use.
+
+### Product Implications
+The biggest opportunity is not one large redesign. It is a sequence of smaller improvements:
+- make the landing page promise sharper
+- make the first assessment screen reduce anxiety
+- keep each question page focused
+- add checkpoints and resume confidence
+- use the guide character for reassurance, not entertainment
+- make progress feel meaningful from the beginning
+- improve the report by turning instructions into a test-and-refine loop
+
+## Idea 7: Add A Pre-Assessment Value And Commitment Screen
+
+### Status
+Discussion candidate. Do not implement yet.
+
+### Problem
+The user is asked to think deeply before they fully feel the reward. If the assessment starts too quickly, it can feel like a test or form instead of a guided path toward a useful AI operating profile.
+
+### Product Direction
+Before the first question, add a short, premium "what will happen" screen that:
+- explains why the questions matter
+- shows what the user will get at the end
+- reassures them that there are no perfect answers
+- sets a realistic expectation for effort
+- makes the next action obvious
+
+This screen should not be a marketing page. It should be a calm bridge from curiosity to commitment.
+
+### Suggested Content
+The screen should answer:
+- "Why am I answering this?"
+- "What will I receive?"
+- "How should I choose answers?"
+- "Can I stop and come back?"
+
+Possible English direction:
+- "You are not taking a test. You are building an operating profile for how AI should support your work."
+- "Choose the closest answer, not the perfect answer."
+- "Your answers become a practical report and copy-ready AI instructions."
+
+Possible Arabic direction:
+- "هذا ليس اختباراً. أنت تبني ملفاً عملياً يساعد الذكاء الاصطناعي على فهم طريقة عملك."
+- "اختر الإجابة الأقرب لك، وليس الإجابة المثالية."
+- "إجاباتك ستتحول إلى تقرير عملي وتعليمات جاهزة للذكاء الاصطناعي."
+
+### UX Requirements
+Keep it short:
+- one clear headline
+- 3 outcome bullets
+- one reassurance line
+- one primary button
+
+Avoid:
+- long explanation
+- internal matrix language
+- psychological claims
+- too many choices before the user starts
+
+### Why This Helps
+This reduces early uncertainty. It also frames the assessment as a useful investment, not a quiz.
+
+### Implementation Notes For Later
+Likely work areas:
+- assessment start flow in `artifacts/inspire-web/src/pages/assess.tsx`
+- localized copy in `artifacts/inspire-web/src/i18n/locales/en.ts`
+- localized copy in `artifacts/inspire-web/src/i18n/locales/ar.ts`
+- analytics events from Idea 2 to measure whether the screen improves start-to-completion
+
+Before implementation, decide:
+- whether this appears before account creation, after account creation, or both
+- exact wording in Arabic and English
+- whether to show estimated time only after analytics confirms the real median time
+- whether to include the guide character on this screen
+
+## Idea 8: Add Save/Resume Confidence And Assessment Checkpoints
+
+### Status
+Discussion candidate. Do not implement yet.
+
+### Problem
+The assessment requires focus. If users feel they must finish in one sitting, some may abandon when they are interrupted or tired.
+
+### Product Direction
+Make progress feel protected.
+
+The product should clearly communicate:
+- answers are saved
+- the user can return later
+- completed sections remain completed
+- the next step is obvious when they come back
+
+This is not a new matrix feature. It is a confidence feature.
+
+### Recommended Experience
+During assessment:
+- show a small autosave status after answering
+- mark completed sections
+- show "continue where you left off" when returning
+- avoid forcing the user to restart
+
+At natural checkpoints:
+- after finishing a section, show a very short milestone state
+- give the user permission to continue now or return later
+- keep the primary action as continue
+
+Possible Arabic direction:
+- "تم حفظ إجاباتك."
+- "يمكنك المتابعة من هذه النقطة لاحقاً."
+- "أنهيت هذا الجزء. نكمل الآن الجزء التالي."
+
+### Guardrails
+Avoid:
+- making pauses too attractive before the user has momentum
+- adding account complexity just for resume
+- sending emails/reminders without explicit decision
+- implying that partial reports are available before enough signal exists
+
+### Why This Helps
+Checkpoints reduce the psychological cost of starting. If the user knows progress is protected, they are more willing to begin a thoughtful flow.
+
+### Implementation Notes For Later
+Likely work areas:
+- assessment state persistence in frontend/backend
+- resume logic in `artifacts/inspire-web/src/pages/assess.tsx`
+- admin progress visibility from Idea 2
+- optional session recovery before login if technically safe
+
+Before implementation, decide:
+- whether saving requires login first
+- how long partial assessments are retained
+- whether anonymous sessions are worth the complexity
+- whether returning users land directly on the next unanswered question
+- how to handle changed assessment versions later
+
+## Idea 9: Add An Instruction Quality Loop After The Report
+
+### Status
+Discussion candidate. Do not implement yet.
+
+### Problem
+The report can produce strong copy-ready instructions, but instructions usually become better after real use. If the user tests the instruction and something still feels wrong, the product should help improve it instead of leaving the user alone.
+
+### Product Direction
+Add a lightweight "improve my instruction" loop after the user tests the instruction.
+
+The user can report:
+- what answer improved
+- what still felt too generic
+- what tone or structure was not right
+- what AI assistant they tested
+- whether they want a tighter, shorter, or more detailed instruction
+
+INSPIRE can then generate a revised instruction version while preserving the original report.
+
+### Recommended Flow
+1. User copies the instruction.
+2. User tests it with the suggested prompt or their own prompt.
+3. User returns and chooses one of a few feedback options.
+4. INSPIRE creates `Instruction v2` or gives improvement suggestions.
+5. User can keep original, copy revised version, or submit feedback/testimonial.
+
+### Feedback Options
+Keep the feedback easy:
+- "The answer was still too general."
+- "The tone was not right."
+- "It gave too much detail."
+- "It was too short."
+- "It missed my project context."
+- "It did not give practical next steps."
+- "It worked well."
+
+Optional open text:
+- "What should the instruction improve?"
+
+### Instruction Quality Principles
+Use the feedback to tune:
+- context specificity
+- output structure
+- tone
+- decision-making support
+- constraints and things to avoid
+- length and detail level
+- project-specific examples
+
+Avoid:
+- exposing internal matrix logic
+- changing the user's profile from one feedback click
+- overwriting the original instruction
+- making unlimited regeneration loops in version one
+
+### Why This Helps
+This strengthens the final result, not only the experience. It also creates a better path to testimonials because the user is more likely to see improvement after a real test.
+
+### Implementation Notes For Later
+Likely work areas:
+- results page in `artifacts/inspire-web/src/pages/results.tsx`
+- API route for instruction revision
+- database support for instruction versions
+- admin feedback/testimonial review
+- possible evaluator tests to ensure revised instructions remain safe and grounded
+
+Before implementation, decide:
+- whether version one only collects feedback or also regenerates instructions
+- max number of revisions per report
+- whether revision requires payment or is included
+- how to label original versus revised instructions
+- whether the revised instruction appears in PDF/export
