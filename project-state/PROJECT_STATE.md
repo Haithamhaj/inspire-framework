@@ -4,9 +4,9 @@
 Keep the current Replit-hosted production app stable while planning the next product improvements on a separate work branch.
 
 ## Current Reality
-- GitHub `main` has been fast-forwarded to match `codex/platform-migration` at commit `2251dc7`.
-- Local active work branch: `codex/next-work`, created from the current production-ready baseline for future changes.
-- Replit production is still running from its own workspace snapshot on `codex/platform-migration`; Replit reported local commit `4f073d3 Published your App`, one commit ahead of origin. Do not pull/redeploy there unless intentionally publishing new work.
+- GitHub `main` is updated to commit `37db554` with the latest landing-page conversion pass.
+- The local active planning branch is `codex/product-plan-next`, created after `main` was updated for deployment.
+- Replit workspace was reset to `origin/main` at commit `37db554`, and the production build command passed there. Replit deployment still requires the owner to click/run Deploy from Replit.
 - The app currently has a Vite frontend, Express API, PostgreSQL/Drizzle database, and legacy PayPal billing code.
 - Official production domain: `https://inspire.next-stepai.com`.
 - Latest production read-only smoke after the GitHub merge passed:
@@ -81,9 +81,10 @@ Keep the current Replit-hosted production app stable while planning the next pro
 ## Active Decisions
 - Do not make product changes directly on `main`; use `codex/next-work` or a new feature branch, then merge after verification.
 - Treat Replit as the production deployment host for now, but remember it does not automatically deploy GitHub `main`.
-- Keep Replit untouched until a new change is intentionally ready to publish.
+- Keep Replit deployment intentional: GitHub updates do not change production until Replit deploy is run.
 - Historical data is not critical; a clean Supabase database is acceptable if migration becomes costly.
 - Replit remains the temporary deployment target because it is already paid for and configured.
+- Next product-work order is documented at the top of `project-state/PRODUCT_IDEAS.md`.
 
 ## Active Risks
 - Billing copy now mentions Lemon Squeezy, while the current backend billing implementation still uses PayPal.
@@ -91,7 +92,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
 - Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
-- Replit workspace has one local publish commit ahead of origin (`4f073d3`). This is acceptable while production is healthy, but should be handled carefully before the next Replit redeploy.
+- Replit workspace history previously had local-only commits; it was backed up/reset before the latest deploy preparation. Continue using explicit GitHub commit checks before each Replit deploy.
 - Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
 
 ## Protected Areas
@@ -100,7 +101,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Plan the next product ideas on `codex/next-work` without touching Replit. Redeploy Replit only after a new change is built, tested, merged to `main`, and intentionally approved for production.
+Publish the already-prepared Replit deployment if approved. For the next feature pass, start with assessment friction analytics from `project-state/PRODUCT_IDEAS.md` Idea 2 before changing question-screen guidance or adding the guide character.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

@@ -2,6 +2,51 @@
 
 This file is the lightweight discussion backlog for product ideas before implementation. It should capture the idea, why it may help, how it should feel to the customer, and the guardrails that protect the current product.
 
+## Current Product-Planning Order
+
+### Completed In The Latest Landing Pass
+This part is done and merged to GitHub `main` at commit `37db554`:
+- updated the landing hero promise around `أخيرًا… AI يفهم طريقتك`
+- added the top moving value strip:
+  `وقت أقل • شرح أقل • نتائج أقرب • تركيز أكبر • AI أقرب لك • جهد أقل`
+- added a clearer "what you get after analysis" outcome strip
+- added a stronger before/after comparison using the women's perfume marketing-plan example
+- changed the comparison order so `مع INSPIRE` appears before the generic answer
+- kept the work limited to landing-page conversion copy/UX, without changing assessment logic, matrix logic, report generation, billing, or production backend behavior
+
+### Recommended Next Sequence
+Work through the next improvements in this order:
+
+1. **Assessment friction analytics**
+   Add first-party tracking for starts, question progress, pauses, drop-offs, completion, report opening, and instruction copying. This should come first because it gives evidence before changing the assessment experience.
+
+2. **Pre-assessment value and commitment screen**
+   Add a short screen before the questions explaining what the user will get, why thoughtful answers matter, and that there are no perfect answers. This reduces anxiety before the demanding questions begin.
+
+3. **Guide character plus assessment encouragement**
+   Add the small refined guide character and its microcopy. It should explain, reassure, and guide without voice, without heavy movement, and with a clear skip option.
+
+4. **Question-screen liveliness**
+   Improve visual progress, transitions, selected-answer feedback, and section movement. The screen should feel alive, but the guide character should own conversational text so both do not say the same thing.
+
+5. **Report positive work-pattern insights**
+   Add the report section for `ما يعمل لصالحك` and `ما يستحق الانتباه والتحسين`, after the experience has enough analytics and the reporting contract is reviewed.
+
+6. **Instruction testing, feedback, and testimonials**
+   After users reach the report, guide them to test the instruction in ChatGPT/Claude/Gemini, compare outputs, and optionally submit feedback or a public testimonial.
+
+7. **Instruction quality loop**
+   Later, help users paste a result back, improve the instruction, and keep the best version. This is a deeper product loop and should come after the simpler feedback/testimonial path.
+
+### Immediate Next Point
+The next practical work item is **Idea 2: Track Assessment Friction And Completion Analytics**.
+
+Reason:
+- it does not change the assessment questions or matrix logic
+- it helps identify where users stop before we redesign the question flow
+- it gives the admin visibility into starts, completions, drop-offs, slow questions, and report/instruction usage
+- it will help judge whether the later guide character and screen-motion changes actually improve completion
+
 ## Idea 1: Add Positive Work Pattern Insights To The Report
 
 ### Status
@@ -809,7 +854,19 @@ Before implementation, decide:
 ## Idea 6: Strengthen Landing Page Conversion And Marketing Pull
 
 ### Status
-Discussion candidate. Do not implement yet.
+Partially implemented and merged to GitHub `main` at commit `37db554`.
+
+Completed:
+- approved Arabic hero copy is live in code
+- top value marquee is live in code
+- outcome strip explaining what the customer receives after analysis is live in code
+- before/after proof block is live in code using the women's perfume marketing-plan example
+- `مع INSPIRE` appears first, followed by the generic answer
+
+Remaining for later:
+- real customer testimonials after Idea 5 is implemented
+- deeper public social proof once testimonial consent and admin approval exist
+- additional landing experiments only after traffic or completion analytics exist
 
 ### Approved Hero Direction
 Use this as the agreed Arabic hero direction when implementing the landing-page update.
