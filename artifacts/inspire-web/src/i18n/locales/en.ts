@@ -472,11 +472,18 @@ export const en: Dictionary = {
         eyebrow: "Difference at a glance",
         title: "Same question — a closer answer",
         goalExampleLabel: "Goal example:",
+        promptLabel: "Same question:",
+        promptText:
+          "Help me organize my ideas: What should I start with first? What should I pay attention to most? What are the next three steps?",
         withoutLabel: "Without an operating profile",
         withoutTag: "Generic reply",
+        withoutExample:
+          "Start by defining the problem, identify user types, and build a simple MVP. Focus on understanding users and personalizing the results.",
         withoutNote: "Less tied to your goal and context",
         withLabel: "With an INSPIRE operating profile",
         withTag: "Tailored reply",
+        withExample:
+          "Do not start with the interface or questions. Start with the core promise: what will the person receive after answering that feels worth using? Do not sell a prompt; sell usable personal understanding.",
         withChip1: "Contextual",
         withChip2: "Role-aware",
         withChip3: "Structured",

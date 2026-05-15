@@ -529,14 +529,24 @@ function BeforeAfter({ goal, reduced }: { goal: GoalDef; reduced: boolean }) {
   const t = useT();
   const a = accentClasses[goal.accent];
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <motion.div
-        initial={reduced ? { opacity: 1 } : { opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5 }}
-        className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-5"
-      >
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
+        <div className="mb-2 text-[12.5px] font-semibold uppercase tracking-widest text-white/50">
+          {t("landing.hero.compare.promptLabel")}
+        </div>
+        <p className="text-[15px] leading-7 text-white/82">
+          {t("landing.hero.compare.promptText")}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <motion.div
+          initial={reduced ? { opacity: 1 } : { opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5 }}
+          className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+        >
         <div className="mb-3 flex items-center justify-between">
           <div className="inline-flex items-center gap-2 text-[13px] font-medium text-white/66">
             <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
@@ -547,21 +557,21 @@ function BeforeAfter({ goal, reduced }: { goal: GoalDef; reduced: boolean }) {
           </span>
         </div>
         <div className="rounded-xl border border-white/[0.06] bg-black/20 p-4 text-[14px] leading-relaxed text-white/76">
-          {t(goalKey(goal.key, "before"))}
+          {t("landing.hero.compare.withoutExample")}
         </div>
         <div className="mt-3 flex items-center gap-2 text-[12.5px] font-medium text-white/58">
           <span className="h-1 w-1 rounded-full bg-white/40" />
           {t("landing.hero.compare.withoutNote")}
         </div>
-      </motion.div>
+        </motion.div>
 
-      <motion.div
-        initial={reduced ? { opacity: 1 } : { opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 ${a.chip} ring-1 ${a.ring}`}
-      >
+        <motion.div
+          initial={reduced ? { opacity: 1 } : { opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 ${a.chip} ring-1 ${a.ring}`}
+        >
         <div
           className={`pointer-events-none absolute -top-12 -left-12 h-40 w-40 rounded-full bg-gradient-to-br ${a.glow} blur-2xl`}
         />
@@ -575,7 +585,7 @@ function BeforeAfter({ goal, reduced }: { goal: GoalDef; reduced: boolean }) {
           </span>
         </div>
         <div className="relative rounded-xl border border-white/10 bg-black/30 p-4 text-[14px] leading-relaxed text-white/92">
-          {t(goalKey(goal.key, "after"))}
+          {t("landing.hero.compare.withExample")}
         </div>
         <div className="relative mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] font-medium text-white/76">
           {(["withChip1", "withChip2", "withChip3", "withChip4"] as const).map(
@@ -587,7 +597,8 @@ function BeforeAfter({ goal, reduced }: { goal: GoalDef; reduced: boolean }) {
             ),
           )}
         </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }
