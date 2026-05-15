@@ -5,13 +5,27 @@ import {
   RealityFoxCharacter,
   type GuideState,
 } from "@/components/guide-character/GuideCharacterDemo";
+import bodyKeyframesSheet from "@/assets/inspire-guide-character/motion/body-keyframes.jpg";
+import guideBarVariantsSheet from "@/assets/inspire-guide-character/motion/guide-bar-variants.jpg";
+import rigOverviewSheet from "@/assets/inspire-guide-character/reference/rig-overview.jpg";
 
 type Locale = "ar" | "en";
 type LabMood = GuideState | "thinking" | "bored" | "walk";
+type InspireGuidePose =
+  | "listening"
+  | "speaking"
+  | "thinking"
+  | "pointing"
+  | "answer"
+  | "progress"
+  | "celebrate"
+  | "walk"
+  | "base";
 
 interface Scenario {
   key: string;
   mood: LabMood;
+  inspirePose: InspireGuidePose;
   sprite: GuideState | "runningRight" | "runningLeft";
   x: number;
   title: { ar: string; en: string };
@@ -22,6 +36,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "landing",
     mood: "waving",
+    inspirePose: "speaking",
     sprite: "waving",
     x: 126,
     title: { ar: "الصفحة الرئيسية", en: "Landing" },
@@ -33,6 +48,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "question",
     mood: "walk",
+    inspirePose: "walk",
     sprite: "runningLeft",
     x: -98,
     title: { ar: "أثناء الأسئلة", en: "Questions" },
@@ -44,6 +60,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "idle",
     mood: "thinking",
+    inspirePose: "thinking",
     sprite: "waiting",
     x: -18,
     title: { ar: "توقف طويل", en: "Long pause" },
@@ -55,6 +72,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "bored",
     mood: "bored",
+    inspirePose: "listening",
     sprite: "waiting",
     x: 88,
     title: { ar: "ملل أو بطء", en: "Fatigue" },
@@ -66,6 +84,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "answer",
     mood: "review",
+    inspirePose: "answer",
     sprite: "review",
     x: -124,
     title: { ar: "بعد اختيار جواب", en: "Answer selected" },
@@ -77,6 +96,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "complete",
     mood: "complete",
+    inspirePose: "celebrate",
     sprite: "complete",
     x: 24,
     title: { ar: "تقدم واضح", en: "Progress" },
@@ -86,6 +106,34 @@ const SCENARIOS: Scenario[] = [
     },
   },
 ];
+
+const SHEET_SIZE = {
+  guideBar: { width: 1280, height: 960 },
+  body: { width: 1280, height: 960 },
+  rigOverview: { width: 1280, height: 960 },
+};
+
+const INSPIRE_POSE_CROPS: Record<
+  InspireGuidePose,
+  {
+    sheet: "guideBar" | "body" | "rigOverview";
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    displayWidth?: number;
+  }
+> = {
+  listening: { sheet: "guideBar", x: 58, y: 536, w: 116, h: 82, displayWidth: 96 },
+  speaking: { sheet: "guideBar", x: 240, y: 536, w: 112, h: 82, displayWidth: 96 },
+  thinking: { sheet: "guideBar", x: 420, y: 536, w: 112, h: 82, displayWidth: 96 },
+  pointing: { sheet: "guideBar", x: 596, y: 536, w: 112, h: 82, displayWidth: 96 },
+  answer: { sheet: "guideBar", x: 768, y: 536, w: 112, h: 82, displayWidth: 96 },
+  progress: { sheet: "guideBar", x: 946, y: 536, w: 112, h: 82, displayWidth: 96 },
+  celebrate: { sheet: "guideBar", x: 1114, y: 536, w: 118, h: 82, displayWidth: 100 },
+  walk: { sheet: "body", x: 330, y: 548, w: 74, h: 140, displayWidth: 70 },
+  base: { sheet: "rigOverview", x: 374, y: 70, w: 310, h: 514, displayWidth: 82 },
+};
 
 function isArabicPath() {
   return window.location.pathname.startsWith("/ar");
@@ -225,6 +273,97 @@ function SvgGuideCharacter({ mood }: { mood: LabMood }) {
         />
       )}
     </motion.svg>
+  );
+}
+
+function SheetCrop({
+  pose,
+  className = "",
+}: {
+  pose: InspireGuidePose;
+  className?: string;
+}) {
+  const crop = INSPIRE_POSE_CROPS[pose];
+  const sheet =
+    crop.sheet === "guideBar"
+      ? guideBarVariantsSheet
+      : crop.sheet === "body"
+        ? bodyKeyframesSheet
+        : rigOverviewSheet;
+  const sheetSize = SHEET_SIZE[crop.sheet];
+  const displayWidth = crop.displayWidth ?? 88;
+  const scale = displayWidth / crop.w;
+  const displayHeight = crop.h * scale;
+
+  return (
+    <div
+      className={`overflow-hidden ${className}`}
+      style={{
+        width: displayWidth,
+        height: displayHeight,
+        backgroundImage: `url(${sheet})`,
+        backgroundSize: `${sheetSize.width * scale}px ${sheetSize.height * scale}px`,
+        backgroundPosition: `${-crop.x * scale}px ${-crop.y * scale}px`,
+        backgroundRepeat: "no-repeat",
+      }}
+      aria-hidden="true"
+    />
+  );
+}
+
+function InspireGuideCharacter({ pose }: { pose: InspireGuidePose }) {
+  const reduced = useReducedMotion() ?? false;
+  const visualPose = "base";
+  const isWalk = pose === "walk";
+  const isThinking = pose === "thinking";
+  const isCelebrate = pose === "celebrate";
+  const isListening = pose === "listening";
+
+  return (
+    <motion.div
+      role="img"
+      aria-label="INSPIRE guide character prototype"
+      className="relative flex h-[92px] w-[156px] items-end justify-center overflow-visible drop-shadow-[0_18px_22px_rgba(0,0,0,0.36)]"
+      animate={
+        reduced
+          ? undefined
+          : isWalk
+            ? { x: [-8, 8, -8], y: [0, -2, 0] }
+            : isCelebrate
+              ? { y: [0, -8, 0], rotate: [0, -2, 2, 0] }
+              : isListening
+                ? { rotate: [0, -1.5, 0] }
+                : { y: [0, -3, 0] }
+      }
+      transition={{
+        duration: isWalk ? 1.6 : isCelebrate ? 1.2 : 2.8,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      <div className="absolute bottom-0 h-2.5 w-24 rounded-full bg-black/35 blur-sm" />
+      <motion.div
+        animate={reduced ? undefined : isThinking ? { rotate: [-2, 2, -2] } : undefined}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        className="relative z-10 rounded-2xl"
+      >
+        <SheetCrop pose={visualPose} />
+      </motion.div>
+      {isThinking && (
+        <motion.span
+          className="absolute right-6 top-2 z-20 h-2 w-2 rounded-full bg-amber-200 shadow-[0_0_18px_rgba(253,230,138,0.8)]"
+          animate={reduced ? undefined : { y: [0, -8, 0], opacity: [0.45, 1, 0.45] }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+      {isCelebrate && (
+        <motion.span
+          className="absolute left-8 top-1 z-20 h-2 w-2 rounded-full bg-teal-200 shadow-[0_0_18px_rgba(94,234,212,0.8)]"
+          animate={reduced ? undefined : { scale: [0.8, 1.5, 0.8], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+    </motion.div>
   );
 }
 
@@ -368,6 +507,10 @@ export default function GuideCharacterMotionLab() {
 
           <MotionBar title={isAr ? "الخيار 2: شخصية SVG قابلة للتحريك" : "Option 2: animatable SVG rig"} scenario={scenario} locale={locale}>
             <SvgGuideCharacter mood={scenario.mood} />
+          </MotionBar>
+
+          <MotionBar title={isAr ? "الخيار 3: شخصية INSPIRE الجديدة" : "Option 3: new INSPIRE guide"} scenario={scenario} locale={locale}>
+            <InspireGuideCharacter pose={scenario.inspirePose} />
           </MotionBar>
 
           <RiveReadinessCard locale={locale} />

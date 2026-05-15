@@ -338,6 +338,9 @@ Motion-lab note:
 - the lab compares the current sprite character against an SVG rig concept using the same scenario states: landing, questions, long pause, fatigue, answer selected, and progress
 - the SVG concept can animate body, eyes, arms, legs, thinking marker, walking, light boredom, and completion states with existing `framer-motion`
 - the lab includes a Rive/Lottie readiness card instead of adding a new dependency blindly; a polished `.riv` or Lottie file is needed before that option can be judged fairly
+- the lab now also includes a third option, the new INSPIRE guide character, using the supplied motion-pack/reference sheets as a visual prototype
+- current supplied assets are JPG sheets, not clean transparent PNG layers, so the prototype is useful for visual direction but not production-ready animation
+- production-quality motion still needs either a `.riv` file or separately exported transparent PNG/SVG layers for the chosen poses and rig parts
 - the lab is for visual decision-making only and is not connected to production assessment behavior
 
 ### Problem
