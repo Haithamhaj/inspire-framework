@@ -811,6 +811,27 @@ Before implementation, decide:
 ### Status
 Discussion candidate. Do not implement yet.
 
+### Approved Hero Direction
+Use this as the agreed Arabic hero direction when implementing the landing-page update.
+
+Headline:
+`أخيرًا… AI يفهم طريقتك`
+
+Subheadline:
+`INSPIRE ينشئ تعليمات مخصصة تجعل ChatGPT وClaude وGemini يتعاملون معك بطريقة أقرب لك.`
+
+Support line:
+`قلّل إعادة التوجيه والشرح، واحصل على نتائج أقرب لطريقتك في التفكير والعمل.`
+
+Primary CTA:
+`ابدأ التحليل الآن`
+
+Secondary CTA:
+`ماذا سأحصل بعد التحليل`
+
+Implementation note:
+This approved copy should guide the first landing-page pass. English copy can be adapted from the same positioning, but should not be implemented before deciding the exact English tone.
+
 ### Current Observation
 The landing page already has a polished hero, animated profile preview, goal selector, before/after comparison, explainer section, pricing, FAQ, and SEO guide links. However, the marketing pull can still be stronger.
 
