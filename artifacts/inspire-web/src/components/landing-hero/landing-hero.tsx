@@ -102,6 +102,49 @@ function AuroraBackground() {
   );
 }
 
+function ValueMarquee({
+  text,
+  reduced,
+}: {
+  text: string;
+  reduced: boolean;
+}) {
+  const items = text.split("•").map((item) => item.trim()).filter(Boolean);
+  const repeated = [items, items];
+
+  return (
+    <div className="relative z-10 overflow-hidden border-y border-white/10 bg-black/25 py-2.5 backdrop-blur-md">
+      <span className="sr-only">{text}</span>
+      <motion.div
+        aria-hidden="true"
+        animate={reduced ? { x: 0 } : { x: ["0%", "-50%"] }}
+        transition={
+          reduced
+            ? undefined
+            : { duration: 30, ease: "linear", repeat: Infinity }
+        }
+        className="flex w-max items-center gap-8 whitespace-nowrap"
+      >
+        {repeated.map((group, groupIndex) => (
+          <div key={groupIndex} className="flex items-center gap-8 px-4">
+            {group.map((item, itemIndex) => (
+              <span
+                key={`${groupIndex}-${itemIndex}`}
+                className="inline-flex items-center gap-8 text-[13px] font-semibold text-white/82 md:text-[14px]"
+              >
+                <span className="bg-gradient-to-l from-amber-100 via-rose-100 to-violet-100 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(251,191,36,0.18)]">
+                  {item}
+                </span>
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-300/70 shadow-[0_0_16px_rgba(253,164,175,0.55)]" />
+              </span>
+            ))}
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
 function SignalChip({
   label,
   accent,
@@ -519,6 +562,7 @@ export default function LandingHero({
       data-testid="landing-hero"
     >
       <AuroraBackground />
+      <ValueMarquee text={t("landing.hero.marquee")} reduced={reduced} />
 
       {/* HERO MAIN */}
       <section className="relative mx-auto w-full max-w-7xl px-5 pb-16 pt-12 md:px-8 md:pb-24 md:pt-20">
@@ -549,7 +593,6 @@ export default function LandingHero({
               <span className="bg-gradient-to-l from-violet-300 via-fuchsia-300 to-rose-300 bg-clip-text text-transparent">
                 {t("landing.hero.headlineAccent2")}
               </span>
-              .
             </motion.h1>
 
             <motion.p

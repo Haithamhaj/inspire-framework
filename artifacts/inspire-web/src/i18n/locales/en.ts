@@ -434,14 +434,15 @@ export const en: Dictionary = {
   landing: {
     hero: {
       eyebrow: "Next Step AI · Human Interactive AI",
-      headlineLead: "Your next step with",
+      marquee: "Less time • Less explaining • Closer results • More focus • AI closer to you • Less effort",
+      headlineLead: "Finally,",
       headlineAccent1: "AI",
-      headlineMid: "begins when it understands",
-      headlineAccent2: "how to work with you",
+      headlineMid: "understands",
+      headlineAccent2: "how you work",
       paragraph:
-        "INSPIRE builds a purpose-specific AI Operating Profile so ChatGPT, Gemini, and Claude understand your goal, style, and context from the very first message.",
-      primaryCta: "Build your assistant profile",
-      secondaryCta: "See how it works",
+        "INSPIRE creates custom instructions that help ChatGPT, Claude, and Gemini work with you in a way that feels closer to your style. Reduce repeated explaining and get results closer to how you think and work.",
+      primaryCta: "Start the analysis now",
+      secondaryCta: "What will I get after the analysis?",
       trustLine: "Works with",
       slogan: "Every goal has its own INSPIRE",
       goalsEyebrow: "Pick your goal",

@@ -430,14 +430,15 @@ export const ar = {
   landing: {
     hero: {
       eyebrow: "خطوتك التالية مع AI · ذكاء اصطناعي تفاعلي مع الإنسان",
-      headlineLead: "خطوتك التالية مع",
+      marquee: "وقت أقل • شرح أقل • نتائج أقرب • تركيز أكبر • AI أقرب لك • جهد أقل",
+      headlineLead: "أخيرًا…",
       headlineAccent1: "AI",
-      headlineMid: "تبدأ عندما يفهم",
-      headlineAccent2: "كيف يعمل معك",
+      headlineMid: "يفهم",
+      headlineAccent2: "طريقتك",
       paragraph:
-        "INSPIRE يبني ملف تشغيل مخصّصًا يجعل ChatGPT وGemini وClaude يفهمون هدفك وأسلوبك وسياقك من أول رسالة.",
-      primaryCta: "ابنِ ملف تشغيل مساعدك",
-      secondaryCta: "شاهد كيف يعمل",
+        "INSPIRE ينشئ تعليمات مخصصة تجعل أدوات الذكاء الاصطناعي تتعامل معك بطريقة أقرب لك. قلّل إعادة التوجيه والشرح، واحصل على نتائج أقرب لطريقتك في التفكير والعمل.",
+      primaryCta: "ابدأ التحليل الآن",
+      secondaryCta: "ماذا سأحصل بعد التحليل",
       trustLine: "يعمل مع",
       slogan: "كل هدف له إلهامه الخاص",
       goalsEyebrow: "اختر هدفك",
