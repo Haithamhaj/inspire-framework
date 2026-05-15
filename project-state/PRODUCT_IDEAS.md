@@ -336,10 +336,31 @@ Motion and visual feedback:
 - calm motion graphic when finishing a section
 - report-building preview that becomes more complete as the user progresses
 
+Light guide character:
+- use a small refined character/avatar as a quiet assessment guide
+- no voice
+- no large movement across the screen
+- stays in one stable position, such as beside the question card or in a small guide panel
+- uses subtle internal motion only, such as blinking, breathing, small eye movement, or a gentle expression change
+- can have a few states: neutral, thinking, encouraging, section-complete
+- should feel premium and calm, not childish or game-like
+
 Challenge framing:
 - "These questions are designed to be thoughtful, not quick trivia."
 - "Choose the closest answer. The report works from patterns, not perfect answers."
 - "If two options feel close, choose the one that appears most often in real work."
+
+Closest-answer guidance:
+- "More than one option may feel true. Choose the one that appears most often in your real work."
+- "Answer based on the project context you entered, not on an ideal version of yourself."
+- "If you are between two answers, choose the one that would matter most for this project."
+- "There is no right or wrong answer here. The goal is to find the closest working pattern."
+
+Project-aware guidance:
+- If the user entered a project context, the guide can occasionally reference it in a light way.
+- Example: "For your content project, choose the answer that best reflects how you usually move from idea to finished output."
+- Example: "Think about this in the context of the project you described, not every situation in your life."
+- Keep this generic enough to avoid exposing internal analysis or over-personalizing before the report is ready.
 
 ### Should We Explain The Impact Of Each Answer?
 Be careful.
@@ -403,6 +424,7 @@ First version should be simple:
 - neutral reassurance text
 - subtle motion between questions
 - completion milestone text
+- optional guide character with subtle internal animation and rotating microcopy
 
 Avoid in first version:
 - per-answer explanations
@@ -410,6 +432,9 @@ Avoid in first version:
 - game-like badges
 - personality labels during the assessment
 - anything that reveals scoring or matrix logic
+- voice, sound effects, or auto-playing audio
+- a character that moves around the screen or distracts from reading
+- messages after every single answer
 
 Before implementation, decide:
 - exact tone in Arabic and English
@@ -418,3 +443,5 @@ Before implementation, decide:
 - motion style and intensity
 - whether transition cards appear before or after sections
 - how to measure completion impact
+- whether the guide character asset is supplied by the owner or generated/custom-designed
+- how many character states are needed for version one
