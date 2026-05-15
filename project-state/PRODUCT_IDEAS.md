@@ -805,3 +805,154 @@ Before implementation, decide:
 - testimonial consent wording
 - admin approval workflow
 - where approved testimonials appear publicly
+
+## Idea 6: Strengthen Landing Page Conversion And Marketing Pull
+
+### Status
+Discussion candidate. Do not implement yet.
+
+### Current Observation
+The landing page already has a polished hero, animated profile preview, goal selector, before/after comparison, explainer section, pricing, FAQ, and SEO guide links. However, the marketing pull can still be stronger.
+
+The page explains what INSPIRE does, but it may not yet make the visitor feel an urgent, practical reason to register and complete the assessment now.
+
+### Problem
+A new visitor may ask:
+- Why do I need INSPIRE?
+- Why not just write better prompts myself?
+- Why should I answer thoughtful questions?
+- What do I get that is meaningfully different from generic AI advice?
+- How will this help my real work today?
+
+The page needs a sharper reason to start, not only a description of the product.
+
+### Product Direction
+Reframe the landing page around the practical pain:
+- AI gives generic answers because it does not know how you think, decide, work, review, and communicate.
+- INSPIRE turns your work pattern into copy-ready AI instructions.
+- The result is an AI assistant that responds closer to your real operating style.
+
+The core promise:
+`Stop re-explaining yourself to AI. Build instructions that make AI work like it understands you.`
+
+Arabic direction:
+`توقف عن شرح نفسك للذكاء الاصطناعي كل مرة. ابنِ تعليمات تجعله يعمل بطريقة أقرب لطريقتك في التفكير والعمل.`
+
+### Stronger First-Screen Hooks
+Possible hero angles:
+- "Your AI does not know how you work yet."
+- "Turn your working style into AI instructions you can actually use."
+- "Make ChatGPT, Claude, or Gemini respond closer to how you think and execute."
+- "A practical assessment that turns your work pattern into copy-ready AI instructions."
+
+Arabic:
+- "الذكاء الاصطناعي لا يعرف كيف تعمل بعد."
+- "حوّل طريقة عملك إلى تعليمات جاهزة للذكاء الاصطناعي."
+- "اجعل ChatGPT أو Claude أو Gemini يرد بطريقة أقرب لطريقة تفكيرك وتنفيذك."
+- "تقييم عملي يحوّل نمط عملك إلى تعليمات AI جاهزة للاستخدام."
+
+### Missing Marketing Elements To Consider
+Stronger visible outcome:
+- show a short "before AI / after INSPIRE" example above the fold or very close to it
+- make the copy-ready instruction feel like the prize, not a technical detail
+- show that the report is not theory: it produces a usable instruction and practical operating insights
+
+Clearer pain:
+- generic answers
+- repeated corrections
+- AI forgetting preferences
+- AI giving too many options
+- answers that are technically okay but not useful
+- having to explain context every time
+
+Clearer benefit:
+- less repeated explaining
+- more useful first drafts
+- better review and decision support
+- AI responses closer to the user's work style
+- a reusable instruction for multiple AI platforms
+
+Social proof path:
+- later use testimonials from Idea 5
+- show "tested with ChatGPT / Claude / Gemini" once testimonials exist
+- show short before/after snippets with consent
+
+### Suggested Landing Structure
+First viewport:
+- sharp pain statement
+- clear product promise
+- one visual before/after example
+- primary CTA: start assessment
+- secondary CTA: see the difference
+
+Next section:
+- "Why generic AI fails"
+- 3 to 5 concrete problems users recognize
+
+Next section:
+- "What INSPIRE creates"
+- operating snapshot
+- practical recommendations
+- copy-ready AI instructions
+- test prompt / before-after proof
+
+Next section:
+- how it works in 3 steps
+- answer thoughtful questions
+- get your operating report
+- paste instructions into your AI assistant
+
+Next section:
+- examples by use case: writing, business, teaching, coding, planning
+
+Next section:
+- pricing and trust/legal links
+
+### CTA Improvements
+Current CTA can be made more outcome-driven.
+
+Possible CTAs:
+- "Build my AI instructions"
+- "Create my operating profile"
+- "Start my INSPIRE assessment"
+- "Make AI understand how I work"
+
+Arabic:
+- "أنشئ تعليماتي للذكاء الاصطناعي"
+- "ابنِ ملف نمط عملي"
+- "ابدأ تقييم INSPIRE"
+- "اجعل الذكاء الاصطناعي يفهم طريقة عملي"
+
+### Copy Principles
+Use practical language:
+- "work style"
+- "decisions"
+- "execution"
+- "review"
+- "communication"
+- "instructions you can paste"
+
+Avoid:
+- overexplaining the INSPIRE acronym early
+- making the first screen feel like education only
+- too much abstract language
+- sounding like a personality test
+- implying psychological diagnosis
+
+### Implementation Notes For Later
+This is mostly marketing/UX copy and landing layout work.
+
+Likely work areas:
+- `artifacts/inspire-web/src/components/landing-hero/landing-hero.tsx`
+- `artifacts/inspire-web/src/pages/landing.tsx`
+- `artifacts/inspire-web/src/i18n/locales/en.ts`
+- `artifacts/inspire-web/src/i18n/locales/ar.ts`
+- possibly testimonials from Idea 5 after capture exists
+
+Before implementation, decide:
+- primary hero message
+- Arabic/English tone
+- whether to keep current hero visual or simplify it
+- whether to add a stronger before/after proof block near the top
+- whether testimonials wait until real approved testimonials exist
+- whether page should prioritize assessment conversion or Lemon review clarity
