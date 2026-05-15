@@ -115,3 +115,4 @@ Plan the next product ideas on `codex/next-work` without touching Replit. Redepl
 - SEO strategy: `project-state/SEO_STRATEGY.md`
 - SEO execution plan: `project-state/SEO_EXECUTION_PLAN.md`
 - SEO measurement setup: `project-state/SEO_MEASUREMENT_SETUP.md`
+- Product ideas backlog: `project-state/PRODUCT_IDEAS.md`
