@@ -1,12 +1,17 @@
-# INSPIRE Platform Migration State
+# INSPIRE Operational State
 
 ## Current Goal
-Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, then finish the customer demo/review path for Lemon Squeezy.
+Keep the current Replit-hosted production app stable while planning the next product improvements on a separate work branch.
 
 ## Current Reality
-- `main` remains the old GitHub baseline, but the Replit workspace has been switched to `codex/platform-migration` for the current deployment work.
-- Active work branch: `codex/platform-migration`.
+- GitHub `main` has been fast-forwarded to match `codex/platform-migration` at commit `2251dc7`.
+- Local active work branch: `codex/next-work`, created from the current production-ready baseline for future changes.
+- Replit production is still running from its own workspace snapshot on `codex/platform-migration`; Replit reported local commit `4f073d3 Published your App`, one commit ahead of origin. Do not pull/redeploy there unless intentionally publishing new work.
 - The app currently has a Vite frontend, Express API, PostgreSQL/Drizzle database, and legacy PayPal billing code.
+- Official production domain: `https://inspire.next-stepai.com`.
+- Latest production read-only smoke after the GitHub merge passed:
+  - `/api/healthz` returned `{"status":"ok"}`.
+  - `/pricing` returned `200`.
 - Lemon Squeezy approval is not complete yet; the site needs review readiness before payment integration.
 - Phase 1 technical audit is documented in `project-state/TECHNICAL_AUDIT.md`.
 - Phase 2 DB v2 foundation has started with schema and migration files for decision snapshots and generation runs.
@@ -30,7 +35,6 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Durable Supabase CA setup is now included for Replit production via `certs/supabase-ca-chain.pem` and `NODE_EXTRA_CA_CERTS`.
 - Replit deployment handoff now includes both an audit-only prompt and an execution-preparation prompt.
 - Replit production is republished from `codex/platform-migration`.
-- Official production domain: `https://inspire.next-stepai.com`.
 - Replit `APP_URL` is set to `https://inspire.next-stepai.com`.
 - Replit `DATABASE_URL` is set manually as a secret and verified to point to Supabase Session Pooler with `sslmode=verify-full`.
 - Replit Supabase connectivity was verified from the Replit shell with the checked-in CA chain.
@@ -75,9 +79,9 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
 
 ## Active Decisions
-- Do not make large migration or platform changes directly on `main`.
-- Treat Replit as the old running environment for now.
-- Use this branch for DB v2, admin improvements, Supabase readiness, deployment planning, and Lemon Squeezy review preparation.
+- Do not make product changes directly on `main`; use `codex/next-work` or a new feature branch, then merge after verification.
+- Treat Replit as the production deployment host for now, but remember it does not automatically deploy GitHub `main`.
+- Keep Replit untouched until a new change is intentionally ready to publish.
 - Historical data is not critical; a clean Supabase database is acceptable if migration becomes costly.
 - Replit remains the temporary deployment target because it is already paid for and configured.
 
@@ -87,7 +91,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
 - Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
-- The Replit workspace is currently on a feature branch. Later, decide whether to merge `codex/platform-migration` into `main` or keep Replit intentionally pinned to this branch until review is complete.
+- Replit workspace has one local publish commit ahead of origin (`4f073d3`). This is acceptable while production is healthy, but should be handled carefully before the next Replit redeploy.
 - Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
 
 ## Protected Areas
@@ -96,7 +100,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Review the generated Lemon Squeezy demo video, upload/share it if approved, then send the Lemon reply covering the demo, social URLs, product/legal URLs, self-serve premade-product confirmation, and product-type explanation.
+Plan the next product ideas on `codex/next-work` without touching Replit. Redeploy Replit only after a new change is built, tested, merged to `main`, and intentionally approved for production.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
