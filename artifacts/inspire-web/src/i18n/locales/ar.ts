@@ -441,6 +441,8 @@ export const ar = {
       secondaryCta: "ماذا سأحصل بعد التحليل",
       trustLine: "يعمل مع",
       slogan: "كل هدف له إلهامه الخاص",
+      guideTitle: "دليل INSPIRE",
+      guideLine: "شخصية هادئة ترافقك حتى تبني تعليمات أقرب لطريقة عملك.",
       outcomesEyebrow: "النتيجة",
       outcomesTitle: "بعد التحليل ستحصل على",
       outcome1Title: "تقرير عملي عن نمط عملك",

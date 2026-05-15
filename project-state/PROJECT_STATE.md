@@ -77,6 +77,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Review-facing product copy now explicitly states that INSPIRE is a premade self-serve digital assessment/report product, not consultation or custom-service sales.
 - A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
+- A separate prototype branch `codex/guide-character-demo` is testing the INSPIRE guide character as an automatic sticky bar under the navbar on `/ar/guide-character-demo` and the landing page; it is not on `main` and does not change assessment, matrix, report, billing, or API logic.
 
 ## Active Decisions
 - Do not make product changes directly on `main`; use `codex/next-work` or a new feature branch, then merge after verification.
@@ -101,7 +102,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Publish the already-prepared Replit deployment if approved. For the next feature pass, start with assessment friction analytics from `project-state/PRODUCT_IDEAS.md` Idea 2 before changing question-screen guidance or adding the guide character.
+Publish the already-prepared Replit deployment if approved. The guide-character work is only a prototype on `codex/guide-character-demo`; before production, decide whether to keep it visually, optimize the 2.3MB sprite asset, and then return to assessment friction analytics from `project-state/PRODUCT_IDEAS.md` Idea 2.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

@@ -445,6 +445,8 @@ export const en: Dictionary = {
       secondaryCta: "What will I get after the analysis?",
       trustLine: "Works with",
       slogan: "Every goal has its own INSPIRE",
+      guideTitle: "INSPIRE Guide",
+      guideLine: "A quiet companion that helps you build instructions closer to how you work.",
       outcomesEyebrow: "Outcome",
       outcomesTitle: "After the analysis, you get",
       outcome1Title: "A practical work-pattern report",

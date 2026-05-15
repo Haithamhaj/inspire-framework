@@ -325,6 +325,14 @@ Before implementation, decide:
 ### Status
 Discussion candidate. Do not implement yet.
 
+Prototype note:
+- branch `codex/guide-character-demo` contains a hidden comparison page at `/ar/guide-character-demo`
+- the page now focuses on the existing `Reality Fox` spritesheet character inside a sticky guide bar under the navbar
+- the character moves automatically inside the full bar space, switches between walking/running/idle/waiting/completion sprite rows, and does not expose manual movement controls
+- the sticky guide bar uses predefined rotating and trigger-based messages for start, waiting, answer selection, and completion; it does not use generative AI yet
+- the branch also prototypes the same sticky guide bar on the landing page as the `دليل INSPIRE` / `INSPIRE Guide` brand character
+- this is only a visual/motion experiment and does not change the assessment flow, questions, matrix, or report logic
+
 ### Problem
 The assessment questions are thoughtful and demanding. A user may understand the value but still feel fatigue because the screen can feel static: read, think, choose, next. If the experience feels too much like a test, some users may stop before reaching the report.
 

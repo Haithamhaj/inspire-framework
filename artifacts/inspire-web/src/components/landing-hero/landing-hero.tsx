@@ -24,6 +24,7 @@ import {
   Wand2,
 } from "lucide-react";
 import { useDirection, useT, type TKey } from "@/i18n";
+import { AutoGuideBar } from "@/components/guide-character/GuideCharacterDemo";
 
 // ─── Goal model ──────────────────────────────────────────────────────────────
 type GoalKey = "pm" | "writing" | "teaching" | "creative" | "business";
@@ -660,6 +661,8 @@ export default function LandingHero({
       data-testid="landing-hero"
     >
       <AuroraBackground />
+      <AutoGuideBar locale={isRtl ? "ar" : "en"} />
+      <div className="h-[112px] md:h-[104px]" aria-hidden="true" />
       <ValueMarquee
         text={t("landing.hero.marquee")}
         reduced={reduced}
