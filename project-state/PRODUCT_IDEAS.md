@@ -445,3 +445,134 @@ Before implementation, decide:
 - how to measure completion impact
 - whether the guide character asset is supplied by the owner or generated/custom-designed
 - how many character states are needed for version one
+
+## Idea 4: Make The Question Screen Feel More Alive And Guided
+
+### Status
+Discussion candidate. Do not implement yet.
+
+### Current Observation
+The current question screen is visually clean and already has cards, colors, selected states, and a progress area. However, the experience can still feel static: the user reads a demanding question, chooses an option, then moves forward. The screen looks polished but not yet alive or actively supportive.
+
+### Product Direction
+Improve the question screen so it feels:
+- clearer
+- more guided
+- more responsive to progress
+- less like a test
+- more like a premium interactive assessment
+
+This should improve completion without changing the questions, answer options, matrix, or report logic.
+
+### Question Screen Improvements
+Progress should be more visible:
+- persistent progress bar with percentage and question count
+- clearer section progress, not only total progress
+- show "answered on this page" status
+- show "remaining questions" in a calm way
+- mark completed sections with a subtle visual milestone
+
+Question cards should feel more alive:
+- selected answers can gently lift/glow, not only change color
+- answered question card can show a calm completion state
+- next question/card can enter with a slight motion
+- section header can change as the user progresses
+- small animated accent line or pulse when a page is completed
+
+Guidance should reduce hesitation:
+- visible note: "Choose the closest answer, not the perfect answer."
+- project-aware note when available: "Think about this in the context of your current project."
+- if a page is incomplete, show which question still needs an answer
+- after selecting an option, show a neutral reassurance line, not an interpretation
+
+### Better Progress Concepts
+Possible labels:
+- "Profile progress"
+- "Work pattern map"
+- "Building your report"
+- "Section progress"
+
+Arabic options:
+- "تقدم الملف"
+- "خريطة نمط العمل"
+- "جاري بناء تقريرك"
+- "تقدم القسم"
+
+Possible progress message examples:
+- "6 of 21 answered. Your work pattern is becoming clearer."
+- "This section focuses on how you start, decide, and handle unclear work."
+- "Almost done with this section. Choose the closest answer and continue."
+
+### Page Structure Idea
+Top:
+- compact progress bar
+- current section name
+- short purpose of this section
+
+Middle:
+- question cards
+- answer buttons with clearer selected state
+- subtle helper from the guide character or guide panel
+
+Bottom:
+- back/next
+- incomplete-page hint if needed
+- "answers autosaved" reassurance
+
+Side or inline panel:
+- guide character or small guidance card
+- not a floating card that covers content
+- on mobile, it can become a compact inline message above the questions
+
+### Motion Style
+Use subtle motion:
+- fade/slide between pages
+- selected answer micro-interaction
+- progress bar smooth fill
+- gentle section completion pulse
+- guide character blinking/breathing
+
+Avoid:
+- bouncing elements
+- confetti during the main assessment
+- large animations that slow reading
+- motion that shifts layout unexpectedly
+- moving text while user is reading
+
+### Handling Multiple Correct-Feeling Answers
+This should be handled directly on the question screen.
+
+Recommended helper copy:
+- "If two answers feel true, choose the one that happens most often in your real work."
+- "If your answer changes by situation, choose what is most true for this project."
+- "There is no perfect answer. The report reads the overall pattern."
+
+This message can appear:
+- below the section header
+- beside the guide character
+- after a user spends a long time on a question
+- when returning/backtracking
+
+### Implementation Notes For Later
+This is mostly frontend work.
+
+Likely work areas:
+- `artifacts/inspire-web/src/pages/assess.tsx`
+- localized copy in `artifacts/inspire-web/src/i18n/locales`
+- possible new assessment UI components
+- optional connection to analytics from Idea 2
+- optional guide character from Idea 3
+
+First version should focus on:
+- clearer progress
+- section purpose copy
+- closest-answer helper text
+- better selected/answered state
+- subtle page/selection motion
+
+Do not add:
+- answer interpretation
+- matrix explanations
+- large layout redesign before measuring
+- heavy animation
+- popups that interrupt answering
