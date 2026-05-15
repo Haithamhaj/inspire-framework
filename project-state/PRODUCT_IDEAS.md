@@ -464,6 +464,13 @@ Improve the question screen so it feels:
 
 This should improve completion without changing the questions, answer options, matrix, or report logic.
 
+Important separation from Idea 3:
+- the question screen should provide visual life, structure, and feedback
+- the guide character should provide spoken-style text, encouragement, closest-answer guidance, and progress messages
+- avoid having both the screen and the character say the same thing
+- if a sentence feels conversational, it belongs to the guide character
+- if a change is visual or structural, it belongs to the question screen
+
 ### Question Screen Improvements
 Progress should be more visible:
 - persistent progress bar with percentage and question count
@@ -479,11 +486,10 @@ Question cards should feel more alive:
 - section header can change as the user progresses
 - small animated accent line or pulse when a page is completed
 
-Guidance should reduce hesitation:
-- visible note: "Choose the closest answer, not the perfect answer."
-- project-aware note when available: "Think about this in the context of your current project."
-- if a page is incomplete, show which question still needs an answer
-- after selecting an option, show a neutral reassurance line, not an interpretation
+Guidance split:
+- the screen may show non-conversational status only, such as incomplete question markers or autosave state
+- the guide character owns closest-answer guidance and project-aware reassurance
+- after selecting an option, the screen should respond visually; the guide character may optionally provide neutral reassurance
 
 ### Better Progress Concepts
 Possible labels:
@@ -502,6 +508,8 @@ Possible progress message examples:
 - "6 of 21 answered. Your work pattern is becoming clearer."
 - "This section focuses on how you start, decide, and handle unclear work."
 - "Almost done with this section. Choose the closest answer and continue."
+
+These examples should be treated as guide-character copy, not duplicated in the static screen UI.
 
 ### Page Structure Idea
 Top:
@@ -524,6 +532,8 @@ Side or inline panel:
 - not a floating card that covers content
 - on mobile, it can become a compact inline message above the questions
 
+If the guide character exists, avoid a separate text guidance panel. The character should be the guidance panel.
+
 ### Motion Style
 Use subtle motion:
 - fade/slide between pages
@@ -540,7 +550,7 @@ Avoid:
 - moving text while user is reading
 
 ### Handling Multiple Correct-Feeling Answers
-This should be handled directly on the question screen.
+This should be handled by the guide character, not by static duplicate text on the question screen.
 
 Recommended helper copy:
 - "If two answers feel true, choose the one that happens most often in your real work."
@@ -565,10 +575,10 @@ Likely work areas:
 
 First version should focus on:
 - clearer progress
-- section purpose copy
-- closest-answer helper text
+- visual section state
 - better selected/answered state
 - subtle page/selection motion
+- guide-character integration for text guidance
 
 Do not add:
 - answer interpretation
@@ -576,3 +586,4 @@ Do not add:
 - large layout redesign before measuring
 - heavy animation
 - popups that interrupt answering
+- duplicate static guidance text if the character already says it
