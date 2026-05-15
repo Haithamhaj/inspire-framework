@@ -113,32 +113,6 @@ function ValueMarquee({
 }) {
   const items = text.split("•").map((item) => item.trim()).filter(Boolean);
   const duration = 26;
-  const marqueeAccents = [
-    {
-      text: "from-amber-100 via-orange-200 to-rose-200",
-      dot: "bg-amber-300/80 shadow-[0_0_16px_rgba(252,211,77,0.55)]",
-    },
-    {
-      text: "from-rose-100 via-pink-200 to-fuchsia-200",
-      dot: "bg-rose-300/80 shadow-[0_0_16px_rgba(253,164,175,0.55)]",
-    },
-    {
-      text: "from-violet-100 via-fuchsia-200 to-rose-200",
-      dot: "bg-violet-300/80 shadow-[0_0_16px_rgba(196,181,253,0.55)]",
-    },
-    {
-      text: "from-sky-100 via-cyan-200 to-teal-200",
-      dot: "bg-cyan-300/80 shadow-[0_0_16px_rgba(103,232,249,0.55)]",
-    },
-    {
-      text: "from-emerald-100 via-teal-200 to-sky-200",
-      dot: "bg-emerald-300/80 shadow-[0_0_16px_rgba(110,231,183,0.55)]",
-    },
-    {
-      text: "from-orange-100 via-amber-200 to-yellow-200",
-      dot: "bg-orange-300/80 shadow-[0_0_16px_rgba(253,186,116,0.55)]",
-    },
-  ] as const;
 
   return (
     <div className="relative z-10 h-10 overflow-hidden border-y border-white/10 bg-black/25 backdrop-blur-md">
@@ -152,12 +126,15 @@ function ValueMarquee({
             from { transform: translate3d(-25vw, -50%, 0); }
             to { transform: translate3d(110vw, -50%, 0); }
           }
+          @keyframes inspire-marquee-hue {
+            from { filter: hue-rotate(0deg); }
+            to { filter: hue-rotate(360deg); }
+          }
         `}
       </style>
       <span className="sr-only">{text}</span>
       <div aria-hidden="true" className="absolute inset-0">
         {items.map((item, itemIndex) => {
-          const accent = marqueeAccents[itemIndex % marqueeAccents.length];
           return (
             <span
               key={item}
@@ -167,22 +144,23 @@ function ValueMarquee({
                   ? {
                       insetInlineStart: `${(itemIndex / items.length) * 100}%`,
                       transform: "translateY(-50%)",
+                      color: "hsl(45 95% 82%)",
+                      filter: `hue-rotate(${itemIndex * 58}deg)`,
                     }
                   : {
                       animationName: isRtl
-                        ? "inspire-marquee-rtl"
-                        : "inspire-marquee-ltr",
-                      animationDuration: `${duration}s`,
-                      animationTimingFunction: "linear",
-                      animationIterationCount: "infinite",
-                      animationDelay: `${-(duration / items.length) * itemIndex}s`,
+                        ? "inspire-marquee-rtl, inspire-marquee-hue"
+                        : "inspire-marquee-ltr, inspire-marquee-hue",
+                      animationDuration: `${duration}s, 12s`,
+                      animationTimingFunction: "linear, ease-in-out",
+                      animationIterationCount: "infinite, infinite",
+                      animationDelay: `${-(duration / items.length) * itemIndex}s, ${-itemIndex * 1.4}s`,
+                      color: "hsl(45 95% 82%)",
                     }
               }
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${accent.dot}`} />
-              <span
-                className={`bg-gradient-to-l ${accent.text} bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(255,255,255,0.16)]`}
-              >
+              <span className="h-1.5 w-1.5 rounded-full bg-current shadow-[0_0_16px_currentColor]" />
+              <span className="drop-shadow-[0_0_12px_currentColor]">
                 {item}
               </span>
             </span>
