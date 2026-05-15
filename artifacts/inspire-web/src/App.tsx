@@ -32,6 +32,7 @@ import Profile from "@/pages/profile";
 import Share from "@/pages/share";
 import ReviewDemo from "@/pages/review-demo";
 import GuideCharacterDemo from "@/pages/guide-character-demo";
+import GuideCharacterMotionLab from "@/pages/guide-character-motion-lab";
 import Admin from "@/pages/admin";
 import BillingSuccess from "@/pages/billing-success";
 import NotFound from "@/pages/not-found";
@@ -71,6 +72,7 @@ function Router() {
     "/assess/mini",
     "/review-demo",
     "/guide-character-demo",
+    "/guide-character-motion-lab",
     "/billing/success",
   ]);
   const isPremium = premiumNavPaths.has(normalizedLocation) || /^\/results\/[^/]+/.test(normalizedLocation);
@@ -127,6 +129,8 @@ function Router() {
           <Route path="/ar/review-demo" component={ReviewDemo} />
           <Route path="/guide-character-demo" component={GuideCharacterDemo} />
           <Route path="/ar/guide-character-demo" component={GuideCharacterDemo} />
+          <Route path="/guide-character-motion-lab" component={GuideCharacterMotionLab} />
+          <Route path="/ar/guide-character-motion-lab" component={GuideCharacterMotionLab} />
           <Route path="/billing/success" component={BillingSuccess} />
           <Route path="/ar/billing/success" component={BillingSuccess} />
           <Route path="/admin" component={Admin} />

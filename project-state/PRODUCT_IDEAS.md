@@ -333,6 +333,13 @@ Prototype note:
 - the branch also prototypes the same sticky guide bar on the landing page as the `دليل INSPIRE` / `INSPIRE Guide` brand character
 - this is only a visual/motion experiment and does not change the assessment flow, questions, matrix, or report logic
 
+Motion-lab note:
+- branch `codex/guide-character-motion-lab` adds `/ar/guide-character-motion-lab`
+- the lab compares the current sprite character against an SVG rig concept using the same scenario states: landing, questions, long pause, fatigue, answer selected, and progress
+- the SVG concept can animate body, eyes, arms, legs, thinking marker, walking, light boredom, and completion states with existing `framer-motion`
+- the lab includes a Rive/Lottie readiness card instead of adding a new dependency blindly; a polished `.riv` or Lottie file is needed before that option can be judged fairly
+- the lab is for visual decision-making only and is not connected to production assessment behavior
+
 ### Problem
 The assessment questions are thoughtful and demanding. A user may understand the value but still feel fatigue because the screen can feel static: read, think, choose, next. If the experience feels too much like a test, some users may stop before reaching the report.
 
