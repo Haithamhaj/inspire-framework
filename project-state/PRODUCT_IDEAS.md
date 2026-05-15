@@ -587,3 +587,138 @@ Do not add:
 - heavy animation
 - popups that interrupt answering
 - duplicate static guidance text if the character already says it
+
+## Idea 5: Encourage Instruction Testing, Feedback, And Testimonials
+
+### Status
+Discussion candidate. Do not implement yet.
+
+### Problem
+The report ends with copy-ready AI instructions, but the strongest customer value appears only after the user tests those instructions in ChatGPT, Claude, Gemini, or another assistant and sees the difference.
+
+If the user only reads the instructions and leaves, they may not feel the full value. The product should guide them to test the instructions, compare before/after outputs, and optionally share feedback or a testimonial.
+
+### Product Direction
+Add a post-report experience that helps the user:
+- copy the generated instruction
+- test it in their preferred AI assistant
+- compare normal AI output versus AI output with their INSPIRE instruction
+- return to INSPIRE with feedback
+- optionally submit a public testimonial
+
+This should feel like a practical experiment, not a marketing trap.
+
+### Recommended Flow
+After the report:
+1. Show the copy-ready instruction.
+2. Encourage the user to test it with a real prompt.
+3. Offer a simple comparison method:
+   - ask the same question in a normal AI chat
+   - paste the INSPIRE instruction into custom instructions or the first message
+   - ask the same question again
+   - compare clarity, usefulness, tone, depth, and fit
+4. Ask the user what changed.
+5. Let the user submit private feedback or approve a public testimonial.
+
+### Suggested User-Facing Framing
+Use language like:
+- "Do not just read the instruction. Test it."
+- "Try one question you already asked AI before and compare the result."
+- "Use the same prompt twice: once without INSPIRE, once with your instruction."
+- "If the second answer feels more useful, tell us what changed."
+- "Your feedback helps improve INSPIRE and may help others understand the value."
+
+Arabic direction:
+- "لا تكتف بقراءة التعليمات. جرّبها."
+- "اختر سؤالاً كنت قد سألته للذكاء الاصطناعي من قبل، وجربه مرة بدون التعليمات ومرة معها."
+- "قارن الفرق في الوضوح، الفائدة، الأسلوب، ومدى قرب الجواب من طريقة عملك."
+- "إذا شعرت أن النتيجة أصبحت أفضل، شاركنا الفرق بكلماتك."
+
+### Comparison Template
+Give the user a simple copyable testing prompt:
+
+English:
+`Ask your AI assistant the same work question twice: first normally, then after pasting your INSPIRE instructions. Compare which answer is more useful, specific, and easier to act on.`
+
+Arabic:
+`اسأل مساعد الذكاء الاصطناعي نفس سؤال العمل مرتين: مرة بدون تعليمات INSPIRE، ومرة بعد لصق تعليماتك. قارن أي إجابة كانت أوضح، أكثر فائدة، وأسهل للتنفيذ.`
+
+### Feedback Questions
+Private feedback:
+- Did the instruction improve the answer?
+- What improved most?
+- What still felt missing?
+- Which AI assistant did you test with?
+- What kind of task did you test?
+
+Public testimonial opt-in:
+- "Can we use your feedback publicly?"
+- "Name to show publicly"
+- "Role/company, optional"
+- "AI assistant tested"
+- "Before/after summary"
+- "Public testimonial text"
+
+### Testimonial Safety
+Never publish automatically.
+
+Require explicit approval:
+- private feedback by default
+- public testimonial only if the user checks an approval box
+- allow editing testimonial text before submission
+- avoid exposing sensitive project details
+- allow anonymous display
+
+Suggested consent copy:
+- "I allow INSPIRE to use this testimonial publicly. Do not include private project details unless I wrote them in the testimonial text."
+
+### Admin Use
+Admin should be able to:
+- review private feedback
+- filter feedback by AI assistant
+- mark testimonial as approved/rejected
+- edit display name or anonymize
+- export testimonials
+- choose which testimonials appear on the website
+
+### Website Use
+Testimonials can later appear on:
+- landing page
+- pricing page
+- review-demo/supporting proof page
+- guide pages
+
+Best testimonial format:
+- short quote
+- role or context
+- AI assistant tested
+- what improved
+
+Example:
+- "I tested the same planning prompt before and after INSPIRE. The second answer was more structured, more direct, and easier to turn into action."
+
+### UX Placement
+Best places to encourage testing:
+- immediately after copy-ready instructions
+- after the copy button is clicked
+- in a follow-up card on the results page
+- in a later email if email flow is approved
+- inside the admin-visible feedback widget already connected to report usefulness
+
+### Implementation Notes For Later
+This builds on the existing feedback area in the results page, but needs a more specific "test your instruction" flow.
+
+Likely work areas:
+- results page instruction section in `artifacts/inspire-web/src/pages/results.tsx`
+- feedback schema/API if current fields are too generic
+- admin feedback/testimonial review in `artifacts/inspire-web/src/pages/admin.tsx`
+- database fields for public testimonial consent and display status
+- landing/pricing page testimonial rendering later
+
+Before implementation, decide:
+- whether testimonial capture is part of report feedback or a separate form
+- whether to support before/after pasted examples or only a summary
+- whether screenshots are allowed or avoided
+- testimonial consent wording
+- admin approval workflow
+- where approved testimonials appear publicly
