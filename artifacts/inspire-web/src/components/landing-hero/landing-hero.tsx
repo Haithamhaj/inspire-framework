@@ -105,32 +105,38 @@ function AuroraBackground() {
 function ValueMarquee({
   text,
   reduced,
+  isRtl,
 }: {
   text: string;
   reduced: boolean;
+  isRtl: boolean;
 }) {
   const items = text.split("•").map((item) => item.trim()).filter(Boolean);
   const repeated = [items, items];
+  const motionRange = isRtl ? ["0%", "-50%"] : ["-50%", "0%"];
 
   return (
     <div className="relative z-10 overflow-hidden border-y border-white/10 bg-black/25 py-2.5 backdrop-blur-md">
       <span className="sr-only">{text}</span>
       <motion.div
         aria-hidden="true"
-        animate={reduced ? { x: 0 } : { x: ["0%", "-50%"] }}
+        animate={reduced ? { x: 0 } : { x: motionRange }}
         transition={
           reduced
             ? undefined
             : { duration: 30, ease: "linear", repeat: Infinity }
         }
-        className="flex w-max items-center gap-8 whitespace-nowrap"
+        className="flex w-[200vw] items-center whitespace-nowrap"
       >
         {repeated.map((group, groupIndex) => (
-          <div key={groupIndex} className="flex items-center gap-8 px-4">
+          <div
+            key={groupIndex}
+            className="flex min-w-screen items-center justify-around gap-8 px-8"
+          >
             {group.map((item, itemIndex) => (
               <span
                 key={`${groupIndex}-${itemIndex}`}
-                className="inline-flex items-center gap-8 text-[13px] font-semibold text-white/82 md:text-[14px]"
+                className="inline-flex min-w-max items-center gap-8 text-[13px] font-semibold text-white/82 md:text-[14px]"
               >
                 <span className="bg-gradient-to-l from-amber-100 via-rose-100 to-violet-100 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(251,191,36,0.18)]">
                   {item}
@@ -562,7 +568,11 @@ export default function LandingHero({
       data-testid="landing-hero"
     >
       <AuroraBackground />
-      <ValueMarquee text={t("landing.hero.marquee")} reduced={reduced} />
+      <ValueMarquee
+        text={t("landing.hero.marquee")}
+        reduced={reduced}
+        isRtl={isRtl}
+      />
 
       {/* HERO MAIN */}
       <section className="relative mx-auto w-full max-w-7xl px-5 pb-16 pt-12 md:px-8 md:pb-24 md:pt-20">
