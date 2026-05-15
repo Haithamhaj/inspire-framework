@@ -5,9 +5,25 @@ import {
   RealityFoxCharacter,
   type GuideState,
 } from "@/components/guide-character/GuideCharacterDemo";
-import bodyKeyframesSheet from "@/assets/inspire-guide-character/cleaned/body-keyframes-transparent.png";
-import guideBarVariantsSheet from "@/assets/inspire-guide-character/cleaned/guide-bar-variants-transparent.png";
-import rigOverviewSheet from "@/assets/inspire-guide-character/cleaned/rig-overview-transparent.png";
+import poseAnswer from "@/assets/inspire-guide-character/poses/cleaned/half-body/answer-received.webp";
+import poseBored from "@/assets/inspire-guide-character/poses/cleaned/half-body/bored-polite.webp";
+import poseCelebrate from "@/assets/inspire-guide-character/poses/cleaned/half-body/completion-celebration.webp";
+import poseIdle from "@/assets/inspire-guide-character/poses/cleaned/half-body/idle.webp";
+import posePointing from "@/assets/inspire-guide-character/poses/cleaned/half-body/pointing-hint.webp";
+import poseProgress from "@/assets/inspire-guide-character/poses/cleaned/half-body/progress-encouragement.webp";
+import poseSpeaking from "@/assets/inspire-guide-character/poses/cleaned/half-body/speaking.webp";
+import poseThinking from "@/assets/inspire-guide-character/poses/cleaned/half-body/thinking.webp";
+import poseWaiting from "@/assets/inspire-guide-character/poses/cleaned/half-body/waiting.webp";
+import poseWelcome from "@/assets/inspire-guide-character/poses/cleaned/half-body/welcome-wave.webp";
+import fullJumpCelebrate from "@/assets/inspire-guide-character/poses/cleaned/full-body/jump-celebration.webp";
+import fullListening from "@/assets/inspire-guide-character/poses/cleaned/full-body/listening-standing.webp";
+import fullPointing from "@/assets/inspire-guide-character/poses/cleaned/full-body/pointing-standing.webp";
+import fullSeatedTablet from "@/assets/inspire-guide-character/poses/cleaned/full-body/seated-tablet.webp";
+import fullSeatedWaiting from "@/assets/inspire-guide-character/poses/cleaned/full-body/seated-waiting-platform.webp";
+import fullTablet from "@/assets/inspire-guide-character/poses/cleaned/full-body/tablet-standing.webp";
+import fullThinking from "@/assets/inspire-guide-character/poses/cleaned/full-body/thinking-standing.webp";
+import fullWalkLeft from "@/assets/inspire-guide-character/poses/cleaned/full-body/walk-left.webp";
+import fullWelcome from "@/assets/inspire-guide-character/poses/cleaned/full-body/welcome-standing.webp";
 
 type Locale = "ar" | "en";
 type LabMood = GuideState | "thinking" | "bored" | "walk";
@@ -17,10 +33,12 @@ type InspireGuidePose =
   | "thinking"
   | "pointing"
   | "answer"
+  | "bored"
+  | "waiting"
+  | "welcome"
   | "progress"
   | "celebrate"
-  | "walk"
-  | "base";
+  | "walk";
 
 interface Scenario {
   key: string;
@@ -36,7 +54,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "landing",
     mood: "waving",
-    inspirePose: "speaking",
+    inspirePose: "welcome",
     sprite: "waving",
     x: 126,
     title: { ar: "الصفحة الرئيسية", en: "Landing" },
@@ -48,7 +66,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "question",
     mood: "walk",
-    inspirePose: "walk",
+    inspirePose: "pointing",
     sprite: "runningLeft",
     x: -98,
     title: { ar: "أثناء الأسئلة", en: "Questions" },
@@ -72,7 +90,7 @@ const SCENARIOS: Scenario[] = [
   {
     key: "bored",
     mood: "bored",
-    inspirePose: "listening",
+    inspirePose: "bored",
     sprite: "waiting",
     x: 88,
     title: { ar: "ملل أو بطء", en: "Fatigue" },
@@ -107,33 +125,67 @@ const SCENARIOS: Scenario[] = [
   },
 ];
 
-const SHEET_SIZE = {
-  guideBar: { width: 1280, height: 960 },
-  body: { width: 1280, height: 960 },
-  rigOverview: { width: 1280, height: 960 },
+const HALF_BODY_POSES: Record<InspireGuidePose, string> = {
+  listening: poseIdle,
+  speaking: poseSpeaking,
+  thinking: poseThinking,
+  pointing: posePointing,
+  answer: poseAnswer,
+  bored: poseBored,
+  waiting: poseWaiting,
+  welcome: poseWelcome,
+  progress: poseProgress,
+  celebrate: poseCelebrate,
+  walk: posePointing,
 };
 
-const INSPIRE_POSE_CROPS: Record<
-  InspireGuidePose,
+const FULL_BODY_POSES = [
   {
-    sheet: "guideBar" | "body" | "rigOverview";
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    displayWidth?: number;
-  }
-> = {
-  listening: { sheet: "guideBar", x: 58, y: 536, w: 116, h: 82, displayWidth: 96 },
-  speaking: { sheet: "guideBar", x: 240, y: 536, w: 112, h: 82, displayWidth: 96 },
-  thinking: { sheet: "guideBar", x: 420, y: 536, w: 112, h: 82, displayWidth: 96 },
-  pointing: { sheet: "guideBar", x: 596, y: 536, w: 112, h: 82, displayWidth: 96 },
-  answer: { sheet: "guideBar", x: 768, y: 536, w: 112, h: 82, displayWidth: 96 },
-  progress: { sheet: "guideBar", x: 946, y: 536, w: 112, h: 82, displayWidth: 96 },
-  celebrate: { sheet: "guideBar", x: 1114, y: 536, w: 118, h: 82, displayWidth: 100 },
-  walk: { sheet: "body", x: 330, y: 548, w: 74, h: 140, displayWidth: 70 },
-  base: { sheet: "rigOverview", x: 374, y: 78, w: 310, h: 360, displayWidth: 80 },
-};
+    key: "welcome",
+    image: fullWelcome,
+    label: { ar: "ترحيب", en: "Welcome" },
+  },
+  {
+    key: "question",
+    image: fullPointing,
+    label: { ar: "تلميح للسؤال", en: "Question hint" },
+  },
+  {
+    key: "thinking",
+    image: fullThinking,
+    label: { ar: "تفكير", en: "Thinking" },
+  },
+  {
+    key: "waiting",
+    image: fullSeatedWaiting,
+    label: { ar: "انتظار", en: "Waiting" },
+  },
+  {
+    key: "tablet",
+    image: fullTablet,
+    label: { ar: "قراءة التقدم", en: "Reading progress" },
+  },
+  {
+    key: "walk",
+    image: fullWalkLeft,
+    label: { ar: "مشي", en: "Walking" },
+  },
+  {
+    key: "celebrate",
+    image: fullJumpCelebrate,
+    label: { ar: "احتفال", en: "Celebration" },
+  },
+  {
+    key: "seated-tablet",
+    image: fullSeatedTablet,
+    label: { ar: "مراجعة هادئة", en: "Calm review" },
+  },
+  {
+    key: "listening",
+    image: fullListening,
+    label: { ar: "استماع", en: "Listening" },
+  },
+];
 
 function isArabicPath() {
   return window.location.pathname.startsWith("/ar");
@@ -276,48 +328,13 @@ function SvgGuideCharacter({ mood }: { mood: LabMood }) {
   );
 }
 
-function SheetCrop({
-  pose,
-  className = "",
-}: {
-  pose: InspireGuidePose;
-  className?: string;
-}) {
-  const crop = INSPIRE_POSE_CROPS[pose];
-  const sheet =
-    crop.sheet === "guideBar"
-      ? guideBarVariantsSheet
-      : crop.sheet === "body"
-        ? bodyKeyframesSheet
-        : rigOverviewSheet;
-  const sheetSize = SHEET_SIZE[crop.sheet];
-  const displayWidth = crop.displayWidth ?? 88;
-  const scale = displayWidth / crop.w;
-  const displayHeight = crop.h * scale;
-
-  return (
-    <div
-      className={`overflow-hidden ${className}`}
-      style={{
-        width: displayWidth,
-        height: displayHeight,
-        backgroundImage: `url(${sheet})`,
-        backgroundSize: `${sheetSize.width * scale}px ${sheetSize.height * scale}px`,
-        backgroundPosition: `${-crop.x * scale}px ${-crop.y * scale}px`,
-        backgroundRepeat: "no-repeat",
-      }}
-      aria-hidden="true"
-    />
-  );
-}
-
 function InspireGuideCharacter({ pose }: { pose: InspireGuidePose }) {
   const reduced = useReducedMotion() ?? false;
-  const visualPose = "base";
   const isWalk = pose === "walk";
   const isThinking = pose === "thinking";
   const isCelebrate = pose === "celebrate";
   const isListening = pose === "listening";
+  const poseImage = HALF_BODY_POSES[pose];
 
   return (
     <motion.div
@@ -345,9 +362,14 @@ function InspireGuideCharacter({ pose }: { pose: InspireGuidePose }) {
       <motion.div
         animate={reduced ? undefined : isThinking ? { rotate: [-2, 2, -2] } : undefined}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        className="relative z-10 rounded-2xl"
+        className="relative z-10 flex h-[94px] w-[142px] items-end justify-center overflow-visible"
       >
-        <SheetCrop pose={visualPose} />
+        <img
+          src={poseImage}
+          alt=""
+          className="max-h-[106px] max-w-[150px] object-contain"
+          draggable={false}
+        />
       </motion.div>
       {isThinking && (
         <motion.span
@@ -450,6 +472,56 @@ function RiveReadinessCard({ locale }: { locale: Locale }) {
   );
 }
 
+function FullBodyPoseGallery({ locale }: { locale: Locale }) {
+  const isAr = locale === "ar";
+
+  return (
+    <section className="rounded-[28px] border border-cyan-200/14 bg-cyan-300/[0.045] p-5">
+      <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-white">
+            {isAr ? "حالات الجسم الكامل للشخصية الجديدة" : "Full-body states for the new guide"}
+          </h2>
+          <p className="mt-2 text-[14.5px] leading-7 text-white/62">
+            {isAr
+              ? "هذه الصور تعرض الاتجاه الحقيقي للشخصية قبل تحويلها لاحقاً إلى Rive أو Lottie. الآن هي مناسبة للاختبار البصري والحركة الخفيفة داخل الموقع."
+              : "These assets show the real character direction before converting it to Rive or Lottie later. For now, they are useful for visual testing and light site motion."}
+          </p>
+        </div>
+        <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-bold text-cyan-100/80">
+          {isAr ? "تجربة فقط" : "Prototype only"}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {FULL_BODY_POSES.map((pose, poseIndex) => (
+          <motion.div
+            key={pose.key}
+            className="flex min-h-[210px] flex-col items-center justify-end rounded-[22px] border border-white/10 bg-black/20 p-3"
+            animate={{ y: [0, poseIndex % 2 === 0 ? -4 : -2, 0] }}
+            transition={{
+              duration: 2.8 + (poseIndex % 3) * 0.35,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <div className="flex h-[170px] w-full items-end justify-center overflow-visible">
+              <img
+                src={pose.image}
+                alt=""
+                className="max-h-[176px] max-w-full object-contain drop-shadow-[0_18px_18px_rgba(0,0,0,0.28)]"
+                draggable={false}
+              />
+            </div>
+            <div className="mt-2 w-full rounded-full border border-white/10 bg-white/[0.045] px-2.5 py-1 text-center text-xs font-bold text-white/70">
+              {pose.label[locale]}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function GuideCharacterMotionLab() {
   const locale = useMemo<Locale>(() => (isArabicPath() ? "ar" : "en"), []);
   const isAr = locale === "ar";
@@ -512,6 +584,8 @@ export default function GuideCharacterMotionLab() {
           <MotionBar title={isAr ? "الخيار 3: شخصية INSPIRE الجديدة" : "Option 3: new INSPIRE guide"} scenario={scenario} locale={locale}>
             <InspireGuideCharacter pose={scenario.inspirePose} />
           </MotionBar>
+
+          <FullBodyPoseGallery locale={locale} />
 
           <RiveReadinessCard locale={locale} />
         </div>

@@ -9,6 +9,8 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 ASSET_ROOT = ROOT / "artifacts/inspire-web/src/assets/inspire-guide-character"
 OUTPUT_DIR = ASSET_ROOT / "cleaned"
+POSE_SOURCE_DIR = ASSET_ROOT / "poses/source"
+POSE_OUTPUT_DIR = ASSET_ROOT / "poses/cleaned"
 
 SOURCES = {
     "rig-overview-transparent.png": ASSET_ROOT / "reference/rig-overview.jpg",
@@ -59,13 +61,22 @@ def remove_connected_light_background(source: Path, target: Path) -> None:
         if y < height - 1:
             queue.append((x, y + 1))
 
-    image.save(target)
+    if target.suffix.lower() == ".webp":
+        image.save(target, quality=88, method=6)
+    else:
+        image.save(target)
 
 
 def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for output_name, source in SOURCES.items():
         remove_connected_light_background(source, OUTPUT_DIR / output_name)
+
+    for source in sorted(POSE_SOURCE_DIR.glob("*/*.jpg")):
+        relative_target = source.relative_to(POSE_SOURCE_DIR).with_suffix(".webp")
+        target = POSE_OUTPUT_DIR / relative_target
+        target.parent.mkdir(parents=True, exist_ok=True)
+        remove_connected_light_background(source, target)
 
 
 if __name__ == "__main__":

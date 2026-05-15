@@ -339,8 +339,9 @@ Motion-lab note:
 - the SVG concept can animate body, eyes, arms, legs, thinking marker, walking, light boredom, and completion states with existing `framer-motion`
 - the lab includes a Rive/Lottie readiness card instead of adding a new dependency blindly; a polished `.riv` or Lottie file is needed before that option can be judged fairly
 - the lab now also includes a third option, the new INSPIRE guide character, using the supplied motion-pack/reference sheets as a visual prototype
-- current supplied assets are JPG sheets, not clean transparent PNG layers, so the prototype is useful for visual direction but not production-ready animation
-- a local Pillow script now creates cleaned transparent PNG versions of the key JPG sheets by removing connected light checkerboard/background areas; this improves the visual prototype but increases asset size and still is not a substitute for real separated layers
+- the third option now uses selected cleaned WebP half-body pose assets for the guide bar preview and a full-body pose gallery for movement/state review
+- the current implementation is better for visual decision-making than the original reference-sheet view, but it is still not final production animation
+- a local Pillow script now creates cleaned transparent PNG/WebP versions from the supplied JPGs by removing connected light checkerboard/background areas; this improves the prototype and keeps the imported pose assets lighter than full PNGs, but it is still not a substitute for real separated layers
 - production-quality motion still needs either a `.riv` file or separately exported transparent PNG/SVG layers for the chosen poses and rig parts
 - the lab is for visual decision-making only and is not connected to production assessment behavior
 

@@ -78,7 +78,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
 - A separate prototype branch `codex/guide-character-demo` is testing the INSPIRE guide character as an automatic sticky bar under the navbar on `/ar/guide-character-demo` and the landing page; it is not on `main` and does not change assessment, matrix, report, billing, or API logic.
-- A newer prototype branch `codex/guide-character-motion-lab` adds `/ar/guide-character-motion-lab` to compare the current sprite character, an SVG motion-rig concept, and the new INSPIRE guide character direction using supplied JPG reference/motion sheets; it remains a prototype because production animation still needs clean transparent layers or a `.riv` file.
+- A newer prototype branch `codex/guide-character-motion-lab` adds `/ar/guide-character-motion-lab` to compare the current sprite character, an SVG motion-rig concept, and the new INSPIRE guide character direction using supplied JPG reference/motion sheets. It now uses selected cleaned WebP half-body and full-body pose assets for a more realistic visual review, but it remains a prototype because production animation still needs either clean layered exports, a `.riv` file, or a deliberate static-pose implementation decision.
 
 ## Active Decisions
 - Do not make product changes directly on `main`; use `codex/next-work` or a new feature branch, then merge after verification.
@@ -103,7 +103,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Publish the already-prepared Replit deployment if approved. The guide-character work is only a prototype on `codex/guide-character-demo`; before production, decide whether to keep it visually, optimize the 2.3MB sprite asset, and then return to assessment friction analytics from `project-state/PRODUCT_IDEAS.md` Idea 2.
+For the guide character, review `/ar/guide-character-motion-lab` on `codex/guide-character-motion-lab` and decide whether the new INSPIRE character should move forward as a static multi-pose guide, a layered CSS/Framer prototype, or a production Rive/Lottie asset. Keep production on the verified Replit baseline until this prototype is intentionally merged and deployed.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
