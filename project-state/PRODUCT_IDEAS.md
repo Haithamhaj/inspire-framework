@@ -832,6 +832,24 @@ Secondary CTA:
 Implementation note:
 This approved copy should guide the first landing-page pass. English copy can be adapted from the same positioning, but should not be implemented before deciding the exact English tone.
 
+### Approved Top Value Marquee
+Add a slow, premium top value strip near the top of the landing page to make the value points visible quickly without forcing the visitor to read a paragraph.
+
+Approved Arabic marquee text:
+`وقت أقل • شرح أقل • نتائج أقرب • تركيز أكبر • AI أقرب لك • جهد أقل`
+
+Design direction:
+- subtle continuous horizontal motion
+- slow speed, not distracting
+- lightly glowing or highlighted words
+- premium, calm, and readable
+- pause or reduce motion when appropriate
+- respect `prefers-reduced-motion`
+- do not cover the navigation or primary hero copy
+
+Purpose:
+This strip should work as a quick value signal, not as the main explanation. The hero headline and CTA remain the primary conversion elements.
+
 ### Current Observation
 The landing page already has a polished hero, animated profile preview, goal selector, before/after comparison, explainer section, pricing, FAQ, and SEO guide links. However, the marketing pull can still be stronger.
 
