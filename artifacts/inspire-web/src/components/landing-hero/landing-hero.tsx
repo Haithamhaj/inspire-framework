@@ -112,41 +112,52 @@ function ValueMarquee({
   isRtl: boolean;
 }) {
   const items = text.split("•").map((item) => item.trim()).filter(Boolean);
-  const repeated = [items, items];
-  const motionRange = isRtl ? ["0%", "-50%"] : ["-50%", "0%"];
+  const duration = 26;
 
   return (
-    <div className="relative z-10 overflow-hidden border-y border-white/10 bg-black/25 py-2.5 backdrop-blur-md">
+    <div className="relative z-10 h-10 overflow-hidden border-y border-white/10 bg-black/25 backdrop-blur-md">
+      <style>
+        {`
+          @keyframes inspire-marquee-rtl {
+            from { transform: translate3d(110vw, -50%, 0); }
+            to { transform: translate3d(-25vw, -50%, 0); }
+          }
+          @keyframes inspire-marquee-ltr {
+            from { transform: translate3d(-25vw, -50%, 0); }
+            to { transform: translate3d(110vw, -50%, 0); }
+          }
+        `}
+      </style>
       <span className="sr-only">{text}</span>
-      <motion.div
-        aria-hidden="true"
-        animate={reduced ? { x: 0 } : { x: motionRange }}
-        transition={
-          reduced
-            ? undefined
-            : { duration: 30, ease: "linear", repeat: Infinity }
-        }
-        className="flex w-[200vw] items-center whitespace-nowrap"
-      >
-        {repeated.map((group, groupIndex) => (
-          <div
-            key={groupIndex}
-            className="flex min-w-screen items-center justify-around gap-8 px-8"
+      <div aria-hidden="true" className="absolute inset-0">
+        {items.map((item, itemIndex) => (
+          <span
+            key={item}
+            className="absolute left-0 top-1/2 inline-flex min-w-max items-center gap-8 text-[13px] font-semibold text-white/82 md:text-[14px]"
+            style={
+              reduced
+                ? {
+                    insetInlineStart: `${(itemIndex / items.length) * 100}%`,
+                    transform: "translateY(-50%)",
+                  }
+                : {
+                    animationName: isRtl
+                      ? "inspire-marquee-rtl"
+                      : "inspire-marquee-ltr",
+                    animationDuration: `${duration}s`,
+                    animationTimingFunction: "linear",
+                    animationIterationCount: "infinite",
+                    animationDelay: `${-(duration / items.length) * itemIndex}s`,
+                  }
+            }
           >
-            {group.map((item, itemIndex) => (
-              <span
-                key={`${groupIndex}-${itemIndex}`}
-                className="inline-flex min-w-max items-center gap-8 text-[13px] font-semibold text-white/82 md:text-[14px]"
-              >
-                <span className="bg-gradient-to-l from-amber-100 via-rose-100 to-violet-100 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(251,191,36,0.18)]">
-                  {item}
-                </span>
-                <span className="h-1.5 w-1.5 rounded-full bg-rose-300/70 shadow-[0_0_16px_rgba(253,164,175,0.55)]" />
-              </span>
-            ))}
-          </div>
+            <span className="bg-gradient-to-l from-amber-100 via-rose-100 to-violet-100 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(251,191,36,0.18)]">
+              {item}
+            </span>
+            <span className="h-1.5 w-1.5 rounded-full bg-rose-300/70 shadow-[0_0_16px_rgba(253,164,175,0.55)]" />
+          </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
