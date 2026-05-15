@@ -474,16 +474,16 @@ export const en: Dictionary = {
         goalExampleLabel: "Goal example:",
         promptLabel: "Same question:",
         promptText:
-          "Help me organize my ideas: What should I start with first? What should I pay attention to most? What are the next three steps?",
+          "Create a marketing plan for a women's perfume product sold through ecommerce sites such as Amazon. I need the steps and sections of the marketing plan briefly.",
         withoutLabel: "Without an operating profile",
         withoutTag: "Generic reply",
         withoutExample:
-          "Start by defining the problem, identify user types, and build a simple MVP. Focus on understanding users and personalizing the results.",
+          "Brief marketing plan for a women's perfume sold through ecommerce platforms\n\n1. Product and market analysis\nDefine the target audience, perfume type, point of difference, and competitors.\n\n2. Marketing identity\nBrand name, logo, colors, perfume story, and a professional scent description.\n\n3. Product page setup\nProfessional images, short video, persuasive description, ingredients, longevity, customer reviews, and clear pricing.\n\n4. Pricing and advertising\nChoose a launch price or offer, then use Instagram, TikTok, Snapchat, and Amazon ads.\n\n5. Influencers and reviews\nWork with micro-influencers, collect reviews, follow up after orders, and measure sales and acquisition cost.",
         withoutNote: "Less tied to your goal and context",
         withLabel: "With an INSPIRE operating profile",
         withTag: "Tailored reply",
         withExample:
-          "Do not start with the interface or questions. Start with the core promise: what will the person receive after answering that feels worth using? Do not sell a prompt; sell usable personal understanding.",
+          "Brief marketing plan for a women's perfume online\n\n1. Marketing goal\nSet a clear goal for the first 60-90 days: increase visibility, achieve the first sales and reviews, test the best customer segment, and reach an acceptable ad cost per order.\n\n2. Target customer\nSegment the audience instead of saying women only: ages 18-25 for a daily scent and attractive design, ages 25-40 for an elegant and long-lasting feminine scent, and gift buyers purchasing for a wife, mother, or sister.\n\nImportant note: perfume is hard to sell online because the customer cannot smell it. So you must sell the feeling: soft, luxurious, oriental, floral, powdery, summery, or evening.\n\n3. Product positioning\nWrite one clear sentence about the scent and occasion. Do not claim it suits every woman and every moment, because that weakens the message.\n\n4. Product page\nThe product page is the heart of the plan: clear title, images of the bottle, usage, gift context, and scent notes, concise bullets, a description that sells the feeling, and relevant search keywords.\n\n5. Ads and improvement\nStart with marketplace ads for direct keywords, then test TikTok and Instagram content. If ads bring clicks without sales, the issue is usually price, images, description, or weak trust.\n\nBottom line: do not start with ads. Start with the product page and positioning. Ads bring traffic, but they do not fix an unclear product or a weak page.",
         withChip1: "Contextual",
         withChip2: "Role-aware",
         withChip3: "Structured",
