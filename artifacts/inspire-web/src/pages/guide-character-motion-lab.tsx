@@ -23,6 +23,7 @@ import fullSeatedWaiting from "@/assets/inspire-guide-character/poses/cleaned/fu
 import fullTablet from "@/assets/inspire-guide-character/poses/cleaned/full-body/tablet-standing.webp";
 import fullThinking from "@/assets/inspire-guide-character/poses/cleaned/full-body/thinking-standing.webp";
 import fullWalkLeft from "@/assets/inspire-guide-character/poses/cleaned/full-body/walk-left.webp";
+import fullWalkRight from "@/assets/inspire-guide-character/poses/cleaned/full-body/walk-right.webp";
 import fullWelcome from "@/assets/inspire-guide-character/poses/cleaned/full-body/welcome-standing.webp";
 
 type Locale = "ar" | "en";
@@ -186,6 +187,20 @@ const FULL_BODY_POSES = [
     label: { ar: "استماع", en: "Listening" },
   },
 ];
+
+const FULL_BODY_BY_POSE: Record<InspireGuidePose, string> = {
+  listening: fullListening,
+  speaking: fullWelcome,
+  thinking: fullThinking,
+  pointing: fullPointing,
+  answer: fullTablet,
+  bored: fullSeatedTablet,
+  waiting: fullSeatedWaiting,
+  welcome: fullWelcome,
+  progress: fullTablet,
+  celebrate: fullJumpCelebrate,
+  walk: fullWalkLeft,
+};
 
 function isArabicPath() {
   return window.location.pathname.startsWith("/ar");
@@ -440,6 +455,136 @@ function MotionBar({
   );
 }
 
+function DepthMotionStage({
+  scenario,
+  locale,
+}: {
+  scenario: Scenario;
+  locale: Locale;
+}) {
+  const reduced = useReducedMotion() ?? false;
+  const isAr = locale === "ar";
+  const closeKeys = new Set(["landing", "answer", "complete"]);
+  const farKeys = new Set(["question", "bored"]);
+  const isClose = closeKeys.has(scenario.key);
+  const isFar = farKeys.has(scenario.key);
+  const image = isClose
+    ? HALF_BODY_POSES[scenario.inspirePose]
+    : scenario.key === "question"
+      ? fullWalkRight
+      : FULL_BODY_BY_POSE[scenario.inspirePose];
+  const direction = isAr ? -1 : 1;
+  const depthX = isClose ? 0 : isFar ? direction * 250 : direction * -110;
+  const depthScale = isClose ? 1.22 : isFar ? 0.68 : 0.88;
+  const depthY = isClose ? 0 : isFar ? 22 : 12;
+  const bubbleVisible = isClose || scenario.key === "idle";
+
+  return (
+    <section className="rounded-[28px] border border-teal-200/18 bg-teal-300/[0.045] p-4 shadow-2xl shadow-black/20">
+      <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-white">
+            {isAr ? "الخيار 4: بار عميق يجمع نصف الجسم والجسم الكامل" : "Option 4: depth bar with close and full-body states"}
+          </h2>
+          <p className="mt-1 text-sm leading-6 text-white/58">
+            {isAr
+              ? "عندما تقترب الشخصية تظهر نصف جسم وتتحدث. وعندما تبتعد داخل المساحة تظهر كاملة وتقدر تمشي أو تجلس أو تنتظر."
+              : "When the character comes close, it becomes an upper-body guide. When it moves back, the full body can walk, sit, or wait."}
+          </p>
+        </div>
+        <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-semibold text-white/60">
+          {scenario.title[locale]}
+        </span>
+      </div>
+
+      <div className="relative min-h-[330px] overflow-hidden rounded-[26px] border border-white/10 bg-[#0c1021] p-3 md:min-h-[252px]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(45,212,191,0.14),transparent_34%),linear-gradient(90deg,rgba(255,255,255,0.03),transparent_28%,transparent_72%,rgba(255,255,255,0.03))]" />
+        <div className="absolute bottom-10 left-8 right-8 h-px bg-cyan-100/10" />
+        <div className="absolute bottom-20 left-16 right-16 h-px bg-cyan-100/7" />
+        <div className="absolute bottom-4 left-1/2 h-24 w-[72%] -translate-x-1/2 rounded-[50%] bg-black/28 blur-2xl" />
+
+        <motion.div
+          className="absolute left-1/2 top-10 z-10 h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_20px_rgba(103,232,249,0.75)]"
+          animate={reduced ? undefined : { x: [-180, 180, -180], opacity: [0.35, 1, 0.35] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        <motion.div
+          className="absolute bottom-7 left-1/2 z-20 flex w-[190px] -translate-x-1/2 items-end justify-center md:w-[220px]"
+          animate={
+            reduced
+              ? undefined
+              : {
+                  x: depthX,
+                  y: depthY,
+                  scale: depthScale,
+                }
+          }
+          transition={{ type: "spring", stiffness: 62, damping: 16 }}
+        >
+          <div className="absolute bottom-0 h-3 w-28 rounded-full bg-black/38 blur-md" />
+          <motion.img
+            key={`${scenario.key}-${isClose ? "near" : "far"}`}
+            src={image}
+            alt=""
+            draggable={false}
+            className={`relative z-10 object-contain drop-shadow-[0_22px_22px_rgba(0,0,0,0.34)] ${
+              isClose ? "max-h-[168px] md:max-h-[180px]" : "max-h-[190px] md:max-h-[210px]"
+            }`}
+            animate={
+              reduced
+                ? undefined
+                : scenario.key === "question"
+                  ? { x: [-8, 8, -8], y: [0, -3, 0] }
+                  : scenario.key === "complete"
+                    ? { y: [0, -10, 0], rotate: [0, -1.5, 1.5, 0] }
+                    : { y: [0, -3, 0] }
+            }
+            transition={{
+              duration: scenario.key === "question" ? 1.6 : scenario.key === "complete" ? 1.2 : 2.8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        </motion.div>
+
+        <motion.div
+          className={`absolute z-30 max-w-[min(520px,calc(100%-32px))] rounded-[22px] border border-white/10 bg-white/[0.07] px-4 py-3 backdrop-blur ${
+            isAr ? "right-4 md:right-8" : "left-4 md:left-8"
+          } bottom-4`}
+          animate={
+            reduced
+              ? undefined
+              : {
+                  opacity: bubbleVisible ? 1 : 0.68,
+                  y: bubbleVisible ? 0 : 5,
+                }
+          }
+          transition={{ duration: 0.35 }}
+        >
+          <div className="mb-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-cyan-100/75">
+            <Sparkles className="h-3.5 w-3.5" />
+            {isAr ? "حالة العمق" : "Depth state"}
+          </div>
+          <p className="text-[13.5px] leading-6 text-white/78">
+            {isClose
+              ? isAr
+                ? "الشخصية قريبة الآن: نصف جسم أوضح للكلام والتوجيه."
+                : "Close state: upper body is clearer for speech and guidance."
+              : isFar
+                ? isAr
+                  ? "الشخصية بعيدة الآن: جسم كامل مناسب للمشي والانتظار والحركة."
+                  : "Far state: full body works for walking, waiting, and motion."
+                : isAr
+                  ? "حالة وسط: انتقال ناعم بين الكلام والحركة."
+                  : "Mid state: a soft transition between speaking and movement."}
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function RiveReadinessCard({ locale }: { locale: Locale }) {
   const isAr = locale === "ar";
 
@@ -584,6 +729,8 @@ export default function GuideCharacterMotionLab() {
           <MotionBar title={isAr ? "الخيار 3: شخصية INSPIRE الجديدة" : "Option 3: new INSPIRE guide"} scenario={scenario} locale={locale}>
             <InspireGuideCharacter pose={scenario.inspirePose} />
           </MotionBar>
+
+          <DepthMotionStage scenario={scenario} locale={locale} />
 
           <FullBodyPoseGallery locale={locale} />
 
