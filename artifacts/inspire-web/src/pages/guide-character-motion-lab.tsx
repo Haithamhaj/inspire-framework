@@ -5,9 +5,9 @@ import {
   RealityFoxCharacter,
   type GuideState,
 } from "@/components/guide-character/GuideCharacterDemo";
-import bodyKeyframesSheet from "@/assets/inspire-guide-character/motion/body-keyframes.jpg";
-import guideBarVariantsSheet from "@/assets/inspire-guide-character/motion/guide-bar-variants.jpg";
-import rigOverviewSheet from "@/assets/inspire-guide-character/reference/rig-overview.jpg";
+import bodyKeyframesSheet from "@/assets/inspire-guide-character/cleaned/body-keyframes-transparent.png";
+import guideBarVariantsSheet from "@/assets/inspire-guide-character/cleaned/guide-bar-variants-transparent.png";
+import rigOverviewSheet from "@/assets/inspire-guide-character/cleaned/rig-overview-transparent.png";
 
 type Locale = "ar" | "en";
 type LabMood = GuideState | "thinking" | "bored" | "walk";
@@ -132,7 +132,7 @@ const INSPIRE_POSE_CROPS: Record<
   progress: { sheet: "guideBar", x: 946, y: 536, w: 112, h: 82, displayWidth: 96 },
   celebrate: { sheet: "guideBar", x: 1114, y: 536, w: 118, h: 82, displayWidth: 100 },
   walk: { sheet: "body", x: 330, y: 548, w: 74, h: 140, displayWidth: 70 },
-  base: { sheet: "rigOverview", x: 374, y: 70, w: 310, h: 514, displayWidth: 82 },
+  base: { sheet: "rigOverview", x: 374, y: 78, w: 310, h: 360, displayWidth: 80 },
 };
 
 function isArabicPath() {

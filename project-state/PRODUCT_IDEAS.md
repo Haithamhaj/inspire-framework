@@ -340,6 +340,7 @@ Motion-lab note:
 - the lab includes a Rive/Lottie readiness card instead of adding a new dependency blindly; a polished `.riv` or Lottie file is needed before that option can be judged fairly
 - the lab now also includes a third option, the new INSPIRE guide character, using the supplied motion-pack/reference sheets as a visual prototype
 - current supplied assets are JPG sheets, not clean transparent PNG layers, so the prototype is useful for visual direction but not production-ready animation
+- a local Pillow script now creates cleaned transparent PNG versions of the key JPG sheets by removing connected light checkerboard/background areas; this improves the visual prototype but increases asset size and still is not a substitute for real separated layers
 - production-quality motion still needs either a `.riv` file or separately exported transparent PNG/SVG layers for the chosen poses and rig parts
 - the lab is for visual decision-making only and is not connected to production assessment behavior
 
