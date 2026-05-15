@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Check, Play, Sparkles, TimerReset } from "lucide-react";
 import {
   RealityFoxCharacter,
@@ -478,6 +478,8 @@ function DepthMotionStage({
   const depthScale = isClose ? 1.22 : isFar ? 0.68 : 0.88;
   const depthY = isClose ? 0 : isFar ? 22 : 12;
   const bubbleVisible = isClose || scenario.key === "idle";
+  const characterHeightClass = isClose ? "h-[180px] md:h-[194px]" : "h-[210px] md:h-[230px]";
+  const characterMaxHeightClass = isClose ? "max-h-[168px] md:max-h-[180px]" : "max-h-[190px] md:max-h-[210px]";
 
   return (
     <section className="rounded-[28px] border border-teal-200/18 bg-teal-300/[0.045] p-4 shadow-2xl shadow-black/20">
@@ -510,7 +512,7 @@ function DepthMotionStage({
         />
 
         <motion.div
-          className="absolute bottom-7 left-1/2 z-20 flex w-[190px] -translate-x-1/2 items-end justify-center md:w-[220px]"
+          className={`absolute bottom-7 left-1/2 z-20 flex w-[190px] -translate-x-1/2 items-end justify-center md:w-[220px] ${characterHeightClass}`}
           animate={
             reduced
               ? undefined
@@ -520,32 +522,60 @@ function DepthMotionStage({
                   scale: depthScale,
                 }
           }
-          transition={{ type: "spring", stiffness: 62, damping: 16 }}
+          transition={{ type: "spring", stiffness: 48, damping: 19, mass: 0.9 }}
         >
           <div className="absolute bottom-0 h-3 w-28 rounded-full bg-black/38 blur-md" />
-          <motion.img
-            key={`${scenario.key}-${isClose ? "near" : "far"}`}
-            src={image}
-            alt=""
-            draggable={false}
-            className={`relative z-10 object-contain drop-shadow-[0_22px_22px_rgba(0,0,0,0.34)] ${
-              isClose ? "max-h-[168px] md:max-h-[180px]" : "max-h-[190px] md:max-h-[210px]"
-            }`}
+          <motion.div
+            className="relative z-10 flex h-full w-full items-end justify-center"
             animate={
               reduced
                 ? undefined
                 : scenario.key === "question"
-                  ? { x: [-8, 8, -8], y: [0, -3, 0] }
+                  ? { x: [-10, 10, -10], y: [0, -3, 0] }
                   : scenario.key === "complete"
                     ? { y: [0, -10, 0], rotate: [0, -1.5, 1.5, 0] }
                     : { y: [0, -3, 0] }
             }
             transition={{
-              duration: scenario.key === "question" ? 1.6 : scenario.key === "complete" ? 1.2 : 2.8,
+              duration: scenario.key === "question" ? 1.7 : scenario.key === "complete" ? 1.25 : 2.9,
               repeat: Infinity,
               ease: "easeInOut",
             }}
-          />
+          >
+            <AnimatePresence initial={false} mode="popLayout">
+              <motion.img
+                key={`${scenario.key}-${isClose ? "near" : "far"}`}
+                src={image}
+                alt=""
+                draggable={false}
+                className={`absolute bottom-0 object-contain drop-shadow-[0_22px_22px_rgba(0,0,0,0.34)] ${characterMaxHeightClass}`}
+                initial={{
+                  opacity: 0,
+                  scale: isClose ? 0.9 : 1.06,
+                  y: isClose ? 18 : -8,
+                  filter: "blur(5px)",
+                }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: 0,
+                  filter: "blur(0px)",
+                }}
+                exit={{
+                  opacity: 0,
+                  scale: isClose ? 1.08 : 0.94,
+                  y: isClose ? -12 : 14,
+                  filter: "blur(4px)",
+                }}
+                transition={{
+                  opacity: { duration: 0.55, ease: "easeInOut" },
+                  scale: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+                  y: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+                  filter: { duration: 0.45, ease: "easeOut" },
+                }}
+              />
+            </AnimatePresence>
+          </motion.div>
         </motion.div>
 
         <motion.div
