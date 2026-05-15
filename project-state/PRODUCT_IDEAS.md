@@ -620,6 +620,89 @@ After the report:
 4. Ask the user what changed.
 5. Let the user submit private feedback or approve a public testimonial.
 
+### Guided Comparison Prompt
+Do not rely only on the user inventing their own test question.
+
+INSPIRE already knows enough safe context to suggest a strong comparison prompt:
+- project context
+- selected domain and specialization
+- report language
+- operating pattern
+- practical recommendations
+- copy-ready instruction intent
+
+Use this to offer two testing options:
+1. `Use a suggested test prompt`
+2. `Use your own prompt`
+
+The suggested prompt should be human, practical, and related to the user's project. It should be designed to reveal the difference between:
+- a normal AI answer
+- an AI answer after applying the user's INSPIRE instruction
+
+The suggested prompt should not expose:
+- matrix logic
+- scores
+- internal roles
+- raw selected answers
+- private system fields
+
+### Suggested Prompt Design
+The prompt should create a task where personalization matters.
+
+Good prompt types:
+- plan review
+- decision comparison
+- content improvement
+- unclear task structuring
+- launch/readiness review
+- communication rewrite
+- debugging or problem-solving path
+- turning scattered ideas into an action plan
+
+The prompt should include enough ambiguity that a generic AI may answer broadly, while the INSPIRE-instructed AI should respond in a more fitting structure, tone, depth, and operating style.
+
+Example structure:
+- "Here is my project context..."
+- "Help me think through..."
+- "Give me a practical output I can use..."
+- "Point out what I may be missing..."
+- "Keep it aligned with how I work best..."
+
+### Example Suggested Prompt
+For a content project:
+`I am preparing content for [project/context]. Help me turn this rough idea into a practical plan. Give me a clear structure, likely weak points, and the next three actions I should take.`
+
+For a software/dashboard project:
+`I am building [project/context]. Review this plan as if I need to decide what to build next. Organize the priorities, point out missing assumptions, and give me a practical next-step plan.`
+
+For a decision project:
+`I need to choose between two possible directions for [project/context]. Compare the options, identify what information is missing, and recommend a practical next step.`
+
+### Comparison UX
+After the user copies the instruction, show:
+- button: `Copy suggested test prompt`
+- button: `I'll use my own prompt`
+- short instructions:
+  - "Ask this once normally."
+  - "Then paste your INSPIRE instruction and ask it again."
+  - "Compare which answer feels more useful, specific, and aligned with how you work."
+
+Arabic direction:
+- "انسخ سؤال الاختبار المقترح."
+- "اسأله مرة في AI عادي."
+- "ثم الصق تعليمات INSPIRE واسأله مرة ثانية."
+- "قارن أي إجابة كانت أوضح، أعمق، وأسهل للتنفيذ."
+
+### Why This Matters
+The suggested prompt increases the chance that the user sees a meaningful difference quickly.
+
+If the user asks a very simple factual question, the difference may be small. But if the prompt requires planning, judgment, structure, review, or communication style, the INSPIRE instruction should make the answer noticeably more aligned.
+
+This makes the testimonial request more natural:
+- "Did the suggested prompt show a difference?"
+- "What changed in the second answer?"
+- "Would you allow us to quote your comparison?"
+
 ### Suggested User-Facing Framing
 Use language like:
 - "Do not just read the instruction. Test it."
