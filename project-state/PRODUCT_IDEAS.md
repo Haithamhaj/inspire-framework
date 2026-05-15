@@ -127,3 +127,150 @@ Before implementation, decide:
 - whether PDF/share views should include it
 - how to update report writer validation without allowing old legacy labels or internal terms
 
+## Idea 2: Track Assessment Friction And Completion Analytics
+
+### Status
+Discussion candidate. Do not implement yet.
+
+### Problem
+Early users reported that the assessment questions are strong and valuable, but mentally demanding. They require focus and can feel like a serious test. That can create fatigue, hesitation, or abandonment before the user reaches the report.
+
+The product needs visibility into where this happens instead of guessing.
+
+### Product Direction
+Add analytics that show how users move through the assessment flow:
+- where they click
+- where they pause
+- where they abandon
+- which questions take the longest
+- how many users start versus finish
+- how many reach payment or pending payment
+- which device/language path has more friction
+
+This should be added to the admin reporting layer so the operator can see assessment health without reading raw database records.
+
+### Customer And Product Value
+This helps answer:
+- Are the questions too heavy?
+- Which specific question causes the most drop-off?
+- Are users stopping because of question difficulty, payment, registration, language, layout, or technical issues?
+- Do Arabic and English users behave differently?
+- Should the product add lighter guidance, progress reassurance, save/resume, examples, or shorter steps?
+
+The goal is not surveillance. The goal is to improve the assessment experience and reduce unnecessary friction.
+
+### Recommended Admin Metrics
+High-level funnel:
+- landing page views
+- assessment starts
+- question page reached
+- number of questions answered
+- assessment submitted
+- pending payment reached
+- report generated
+- report opened
+- copy-ready instructions copied
+
+Question-level friction:
+- question viewed
+- option selected
+- time spent per question
+- back/next usage
+- answer changed
+- abandonment point
+- long pause before next action
+
+Session-level summary:
+- language
+- assessment type
+- device category
+- browser family
+- started at
+- last activity at
+- completion status
+- total time
+- last completed question
+
+Admin report views:
+- completion rate by day
+- average time to complete
+- drop-off by step
+- slowest questions
+- most skipped or delayed questions
+- user list with assessment progress
+- exportable CSV/JSON for analysis
+
+### Privacy And Safety Guardrails
+Do not record sensitive raw behavior beyond what is needed.
+
+Prefer event summaries over intrusive recording:
+- no screen recording
+- no keystroke logging
+- no mouse-coordinate heatmap unless clearly needed and privacy-reviewed
+- no capturing typed open-answer text as analytics events
+- no third-party tracker by default unless deliberately approved
+
+Better approach:
+- first-party events stored in our database
+- anonymized or user-linked only where operationally necessary
+- clear internal event names
+- retention policy later if volume grows
+
+### Suggested Event Model
+Use simple first-party events such as:
+- `assessment_started`
+- `question_viewed`
+- `option_selected`
+- `question_next_clicked`
+- `question_back_clicked`
+- `assessment_paused`
+- `assessment_resumed`
+- `assessment_submitted`
+- `payment_step_reached`
+- `report_opened`
+- `instructions_copied`
+
+Each event can include safe metadata:
+- user id if logged in
+- assessment id if available
+- question id
+- language
+- timestamp
+- page/step
+- device category
+- elapsed time since previous event
+
+Avoid storing:
+- raw matrix data
+- raw answer text in event payloads
+- secrets
+- full IP unless there is a specific security need
+
+### UX Improvement Ideas To Consider After Data
+Do not redesign before measuring, but likely options include:
+- clearer progress indicator
+- softer intro explaining that thoughtful answers create a better report
+- save/resume reminder
+- shorter question groups
+- encouraging microcopy between sections
+- optional examples for difficult questions
+- "you can answer with the closest option" reassurance
+- admin alert when many users stop at the same question
+
+### Implementation Notes For Later
+This can be added without changing the assessment matrix or report logic.
+
+Likely work areas:
+- frontend event capture in `artifacts/inspire-web/src/pages/assess.tsx`
+- API endpoint for analytics events in `artifacts/api-server/src/routes`
+- new DB table for assessment events or progress sessions
+- admin analytics panel in `artifacts/inspire-web/src/pages/admin.tsx`
+- admin export filters
+
+Before implementation, decide:
+- first-party database events versus external analytics tool
+- exact event names
+- whether events are linked to users before login
+- whether anonymous session tracking is needed before registration
+- admin dashboard scope for first version
+- data retention policy
