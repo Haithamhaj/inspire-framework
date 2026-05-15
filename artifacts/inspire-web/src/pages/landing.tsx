@@ -78,7 +78,7 @@ export default function Landing() {
       <div className="relative z-10">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <LandingHero primaryHref={href("/privacy-consent")} secondaryAnchorId="how-it-works" />
+      <LandingHero primaryHref={href("/privacy-consent")} secondaryAnchorId="what-you-get" />
 
       {/* ─── EXPLAINER DEMO ───────────────────────────────── */}
       <section className="py-20 px-6 bg-transparent">
@@ -271,7 +271,7 @@ export default function Landing() {
       </section>
 
       {/* ─── SAMPLE OUTPUT ────────────────────────────────── */}
-      <section className="py-24 px-6 bg-slate-950/20 backdrop-blur-[1px]">
+      <section id="what-you-get" className="py-24 px-6 bg-slate-950/20 backdrop-blur-[1px]">
         <div className="container max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -586,7 +586,7 @@ export default function Landing() {
               {copy.finalCta.badge}
             </div>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-5">
-              {copy.finalCta.titleLead}<br />
+              {copy.finalCta.titleLead}{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-l from-accent to-rose-400">{copy.finalCta.titleAccent}</span>
             </h2>
             <p className="text-white/50 mb-10 text-lg max-w-xl mx-auto">

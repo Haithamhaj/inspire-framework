@@ -171,6 +171,67 @@ function ValueMarquee({
   );
 }
 
+function OutcomeStrip({ reduced }: { reduced: boolean }) {
+  const t = useT();
+  const items = [
+    {
+      icon: Brain,
+      title: t("landing.hero.outcome1Title"),
+      desc: t("landing.hero.outcome1Desc"),
+    },
+    {
+      icon: MessageSquare,
+      title: t("landing.hero.outcome2Title"),
+      desc: t("landing.hero.outcome2Desc"),
+    },
+    {
+      icon: Target,
+      title: t("landing.hero.outcome3Title"),
+      desc: t("landing.hero.outcome3Desc"),
+    },
+  ];
+
+  return (
+    <section className="relative mx-auto w-full max-w-7xl px-5 pb-12 md:px-8 md:pb-14">
+      <motion.div
+        initial={reduced ? { opacity: 1 } : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, delay: 0.35 }}
+        className="rounded-3xl border border-white/10 bg-white/[0.035] p-5 shadow-xl shadow-black/10 backdrop-blur-md md:p-6"
+      >
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0 md:max-w-[240px]">
+            <span className="text-[12px] font-bold uppercase tracking-widest text-rose-300">
+              {t("landing.hero.outcomesEyebrow")}
+            </span>
+            <h2 className="mt-2 text-2xl font-bold text-white">
+              {t("landing.hero.outcomesTitle")}
+            </h2>
+          </div>
+          <div className="grid flex-1 grid-cols-1 gap-3 md:grid-cols-3">
+            {items.map(({ icon: Icon, title, desc }) => (
+              <div
+                key={title}
+                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-black/20 p-4"
+              >
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-400/15 text-rose-200">
+                  <Icon className="h-4 w-4" />
+                </span>
+                <div>
+                  <div className="text-[15px] font-bold text-white">{title}</div>
+                  <div className="mt-1 text-[13.5px] leading-5 text-white/62">
+                    {desc}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
 function SignalChip({
   label,
   accent,
@@ -693,6 +754,8 @@ export default function LandingHero({
           </div>
         </div>
       </section>
+
+      <OutcomeStrip reduced={reduced} />
 
       {/* GOAL SELECTOR */}
       <section className="relative mx-auto w-full max-w-7xl px-5 pb-12 md:px-8 md:pb-16">

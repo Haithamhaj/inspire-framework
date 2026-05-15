@@ -26,7 +26,7 @@ export const en: Dictionary = {
       myReports: "My reports",
       logout: "Log out",
       login: "Log in",
-      startAssessment: "Start assessment",
+      startAssessment: "Start the analysis now",
     },
   },
   assessment: {
@@ -445,6 +445,14 @@ export const en: Dictionary = {
       secondaryCta: "What will I get after the analysis?",
       trustLine: "Works with",
       slogan: "Every goal has its own INSPIRE",
+      outcomesEyebrow: "Outcome",
+      outcomesTitle: "After the analysis, you get",
+      outcome1Title: "A practical work-pattern report",
+      outcome1Desc: "Explains how you think, execute, and interact with AI.",
+      outcome2Title: "Ready-to-copy instructions",
+      outcome2Desc: "Use them with ChatGPT, Claude, or Gemini.",
+      outcome3Title: "Starter prompts for your project",
+      outcome3Desc: "Questions and starting points that help you get closer results.",
       goalsEyebrow: "Pick your goal",
       goalsTitle: "Every goal has its own INSPIRE",
       goalsSubtitle:
@@ -641,7 +649,7 @@ export const en: Dictionary = {
       },
       ctaTitle: "Discover your full profile",
       ctaSubtitle: "Curious how your interaction profile maps across each component? The assessment shows you.",
-      ctaButton: "Start the full assessment",
+      ctaButton: "Start the analysis now",
     },
     sample: {
       eyebrow: "The actual output",
@@ -705,7 +713,7 @@ export const en: Dictionary = {
         price: "$10",
         perUnit: "/ assessment",
         sublabel: "One-time payment · No subscription",
-        cta: "Start the full assessment",
+        cta: "Start the analysis now",
         features: [
           "Full personal assessment for any project",
           "INSPIRE practical profile map across the seven components",
@@ -752,7 +760,7 @@ export const en: Dictionary = {
       titleAccent: "AI to understand you",
       paragraph:
         "The difference between average AI and AI that's truly yours starts with instructions built around who you are — not what you type.",
-      primary: "Start the full assessment — $10",
+      primary: "Start the analysis now — $10",
       secondary: "Compare both paths",
     },
   },

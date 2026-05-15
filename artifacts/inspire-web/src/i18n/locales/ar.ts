@@ -24,7 +24,7 @@ export const ar = {
       myReports: "تقاريري",
       logout: "تسجيل الخروج",
       login: "تسجيل الدخول",
-      startAssessment: "ابدأ التقييم",
+      startAssessment: "ابدأ التحليل الآن",
     },
   },
   assessment: {
@@ -441,6 +441,14 @@ export const ar = {
       secondaryCta: "ماذا سأحصل بعد التحليل",
       trustLine: "يعمل مع",
       slogan: "كل هدف له إلهامه الخاص",
+      outcomesEyebrow: "النتيجة",
+      outcomesTitle: "بعد التحليل ستحصل على",
+      outcome1Title: "تقرير عملي عن نمط عملك",
+      outcome1Desc: "يفسر كيف تفكر وتنفذ وتتفاعل مع AI.",
+      outcome2Title: "تعليمات جاهزة للنسخ",
+      outcome2Desc: "تستخدمها مع ChatGPT أو Claude أو Gemini.",
+      outcome3Title: "نقاط انطلاق لمشروعك",
+      outcome3Desc: "أسئلة وبدايات تساعدك تحصل على نتائج أقرب لك.",
       goalsEyebrow: "اختر هدفك",
       goalsTitle: "كل هدف له إلهامه الخاص",
       goalsSubtitle:
@@ -632,7 +640,7 @@ export const ar = {
       },
       ctaTitle: "اكتشف نمطك الكامل",
       ctaSubtitle: "كيف تبدو خريطة تفاعلك مع AI عبر هذه المكونات؟ التقييم يكشفها لك.",
-      ctaButton: "ابدأ التقييم الكامل",
+      ctaButton: "ابدأ التحليل الآن",
     },
     sample: {
       eyebrow: "المخرج الفعلي",
@@ -696,7 +704,7 @@ export const ar = {
         price: "$10",
         perUnit: "/ تقييم",
         sublabel: "دفعة واحدة · بدون اشتراك",
-        cta: "ابدأ التقييم الكامل",
+        cta: "ابدأ التحليل الآن",
         features: [
           "تقييم شخصي كامل لأي مشروع",
           "خريطة عملية لملف INSPIRE عبر المكونات السبعة",
@@ -743,7 +751,7 @@ export const ar = {
       titleAccent: "الذكاء الاصطناعي",
       paragraph:
         "الفارق بين AI متوسط وAI حقيقي لك يبدأ من تعليمات مبنية على من أنت — لا من ما تكتب.",
-      primary: "ابدأ التقييم الكامل — $10",
+      primary: "ابدأ التحليل الآن — $10",
       secondary: "قارن بين المسارين",
     },
   },
