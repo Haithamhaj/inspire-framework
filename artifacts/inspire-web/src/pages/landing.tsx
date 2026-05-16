@@ -74,10 +74,10 @@ export default function Landing() {
       <div className="relative z-10">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <LandingHero primaryHref={href("/privacy-consent")} secondaryAnchorId="what-you-get" />
+      <LandingHero primaryHref={href("/privacy-consent")} secondaryAnchorId="reply-difference" />
 
       {/* ─── EXPLAINER DEMO ───────────────────────────────── */}
-      <section className="py-20 px-6 bg-transparent">
+      <section id="reply-difference" className="py-20 px-6 bg-transparent">
         <div className="container max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
