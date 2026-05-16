@@ -31,28 +31,24 @@ const STEP_COLORS = [
 const STEP_ICONS = [FileText, Brain, Sparkles] as const;
 
 // ─── SAMPLE INSTRUCTION (always English code block) ───────────────────
-const SAMPLE = `## Assistant Identity
-A purpose-specific assistant tuned to my selected goal, working style,
-and how I like to interact with AI.
+const SAMPLE = `## Personalized AI instructions
+Act as a practical assistant for my current goal.
+Give me clear answers, useful next steps, and avoid generic advice.
 
-## Mission & Domain Context
-Help me make focused, practical progress on [my project / goal].
-Stay anchored to my context and the constraints I share.
+## My working style
+- Start with the direct answer
+- Keep options short and easy to compare
+- Ask one question only when it truly changes the result
 
-## Dynamic Roles
-- Planning partner — turn ideas into concrete next steps
-- Quality reviewer — flag risks and weak assumptions
-- Execution coach — keep momentum on the next action
+## What I need from you
+- Turn ideas into concrete next steps
+- Point out what I should watch before I decide
+- Help me move from thinking to action
 
-## Thinking & Quality Modes
-- Reason briefly before concluding; show the path
-- Prefer concrete over generic; tie claims to my context
-- When complexity rises, structure the answer step by step
-
-## Red Lines
-- Don't list more than 3 options at once
-- Don't pad with filler or restate what I just said
-- Don't switch topic without flagging it first`;
+## What to avoid
+- Long introductions
+- Too many options at once
+- Advice that could apply to anyone`;
 
 export default function Landing() {
   const { locale, dir } = useI18n();
@@ -90,15 +86,15 @@ export default function Landing() {
             className="text-center mb-10"
           >
             <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">
-              {locale === "ar" ? "شاهد كيف يعمل" : "See It In Action"}
+              {locale === "ar" ? "شاهد الفرق في الردود" : "See the difference in replies"}
             </span>
             <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">
-              {locale === "ar" ? "الفرق الذي يصنعه ملف التشغيل" : "The Difference a Profile Makes"}
+              {locale === "ar" ? "كيف تصبح ردود AI أقرب لهدفك وطريقتك" : "How AI replies become closer to your goal and style"}
             </h2>
             <p className="text-[15px] leading-7 text-slate-400 max-w-xl mx-auto">
               {locale === "ar"
-                ? "بدون ملف تشغيل، الذكاء الاصطناعي يجيب بشكل عام. بعده، يعرف تمامًا كيف تفكر وما تحتاجه."
-                : "Without a profile, AI responds generically. With one, it knows exactly how you think and what you need."}
+                ? "بدون تعليمات مخصصة، AI يعطيك ردًا عامًا وتبدأ في التعديل والشرح من جديد. مع INSPIRE، يعرف هدفك وطريقة الشغل التي تناسبك."
+                : "Without personalized instructions, AI gives generic replies and you start editing and explaining again. With INSPIRE, it knows your goal and the way you like to work."}
             </p>
           </motion.div>
           <motion.div
@@ -546,8 +542,8 @@ export default function Landing() {
               </h2>
               <p className="text-[15px] leading-7 text-slate-400">
                 {locale === "ar"
-                  ? "قبل أن تبدأ التقييم، اقرأ أدلة مختصرة عن هندسة الأوامر، تعليمات ChatGPT، واستخدام الذكاء الاصطناعي في العمل داخل السعودية والخليج."
-                  : "Before taking the assessment, explore focused guides on prompt engineering, ChatGPT custom instructions, and AI productivity for Saudi Arabia and GCC work contexts."}
+                  ? "قبل أن تبدأ، اقرأ أدلة قصيرة تساعدك تشرح هدفك وتطلب من AI بطريقة أوضح وتستخدمه في شغلك اليومي."
+                  : "Before you start, read short guides that help you explain your goal, ask AI more clearly, and use it in your daily work."}
               </p>
               <Link
                 href={href("/guides")}
@@ -562,7 +558,7 @@ export default function Landing() {
               {[
                 locale === "ar" ? "كيف أكتب برومبت أفضل؟" : "How do I write better prompts?",
                 locale === "ar" ? "ماذا أضع في تعليمات ChatGPT؟" : "What should I put in ChatGPT custom instructions?",
-                locale === "ar" ? "ما هو ملف تشغيل الذكاء الاصطناعي؟" : "What is an AI operating profile?",
+                locale === "ar" ? "كيف أجعل AI يفهم هدفي وطريقتي؟" : "How do I make AI understand my goal and style?",
               ].map((item) => (
                 <div key={item} className="rounded-2xl border border-slate-400/10 bg-slate-950/55 p-4 text-sm font-bold text-slate-200">
                   {item}

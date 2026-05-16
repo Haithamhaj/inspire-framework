@@ -712,14 +712,14 @@ export default function Assess() {
       }>)
       .then((d) => {
         if (!d.success || !d.assessment) {
-          throw new Error(d.error ?? "تعذر تحميل إجابات التحليل السابق");
+          throw new Error(d.error ?? "تعذر تحميل إجابات التقييم السابق");
         }
         setPreviousReuse(d.assessment);
         setAnswerMode("reuse");
       })
       .catch((err: unknown) => {
         setAnswerMode("new");
-        setPreviousReuseError(err instanceof Error ? err.message : "تعذر تحميل إجابات التحليل السابق");
+        setPreviousReuseError(err instanceof Error ? err.message : "تعذر تحميل إجابات التقييم السابق");
       })
       .finally(() => setPreviousReuseLoading(false));
   }, [previousAssessmentId, user]);
@@ -879,7 +879,7 @@ export default function Assess() {
                 {discountInfo?.valid && discountInfo.discountPercent === 50 && (
                   <div className="mb-3 rounded-2xl border border-teal-300/20 bg-teal-500/[0.08] px-4 py-3 text-sm leading-6 text-teal-100">
                     {locale === "ar"
-                      ? "لأن لديك تحليلاً سابقاً، تم تطبيق خصم خاص لك 50% لهذا التحليل فقط. الكود صالح لمرة واحدة."
+                      ? "لأن لديك تقييماً سابقاً، تم تطبيق خصم خاص لك 50% لهذه التعليمات فقط. الكود صالح لمرة واحدة."
                       : "Because you already have a previous assessment, a private 50% discount has been applied for this assessment only. This code is one-time use."}
                   </div>
                 )}
@@ -1150,8 +1150,8 @@ export default function Assess() {
     if (answerMode === "reuse" && !context) {
       setSetupError(
         locale === "ar"
-          ? "عند استخدام نفس الإجابات، يجب إدخال سياق/هدف جديد حتى يتأثر التحليل الجديد بالدومين."
-          : "When reusing answers, add a new context/goal so the new analysis is affected by the selected domain."
+          ? "عند استخدام نفس الإجابات، يجب إدخال سياق/هدف جديد حتى تتأثر التعليمات الجديدة بالدومين."
+          : "When reusing answers, add a new context/goal so the new instructions reflect the selected domain."
       );
       return;
     }
@@ -1335,7 +1335,7 @@ export default function Assess() {
                 </div>
                 <div>
                   <p className="text-sm font-black text-slate-100">
-                    {locale === "ar" ? "إجابات التحليل السابق" : "Previous assessment answers"}
+                    {locale === "ar" ? "إجابات التقييم السابق" : "Previous assessment answers"}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-slate-400">
                     {locale === "ar"
@@ -1402,8 +1402,8 @@ export default function Assess() {
                     </div>
                     <p className="text-xs leading-5 text-slate-400">
                       {locale === "ar"
-                        ? "ستمر على الأسئلة كاملة وتبني تحليلاً جديداً من إجابات جديدة."
-                        : "You will go through the full questions and build a new analysis from new answers."}
+                        ? "ستمر على الأسئلة كاملة وتبني تعليمات جديدة من إجابات جديدة."
+                        : "You will go through the full questions and build new instructions from new answers."}
                     </p>
                   </button>
                 </div>

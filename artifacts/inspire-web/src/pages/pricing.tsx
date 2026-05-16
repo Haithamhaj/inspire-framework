@@ -24,9 +24,9 @@ const pricingPlans = [
     cta: "Start full assessment",
     href: "/assess",
     features: [
-      "Full operating profile report",
+      "Full personalized AI instructions",
       "Copy-ready AI instructions",
-      "PDF report and share link",
+      "Saveable PDF version and share link",
       "No subscription",
     ],
     highlighted: true,
@@ -54,7 +54,7 @@ export default function Pricing() {
           note: "دفعة واحدة لكل تقييم",
           cta: "ابدأ التقييم الكامل",
           href: "/assess",
-          features: ["ملف تشغيل كامل للذكاء الاصطناعي", "تعليمات جاهزة للنسخ", "تقرير PDF ورابط مشاركة", "بدون اشتراك"],
+          features: ["تعليمات مخصصة كاملة للذكاء الاصطناعي", "تعليمات جاهزة للنسخ", "نسخة قابلة للحفظ كـ PDF ورابط مشاركة", "بدون اشتراك"],
           highlighted: true,
         },
       ]
@@ -62,9 +62,9 @@ export default function Pricing() {
   const copy = isAr
     ? {
         eyebrow: "الأسعار",
-        title: "تسعير واضح لتقرير رقمي مخصص للذكاء الاصطناعي",
+        title: "تسعير واضح لتعليمات ذكاء اصطناعي مخصصة",
         intro:
-          "INSPIRE يقدّم تجربة رقمية كاملة: تقييم منظم، ملف تشغيل للذكاء الاصطناعي، وتعليمات جاهزة للاستخدام مع أدوات مثل ChatGPT وClaude وGemini.",
+          "INSPIRE يقدّم تجربة رقمية كاملة: تقييم منظم، تعليمات مخصصة للذكاء الاصطناعي، وطلبات بداية جاهزة للاستخدام مع أدوات مثل ChatGPT وClaude وGemini.",
         full: "التقرير الكامل",
         perAssessment: "/ تقييم",
         cards: [
@@ -91,9 +91,9 @@ export default function Pricing() {
       }
     : {
         eyebrow: "Pricing",
-        title: "Simple pricing for a digital AI operating profile",
+        title: "Simple pricing for personalized AI instructions",
         intro:
-          "INSPIRE delivers a complete digital experience: a structured assessment, an AI operating profile, and copy-ready instructions for tools such as ChatGPT, Claude, and Gemini.",
+          "INSPIRE delivers a complete digital experience: a structured assessment, personalized AI instructions, and starter prompts for tools such as ChatGPT, Claude, and Gemini.",
         full: "Full report",
         perAssessment: "/ assessment",
         cards: [

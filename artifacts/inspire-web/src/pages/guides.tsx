@@ -79,7 +79,7 @@ const guides: Guide[] = [
       {
         title: "Start with the outcome, not the tool",
         body: [
-          "A strong prompt begins with the result you want: a decision, plan, draft, review, analysis, or next action. The AI model matters, but the operating context matters more.",
+          "A strong prompt begins with the result you want: a decision, plan, draft, review, clearer thinking, or next action. The AI model matters, but the working context matters more.",
           "Instead of asking a broad question, define the task, audience, constraints, format, and quality standard.",
         ],
       },
@@ -87,7 +87,7 @@ const guides: Guide[] = [
         title: "Give the assistant a working role",
         body: [
           "Generic prompts often produce generic answers. Give the assistant a role that fits the job: strategy reviewer, writing editor, planning partner, customer-support analyst, or technical explainer.",
-          "INSPIRE turns this into a reusable operating profile so you do not rewrite the same context every time.",
+          "INSPIRE turns this into reusable personalized instructions so you do not rewrite the same context every time.",
         ],
       },
       {
@@ -141,7 +141,7 @@ const guides: Guide[] = [
         title: "Separate context from commands",
         body: [
           "Permanent instructions should include stable preferences. Temporary project details should stay in the current chat.",
-          "INSPIRE helps separate these layers by producing a stable AI operating profile and project-aware starter prompts.",
+          "INSPIRE helps separate these layers by producing stable personalized AI instructions and project-aware starter prompts.",
         ],
       },
       {
@@ -176,7 +176,7 @@ const guides: Guide[] = [
     slug: "prompt-engineering-for-work",
     title: "Prompt Engineering for Work in Saudi Arabia and the GCC",
     description:
-      "A workplace-focused guide to using prompt engineering for planning, writing, analysis, and productivity in GCC teams.",
+      "A workplace-focused guide to using prompt engineering for planning, writing, clearer thinking, and productivity in GCC teams.",
     keywords: ["prompt engineering for work", "AI productivity GCC", "استخدام الذكاء الاصطناعي في العمل"],
     example: {
       weak: "Summarize this meeting.",
@@ -188,7 +188,7 @@ const guides: Guide[] = [
         title: "Work prompts need business context",
         body: [
           "In the workplace, prompts should include the goal, audience, constraints, decision criteria, and expected format.",
-          "This matters in Saudi and GCC teams where AI is increasingly used for communication, analysis, training, planning, and operational work.",
+          "This matters in Saudi and GCC teams where AI is increasingly used for communication, clearer thinking, training, planning, and operational work.",
         ],
       },
       {
@@ -199,10 +199,10 @@ const guides: Guide[] = [
         ],
       },
       {
-        title: "Build a reusable operating profile",
+        title: "Build reusable personalized instructions",
         body: [
-          "A personal or team operating profile makes AI outputs more consistent. It gives the assistant rules for tone, structure, risk, detail level, and decision support.",
-          "INSPIRE is designed to generate this profile from a structured assessment rather than guesswork.",
+          "Personalized instructions make AI outputs more consistent. They give the assistant rules for tone, structure, risk, detail level, and decision support.",
+          "INSPIRE is designed to generate these instructions from a structured assessment rather than guesswork.",
         ],
       },
       {
@@ -228,10 +228,10 @@ const guides: Guide[] = [
   },
   {
     slug: "ai-operating-profile",
-    title: "What Is an AI Operating Profile?",
+    title: "What Are Personalized AI Instructions?",
     description:
-      "An AI operating profile is a reusable instruction layer that tells AI tools how to work with your goals, style, and constraints.",
-    keywords: ["AI operating profile", "AI work style assessment", "تعليمات مخصصة للذكاء الاصطناعي"],
+      "Personalized AI instructions tell AI tools how to work with your goals, style, boundaries, and preferred response format.",
+    keywords: ["personalized AI instructions", "AI work style assessment", "تعليمات مخصصة للذكاء الاصطناعي"],
     example: {
       weak: "Answer in my style.",
       stronger:
@@ -239,44 +239,44 @@ const guides: Guide[] = [
     },
     sections: [
       {
-        title: "A profile is more than a prompt",
+        title: "Personalized instructions are more than one prompt",
         body: [
-          "A prompt usually asks for one output. An AI operating profile defines how the assistant should think, respond, structure work, and avoid mistakes across many tasks.",
-          "It acts like a lightweight operating manual for your AI assistant.",
+          "A prompt usually asks for one output. Personalized instructions define how the assistant should think, respond, structure work, and avoid mistakes across many tasks.",
+          "They act like a lightweight guide for your AI assistant.",
         ],
       },
       {
         title: "What it contains",
         body: [
-          "A useful profile includes your goal context, preferred communication style, thinking modes, quality standards, red lines, and examples of useful outputs.",
+          "Useful instructions include your goal context, preferred communication style, thinking modes, quality standards, red lines, and examples of useful outputs.",
           "INSPIRE organizes these signals into a copy-ready instruction set and a readable report.",
         ],
       },
       {
         title: "Why it matters",
         body: [
-          "Most people lose time because every AI conversation starts from zero. A profile reduces repetition and helps the assistant adapt faster.",
+          "Most people lose time because every AI conversation starts from zero. Personalized instructions reduce repetition and help the assistant adapt faster.",
           "For teams, it can also make AI collaboration easier to explain and share.",
         ],
       },
       {
         title: "How it differs from a prompt library",
         body: [
-          "A prompt library gives you reusable task templates. An operating profile gives the AI a reusable understanding of how to work with you.",
-          "The two can work together: the profile sets behavior, while task prompts describe the current job.",
+          "A prompt library gives you reusable task templates. Personalized instructions give AI a reusable understanding of how to work with you.",
+          "The two can work together: instructions set behavior, while task prompts describe the current job.",
         ],
       },
     ],
     faqs: [
       {
-        question: "Is an AI operating profile the same as a prompt?",
+        question: "Are personalized AI instructions the same as a prompt?",
         answer:
-          "No. A prompt usually asks for one output. An operating profile defines repeated behavior across many tasks and conversations.",
+          "No. A prompt usually asks for one output. Personalized instructions define repeated behavior across many tasks and conversations.",
       },
       {
-        question: "Can I use one profile across multiple AI tools?",
+        question: "Can I use the same instructions across multiple AI tools?",
         answer:
-          "Yes. A well-written profile can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
+          "Yes. Well-written instructions can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
       },
     ],
   },
@@ -350,7 +350,7 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
       {
         title: "ابدأ بالنتيجة، لا بالأداة",
         body: [
-          "المطالبة القوية تبدأ بالنتيجة التي تريدها: قرار، خطة، مسودة، مراجعة، تحليل، أو خطوة تالية.",
+          "المطالبة القوية تبدأ بالنتيجة التي تريدها: قرار، خطة، مسودة، مراجعة، تفكير أوضح، أو خطوة تالية.",
           "بدلاً من سؤال واسع، حدّد المهمة والجمهور والقيود وشكل المخرجات ومعيار الجودة.",
         ],
       },
@@ -358,7 +358,7 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
         title: "أعط المساعد دوراً واضحاً",
         body: [
           "المطالبات العامة تنتج إجابات عامة. حدّد دوراً يناسب المهمة: مراجع استراتيجي، محرر كتابة، شريك تخطيط، أو محلل دعم عملاء.",
-          "INSPIRE يحول هذا الدور إلى ملف تشغيل قابل لإعادة الاستخدام حتى لا تعيد كتابة نفس السياق كل مرة.",
+          "INSPIRE يحول هذا الدور إلى تعليمات مخصصة قابلة لإعادة الاستخدام حتى لا تعيد كتابة نفس السياق كل مرة.",
         ],
       },
       {
@@ -408,7 +408,7 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
         title: "افصل السياق الثابت عن تفاصيل المشروع",
         body: [
           "التفضيلات الثابتة مكانها في التعليمات المخصصة. أما تفاصيل المشروع المؤقتة فالأفضل أن تبقى داخل المحادثة الحالية.",
-          "INSPIRE يساعدك على فصل هذه الطبقات عبر ملف تشغيل ثابت ومطالبات بداية مرتبطة بسياقك.",
+          "INSPIRE يساعدك على فصل هذه الطبقات عبر تعليمات مخصصة ثابتة ومطالبات بداية مرتبطة بسياقك.",
         ],
       },
       {
@@ -439,7 +439,7 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
   },
   "prompt-engineering-for-work": {
     title: "هندسة المطالبات للعمل في السعودية والخليج",
-    description: "دليل عملي لاستخدام هندسة المطالبات في التخطيط والكتابة والتحليل والإنتاجية داخل فرق العمل.",
+    description: "دليل عملي لاستخدام هندسة المطالبات في التخطيط والكتابة والتفكير الأوضح والإنتاجية داخل فرق العمل.",
     keywords: ["هندسة المطالبات للعمل", "الذكاء الاصطناعي في السعودية", "إنتاجية الذكاء الاصطناعي", "استخدام AI في العمل"],
     example: {
       weak: "لخّص هذا الاجتماع.",
@@ -451,7 +451,7 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
         title: "مطالبات العمل تحتاج سياقاً تجارياً",
         body: [
           "في العمل، المطالبة يجب أن تشمل الهدف والجمهور والقيود ومعايير القرار وشكل المخرجات المتوقع.",
-          "هذا مهم في السعودية والخليج حيث يستخدم الذكاء الاصطناعي في التواصل والتحليل والتدريب والتخطيط والعمل التشغيلي.",
+          "هذا مهم في السعودية والخليج حيث يستخدم الذكاء الاصطناعي في التواصل والتفكير الأوضح والتدريب والتخطيط والعمل التشغيلي.",
         ],
       },
       {
@@ -462,10 +462,10 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
         ],
       },
       {
-        title: "ابنِ ملف تشغيل قابل لإعادة الاستخدام",
+        title: "ابنِ تعليمات مخصصة قابلة لإعادة الاستخدام",
         body: [
-          "ملف التشغيل الشخصي أو الجماعي يجعل مخرجات الذكاء الاصطناعي أكثر اتساقاً، لأنه يحدد النبرة والبنية والمخاطر ومستوى التفصيل.",
-          "INSPIRE مصمم لتوليد هذا الملف من تقييم منظّم بدلاً من التخمين.",
+          "التعليمات المخصصة الشخصية أو الجماعية تجعل مخرجات الذكاء الاصطناعي أكثر اتساقاً، لأنها تحدد النبرة والبنية والمخاطر ومستوى التفصيل.",
+          "INSPIRE مصمم لتوليد هذه التعليمات من تقييم منظّم بدلاً من التخمين.",
         ],
       },
       {
@@ -488,9 +488,9 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
     ],
   },
   "ai-operating-profile": {
-    title: "ما هو ملف تشغيل الذكاء الاصطناعي؟",
-    description: "ملف التشغيل هو طبقة تعليمات قابلة لإعادة الاستخدام توضّح للذكاء الاصطناعي كيف يعمل مع أهدافك وأسلوبك وقيودك.",
-    keywords: ["ملف تشغيل الذكاء الاصطناعي", "تعليمات مخصصة للذكاء الاصطناعي", "تقييم أسلوب العمل", "AI operating profile"],
+    title: "ما هي تعليمات الذكاء الاصطناعي المخصصة؟",
+    description: "تعليمات الذكاء الاصطناعي المخصصة توضّح للذكاء الاصطناعي كيف يعمل مع أهدافك وأسلوبك وحدودك.",
+    keywords: ["تعليمات مخصصة للذكاء الاصطناعي", "تقييم أسلوب العمل", "personalized AI instructions"],
     example: {
       weak: "أجب بأسلوبي.",
       stronger:
@@ -498,42 +498,42 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
     },
     sections: [
       {
-        title: "الملف أكثر من مطالبة واحدة",
+        title: "التعليمات المخصصة أكثر من مطالبة واحدة",
         body: [
-          "المطالبة تطلب مخرجاً واحداً غالباً. أما ملف التشغيل فيحدد كيف يفكر المساعد ويرد ويرتب العمل ويتجنب الأخطاء عبر مهام متعددة.",
-          "هو أشبه بدليل تشغيل خفيف لمساعدك الذكي.",
+          "المطالبة تطلب مخرجاً واحداً غالباً. أما التعليمات المخصصة فتحدد كيف يفكر المساعد ويرد ويرتب العمل ويتجنب الأخطاء عبر مهام متعددة.",
+          "هي أشبه بدليل خفيف لمساعدك الذكي.",
         ],
       },
       {
         title: "ماذا يحتوي؟",
         body: [
-          "الملف المفيد يشمل سياق الهدف، أسلوب التواصل المفضل، أنماط التفكير، معايير الجودة، الخطوط الحمراء، وأمثلة على المخرجات المفيدة.",
+          "التعليمات المفيدة تشمل سياق الهدف، أسلوب التواصل المفضل، أنماط التفكير، معايير الجودة، الخطوط الحمراء، وأمثلة على المخرجات المفيدة.",
           "INSPIRE يرتب هذه الإشارات في تعليمات قابلة للنسخ وتقرير واضح.",
         ],
       },
       {
         title: "لماذا يهم؟",
         body: [
-          "كثير من الناس يضيعون وقتاً لأن كل محادثة تبدأ من الصفر. ملف التشغيل يقلل التكرار ويساعد المساعد على التكيف أسرع.",
+          "كثير من الناس يضيعون وقتاً لأن كل محادثة تبدأ من الصفر. التعليمات المخصصة تقلل التكرار وتساعد المساعد على التكيف أسرع.",
           "وبالنسبة للفرق، يسهل شرح طريقة التعاون مع الذكاء الاصطناعي ومشاركتها.",
         ],
       },
       {
         title: "كيف يختلف عن مكتبة المطالبات؟",
         body: [
-          "مكتبة المطالبات تعطيك قوالب للمهام. ملف التشغيل يعطي المساعد فهماً متكرراً لطريقة العمل معك.",
-          "يمكن الجمع بين الاثنين: الملف يحدد السلوك، والمطالبة تصف المهمة الحالية.",
+          "مكتبة المطالبات تعطيك قوالب للمهام. التعليمات المخصصة تعطي المساعد فهماً متكرراً لطريقة العمل معك.",
+          "يمكن الجمع بين الاثنين: التعليمات تحدد السلوك، والمطالبة تصف المهمة الحالية.",
         ],
       },
     ],
     faqs: [
       {
-        question: "هل ملف التشغيل هو نفسه البرومبت؟",
-        answer: "لا. البرومبت يطلب غالباً نتيجة واحدة، أما ملف التشغيل فيحدد سلوكاً متكرراً عبر مهام ومحادثات كثيرة.",
+        question: "هل التعليمات المخصصة هي نفسها البرومبت؟",
+        answer: "لا. البرومبت يطلب غالباً نتيجة واحدة، أما التعليمات المخصصة فتحدد سلوكاً متكرراً عبر مهام ومحادثات كثيرة.",
       },
       {
-        question: "هل أستطيع استخدام ملف واحد مع أكثر من أداة؟",
-        answer: "نعم. يمكن تكييف الملف الجيد مع ChatGPT وClaude وGemini، مع مراعاة اختلاف مكان إدخال التعليمات في كل أداة.",
+        question: "هل أستطيع استخدام نفس التعليمات مع أكثر من أداة؟",
+        answer: "نعم. يمكن تكييف التعليمات الجيدة مع ChatGPT وClaude وGemini، مع مراعاة اختلاف مكان إدخال التعليمات في كل أداة.",
       },
     ],
   },
@@ -633,8 +633,8 @@ function GuidesIndex() {
           </h1>
           <p className="mt-5 text-base leading-8 text-slate-300">
             {locale === "ar"
-              ? "تعرّف على طريقة كتابة مطالبات أوضح، واستخدام تعليمات ChatGPT، وبناء ملف تشغيل للذكاء الاصطناعي يناسب العمل في السعودية والخليج والسياقات العربية/الإنجليزية."
-              : "Learn how to write better prompts, use ChatGPT custom instructions, and build an AI operating profile for work in Saudi Arabia, the GCC, and bilingual Arabic/English contexts."}
+              ? "تعرّف على طريقة كتابة مطالبات أوضح، واستخدام تعليمات ChatGPT، وبناء تعليمات مخصصة للذكاء الاصطناعي تناسب العمل في السعودية والخليج والسياقات العربية/الإنجليزية."
+              : "Learn how to write better prompts, use ChatGPT custom instructions, and build personalized AI instructions for work in Saudi Arabia, the GCC, and bilingual Arabic/English contexts."}
           </p>
         </header>
 
@@ -774,8 +774,8 @@ function GuideDetail({ guide }: { guide: Guide }) {
           <h2 className="text-2xl font-black text-white">{locale === "ar" ? "حوّل هذا إلى تعليماتك الخاصة" : "Turn this into your own AI instructions"}</h2>
           <p className="mt-3 text-base leading-8 text-slate-300">
             {locale === "ar"
-              ? "INSPIRE يحوّل أهدافك وأسلوب عملك وتفضيلاتك وحدودك إلى ملف تشغيل قابل للاستخدام مع الذكاء الاصطناعي."
-              : "INSPIRE converts your goals, work style, preferences, and red lines into a reusable AI operating profile."}
+              ? "INSPIRE يحوّل أهدافك وأسلوب عملك وتفضيلاتك وحدودك إلى تعليمات مخصصة قابلة للاستخدام مع الذكاء الاصطناعي."
+              : "INSPIRE converts your goals, work style, preferences, and red lines into reusable personalized AI instructions."}
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Link href={href("/assess/mini")} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">

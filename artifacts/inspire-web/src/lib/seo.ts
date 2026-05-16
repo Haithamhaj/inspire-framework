@@ -106,12 +106,12 @@ const guideSeo: Record<string, SeoConfig> = {
     path: "/guides/chatgpt-custom-instructions",
     title: "ChatGPT Custom Instructions: What to Include — INSPIRE",
     description:
-      "A practical guide to ChatGPT custom instructions, AI assistant behavior, reusable prompt rules, and personal AI operating profiles.",
+      "A practical guide to ChatGPT custom instructions, AI assistant behavior, reusable prompt rules, and personalized AI instructions.",
     jsonLd: guideJsonLd({
       path: "/guides/chatgpt-custom-instructions",
       title: "ChatGPT Custom Instructions: What to Include",
       description:
-        "A practical guide to ChatGPT custom instructions, AI assistant behavior, reusable prompt rules, and personal AI operating profiles.",
+        "A practical guide to ChatGPT custom instructions, AI assistant behavior, reusable prompt rules, and personalized AI instructions.",
       breadcrumbName: "ChatGPT Custom Instructions",
       faqs: [
         {
@@ -131,12 +131,12 @@ const guideSeo: Record<string, SeoConfig> = {
     path: "/guides/prompt-engineering-for-work",
     title: "Prompt Engineering for Work in Saudi Arabia and the GCC",
     description:
-      "Use prompt engineering at work for planning, writing, analysis, bilingual communication, and productivity across Saudi Arabia and GCC teams.",
+      "Use prompt engineering at work for planning, writing, clearer thinking, bilingual communication, and productivity across Saudi Arabia and GCC teams.",
     jsonLd: guideJsonLd({
       path: "/guides/prompt-engineering-for-work",
       title: "Prompt Engineering for Work in Saudi Arabia and the GCC",
       description:
-        "Use prompt engineering at work for planning, writing, analysis, bilingual communication, and productivity across Saudi Arabia and GCC teams.",
+        "Use prompt engineering at work for planning, writing, clearer thinking, bilingual communication, and productivity across Saudi Arabia and GCC teams.",
       breadcrumbName: "Prompt Engineering for Work",
       faqs: [
         {
@@ -154,25 +154,25 @@ const guideSeo: Record<string, SeoConfig> = {
   },
   "ai-operating-profile": {
     path: "/guides/ai-operating-profile",
-    title: "What Is an AI Operating Profile? — INSPIRE Framework",
+    title: "What Are Personalized AI Instructions? — INSPIRE Framework",
     description:
-      "An AI operating profile is a reusable instruction layer that helps ChatGPT, Claude, and Gemini work with your goals, style, and constraints.",
+      "Personalized AI instructions help ChatGPT, Claude, and Gemini understand your goal, working style, boundaries, and preferred response format.",
     jsonLd: guideJsonLd({
       path: "/guides/ai-operating-profile",
-      title: "What Is an AI Operating Profile?",
+      title: "What Are Personalized AI Instructions?",
       description:
-        "An AI operating profile is a reusable instruction layer that helps ChatGPT, Claude, and Gemini work with your goals, style, and constraints.",
-      breadcrumbName: "AI Operating Profile",
+        "Personalized AI instructions help ChatGPT, Claude, and Gemini understand your goal, working style, boundaries, and preferred response format.",
+      breadcrumbName: "Personalized AI Instructions",
       faqs: [
         {
-          question: "Is an AI operating profile the same as a prompt?",
+          question: "Are personalized AI instructions the same as a prompt?",
           answer:
-            "No. A prompt usually asks for one output. An operating profile defines repeated behavior across many tasks and conversations.",
+            "No. A prompt usually asks for one output. Personalized instructions define repeated behavior across many tasks and conversations.",
         },
         {
-          question: "Can I use one profile across multiple AI tools?",
+          question: "Can I use the same instructions across multiple AI tools?",
           answer:
-            "Yes. A well-written profile can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
+            "Yes. Well-written instructions can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
         },
       ],
     }),
@@ -221,13 +221,13 @@ const guideSeoAr: Record<string, SeoConfig> = {
     path: "/guides/prompt-engineering-for-work",
     title: "هندسة المطالبات للعمل في السعودية والخليج — INSPIRE",
     description:
-      "استخدم هندسة المطالبات في التخطيط والكتابة والتحليل والتواصل ثنائي اللغة داخل فرق العمل في السعودية والخليج.",
+      "استخدم هندسة المطالبات في التخطيط والكتابة والتفكير الأوضح والتواصل ثنائي اللغة داخل فرق العمل في السعودية والخليج.",
   },
   "ai-operating-profile": {
     path: "/guides/ai-operating-profile",
-    title: "ما هو ملف تشغيل الذكاء الاصطناعي؟ — INSPIRE",
+    title: "ما هي تعليمات الذكاء الاصطناعي المخصصة؟ — INSPIRE",
     description:
-      "ملف تشغيل الذكاء الاصطناعي هو طبقة تعليمات قابلة لإعادة الاستخدام تساعد ChatGPT وClaude وGemini على العمل وفق أهدافك وأسلوبك.",
+      "تعليمات الذكاء الاصطناعي المخصصة تساعد ChatGPT وClaude وGemini على فهم هدفك، أسلوبك، حدودك، وشكل الرد المناسب لك.",
   },
   "arabic-ai-prompts": {
     path: "/guides/arabic-ai-prompts",
@@ -239,9 +239,9 @@ const guideSeoAr: Record<string, SeoConfig> = {
 
 export const defaultSeo: SeoConfig = {
   path: "/",
-  title: "INSPIRE Framework — AI Operating Profile & Prompt Instructions",
+  title: "INSPIRE Framework — Personalized AI Instructions for Your Work",
   description:
-    "Build a personal AI operating profile for ChatGPT, Claude, and Gemini. INSPIRE turns your working style into copy-ready AI instructions, starter prompts, and a digital report.",
+    "Create personalized, ready-to-use AI instructions based on your goal and working style. Paste them into ChatGPT, Claude, or Gemini to get replies that fit you better from the start.",
 };
 
 export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfig {
@@ -251,9 +251,9 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
     if (locale === "ar") {
       return {
         path: "/pricing",
-        title: "أسعار INSPIRE — تقرير ملف تشغيل الذكاء الاصطناعي",
+        title: "أسعار INSPIRE — تعليمات ذكاء اصطناعي مخصصة",
         description:
-          "تسعير واضح من INSPIRE: تقييم سريع مجاني وتقرير رقمي كامل بقيمة 10 دولارات مع ملف تشغيل وتعليمات جاهزة للنسخ.",
+          "تسعير واضح من INSPIRE: تقييم سريع مجاني وتعليمات مخصصة كاملة بقيمة 10 دولارات جاهزة للنسخ والاستخدام.",
         jsonLd: breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Pricing", path: "/pricing" },
@@ -263,9 +263,9 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
 
     return {
       path: "/pricing",
-      title: "INSPIRE Pricing — $10 AI Operating Profile Report",
+      title: "INSPIRE Pricing — $10 Personalized AI Instructions",
       description:
-        "Simple INSPIRE pricing: a free quick assessment and a $10 one-time digital AI operating profile report with copy-ready prompt instructions.",
+        "Simple INSPIRE pricing: a free quick assessment and $10 one-time personalized AI instructions with copy-ready starter prompts.",
       jsonLd: breadcrumbJsonLd([
         { name: "Home", path: "/" },
         { name: "Pricing", path: "/pricing" },
@@ -277,9 +277,9 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
     if (locale === "ar") {
       return {
         path: "/about",
-        title: "عن INSPIRE Framework — ملف تشغيل وتعليمات شخصية للذكاء الاصطناعي",
+        title: "عن INSPIRE Framework — تعليمات مخصصة للذكاء الاصطناعي",
         description:
-          "تعرّف على INSPIRE Framework، تقييم رقمي يحوّل أهدافك وأسلوب عملك إلى ملف تشغيل وتعليمات مخصصة للذكاء الاصطناعي.",
+          "تعرّف على INSPIRE Framework، تقييم رقمي يحوّل أهدافك وأسلوب عملك إلى تعليمات مخصصة للذكاء الاصطناعي.",
         jsonLd: {
           "@context": "https://schema.org",
           "@graph": [
@@ -293,7 +293,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
               url: `${siteUrl}/about`,
               name: "About INSPIRE Framework",
               description:
-                "INSPIRE Framework is a self-serve digital assessment that turns a user's goals, work style, preferences, and constraints into AI operating profile instructions.",
+                "INSPIRE Framework is a self-serve digital assessment that turns a user's goals, work style, preferences, and constraints into personalized AI instructions.",
               isPartOf: { "@id": websiteId },
               publisher: { "@id": organizationId },
             },
@@ -304,9 +304,9 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
 
     return {
       path: "/about",
-      title: "About INSPIRE Framework — AI Operating Profile Research and Product",
+      title: "About INSPIRE Framework — Personalized AI Instructions",
       description:
-        "Learn about INSPIRE Framework, a digital assessment that creates personal AI operating profiles and prompt instructions for ChatGPT, Claude, and Gemini.",
+        "Learn about INSPIRE Framework, a digital assessment that creates personalized AI instructions for ChatGPT, Claude, and Gemini.",
       jsonLd: {
         "@context": "https://schema.org",
         "@graph": [
@@ -320,7 +320,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
             url: `${siteUrl}/about`,
             name: "About INSPIRE Framework",
             description:
-              "INSPIRE Framework is a self-serve digital assessment that turns a user's goals, work style, preferences, and constraints into AI operating profile instructions.",
+              "INSPIRE Framework is a self-serve digital assessment that turns a user's goals, work style, preferences, and constraints into personalized AI instructions.",
             isPartOf: { "@id": websiteId },
             publisher: { "@id": organizationId },
           },
@@ -360,7 +360,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
       path: "/contact",
       title: "Contact INSPIRE Framework — Support and Product Questions",
       description:
-        "Contact INSPIRE Framework for support, product questions, billing questions, and review inquiries for the digital AI operating profile report.",
+        "Contact INSPIRE Framework for support, product questions, billing questions, and review inquiries for personalized AI instructions.",
       jsonLd: {
         "@context": "https://schema.org",
         "@graph": [
@@ -454,7 +454,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
         path: "/guides",
         title: "أدلة عملية لكتابة تعليمات أفضل للذكاء الاصطناعي — INSPIRE",
         description:
-          "أدلة عملية عن كتابة مطالبات أفضل، تعليمات ChatGPT، هندسة المطالبات، المطالبات العربية، وملفات تشغيل الذكاء الاصطناعي.",
+          "أدلة عملية عن كتابة مطالبات أفضل، تعليمات ChatGPT، هندسة المطالبات، المطالبات العربية، وتعليمات الذكاء الاصطناعي المخصصة.",
         jsonLd: breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Guides", path: "/guides" },
@@ -466,7 +466,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
       path: "/guides",
       title: "AI Prompt Guides for Work — INSPIRE Framework",
       description:
-        "Practical guides for better AI prompts, ChatGPT custom instructions, prompt engineering, Arabic AI prompts, and AI operating profiles.",
+        "Practical guides for better AI prompts, ChatGPT custom instructions, prompt engineering, Arabic AI prompts, and personalized AI instructions.",
       jsonLd: breadcrumbJsonLd([
         { name: "Home", path: "/" },
         { name: "Guides", path: "/guides" },
@@ -497,14 +497,14 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
         path: "/terms",
         title: "شروط الخدمة — INSPIRE Framework",
         description:
-          "شروط استخدام INSPIRE Framework، المنتج الرقمي الذاتي لإنشاء ملف تشغيل وتعليمات مخصصة للذكاء الاصطناعي.",
+          "شروط استخدام INSPIRE Framework، المنتج الرقمي الذاتي لإنشاء تعليمات مخصصة للذكاء الاصطناعي.",
       };
     }
 
     return {
       path: "/terms",
       title: "Terms of Service — INSPIRE Framework",
-      description: "Terms for using INSPIRE Framework, a self-serve digital AI operating profile and prompt instruction product.",
+      description: "Terms for using INSPIRE Framework, a self-serve personalized AI instruction product.",
     };
   }
 
@@ -521,7 +521,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
     return {
       path: "/privacy",
       title: "Privacy Policy — INSPIRE Framework",
-      description: "How INSPIRE Framework collects and uses information to generate digital AI operating profile reports.",
+      description: "How INSPIRE Framework collects and uses information to generate personalized AI instructions.",
     };
   }
 
@@ -538,7 +538,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
     return {
       path: "/refund-policy",
       title: "Refund Policy — INSPIRE Framework",
-      description: "Refund policy for the INSPIRE Framework digital AI operating profile report.",
+      description: "Refund policy for the INSPIRE Framework personalized AI instruction product.",
     };
   }
 

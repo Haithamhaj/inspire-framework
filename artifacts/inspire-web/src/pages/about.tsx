@@ -18,7 +18,7 @@ export default function About() {
         eyebrow: "عن INSPIRE",
         title: "إطار عملي لبناء تعليمات شخصية للذكاء الاصطناعي",
         intro:
-          "INSPIRE هو تقييم رقمي ذاتي يحوّل أهدافك، أسلوب عملك، تفضيلاتك، وحدودك إلى ملف تشغيل قابل للاستخدام مع ChatGPT وClaude وGemini وأدوات الذكاء الاصطناعي المشابهة.",
+          "INSPIRE هو تقييم رقمي ذاتي يحوّل أهدافك، أسلوب عملك، تفضيلاتك، وحدودك إلى تعليمات مخصصة قابلة للاستخدام مع ChatGPT وClaude وGemini وأدوات الذكاء الاصطناعي المشابهة.",
         principles: [
           "تعليمات الذكاء الاصطناعي الأفضل تبدأ من طريقة عمل المستخدم، لا من قالب عام.",
           "النتائج المفيدة تأتي من وضوح الهدف، السياق، التفضيلات، القيود، وقواعد الجودة.",
@@ -33,8 +33,8 @@ export default function About() {
         researchBody:
           "يرتبط INSPIRE بعمل INSPIRE & CRAFTS من إعداد هيثم حمادنة، وهو إطار عملي لتخصيص تفاعل الأفراد مع الذكاء الاصطناعي.",
         ssrn: "عرض الورقة على SSRN",
-        ctaTitle: "أنشئ ملف تشغيلك للذكاء الاصطناعي",
-        ctaBody: "ابدأ بالتقييم السريع المجاني أو راجع صفحة الأسعار للتقرير الرقمي الكامل.",
+        ctaTitle: "احصل على تعليماتك المخصصة للذكاء الاصطناعي",
+        ctaBody: "ابدأ بالتقييم السريع المجاني أو راجع صفحة الأسعار للتعليمات الكاملة.",
         quick: "جرّب التقييم السريع المجاني",
         pricing: "عرض الأسعار",
       }
@@ -42,7 +42,7 @@ export default function About() {
         eyebrow: "About INSPIRE",
         title: "A practical framework for personal AI instructions",
         intro:
-          "INSPIRE Framework is a self-serve digital assessment that turns a person's goals, working style, preferences, and red lines into a reusable AI operating profile for tools such as ChatGPT, Claude, Gemini, and similar assistants.",
+          "INSPIRE Framework is a self-serve digital assessment that turns a person's goals, working style, preferences, and red lines into reusable personalized AI instructions for tools such as ChatGPT, Claude, Gemini, and similar assistants.",
         principles,
         solveTitle: "What INSPIRE helps you unlock",
         solveBody: [
@@ -53,8 +53,8 @@ export default function About() {
         researchBody:
           "INSPIRE is connected to the INSPIRE & CRAFTS work by Haitham Hamadneh, a practical framework for individual-level AI interaction customization.",
         ssrn: "View the SSRN paper",
-        ctaTitle: "Create your own AI operating profile",
-        ctaBody: "Start with the free quick assessment or review the pricing page for the full digital report.",
+        ctaTitle: "Get your personalized AI instructions",
+        ctaBody: "Start with the free quick assessment or review the pricing page for the complete instructions.",
         quick: "Try the free quick assessment",
         pricing: "View pricing",
       };

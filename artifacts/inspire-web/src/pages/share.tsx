@@ -349,7 +349,7 @@ export default function Share() {
         {/* Footer CTA */}
         <div className="bg-gradient-to-l from-primary/10 to-accent/10 rounded-2xl p-6 text-center border border-primary/10">
           <p className="text-foreground font-semibold mb-1">هل تريد تقييمك الخاص؟</p>
-          <p className="text-muted-foreground text-sm mb-4">أنشئ ملفك السلوكي المخصص مجاناً</p>
+          <p className="text-muted-foreground text-sm mb-4">احصل على تعليماتك المخصصة مجاناً</p>
           <a
             href="/"
             className="inline-block bg-primary text-primary-foreground px-8 py-3 rounded-xl font-bold hover:bg-primary/90 transition-colors"

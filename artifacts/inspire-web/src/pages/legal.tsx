@@ -22,12 +22,12 @@ const termsContent: LegalPageContent = {
   title: "Terms of Service",
   lastUpdated: "May 2026",
   intro:
-    "Welcome to INSPIRE Framework. These Terms of Service govern your access to and use of the INSPIRE Framework website and digital analysis product.",
+    "Welcome to INSPIRE Framework. These Terms of Service govern your access to and use of the INSPIRE Framework website and digital AI instruction product.",
   sections: [
     {
       title: "1. Product Description",
       body: [
-        "INSPIRE Framework is a self-serve AI-powered digital analysis tool. Users complete an online assessment, and the system generates a structured operating profile report and copy-ready AI instructions based on the user's answers.",
+        "INSPIRE Framework is a self-serve AI-powered digital product. Users complete an online assessment, and the system generates personalized AI instructions based on the user's answers.",
       ],
     },
     {
@@ -55,7 +55,7 @@ const termsContent: LegalPageContent = {
     {
       title: "6. Access and Delivery",
       body: [
-        "After successful payment, users receive access to their digital analysis output through the website or related delivery flow. If a technical issue prevents access, users may contact support.",
+        "After successful payment, users receive access to their personalized digital output through the website or related delivery flow. If a technical issue prevents access, users may contact support.",
       ],
     },
     {
@@ -85,7 +85,7 @@ const privacyContent: LegalPageContent = {
   title: "Privacy Policy",
   lastUpdated: "May 2026",
   intro:
-    "This Privacy Policy explains how INSPIRE Framework collects, uses, and protects information when you use our website and digital analysis product.",
+    "This Privacy Policy explains how INSPIRE Framework collects, uses, and protects information when you use our website and personalized AI instruction product.",
   sections: [
     {
       title: "1. Information We Collect",
@@ -107,7 +107,7 @@ const privacyContent: LegalPageContent = {
       title: "3. How We Use Information",
       body: ["We use collected information to:"],
       bullets: [
-        "Generate the user's operating profile report",
+        "Generate the user's personalized AI instructions",
         "Provide access to purchased digital products",
         "Improve the quality and reliability of the service",
         "Respond to support requests",
@@ -155,12 +155,12 @@ const refundContent: LegalPageContent = {
   title: "Refund Policy",
   lastUpdated: "May 2026",
   intro:
-    "INSPIRE Framework provides a self-serve digital analysis product that is generated based on the user's online assessment.",
+    "INSPIRE Framework provides a self-serve personalized AI instruction product that is generated based on the user's online assessment.",
   sections: [
     {
       title: "1. Digital Product Delivery",
       body: [
-        "Because INSPIRE Framework is a digital product and the analysis may be generated or made available shortly after purchase, refunds are generally not available once the report or digital output has been delivered.",
+        "Because INSPIRE Framework is a digital product and the personalized instructions may be generated or made available shortly after purchase, refunds are generally not available once the digital output has been delivered.",
       ],
     },
     {
@@ -169,7 +169,7 @@ const refundContent: LegalPageContent = {
       bullets: [
         "Duplicate payment",
         "Accidental duplicate order",
-        "Technical issue that prevents delivery of the purchased analysis",
+        "Technical issue that prevents delivery of the purchased instructions",
         "Payment was successful but the user did not receive access to the purchased digital product",
       ],
     },
@@ -205,12 +205,12 @@ const termsContentAr: LegalPageContent = {
   title: "شروط الخدمة",
   lastUpdated: "مايو 2026",
   intro:
-    "مرحباً بك في INSPIRE Framework. توضّح شروط الخدمة هذه قواعد الوصول إلى موقع INSPIRE Framework واستخدام المنتج الرقمي التحليلي المقدم من خلاله.",
+    "مرحباً بك في INSPIRE Framework. توضّح شروط الخدمة هذه قواعد الوصول إلى موقع INSPIRE Framework واستخدام منتج تعليمات الذكاء الاصطناعي المخصصة المقدم من خلاله.",
   sections: [
     {
       title: "1. وصف المنتج",
       body: [
-        "INSPIRE Framework هو أداة تحليل رقمية ذاتية مدعومة بالذكاء الاصطناعي. يقوم المستخدم بإكمال تقييم عبر الإنترنت، ثم ينشئ النظام تقريراً منظماً لملف التشغيل وتعليمات جاهزة للاستخدام مع الذكاء الاصطناعي بناءً على إجابات المستخدم.",
+        "INSPIRE Framework هو منتج رقمي ذاتي مدعوم بالذكاء الاصطناعي. يقوم المستخدم بإكمال تقييم عبر الإنترنت، ثم ينشئ النظام تعليمات مخصصة جاهزة للاستخدام مع الذكاء الاصطناعي بناءً على إجابات المستخدم.",
       ],
     },
     {
@@ -268,7 +268,7 @@ const privacyContentAr: LegalPageContent = {
   title: "سياسة الخصوصية",
   lastUpdated: "مايو 2026",
   intro:
-    "توضح سياسة الخصوصية هذه كيفية جمع INSPIRE Framework للمعلومات واستخدامها وحمايتها عند استخدام الموقع والمنتج الرقمي التحليلي.",
+    "توضح سياسة الخصوصية هذه كيفية جمع INSPIRE Framework للمعلومات واستخدامها وحمايتها عند استخدام الموقع ومنتج تعليمات الذكاء الاصطناعي المخصصة.",
   sections: [
     {
       title: "1. المعلومات التي نجمعها",
@@ -290,7 +290,7 @@ const privacyContentAr: LegalPageContent = {
       title: "3. كيفية استخدام المعلومات",
       body: ["نستخدم المعلومات التي يتم جمعها من أجل:"],
       bullets: [
-        "إنشاء تقرير ملف التشغيل الخاص بالمستخدم",
+        "إنشاء تعليمات الذكاء الاصطناعي المخصصة الخاصة بالمستخدم",
         "توفير الوصول إلى المنتجات الرقمية المشتراة",
         "تحسين جودة الخدمة وموثوقيتها",
         "الرد على طلبات الدعم",
@@ -338,12 +338,12 @@ const refundContentAr: LegalPageContent = {
   title: "سياسة الاسترداد",
   lastUpdated: "مايو 2026",
   intro:
-    "يوفر INSPIRE Framework منتجاً رقمياً تحليلياً ذاتياً يتم إنشاؤه بناءً على تقييم المستخدم عبر الإنترنت.",
+    "يوفر INSPIRE Framework منتج تعليمات ذكاء اصطناعي مخصصاً يتم إنشاؤه بناءً على تقييم المستخدم عبر الإنترنت.",
   sections: [
     {
       title: "1. تسليم المنتج الرقمي",
       body: [
-        "نظراً لأن INSPIRE Framework منتج رقمي وقد يتم إنشاء التحليل أو إتاحته بعد الشراء بوقت قصير، فإن عمليات الاسترداد لا تكون متاحة عادةً بعد تسليم التقرير أو المخرجات الرقمية.",
+        "نظراً لأن INSPIRE Framework منتج رقمي وقد يتم إنشاء التعليمات المخصصة أو إتاحتها بعد الشراء بوقت قصير، فإن عمليات الاسترداد لا تكون متاحة عادةً بعد تسليم المخرجات الرقمية.",
       ],
     },
     {
@@ -352,7 +352,7 @@ const refundContentAr: LegalPageContent = {
       bullets: [
         "دفع مكرر",
         "طلب مكرر عن طريق الخطأ",
-        "مشكلة تقنية تمنع تسليم التحليل المشترى",
+        "مشكلة تقنية تمنع تسليم التعليمات المشتراة",
         "نجاح عملية الدفع دون حصول المستخدم على الوصول إلى المنتج الرقمي المشترى",
       ],
     },

@@ -67,14 +67,14 @@ const questions = [
       "General best practices from the internet.",
     ],
     selected: 1,
-    signal: "The final operating profile keeps project context and user preferences active across prompts.",
+    signal: "The final personalized instructions keep project context and user preferences active across prompts.",
   },
 ];
 
 const reportSections = [
   {
     eyebrow: "01",
-    title: "AI Operating Profile",
+    title: "Personalized AI Instructions",
     body:
       "You work best with an AI assistant that behaves like a strategic execution partner. It should clarify the objective, test assumptions, identify risks, and keep each response tied to the user's project context.",
   },
@@ -82,7 +82,7 @@ const reportSections = [
     eyebrow: "02",
     title: "Recommended AI Roles",
     body:
-      "Primary roles: Strategic Partner, Risk Reviewer, Decision Support, Organizer, and Execution Coach. The assistant should switch roles depending on whether the task is planning, analysis, writing, prioritization, or implementation.",
+      "Primary roles: Strategic Partner, Risk Reviewer, Decision Support, Organizer, and Execution Coach. The assistant should switch roles depending on whether the task is planning, clearer thinking, writing, prioritization, or implementation.",
   },
   {
     eyebrow: "03",
@@ -180,7 +180,7 @@ export default function ReviewDemo() {
             </div>
             <div>
               <p className="text-2xl font-black tracking-wide text-white">INSPIRE Framework</p>
-              <p className="text-sm font-semibold text-slate-400">Self-serve digital assessment and AI operating profile report</p>
+              <p className="text-sm font-semibold text-slate-400">Self-serve digital assessment and personalized AI instructions</p>
             </div>
           </div>
           <div className="rounded-2xl border border-slate-700 bg-slate-950/80 px-6 py-4 text-right">
@@ -210,7 +210,7 @@ export default function ReviewDemo() {
               {[
                 ["Product", "Full INSPIRE report"],
                 ["Delivery", "Digital report after online assessment"],
-                ["Output", "Operating profile, AI roles, prompt starters, and copy-ready instructions"],
+                ["Output", "Personalized instructions, AI roles, prompt starters, and copy-ready instructions"],
                 ["Payment status", "Lemon Squeezy review stage; no live checkout in this demo"],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
@@ -324,7 +324,7 @@ export default function ReviewDemo() {
                 </div>
                 <h2 className="text-5xl font-black leading-tight text-white">Generating the personalized report</h2>
                 <p className="mt-5 max-w-4xl text-2xl leading-10 text-slate-300">
-                  INSPIRE combines the user's answers, project context, decision signals, and report structure into a complete digital AI operating profile.
+                  INSPIRE combines the user's answers, project context, decision signals, and report structure into complete personalized AI instructions.
                 </p>
                 <div className="mt-10 grid w-full max-w-5xl gap-5 sm:grid-cols-3">
                   {["Assessment answers", "INSPIRE logic", "Report sections"].map((item) => (
@@ -369,7 +369,7 @@ export default function ReviewDemo() {
                           <p className="text-sm font-bold uppercase tracking-[0.18em] text-rose-200">INSPIRE report</p>
                           <h3 className="mt-2 text-4xl font-black text-white">AI Productivity Workflow</h3>
                           <p className="mt-3 max-w-4xl text-xl leading-8 text-slate-300">
-                            Personalized AI operating profile, generated from the user's assessment answers and work context.
+                            Personalized AI instructions, generated from the user's assessment answers and work context.
                           </p>
                         </div>
                       </div>
@@ -394,7 +394,7 @@ export default function ReviewDemo() {
                     <div className="mt-5 rounded-3xl border border-emerald-300/25 bg-emerald-500/10 p-7 text-center">
                       <Check className="mx-auto h-10 w-10 text-emerald-200" />
                       <p className="mt-3 text-3xl font-black text-white">End of report</p>
-                      <p className="mt-2 text-xl text-slate-300">The customer can copy instructions, download the report, or reuse the profile with AI tools.</p>
+                      <p className="mt-2 text-xl text-slate-300">The customer can copy instructions, download the report, or reuse the instructions with AI tools.</p>
                     </div>
                   </div>
 
