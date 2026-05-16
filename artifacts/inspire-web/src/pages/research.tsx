@@ -22,7 +22,7 @@ export default function Research() {
         summaryTitle: "ملخص مبسط",
         summary: [
           "توضح الورقة طريقة عملية لتخصيص تعامل الأفراد مع المساعدات الذكية، من خلال تحديد الأهداف والأسلوب والتفضيلات وقواعد التفاعل ومعايير الجودة.",
-          "يحوّل INSPIRE هذه الفكرة إلى منتج عملي: يطرح أسئلة منظمة، يلتقط الإشارات المهمة، ثم ينتج ملف تشغيل وتعليمات قابلة للاستخدام.",
+          "يحوّل INSPIRE هذه الفكرة إلى منتج عملي: يطرح أسئلة منظمة، يلتقط الإشارات المهمة، ثم ينتج تعليمات مخصصة قابلة للاستخدام.",
         ],
         points: [
           "INSPIRE يركز على تفضيلات المستخدم وأسلوب تشغيله مع الذكاء الاصطناعي.",
@@ -33,7 +33,7 @@ export default function Research() {
         doi: "فتح DOI",
         ctaTitle: "من البحث إلى تعليمات قابلة للاستخدام",
         ctaBody:
-          "الهدف العملي هو أن يخرج المستخدم بتعليمات جاهزة للنسخ يمكن استخدامها في العمل، الدراسة، التخطيط، الكتابة، والتحليل.",
+          "الهدف العملي هو أن يخرج المستخدم بتعليمات جاهزة للنسخ يمكن استخدامها في العمل، الدراسة، التخطيط، الكتابة، والتفكير الأوضح.",
         about: "تعرّف على INSPIRE",
         guides: "استكشف الأدلة",
       }
@@ -45,14 +45,14 @@ export default function Research() {
         summaryTitle: "Plain-language summary",
         summary: [
           "The research presents a practical way to customize how AI assistants work with individuals by defining goals, style, preferences, interaction rules, and quality standards.",
-          "INSPIRE turns this idea into a product: it asks structured questions, identifies useful signals, and produces a reusable AI operating profile and prompt instructions.",
+          "INSPIRE turns this idea into a product: it asks structured questions, identifies useful signals, and produces reusable personalized AI instructions.",
         ],
         points: researchPoints,
         ssrn: "Open SSRN page",
         doi: "Open DOI",
         ctaTitle: "From research to usable instructions",
         ctaBody:
-          "The product goal is practical: help users leave with copy-ready AI instructions they can use in real work, study, planning, writing, and analysis workflows.",
+          "The product goal is practical: help users leave with copy-ready AI instructions they can use in real work, study, planning, writing, and clearer thinking workflows.",
         about: "Learn about INSPIRE",
         guides: "Explore the guides",
       };

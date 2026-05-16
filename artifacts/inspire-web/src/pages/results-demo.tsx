@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/tooltip";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MOCK DATA — Project Management AI Operating Profile
+// MOCK DATA — Project Management AI Instructions
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PROJECT_NAME = "إدارة المشاريع";
@@ -225,8 +225,8 @@ const PLATFORMS = [
     name: "ChatGPT",
     accent: "from-emerald-500/30 to-teal-500/20",
     steps: [
-      "افتح ChatGPT واستخدم الملف داخل تعليمات Custom GPT، أو الصقه في تعليمات المشاريع مثل Claude Projects.",
-      "الصق ملف التشغيل في خانة \"كيف تريد أن يردّ عليك ChatGPT؟\".",
+      "افتح ChatGPT واستخدم التعليمات داخل Custom GPT، أو الصقها في تعليمات المشاريع مثل Claude Projects.",
+      "الصق التعليمات في خانة \"كيف تريد أن يردّ عليك ChatGPT؟\".",
       "احفظ الإعدادات. ستجد المساعد يعمل بشخصيتك المخصصة في كل محادثة جديدة.",
     ],
   },
@@ -236,7 +236,7 @@ const PLATFORMS = [
     accent: "from-sky-500/30 to-indigo-500/20",
     steps: [
       "افتح Gemini واختر \"Gems\" لإنشاء مساعد جديد.",
-      "الصق ملف التشغيل في حقل تعليمات الـ Gem واحفظه باسم \"مساعد إدارة المشاريع\".",
+      "الصق التعليمات في حقل تعليمات الـ Gem واحفظه باسم \"مساعد إدارة المشاريع\".",
       "افتح الـ Gem في كل مرة تحتاج فيها هذا الدور تحديدًا.",
     ],
   },
@@ -246,14 +246,14 @@ const PLATFORMS = [
     accent: "from-rose-500/30 to-orange-500/20",
     steps: [
       "في Claude، أنشئ Project جديدًا وسمّه \"إدارة المشاريع\".",
-      "الصق ملف التشغيل في خانة Custom Instructions الخاصة بالمشروع.",
+      "الصق التعليمات في خانة Custom Instructions الخاصة بالمشروع.",
       "ابدأ كل محادثة من هذا المشروع لتحصل على نفس السلوك المتسق.",
     ],
   },
 ];
 
 const STARTERS = [
-  "استخدم ملف التشغيل هذا، ثم ساعدني على تحويل هذه الفكرة إلى خطة تنفيذ من 5 خطوات.",
+  "استخدم هذه التعليمات، ثم ساعدني على تحويل هذه الفكرة إلى خطة تنفيذ من 5 خطوات.",
   "بصفتك مراجع المخاطر، اقرأ الخطة التالية واستخرج أكبر 3 مخاطر مع طريقة تخفيفها.",
   "قارن بين هذين المسارين لإطلاق المشروع، واقترح المسار الأنسب لي مع تبرير قصير.",
   "لخّص نقاش الفريق التالي إلى: قرار، مهام، مالكين، مواعيد. ابدأ بالنتيجة قبل التفاصيل.",
@@ -267,7 +267,7 @@ function buildFullProfileText() {
   const parts = PROFILE_SECTIONS.map(
     (s) => `## ${s.title}\n\n${s.body}`,
   ).join("\n\n");
-  return `# ملف تشغيل مساعدك — ${PROJECT_NAME}\n\n${parts}\n`;
+  return `# تعليمات مساعدك — ${PROJECT_NAME}\n\n${parts}\n`;
 }
 
 const ACCENT_MAP: Record<string, { ring: string; bg: string; text: string; glow: string }> = {
@@ -522,7 +522,7 @@ export default function ResultsDemo() {
                 <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-              ملف تشغيل مساعدك جاهز
+              تعليمات مساعدك جاهزة
             </motion.div>
 
             <motion.h1
@@ -531,7 +531,7 @@ export default function ResultsDemo() {
               transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="font-display font-black text-3xl sm:text-4xl md:text-5xl leading-[1.25] mb-4"
             >
-              تم بناء ملف تشغيل مساعدك{" "}
+              تم بناء تعليمات مساعدك{" "}
               <span className="relative inline-block">
                 <span className="bg-gradient-to-l from-rose-300 via-orange-300 to-amber-200 bg-clip-text text-transparent">
                   لإدارة المشاريع
@@ -649,7 +649,7 @@ export default function ResultsDemo() {
           <SectionHeading
             eyebrow="ما الذي يتغيّر"
             title="كيف سيختلف تعاملك مع AI من الآن"
-            subtitle="هذه ليست وعودًا عامة — هذه تأثيرات مباشرة لملف التشغيل المخصص لمشروعك."
+            subtitle="هذه ليست وعودًا عامة — هذه تأثيرات مباشرة للتعليمات المخصصة لمشروعك."
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
@@ -844,9 +844,9 @@ export default function ResultsDemo() {
           transition={{ duration: 0.5 }}
         >
           <SectionHeading
-            eyebrow="ملف التشغيل"
+            eyebrow="التعليمات المخصصة"
             title="تعليمات مساعدك الجاهزة"
-            subtitle="ملف تشغيل مكتوب بأسلوب طبيعي، جاهز لتلصقه في ChatGPT أو Gemini أو Claude."
+            subtitle="تعليمات مكتوبة بأسلوب طبيعي، جاهزة لتلصقها في ChatGPT أو Gemini أو Claude."
           />
 
           <div className="mt-8 rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.02]">
@@ -858,7 +858,7 @@ export default function ResultsDemo() {
                 </div>
                 <div>
                   <p className="text-sm font-bold text-white">
-                    ملف تشغيل مساعدك
+                    تعليمات مساعدك
                   </p>
                   <p className="text-xs text-white/55">
                     انسخ التعليمات إلى ChatGPT / Gemini / Claude
@@ -867,8 +867,8 @@ export default function ResultsDemo() {
               </div>
               <CopyButton
                 text={fullProfileText}
-                label="نسخ كامل الملف"
-                successLabel="تم نسخ كامل الملف"
+                label="نسخ كامل التعليمات"
+                successLabel="تم نسخ كامل التعليمات"
                 variant="primary"
                 size="md"
               />
@@ -934,8 +934,8 @@ export default function ResultsDemo() {
         >
           <SectionHeading
             eyebrow="طريقة الاستخدام"
-            title="أين تستخدم ملف التشغيل؟"
-            subtitle="نفس الملف يعمل في الأدوات الثلاث الكبرى. اختر أداتك واتبع الخطوات."
+            title="أين تستخدم التعليمات؟"
+            subtitle="نفس التعليمات تعمل في الأدوات الثلاث الكبرى. اختر أداتك واتبع الخطوات."
           />
 
           <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md p-2 sm:p-3">
@@ -1001,7 +1001,7 @@ export default function ResultsDemo() {
           <SectionHeading
             eyebrow="ابدأ الآن"
             title="نقاط انطلاق جاهزة"
-            subtitle="انسخ أيًا منها وألصقه بعد ملف التشغيل في أي محادثة جديدة."
+            subtitle="انسخ أيًا منها وألصقه بعد التعليمات في أي محادثة جديدة."
           />
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">

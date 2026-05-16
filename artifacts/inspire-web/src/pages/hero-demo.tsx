@@ -51,7 +51,7 @@ const GOALS: Goal[] = [
       "شريك تنفيذي يحوّل الأفكار إلى خطط، يكشف المخاطر، ويرتّب الأولويات.",
     signals: ["الهدف", "أولويات", "خطة مرحلية", "كشف مخاطر", "مخرجات تنفيذية"],
     roles: ["شريك تخطيط", "مراجع مخاطر", "منظم تنفيذي"],
-    modes: ["تفكير منهجي", "تحليل أولويات", "قرار سريع"],
+    modes: ["تفكير مرتب", "ترتيب الأولويات", "قرار سريع"],
     outputRule: "خطة مرقّمة + مخاطر + خطوة تالية واضحة",
     starter: "ساعدني أحوّل هذه الفكرة إلى خطة تنفيذ من ٣ مراحل…",
     before: "نصائح عامة عن إدارة الوقت دون ربط بمشروعك.",
@@ -67,7 +67,7 @@ const GOALS: Goal[] = [
       "محرر ذكي يحافظ على صوتك، يقترح بدائل، ويحوّل المسودات إلى نص أوضح.",
     signals: ["نبرة الصوت", "جمهور القارئ", "هيكل النص", "تحرير ذكي", "مسودات بديلة"],
     roles: ["محرر لغوي", "مقترح بدائل", "مدقق هيكلي"],
-    modes: ["تفكير سردي", "تحليل أسلوبي", "إعادة صياغة"],
+    modes: ["تفكير كتابي واضح", "مراجعة الأسلوب", "إعادة صياغة"],
     outputRule: "نص نظيف + بدائل قصيرة + ملاحظات تحرير",
     starter: "حرّر هذه الفقرة مع الحفاظ على نبرتي…",
     before: "إعادة صياغة عامة قد تفقد صوتك الأصلي.",
@@ -115,7 +115,7 @@ const GOALS: Goal[] = [
       "محلل قرارات يقارن الخيارات، يوضّح المقايضات، ويقترح توصية مبرَّرة.",
     signals: ["مقارنة خيارات", "مقايضات", "مخاطر القرار", "توصية مبرَّرة", "أفق زمني"],
     roles: ["محلل مقارن", "كاشف مقايضات", "موصي قرار"],
-    modes: ["تفكير تحليلي", "موازنة معايير", "حسم مبرَّر"],
+    modes: ["تفكير واضح", "موازنة معايير", "حسم مبرَّر"],
     outputRule: "جدول مقارنة + مقايضات + توصية واضحة",
     starter: "قارن بين هذين الخيارين بمعاييري، ثم أوصِ…",
     before: "سرد عام لإيجابيات وسلبيات بدون ترجيح.",
@@ -246,9 +246,9 @@ function ProfilePreview({ goal, reduced }: { goal: Goal; reduced: boolean }) {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
             </span>
-            ملف تشغيل المساعد
+            تعليمات AI المخصصة
           </div>
-          <div className={`text-[11px] ${a.text}`}>INSPIRE Profile</div>
+          <div className={`text-[11px] ${a.text}`}>INSPIRE Instructions</div>
         </div>
 
         {/* Identity */}
@@ -474,7 +474,7 @@ function BeforeAfter({ goal, reduced }: { goal: Goal; reduced: boolean }) {
         <div className="mb-3 flex items-center justify-between">
           <div className="inline-flex items-center gap-2 text-[12px] text-white/60">
             <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
-            بدون ملف تشغيل
+            بدون تعليمات مخصصة
           </div>
           <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 text-[10px] text-white/50">
             رد عام
@@ -503,7 +503,7 @@ function BeforeAfter({ goal, reduced }: { goal: Goal; reduced: boolean }) {
         <div className="relative mb-3 flex items-center justify-between">
           <div className="inline-flex items-center gap-2 text-[12px]">
             <Sparkles className={`h-3.5 w-3.5 ${a.text}`} />
-            مع ملف تشغيل INSPIRE
+            مع تعليمات INSPIRE المخصصة
           </div>
           <span className="rounded-full border border-white/15 bg-black/30 px-2 py-0.5 text-[10px] text-white/70">
             رد مخصّص
@@ -608,7 +608,7 @@ export default function HeroDemo() {
               transition={{ duration: 0.6, delay: 0.15 }}
               className="mt-5 max-w-xl text-[15px] leading-loose text-white/70 md:text-[17px]"
             >
-              INSPIRE يبني ملف تشغيل مخصّصًا يساعد ChatGPT وGemini وClaude على
+              INSPIRE يبني تعليمات مخصصة تساعد ChatGPT وGemini وClaude على
               تقديم إجابات أقرب لهدفك، أسلوبك، وسياقك.
             </motion.p>
 
@@ -623,7 +623,7 @@ export default function HeroDemo() {
                 className="group inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-rose-500 via-orange-500 to-amber-400 px-5 py-3 text-[14.5px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(244,63,94,0.6)] transition-all hover:shadow-[0_14px_36px_-10px_rgba(244,63,94,0.8)]"
               >
                 <Wand2 className="h-4 w-4" />
-                ابنِ ملف تشغيل مساعدك
+                احصل على تعليماتك
                 <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
               </button>
               <button
@@ -656,7 +656,7 @@ export default function HeroDemo() {
               className="mt-8 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-gradient-to-l from-rose-500/10 via-violet-500/10 to-teal-500/10 px-4 py-2 text-[13px] text-white/85"
             >
               <Sparkles className="h-3.5 w-3.5 text-amber-200" />
-              كل هدف له إلهامه الخاص
+              كل هدف يحتاج تعليمات مختلفة
             </motion.div>
           </div>
 
@@ -680,10 +680,10 @@ export default function HeroDemo() {
                 اختر هدفك
               </div>
               <h2 className="text-[22px] font-bold md:text-[26px]">
-                كل هدف له إلهامه الخاص
+                كل هدف يحتاج تعليمات مختلفة
               </h2>
               <p className="mt-1 max-w-xl text-[13.5px] text-white/65 md:text-[14.5px]">
-                اضغط أي هدف لترى كيف يتكيّف ملف التشغيل ليخدمه — هوية، أدوار،
+                اضغط أي هدف لترى كيف تتغير التعليمات حسب طريقة عملك — هوية، أدوار،
                 وأنماط تفكير مختلفة.
               </p>
             </div>

@@ -15,11 +15,11 @@ const content = {
     userPrompt: "ساعدني أرتب مشروعي",
     genericResponse:
       "بالطبع! يمكنني مساعدتك في ترتيب مشروعك. ما هي تفاصيل المشروع؟ هل تريد قائمة مهام أم جدولًا زمنيًا؟",
-    scene1Caption: "طلب واضح… لكن بدون ملف تشغيل",
-    scene2Title: "ملف التشغيل INSPIRE",
+    scene1Caption: "طلب واضح… لكن بدون تعليمات مخصصة",
+    scene2Title: "تعليمات INSPIRE المخصصة",
     cards: [
       { letter: "I", label: "الدور", values: ["مستشار استراتيجي", "محلل أعمال", "مدير مشاريع"], final: "مدير مشاريع" },
-      { letter: "N", label: "الأسلوب", values: ["إبداعي مرن", "منطقي منظّم", "تحليلي دقيق"], final: "تحليلي دقيق" },
+      { letter: "N", label: "الأسلوب", values: ["إبداعي مرن", "منطقي منظّم", "دقيق ومنظّم"], final: "دقيق ومنظّم" },
       { letter: "S", label: "المخرجات", values: ["تقارير مفصّلة", "قوائم منظّمة", "خطوات عملية"], final: "خطوات عملية" },
       { letter: "P", label: "الحدود", values: ["لا تفترض السياق", "بدون اقتراحات", "ركّز على الهدف"], final: "ركّز على الهدف" },
       { letter: "I", label: "طريقة التفكير", values: ["من الأكبر للأصغر", "بدءًا من الأولويات", "خطوة بخطوة"], final: "خطوة بخطوة" },
@@ -32,17 +32,17 @@ const content = {
       "توزيع المهام وفق الأولويات والمواعيد",
     ],
     nextStep: "الخطوة التالية: مراجعة المرحلة الأولى بحلول الجمعة",
-    cta: "ابنِ ملفك الآن",
+    cta: "احصل على تعليماتك الآن",
     sceneLabel: (s: 1 | 2 | 3) =>
-      s === 1 ? "بدون ملف تشغيل" : s === 2 ? "جارٍ بناء الملف…" : "الملف نشط",
+      s === 1 ? "بدون تعليمات مخصصة" : s === 2 ? "جارٍ بناء التعليمات…" : "التعليمات نشطة",
   },
   en: {
     dir: "ltr" as const,
     userPrompt: "Help me organize my project",
     genericResponse:
       "Sure! I can help you organize your project. What are the details? Would you like a task list or a timeline?",
-    scene1Caption: "A clear request… but without an operating profile",
-    scene2Title: "INSPIRE Operating Profile",
+    scene1Caption: "A clear request… but without personalized instructions",
+    scene2Title: "Personalized INSPIRE Instructions",
     cards: [
       { letter: "I", label: "Role", values: ["Strategic Advisor", "Business Analyst", "Project Manager"], final: "Project Manager" },
       { letter: "N", label: "Style", values: ["Creative & Flexible", "Structured Logic", "Analytical"], final: "Analytical" },
@@ -58,9 +58,9 @@ const content = {
       "Assign tasks by priority and deadline",
     ],
     nextStep: "Next step: Review Phase 1 by Friday",
-    cta: "Build Your Profile Now",
+    cta: "Get Your Instructions Now",
     sceneLabel: (s: 1 | 2 | 3) =>
-      s === 1 ? "no profile active" : s === 2 ? "building profile…" : "profile active",
+      s === 1 ? "no personalized instructions" : s === 2 ? "building instructions…" : "instructions active",
   },
 };
 
@@ -318,7 +318,7 @@ export function InspireExplainerSection() {
             {scene === 3 && (
               <motion.div key={`s3-${loopKey}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} className="flex flex-col gap-5">
                 <Glass className="overflow-hidden" style={{ borderColor: "rgba(225,29,72,.3)", boxShadow: "0 0 80px rgba(225,29,72,.12), 0 0 160px rgba(124,58,237,.07), inset 0 1px 0 rgba(255,255,255,.08)" }}>
-                  <TitleBar label="AI Assistant + INSPIRE Profile" glow />
+                  <TitleBar label={locale === "ar" ? "AI Assistant + تعليمات INSPIRE" : "AI Assistant + INSPIRE Instructions"} glow />
                   <div className="p-8 flex flex-col gap-6">
                     <div className="flex justify-start">
                       <div className="rounded-2xl px-6 py-4 text-xl font-bold text-white max-w-md" style={{ background: "linear-gradient(135deg,#e11d48,#7c3aed)", boxShadow: "0 6px 28px rgba(225,29,72,.4)" }}>

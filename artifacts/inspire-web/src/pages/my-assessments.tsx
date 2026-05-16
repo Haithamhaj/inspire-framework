@@ -132,12 +132,12 @@ function ReportsEmptyState({ onStart }: { onStart: () => void }) {
         لا توجد تقارير بعد
       </h2>
       <p className="relative mx-auto mb-8 max-w-md text-sm leading-7 text-slate-400">
-        ابدأ تقييمك الكامل، وبعد اكتماله ستظهر هنا كل تقاريرك مع روابط المشاركة وملفات PDF والمقارنة بين النتائج.
+        ابدأ تقييمك الكامل، وبعد اكتماله ستظهر هنا كل تعليماتك وتقاريرك مع روابط المشاركة ونسخ PDF والمقارنة بين النتائج.
       </p>
       <div className="relative mb-8 grid gap-3 sm:grid-cols-3">
         {[
           { icon: ClipboardList, label: "21 سؤالاً مركزاً" },
-          { icon: ShieldCheck, label: "ملف تشغيل جاهز" },
+          { icon: ShieldCheck, label: "تعليمات مخصصة جاهزة" },
           { icon: GitCompare, label: "مقارنة بين النتائج" },
         ].map((item) => (
           <div key={item.label} className="rounded-2xl border border-slate-400/10 bg-slate-900/40 p-3">
