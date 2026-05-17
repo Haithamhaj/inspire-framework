@@ -74,6 +74,8 @@ const MY_REPORTS_TEXT = {
     fetchFailed: "فشل جلب التقارير",
     genericError: "حدث خطأ",
     revokeFailed: "فشل إلغاء المشاركة",
+    pdfFailed: "فشل تجهيز ملف PDF",
+    pdfPreparing: "جاري تجهيز PDF...",
     providerOpenai: "GPT",
     providerAnthropic: "Claude",
     dateLocale: "ar-SA",
@@ -128,6 +130,8 @@ const MY_REPORTS_TEXT = {
     fetchFailed: "Could not fetch reports",
     genericError: "Something went wrong",
     revokeFailed: "Could not remove sharing",
+    pdfFailed: "Could not prepare the PDF",
+    pdfPreparing: "Preparing PDF...",
     providerOpenai: "GPT",
     providerAnthropic: "Claude",
     dateLocale: "en-US",
@@ -348,6 +352,7 @@ export default function MyAssessments() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [comparing, setComparing] = useState(false);
   const [compareResult, setCompareResult] = useState<CompareResult | null>(null);
+  const [generatingPdfId, setGeneratingPdfId] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -399,6 +404,25 @@ export default function MyAssessments() {
       );
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : text.revokeFailed);
+    }
+  }
+
+  async function handleDownloadPdf(assessmentId: string) {
+    if (generatingPdfId) return;
+    setGeneratingPdfId(assessmentId);
+    setError("");
+    try {
+      const res = await fetch(apiUrl(`/results/${assessmentId}/generate-pdf`), { method: "POST" });
+      const d = await res.json() as { success: boolean; pdfUrl?: string; error?: string };
+      if (!d.success || !d.pdfUrl) throw new Error(d.error || text.pdfFailed);
+      setAssessments((prev) =>
+        prev.map((a) => a.id === assessmentId ? { ...a, pdfUrl: d.pdfUrl! } : a)
+      );
+      window.open(apiUrl(d.pdfUrl.replace("/api", "")), "_blank", "noopener,noreferrer");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : text.pdfFailed);
+    } finally {
+      setGeneratingPdfId(null);
     }
   }
 
@@ -578,16 +602,19 @@ export default function MyAssessments() {
                               <GitCompare className="h-3.5 w-3.5" />
                               {isSelected ? text.selected : text.compare}
                             </button>
-                            {a.pdfUrl && (
-                              <a
-                                href={apiUrl(a.pdfUrl)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-1.5 rounded-2xl border border-slate-400/10 px-4 py-2 text-sm font-bold text-slate-200 transition-colors hover:border-rose-300/30"
-                              >
-                                <Download className="h-3.5 w-3.5" /> PDF
-                              </a>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleDownloadPdf(a.id)}
+                              disabled={generatingPdfId === a.id}
+                              className="flex items-center justify-center gap-1.5 rounded-2xl border border-slate-400/10 px-4 py-2 text-sm font-bold text-slate-200 transition-colors hover:border-rose-300/30 disabled:cursor-wait disabled:opacity-70"
+                              title={generatingPdfId === a.id ? text.pdfPreparing : "PDF"}
+                            >
+                              {generatingPdfId === a.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <Download className="h-3.5 w-3.5" />
+                              )} PDF
+                            </button>
                             {a.shareEnabled && (
                               <button
                                 onClick={() => handleRevokeShare(a.id)}

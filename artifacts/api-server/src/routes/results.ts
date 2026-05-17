@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { assessmentFeedbackTable, assessmentsTable, paymentsTable, usersTable } from "@workspace/db/schema";
+import { assessmentFeedbackTable, assessmentsTable, usersTable } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import { generateAndSavePDF, type AssessmentForPDF } from "../lib/pdf";
@@ -11,6 +11,13 @@ import { type InspireAxisScore } from "../inspire-types";
 import { z } from "zod";
 
 const router: IRouter = Router();
+
+function resolvePdfFilePath(pdfUrl: string | null | undefined) {
+  if (!pdfUrl) return null;
+  const filename = path.basename(pdfUrl);
+  if (!filename.endsWith(".pdf") || filename.includes("..")) return null;
+  return path.join(process.cwd(), "public", "pdfs", filename);
+}
 
 const FeedbackSchema = z.object({
   rating: z.number().int().min(1).max(5),
@@ -30,31 +37,6 @@ async function requireUser(req: Request, _res: Response) {
     .from(usersTable)
     .where(eq(usersTable.id, auth.userId));
   return user ?? null;
-}
-
-async function hasCompletedPayment(assessmentId: string, paymentId: string | null, userId: string): Promise<boolean> {
-  if (!paymentId) return false;
-  const [payment] = await db
-    .select({ id: paymentsTable.id })
-    .from(paymentsTable)
-    .where(
-      and(
-        eq(paymentsTable.id, paymentId),
-        eq(paymentsTable.assessmentId, assessmentId),
-        eq(paymentsTable.userId, userId),
-        eq(paymentsTable.status, "completed")
-      )
-    );
-  return Boolean(payment);
-}
-
-function sendPaymentRequired(res: Response, assessmentId: string, status: string) {
-  res.status(402).json({
-    success: false,
-    error: "payment_required",
-    status,
-    assessmentId,
-  });
 }
 
 // ─── GET /api/results/:id ─────────────────────────────────
@@ -83,14 +65,6 @@ router.get(
     if (!assessment) {
       res.status(404).json({ success: false, error: "Not found" });
       return;
-    }
-
-    if ((assessment.assessmentType ?? "full") === "full") {
-      const paid = await hasCompletedPayment(assessment.id, assessment.paymentId, user.id);
-      if (!paid) {
-        sendPaymentRequired(res, assessment.id, assessment.status);
-        return;
-      }
     }
 
     const [feedback] = await db
@@ -516,7 +490,8 @@ router.post(
       return;
     }
 
-    if (assessment.pdfUrl) {
+    const existingPdfPath = resolvePdfFilePath(assessment.pdfUrl);
+    if (assessment.pdfUrl && existingPdfPath && fs.existsSync(existingPdfPath)) {
       res.json({ success: true, pdfUrl: assessment.pdfUrl });
       return;
     }
