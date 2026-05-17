@@ -12,6 +12,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
   - `/api/healthz` returned `{"status":"ok"}`.
   - `/pricing` returned `200`.
 - Lemon Squeezy approval has been received. Payment integration is moving from disabled/manual review mode to Lemon Squeezy checkout/webhook activation.
+- Production Lemon Squeezy checkout on `https://inspire.next-stepai.com` is forced to live mode in code, so a stale or hidden `LEMON_SQUEEZY_TEST_MODE=true` environment value cannot make the live product checkout fail.
 - Phase 1 technical audit is documented in `project-state/TECHNICAL_AUDIT.md`.
 - Phase 2 DB v2 foundation has started with schema and migration files for decision snapshots and generation runs.
 - Admin now has an API and first UI panel for assessment evidence detail.
