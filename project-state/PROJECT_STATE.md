@@ -12,7 +12,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Latest production read-only smoke after the GitHub merge passed:
   - `/api/healthz` returned `{"status":"ok"}`.
   - `/pricing` returned `200`.
-- Lemon Squeezy approval is not complete yet; the site needs review readiness before payment integration.
+- Lemon Squeezy approval has been received. Payment integration is moving from disabled/manual review mode to Lemon Squeezy checkout/webhook activation.
 - Phase 1 technical audit is documented in `project-state/TECHNICAL_AUDIT.md`.
 - Phase 2 DB v2 foundation has started with schema and migration files for decision snapshots and generation runs.
 - Admin now has an API and first UI panel for assessment evidence detail.
@@ -77,6 +77,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Review-facing product copy now explicitly states that INSPIRE is a premade self-serve digital assessment/report product, not consultation or custom-service sales.
 - A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
+- Lemon Squeezy checkout activation is implemented locally: `BILLING_PROVIDER=lemon` creates server-side Lemon checkouts, stores Lemon checkout/order identifiers, accepts signed `order_created` webhooks, and starts the paid report generation after payment confirmation.
 - A separate prototype branch `codex/guide-character-demo` is testing the INSPIRE guide character as an automatic sticky bar under the navbar on `/ar/guide-character-demo` and the landing page; it is not on `main` and does not change assessment, matrix, report, billing, or API logic.
 - A newer prototype branch `codex/guide-character-motion-lab` adds `/ar/guide-character-motion-lab` to compare the current sprite character, an SVG motion-rig concept, and the new INSPIRE guide character direction using supplied JPG reference/motion sheets. It now uses selected cleaned WebP half-body and full-body pose assets for a more realistic visual review, but it remains a prototype because production animation still needs either clean layered exports, a `.riv` file, or a deliberate static-pose implementation decision.
 
@@ -87,13 +88,14 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Historical data is not critical; a clean Supabase database is acceptable if migration becomes costly.
 - Replit remains the temporary deployment target because it is already paid for and configured.
 - Next product-work order is documented at the top of `project-state/PRODUCT_IDEAS.md`.
+- Activate Lemon Squeezy in test mode first (`LEMON_SQUEEZY_TEST_MODE=true`), verify one full checkout and webhook, then switch to live mode.
 
 ## Active Risks
-- Billing copy now mentions Lemon Squeezy, while the current backend billing implementation still uses PayPal.
+- Lemon Squeezy environment variables and webhook settings must be correct before enabling checkout in production.
 - Replit production deploys from the Replit workspace snapshot, not automatic GitHub push deploys.
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
-- Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
+- Customer-facing paid completion now has code support for Lemon Squeezy, but still needs a real test-mode checkout/webhook verification on Replit before live mode.
 - Replit workspace history previously had local-only commits; it was backed up/reset before the latest deploy preparation. Continue using explicit GitHub commit checks before each Replit deploy.
 - Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
 
@@ -103,7 +105,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-For the guide character, review `/ar/guide-character-motion-lab` on `codex/guide-character-motion-lab` and decide whether the new INSPIRE character should move forward as a static multi-pose guide, a layered CSS/Framer prototype, or a production Rive/Lottie asset. Keep production on the verified Replit baseline until this prototype is intentionally merged and deployed.
+Deploy the Lemon Squeezy integration to Replit in test mode, add the Lemon webhook URL, run one full checkout through `/assess`, and confirm the report starts generating after the `order_created` webhook.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

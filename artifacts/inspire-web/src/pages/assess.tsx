@@ -484,10 +484,12 @@ function ProcessingExperience() {
   );
 }
 
-interface PayPalConfig {
-  clientId: string;
-  env: string;
+interface CheckoutConfig {
+  provider: "lemon" | "paypal";
+  clientId?: string;
+  env?: string;
   price: number;
+  testMode?: boolean;
 }
 
 interface DiscountInfo {
@@ -543,7 +545,7 @@ export default function Assess() {
   // ── Payment gate state ─────────────────────────────────
   const [paymentStatus, setPaymentStatus] = useState<"loading" | "free" | "required" | "paid">("loading");
   const [paymentId, setPaymentId] = useState<string | null>(null);
-  const [paypalConfig, setPaypalConfig] = useState<PayPalConfig | null>(null);
+  const [checkoutConfig, setCheckoutConfig] = useState<CheckoutConfig | null>(null);
   const [paymentGatewayUnavailable, setPaymentGatewayUnavailable] = useState(false);
   const [discountCode, setDiscountCode] = useState("");
   const [discountInfo, setDiscountInfo] = useState<DiscountInfo | null>(null);
@@ -592,17 +594,17 @@ export default function Assess() {
   }, [answers, openAnswer, LS_KEY]);
 
   useEffect(() => {
-    if (paymentStatus !== "required" || paypalConfig) {
+    if (paymentStatus !== "required" || checkoutConfig) {
       return;
     }
-    fetch(apiUrl("/billing/paypal-config"))
-      .then((r) => r.json() as Promise<{ success: boolean; clientId: string; env: string; price: number }>)
+    fetch(apiUrl("/billing/checkout-config"))
+      .then((r) => r.json() as Promise<CheckoutConfig & { success: boolean }>)
       .then((config) => {
-        if (config.success) setPaypalConfig(config);
+        if (config.success) setCheckoutConfig(config);
         else setPaymentGatewayUnavailable(true);
       })
       .catch(() => setPaymentGatewayUnavailable(true));
-  }, [paymentStatus, paypalConfig]);
+  }, [paymentStatus, checkoutConfig]);
 
   // Fetch questions from API
   useEffect(() => {
@@ -642,10 +644,10 @@ export default function Assess() {
           setPaymentStatus("required");
         } else if (d.freeUsed) {
           setPaymentStatus("required");
-          fetch(apiUrl("/billing/paypal-config"))
-            .then((r) => r.json() as Promise<{ success: boolean; clientId: string; env: string; price: number }>)
+          fetch(apiUrl("/billing/checkout-config"))
+            .then((r) => r.json() as Promise<CheckoutConfig & { success: boolean }>)
             .then((config) => {
-              if (config.success) setPaypalConfig(config);
+              if (config.success) setCheckoutConfig(config);
               else setPaymentGatewayUnavailable(true);
             })
             .catch(() => setPaymentGatewayUnavailable(true));
@@ -768,14 +770,39 @@ export default function Assess() {
         setDiscountInfo({
           valid: d.valid,
           discountPercent: d.discountPercent ?? 0,
-          finalPrice: d.finalPrice ?? paypalConfig?.price ?? 10,
-          originalPrice: d.originalPrice ?? paypalConfig?.price ?? 10,
+          finalPrice: d.finalPrice ?? checkoutConfig?.price ?? 10,
+          originalPrice: d.originalPrice ?? checkoutConfig?.price ?? 10,
         });
       }
     } catch {
       // ignore
     } finally {
       setCheckingDiscount(false);
+    }
+  }
+
+  async function handleLemonCheckout() {
+    if (!assessmentId) {
+      setPaymentError(locale === "ar" ? "تعذر تحديد التقييم الحالي. أعد المحاولة." : "Could not identify the current assessment. Please try again.");
+      return;
+    }
+    setPaymentError("");
+    try {
+      const res = await fetch(apiUrl("/billing/create-order"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          assessmentId,
+          discountCode: (discountInfo?.valid && discountCode.trim()) ? discountCode.trim() : undefined,
+        }),
+      });
+      const d = await res.json() as { success: boolean; checkoutUrl?: string; error?: string };
+      if (!d.success || !d.checkoutUrl) {
+        throw new Error(d.error ?? (locale === "ar" ? "تعذر إنشاء صفحة الدفع" : "Could not create checkout"));
+      }
+      window.location.href = d.checkoutUrl;
+    } catch (err: unknown) {
+      setPaymentError(err instanceof Error ? err.message : t("assessment.payment.paypalError"));
     }
   }
 
@@ -794,8 +821,8 @@ export default function Assess() {
 
   // ── Payment gate screen ────────────────────────────────
   if (paymentStatus === "required" && pendingPayment) {
-    const displayPrice = discountInfo?.valid ? discountInfo.finalPrice : (paypalConfig?.price ?? 10);
-    const originalPrice = paypalConfig?.price ?? 10;
+    const displayPrice = discountInfo?.valid ? discountInfo.finalPrice : (checkoutConfig?.price ?? 10);
+    const originalPrice = checkoutConfig?.price ?? 10;
 
     return (
       <JourneyShell
@@ -934,9 +961,25 @@ export default function Assess() {
                       ? t("assessment.payment.freeActivateRetry")
                       : t("assessment.payment.freeActivate")}
                 </JourneyPrimaryButton>
-              ) : paypalConfig && !paymentGatewayUnavailable ? (
+              ) : checkoutConfig?.provider === "lemon" && !paymentGatewayUnavailable ? (
+                <div className="rounded-3xl border border-slate-400/10 bg-slate-950/45 p-4">
+                  {checkoutConfig.testMode && (
+                    <div className="mb-3 rounded-2xl border border-amber-300/20 bg-amber-500/[0.08] px-4 py-3 text-sm leading-6 text-amber-100">
+                      {locale === "ar"
+                        ? "وضع الاختبار مفعل في Lemon Squeezy. استخدم بيانات اختبار فقط."
+                        : "Lemon Squeezy test mode is active. Use test payment details only."}
+                    </div>
+                  )}
+                  <JourneyPrimaryButton
+                    onClick={handleLemonCheckout}
+                    className="w-full"
+                  >
+                    {locale === "ar" ? "الدفع الآمن عبر Lemon Squeezy" : "Pay securely with Lemon Squeezy"}
+                  </JourneyPrimaryButton>
+                </div>
+              ) : checkoutConfig?.provider === "paypal" && checkoutConfig.clientId && !paymentGatewayUnavailable ? (
                 <div className="rounded-3xl border border-slate-400/10 bg-slate-950/45 p-3">
-                  <PayPalScriptProvider options={{ clientId: paypalConfig.clientId, currency: "USD" }}>
+                  <PayPalScriptProvider options={{ clientId: checkoutConfig.clientId, currency: "USD" }}>
                     <PayPalButtons
                       style={{ layout: "vertical", shape: "rect", label: "pay" }}
                       createOrder={async () => {
@@ -945,6 +988,7 @@ export default function Assess() {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({
+                            assessmentId,
                             discountCode: (discountInfo?.valid && discountCode.trim()) ? discountCode.trim() : undefined,
                           }),
                         });

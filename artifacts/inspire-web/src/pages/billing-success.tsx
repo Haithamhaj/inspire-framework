@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,14 +7,51 @@ import { useQueryClient } from "@tanstack/react-query";
 export default function BillingSuccess() {
   const queryClient = useQueryClient();
   const [ready, setReady] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(!new URLSearchParams(window.location.search).get("payment_id"));
+  const [, navigate] = useLocation();
+  const params = new URLSearchParams(window.location.search);
+  const paymentId = params.get("payment_id");
+  const assessmentId = params.get("assessment_id");
 
   useEffect(() => {
-    const timer = setTimeout(async () => {
+    let cancelled = false;
+    let attempts = 0;
+    const poll = async () => {
+      attempts += 1;
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      setReady(true);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [queryClient]);
+      if (!paymentId) {
+        if (!cancelled) setPaymentConfirmed(true);
+        if (!cancelled) setReady(true);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/billing/payment-status/${paymentId}`);
+        const data = await res.json() as {
+          success: boolean;
+          payment?: { status: string };
+          assessment?: { id: string; status: string } | null;
+        };
+        if (data.success && data.payment?.status === "completed") {
+          if (!cancelled) setPaymentConfirmed(true);
+          if (data.assessment?.status === "completed") {
+            navigate(`/results/${data.assessment.id}`);
+            return;
+          }
+          if (!cancelled) setReady(true);
+          return;
+        }
+      } catch {
+        // Keep polling briefly; Lemon webhooks can arrive moments after redirect.
+      }
+      if (!cancelled && attempts < 10) window.setTimeout(poll, 1500);
+      else if (!cancelled) setReady(true);
+    };
+    const timer = window.setTimeout(poll, 1000);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [assessmentId, navigate, paymentId, queryClient]);
 
   return (
     <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
@@ -44,7 +81,7 @@ export default function BillingSuccess() {
             تم الدفع بنجاح!
           </h1>
           <p className="text-muted-foreground mb-8 leading-relaxed">
-            تم تأكيد دفعتك. يمكنك الآن الانتقال إلى تقاريرك.
+            يتم تأكيد الدفع وتجهيز تقريرك الرقمي الآن. سيظهر التقرير ضمن تقاريرك فور اكتمال التوليد.
           </p>
 
           {!ready ? (
@@ -52,18 +89,23 @@ export default function BillingSuccess() {
               <Loader2 className="h-4 w-4 animate-spin" />
               جارٍ تحديث بياناتك...
             </div>
-          ) : (
+          ) : paymentConfirmed ? (
             <div className="flex items-center justify-center gap-2 text-sm text-green-600 mb-6">
               <CheckCircle2 className="h-4 w-4" />
               دفعتك مؤكدة
             </div>
+          ) : (
+            <div className="flex items-center justify-center gap-2 text-sm text-amber-500 mb-6">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              ننتظر تأكيد Lemon Squeezy
+            </div>
           )}
 
           <Link
-            href="/my-assessments"
+            href={assessmentId ? `/results/${assessmentId}` : "/my-assessments"}
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-xl font-bold text-base hover:bg-primary/90 transition-all hover:-translate-y-0.5 shadow-lg shadow-primary/20"
           >
-            انتقل إلى تقاريري
+            {assessmentId ? "فتح التقرير" : "انتقل إلى تقاريري"}
             <ArrowLeft className="h-5 w-5" />
           </Link>
         </motion.div>

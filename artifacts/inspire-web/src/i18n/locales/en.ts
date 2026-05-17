@@ -79,10 +79,10 @@ export const en: Dictionary = {
       freeActivate: "Create report for free",
       freeActivateRetry: "Create reassessment report for free",
       activating: "Activating...",
-      paypalLoading: "Loading payment gateway...",
-      gatewayUnavailableTitle: "Online checkout is being prepared",
+      paypalLoading: "Loading secure checkout...",
+      gatewayUnavailableTitle: "Secure checkout is temporarily unavailable",
       gatewayUnavailableText:
-        "Your answers are saved, but card checkout is temporarily unavailable while INSPIRE prepares Lemon Squeezy approval. Please check back soon or contact support for manual access.",
+        "Your answers are saved. Secure checkout is temporarily unavailable, so please try again shortly or contact support for manual access.",
       previewTitle: "A quick preview of the complete result",
       previewSubtitle: "Know exactly what you receive before payment",
       previewTagQuestions: "21 questions",
@@ -104,7 +104,7 @@ export const en: Dictionary = {
       freeOrderFallback: "Something went wrong. Please try again.",
       createOrderError: "Could not create the order",
       captureOrderError: "Could not confirm payment",
-      paypalError: "Payment failed. Please try again.",
+      paypalError: "Payment could not be completed. Please try again.",
     },
     status: {
       preparingTitle: "Preparing the assessment",
