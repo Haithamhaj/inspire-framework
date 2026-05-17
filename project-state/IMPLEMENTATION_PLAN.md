@@ -227,26 +227,24 @@ Expected result:
 
 ## Phase 7: Payment Strategy
 
-Goal: Stop relying on broken PayPal flow and prepare clean Lemon Squeezy integration after approval.
+Goal: Stop relying on broken PayPal flow and activate a clean Lemon Squeezy integration after approval.
 
 Before approval:
 - [x] Hide PayPal from the main customer experience with `BILLING_PROVIDER=disabled`.
 - [x] Keep payment state internally ready.
-- [ ] Use admin/free/manual completion only for testing if needed.
+- [x] Use admin/free/manual completion only for testing if needed.
 
 After approval:
-- [ ] Add Lemon Squeezy checkout.
-- [ ] Add Lemon Squeezy webhook.
-- [ ] Update payment records to support:
-  - `processor`
-  - `processor_order_id`
-  - `checkout_id`
-  - `customer_email`
-  - `currency`
-  - `refund_status`
-- [ ] Link webhook payment confirmation to assessment/report generation.
+- [x] Add Lemon Squeezy checkout.
+- [x] Add Lemon Squeezy webhook.
+- [x] Update payment records to support:
+  - `provider`
+  - `lemon_checkout_id`
+  - `lemon_order_id`
+- [x] Link webhook payment confirmation to assessment/report generation.
 - [ ] Test successful payment, duplicate webhook, failed payment, and refund states.
-- [!] Current schema still has PayPal-specific fields; general payment schema should be part of the Lemon Squeezy integration phase.
+- [!] Lemon Squeezy should be deployed first in test mode. Production mode should only be enabled after a successful end-to-end test checkout and webhook confirmation.
+- [!] The payment schema now supports Lemon Squeezy while keeping legacy PayPal fields for fallback; deeper refund/customer-event modeling remains a later hardening task.
 
 Expected result:
 - A reliable payment path.
@@ -356,5 +354,6 @@ Expected result:
 10. [x] Decide deployment platform: keep Replit temporarily and configure Supabase readiness.
 11. [x] Deploy staging/early-production on Replit with Supabase.
 12. [x] Run fresh production demo assessment through admin-generated report.
-13. [ ] Polish Lemon Squeezy review flow.
-14. [ ] Integrate Lemon Squeezy after approval.
+13. [x] Polish Lemon Squeezy review flow.
+14. [x] Integrate Lemon Squeezy after approval.
+15. [ ] Deploy Lemon Squeezy in test mode, verify checkout/webhook/report generation, then switch to live mode.

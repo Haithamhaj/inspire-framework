@@ -22,7 +22,10 @@ export const paymentsTable = pgTable("payments", {
   assessmentId: uuid("assessment_id").references(() => assessmentsTable.id, {
     onDelete: "set null",
   }),
+  provider: text("provider").default("paypal").notNull(),
   paypalOrderId: text("paypal_order_id").unique(),
+  lemonCheckoutId: text("lemon_checkout_id").unique(),
+  lemonOrderId: text("lemon_order_id").unique(),
   amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
   originalAmount: numeric("original_amount", {
     precision: 10,

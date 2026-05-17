@@ -8,7 +8,9 @@ import {
 } from "@workspace/db/schema";
 import { eq, and, count, isNull } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
-import { randomBytes } from "crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "crypto";
+import { generateReportV2 } from "../lib/ai-engine";
+import type { PromptDataV2 } from "../lib/prompt-builder";
 
 const router: IRouter = Router();
 
@@ -20,6 +22,10 @@ function getBillingProvider(): string {
 
 function isPayPalEnabled(): boolean {
   return getBillingProvider() === "paypal";
+}
+
+function isLemonEnabled(): boolean {
+  return getBillingProvider() === "lemon";
 }
 
 function getPayPalBase(): string {
@@ -55,6 +61,32 @@ async function getPayPalAccessToken(): Promise<string> {
 
   const data = (await res.json()) as { access_token: string };
   return data.access_token;
+}
+
+function getAppUrl() {
+  return (process.env["APP_URL"] ?? "http://localhost:5173").replace(/\/$/, "");
+}
+
+function getLemonConfig() {
+  const apiKey = process.env["LEMON_SQUEEZY_API_KEY"];
+  const storeId = process.env["LEMON_SQUEEZY_STORE_ID"];
+  const variantId = process.env["LEMON_SQUEEZY_VARIANT_ID"];
+  if (!apiKey || !storeId || !variantId) return null;
+  return {
+    apiKey,
+    storeId,
+    variantId,
+    testMode: process.env["LEMON_SQUEEZY_TEST_MODE"] === "true",
+  };
+}
+
+function isV2Answers(value: unknown): value is Array<{ questionId: string; optionId: string }> {
+  return Array.isArray(value) && value.every((item) =>
+    item &&
+    typeof item === "object" &&
+    typeof (item as { questionId?: unknown }).questionId === "string" &&
+    typeof (item as { optionId?: unknown }).optionId === "string"
+  );
 }
 
 async function requireUser(req: Request, _res: Response) {
@@ -152,14 +184,101 @@ async function findUsableDiscountForUser(code: string, userId: string) {
   return discount;
 }
 
-// ─── GET /api/billing/paypal-config ───────────────────────
+async function incrementDiscountUse(code: string) {
+  const [row] = await db
+    .select({ usedCount: discountCodesTable.usedCount })
+    .from(discountCodesTable)
+    .where(eq(discountCodesTable.code, code));
+  await db
+    .update(discountCodesTable)
+    .set({ usedCount: (row?.usedCount ?? 0) + 1 })
+    .where(eq(discountCodesTable.code, code));
+}
+
+async function completeAssessmentAfterPayment(paymentId: string, req: Request) {
+  const [payment] = await db
+    .select()
+    .from(paymentsTable)
+    .where(eq(paymentsTable.id, paymentId));
+
+  if (!payment?.assessmentId) return;
+
+  const [assessment] = await db
+    .select()
+    .from(assessmentsTable)
+    .where(eq(assessmentsTable.id, payment.assessmentId));
+  if (!assessment || assessment.status === "completed") return;
+
+  const [user] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, assessment.userId));
+  if (!user) return;
+
+  if (!isV2Answers(assessment.behavioralAnswers)) {
+    req.log.warn({ assessmentId: assessment.id, paymentId }, "Paid assessment has no V2 answers yet");
+    return;
+  }
+
+  await db
+    .update(assessmentsTable)
+    .set({
+      paymentId: payment.id,
+      status: "processing",
+    })
+    .where(eq(assessmentsTable.id, assessment.id));
+
+  const promptData: PromptDataV2 = {
+    name: user.name,
+    jobTitle: user.jobTitle ?? undefined,
+    projectName: assessment.projectName,
+    projectGoal: assessment.projectGoal,
+    domain: assessment.domain ?? assessment.projectName,
+    customDomain: assessment.customDomain ?? undefined,
+    domainSpecialization: assessment.domainSpecialization ?? undefined,
+    projectContext: assessment.projectContext ?? assessment.projectGoal,
+    reportLanguage: assessment.reportLanguage as "ar" | "en" | "both",
+    answers: assessment.behavioralAnswers,
+    openAnswer: assessment.openAnswer ?? undefined,
+  };
+
+  setImmediate(async () => {
+    try {
+      await generateReportV2(assessment.id, promptData);
+    } catch (err) {
+      req.log.error({ assessmentId: assessment.id, err }, "Lemon paid report generation failed");
+    }
+  });
+}
+
+// ─── GET /api/billing/checkout-config ─────────────────────
 
 router.get(
-  "/billing/paypal-config",
+  "/billing/checkout-config",
   async (req: Request, res: Response): Promise<void> => {
     const user = await requireUser(req, res);
     if (!user) {
       res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    if (isLemonEnabled()) {
+      const lemon = getLemonConfig();
+      if (!lemon) {
+        res.status(503).json({
+          success: false,
+          error: "Lemon Squeezy not configured",
+          provider: getBillingProvider(),
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        provider: "lemon",
+        price: getAssessmentPrice(),
+        testMode: lemon.testMode,
+      });
       return;
     }
 
@@ -183,10 +302,20 @@ router.get(
 
     res.json({
       success: true,
+      provider: "paypal",
       clientId,
       env: process.env["PAYPAL_ENV"] ?? "sandbox",
       price: getAssessmentPrice(),
     });
+  }
+);
+
+// Backward compatibility for older deployed frontend bundles.
+router.get(
+  "/billing/paypal-config",
+  async (req: Request, res: Response): Promise<void> => {
+    req.url = "/billing/checkout-config";
+    router.handle(req, res);
   }
 );
 
@@ -259,12 +388,12 @@ router.post(
       return;
     }
 
-    if (!isPayPalEnabled()) {
+    if (!isPayPalEnabled() && !isLemonEnabled()) {
       res.status(503).json({ success: false, error: "Checkout is temporarily disabled" });
       return;
     }
 
-    const { discountCode } = req.body as { discountCode?: string };
+    const { discountCode, assessmentId } = req.body as { discountCode?: string; assessmentId?: string };
 
     const originalPrice = getAssessmentPrice();
     let finalPrice = originalPrice;
@@ -278,6 +407,133 @@ router.post(
         discountPercent = found.discountPercent;
         finalPrice = discountPrice(discountPercent).finalPrice;
       }
+    }
+
+    if (isLemonEnabled()) {
+      const lemon = getLemonConfig();
+      if (!lemon) {
+        res.status(503).json({ success: false, error: "Lemon Squeezy not configured" });
+        return;
+      }
+      if (!assessmentId) {
+        res.status(400).json({ success: false, error: "assessmentId required" });
+        return;
+      }
+      if (finalPrice <= 0) {
+        res.status(400).json({ success: false, error: "Use free-order for 100% discounts" });
+        return;
+      }
+
+      const [assessment] = await db
+        .select({ id: assessmentsTable.id, userId: assessmentsTable.userId, status: assessmentsTable.status })
+        .from(assessmentsTable)
+        .where(and(eq(assessmentsTable.id, assessmentId), eq(assessmentsTable.userId, user.id)));
+
+      if (!assessment || (assessment.status !== "pending_payment" && assessment.status !== "draft")) {
+        res.status(400).json({ success: false, error: "Assessment is not ready for checkout" });
+        return;
+      }
+
+      const [payment] = await db
+        .insert(paymentsTable)
+        .values({
+          userId: user.id,
+          assessmentId,
+          provider: "lemon",
+          paypalOrderId: null,
+          amount: finalPrice.toFixed(2),
+          originalAmount: originalPrice.toFixed(2),
+          discountCode: codeRecord?.code ?? null,
+          discountPercent,
+          status: "pending",
+        })
+        .returning();
+
+      const returnUrl = `${getAppUrl()}/billing/success?provider=lemon&payment_id=${payment.id}&assessment_id=${assessmentId}`;
+      const customPrice = Math.round(finalPrice * 100);
+      const checkoutRes = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
+        method: "POST",
+        headers: {
+          Accept: "application/vnd.api+json",
+          "Content-Type": "application/vnd.api+json",
+          Authorization: `Bearer ${lemon.apiKey}`,
+        },
+        body: JSON.stringify({
+          data: {
+            type: "checkouts",
+            attributes: {
+              ...(finalPrice !== originalPrice ? { custom_price: customPrice } : {}),
+              product_options: {
+                name: "INSPIRE Framework Full Report",
+                description: "Personalized AI operating profile and copy-ready AI instructions.",
+                redirect_url: returnUrl,
+                receipt_button_text: "Open my INSPIRE report",
+                receipt_link_url: returnUrl,
+                receipt_thank_you_note: "Your INSPIRE report generation starts automatically after payment.",
+                enabled_variants: [Number(lemon.variantId)],
+              },
+              checkout_options: {
+                embed: false,
+                media: true,
+                logo: true,
+                desc: true,
+                discount: false,
+              },
+              checkout_data: {
+                email: user.email,
+                name: user.name,
+                custom: {
+                  payment_id: payment.id,
+                  assessment_id: assessmentId,
+                  user_id: user.id,
+                },
+              },
+              test_mode: lemon.testMode,
+            },
+            relationships: {
+              store: { data: { type: "stores", id: lemon.storeId } },
+              variant: { data: { type: "variants", id: lemon.variantId } },
+            },
+          },
+        }),
+      });
+
+      if (!checkoutRes.ok) {
+        const text = await checkoutRes.text();
+        req.log.error({ text }, "Lemon Squeezy create checkout failed");
+        await db.update(paymentsTable).set({ status: "failed" }).where(eq(paymentsTable.id, payment.id));
+        res.status(502).json({ success: false, error: "Failed to create Lemon Squeezy checkout" });
+        return;
+      }
+
+      const checkoutData = (await checkoutRes.json()) as {
+        data?: { id?: string; attributes?: { url?: string } };
+      };
+      const checkoutId = checkoutData.data?.id;
+      const checkoutUrl = checkoutData.data?.attributes?.url;
+      if (!checkoutId || !checkoutUrl) {
+        await db.update(paymentsTable).set({ status: "failed" }).where(eq(paymentsTable.id, payment.id));
+        res.status(502).json({ success: false, error: "Invalid Lemon Squeezy checkout response" });
+        return;
+      }
+
+      await db
+        .update(paymentsTable)
+        .set({ lemonCheckoutId: checkoutId })
+        .where(eq(paymentsTable.id, payment.id));
+
+      req.log.info({ userId: user.id, paymentId: payment.id, checkoutId, finalPrice }, "Lemon checkout created");
+      res.json({
+        success: true,
+        provider: "lemon",
+        checkoutUrl,
+        checkoutId,
+        paymentId: payment.id,
+        amount: finalPrice,
+        originalPrice,
+        discountPercent,
+      });
+      return;
     }
 
     let accessToken: string;
@@ -325,6 +581,7 @@ router.post(
       .insert(paymentsTable)
       .values({
         userId: user.id,
+        provider: "paypal",
         paypalOrderId: orderId,
         amount: finalPrice.toFixed(2),
         originalAmount: originalPrice.toFixed(2),
@@ -438,18 +695,7 @@ router.post(
       .where(eq(paymentsTable.id, payment.id));
 
     if (payment.discountCode) {
-      await db
-        .update(discountCodesTable)
-        .set({
-          usedCount: (
-            await db
-              .select({ c: discountCodesTable.usedCount })
-              .from(discountCodesTable)
-              .where(eq(discountCodesTable.code, payment.discountCode))
-              .then(([r]) => (r?.c ?? 0) + 1)
-          ),
-        })
-        .where(eq(discountCodesTable.code, payment.discountCode));
+      await incrementDiscountUse(payment.discountCode);
     }
 
     req.log.info({ userId: user.id, orderId, paymentId: payment.id }, "Payment captured");
@@ -501,6 +747,7 @@ router.post(
       .insert(paymentsTable)
       .values({
         userId: user.id,
+        provider: "manual",
         paypalOrderId: null,
         amount: "0.00",
         originalAmount: originalPrice.toFixed(2),
@@ -522,6 +769,136 @@ router.post(
     );
 
     res.json({ success: true, paymentId: payment?.id });
+  }
+);
+
+// ─── GET /api/billing/payment-status/:id ──────────────────
+
+router.get(
+  "/billing/payment-status/:id",
+  async (req: Request, res: Response): Promise<void> => {
+    const user = await requireUser(req, res);
+    if (!user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
+
+    const { id } = req.params;
+    const [payment] = await db
+      .select()
+      .from(paymentsTable)
+      .where(and(eq(paymentsTable.id, id as string), eq(paymentsTable.userId, user.id)));
+
+    if (!payment) {
+      res.status(404).json({ success: false, error: "Payment not found" });
+      return;
+    }
+
+    const [assessment] = payment.assessmentId
+      ? await db
+          .select({ id: assessmentsTable.id, status: assessmentsTable.status })
+          .from(assessmentsTable)
+          .where(and(eq(assessmentsTable.id, payment.assessmentId), eq(assessmentsTable.userId, user.id)))
+      : [];
+
+    res.json({
+      success: true,
+      payment: {
+        id: payment.id,
+        provider: payment.provider,
+        status: payment.status,
+        assessmentId: payment.assessmentId,
+      },
+      assessment: assessment ?? null,
+    });
+  }
+);
+
+// ─── POST /api/billing/lemon-webhook ──────────────────────
+
+router.post(
+  "/billing/lemon-webhook",
+  async (req: Request, res: Response): Promise<void> => {
+    const secret = process.env["LEMON_SQUEEZY_WEBHOOK_SECRET"];
+    if (!secret) {
+      req.log.error("Lemon webhook secret not configured");
+      res.status(503).json({ success: false, error: "Webhook not configured" });
+      return;
+    }
+
+    const signature = req.headers["x-signature"];
+    const rawBody = (req as Request & { rawBody?: Buffer }).rawBody;
+    if (!rawBody || typeof signature !== "string") {
+      res.status(400).json({ success: false, error: "Missing signature" });
+      return;
+    }
+
+    const expected = Buffer.from(createHmac("sha256", secret).update(rawBody).digest("hex"), "utf8");
+    const received = Buffer.from(signature, "utf8");
+    if (expected.length !== received.length || !timingSafeEqual(expected, received)) {
+      req.log.warn("Invalid Lemon webhook signature");
+      res.status(401).json({ success: false, error: "Invalid signature" });
+      return;
+    }
+
+    const payload = req.body as {
+      meta?: { event_name?: string; custom_data?: Record<string, unknown> };
+      data?: {
+        id?: string;
+        attributes?: {
+          status?: string;
+          total_usd?: number;
+          total?: number;
+        };
+      };
+    };
+
+    const eventName = payload.meta?.event_name ?? req.headers["x-event-name"];
+    if (eventName !== "order_created") {
+      res.json({ success: true, ignored: true });
+      return;
+    }
+
+    const customData = payload.meta?.custom_data ?? {};
+    const paymentId = typeof customData["payment_id"] === "string" ? customData["payment_id"] : null;
+    if (!paymentId) {
+      req.log.warn({ customData }, "Lemon order_created webhook missing payment_id");
+      res.json({ success: true, ignored: true });
+      return;
+    }
+
+    const [payment] = await db
+      .select()
+      .from(paymentsTable)
+      .where(eq(paymentsTable.id, paymentId));
+
+    if (!payment) {
+      req.log.warn({ paymentId }, "Lemon webhook payment not found");
+      res.json({ success: true, ignored: true });
+      return;
+    }
+
+    if (payment.status !== "completed") {
+      await db
+        .update(paymentsTable)
+        .set({
+          status: "completed",
+          lemonOrderId: payload.data?.id ?? payment.lemonOrderId,
+        })
+        .where(eq(paymentsTable.id, payment.id));
+
+      if (payment.discountCode) {
+        await incrementDiscountUse(payment.discountCode);
+      }
+    }
+
+    await completeAssessmentAfterPayment(payment.id, req);
+
+    req.log.info(
+      { paymentId: payment.id, orderId: payload.data?.id, assessmentId: payment.assessmentId },
+      "Lemon order processed"
+    );
+    res.json({ success: true });
   }
 );
 
