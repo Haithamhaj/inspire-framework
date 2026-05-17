@@ -8,6 +8,7 @@ import { useI18n } from "@/i18n";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { localizePath } from "@/lib/locale-paths";
 import {
   JourneyPanel,
   JourneyPrimaryButton,
@@ -22,7 +23,8 @@ export default function Login() {
   const { toast } = useToast();
   const { login: setAuthToken } = useAuth();
   const { mutateAsync: performLogin, isPending } = useLogin();
-  const { t, dir } = useI18n();
+  const { t, dir, locale } = useI18n();
+  const href = (path: string) => localizePath(path, locale);
 
   const loginSchema = z.object({
     email: z.string().email(t("login.emailInvalid")),
@@ -39,7 +41,7 @@ export default function Login() {
       if (result.success && result.access_token) {
         setAuthToken(result.access_token);
         toast({ title: t("login.successToast") });
-        setLocation("/my-assessments");
+        setLocation(href("/my-assessments"));
       }
     } catch (err: unknown) {
       let message = t("login.errorFallback");
@@ -47,7 +49,9 @@ export default function Login() {
         const data = err.data as { error?: string; retryAfter?: number } | null;
         if (err.status === 429 && data?.retryAfter != null) {
           const minutes = Math.ceil(data.retryAfter / 60);
-          message = `حاولت كثيراً، أعد المحاولة بعد ${minutes} دقيقة`;
+          message = locale === "ar"
+            ? `حاولت كثيراً، أعد المحاولة بعد ${minutes} دقيقة`
+            : `Too many attempts. Try again in ${minutes} minute${minutes === 1 ? "" : "s"}.`;
         } else if (data?.error) {
           message = data.error;
         } else {
@@ -143,8 +147,8 @@ export default function Login() {
             </div>
             {errors.password && <p className="mt-1.5 text-sm font-medium text-rose-300">{errors.password.message}</p>}
             <div className="mt-3 text-right">
-              <Link href="/forgot-password" className="text-sm font-bold text-rose-200 transition-colors hover:text-rose-100 hover:underline">
-                Forgot password?
+              <Link href={href("/forgot-password")} className="text-sm font-bold text-rose-200 transition-colors hover:text-rose-100 hover:underline">
+                {locale === "ar" ? "نسيت كلمة المرور؟" : "Forgot password?"}
               </Link>
             </div>
           </div>
@@ -163,7 +167,7 @@ export default function Login() {
 
         <p className="mt-8 text-center font-medium text-slate-400">
           {t("login.noAccount")}{" "}
-          <Link href="/privacy-consent" className="font-bold text-rose-200 transition-colors hover:text-rose-100 hover:underline">
+          <Link href={href("/privacy-consent")} className="font-bold text-rose-200 transition-colors hover:text-rose-100 hover:underline">
             {t("login.createAccount")}
           </Link>
         </p>

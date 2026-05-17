@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useI18n } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
 import {
   JourneyPanel,
   JourneyPrimaryButton,
@@ -511,6 +512,7 @@ interface NextAssessmentDiscount {
 export default function Assess() {
   const { user, isLoading } = useAuth();
   const { dir, locale, t } = useI18n();
+  const href = (path: string) => localizePath(path, locale);
 
   const searchParams = new URLSearchParams(window.location.search);
   const previousAssessmentId = searchParams.get("prev");
@@ -682,7 +684,7 @@ export default function Assess() {
           throw new Error(d.error ?? "تعذر تحميل التقييم المحفوظ");
         }
         if (d.assessment.status !== "pending_payment" && d.assessment.status !== "draft") {
-          navigate(`/results/${d.assessment.id}`);
+          navigate(href(`/results/${d.assessment.id}`));
           return;
         }
         setAssessmentId(d.assessment.id);
@@ -817,7 +819,7 @@ export default function Assess() {
       </JourneyShell>
     );
   }
-  if (!user) return <Redirect to="/login" />;
+  if (!user) return <Redirect to={href("/login")} />;
 
   // ── Payment gate screen ────────────────────────────────
   if (paymentStatus === "required" && pendingPayment) {
@@ -1172,7 +1174,7 @@ export default function Assess() {
           if (!d.success) return;
           if (d.assessment.status === "completed") {
             clearInterval(pollRef.current!);
-            navigate(`/results/${targetAssessmentId}`);
+            navigate(href(`/results/${targetAssessmentId}`));
           } else if (d.assessment.status === "failed") {
             clearInterval(pollRef.current!);
             setPhase("error");
@@ -1351,10 +1353,14 @@ export default function Assess() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-black text-slate-100">
-                  {userName ? `جاهز نبدأ يا ${userName}؟` : "جاهز نبدأ؟"}
+                  {locale === "ar"
+                    ? (userName ? `جاهز نبدأ يا ${userName}؟` : "جاهز نبدأ؟")
+                    : (userName ? `Ready to start, ${userName}?` : "Ready to start?")}
                 </p>
                 <p className="mt-1 text-sm leading-6 text-slate-400">
-                  أدخل اسم المشروع وهدفك الرئيسي، وسنستخدمهما فقط لتوجيه الأسئلة والتقرير حول سياقك الحقيقي.
+                  {locale === "ar"
+                    ? "أدخل اسم المشروع وهدفك الرئيسي، وسنستخدمهما فقط لتوجيه الأسئلة والتقرير حول سياقك الحقيقي."
+                    : "Enter your project name and main goal. We use them only to shape the questions and report around your real context."}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {[

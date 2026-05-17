@@ -10,6 +10,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { useI18n, type Locale } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
 
 // ─── MINI SCENARIOS (indices 0,1,2,5,6 from full list) ──────
 
@@ -80,6 +81,8 @@ function apiUrl(path: string) {
 export default function AssessMini() {
   const { user, isLoading } = useAuth();
   const { dir, locale, t } = useI18n();
+  const href = (path: string) => localizePath(path, locale);
+  const loginPath = href("/login");
   const [, navigate] = useLocation();
 
   const [step, setStep] = useState(0);
@@ -93,8 +96,8 @@ export default function AssessMini() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoading && !user) navigate("/login");
-  }, [user, isLoading, navigate]);
+    if (!isLoading && !user) navigate(loginPath);
+  }, [user, isLoading, navigate, loginPath]);
 
   if (isLoading) {
     return (
@@ -103,7 +106,7 @@ export default function AssessMini() {
       </div>
     );
   }
-  if (!user) return <Redirect to="/login" />;
+  if (!user) return <Redirect to={loginPath} />;
 
   const progress = Math.round((step / (TOTAL_STEPS - 1)) * 100);
 
@@ -164,7 +167,7 @@ export default function AssessMini() {
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error ?? t("miniAssessment.submitFailed"));
-      navigate(`/results/${assessmentId}`);
+      navigate(href(`/results/${assessmentId}`));
     } catch (e) {
       setError(e instanceof Error ? e.message : t("miniAssessment.submitFailed"));
       setSubmitting(false);
