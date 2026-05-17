@@ -294,13 +294,18 @@ export default function Share() {
           </div>
         )}
 
-        {/* Quick Starters */}
+        {/* Short instructions / starters */}
         {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 && (
           <div className="bg-card rounded-2xl border border-border p-6">
             <h2 className="font-display font-bold text-xl text-foreground mb-4 flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-accent" /> Quick Starter Prompts
+              <MessageSquare className="h-5 w-5 text-accent" />
+              {assessment.assessmentType === "mini" ? "تعليمات مختصرة للذكاء الاصطناعي" : "Quick Starter Prompts"}
             </h2>
-            <p className="text-muted-foreground text-sm mb-4">انقر على أي بادئة لنسخها مباشرةً</p>
+            <p className="text-muted-foreground text-sm mb-4">
+              {assessment.assessmentType === "mini"
+                ? "انقر على أي تعليمات لنسخها مباشرةً"
+                : "انقر على أي بادئة لنسخها مباشرةً"}
+            </p>
             <div className="space-y-3">
               {assessment.quickStarters.map((qs, i) => (
                 <div

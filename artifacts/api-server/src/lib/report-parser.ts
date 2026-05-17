@@ -55,7 +55,7 @@ export function parseFullReport(text: string) {
         .trim()
     )
     .filter(Boolean)
-    .slice(0, 3);
+    .slice(0, 6);
 
   const rawRecs = extract("===RECOMMENDATIONS_START===", "===RECOMMENDATIONS_END===");
   const recommendations = rawRecs

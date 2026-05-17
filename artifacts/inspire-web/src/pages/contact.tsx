@@ -26,8 +26,8 @@ export default function Contact() {
         ],
         beforeTitle: "ابدأ من المسار الأنسب",
         beforeBody:
-          "يمكنك تجربة التقييم السريع المجاني، مراجعة الأسعار، أو الاطلاع على الشروط وسياسة الخصوصية من الروابط أسفل الصفحة.",
-        quick: "جرّب التقييم السريع المجاني",
+          "يمكنك الحصول على تعليمات مختصرة، مراجعة الأسعار، أو الاطلاع على الشروط وسياسة الخصوصية من الروابط أسفل الصفحة.",
+        quick: "احصل على تعليمات مختصرة",
         pricing: "عرض الأسعار",
       }
     : {
@@ -45,8 +45,8 @@ export default function Contact() {
         ],
         beforeTitle: "Choose the path that fits your next step",
         beforeBody:
-          "You can try the free quick assessment, review pricing, or use the footer links for terms and privacy details.",
-        quick: "Try the free quick assessment",
+          "You can get short instructions, review pricing, or use the footer links for terms and privacy details.",
+        quick: "Get short instructions",
         pricing: "View pricing",
       };
 

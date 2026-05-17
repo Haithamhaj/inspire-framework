@@ -253,7 +253,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
         path: "/pricing",
         title: "أسعار INSPIRE — تعليمات ذكاء اصطناعي مخصصة",
         description:
-          "تسعير واضح من INSPIRE: تقييم سريع مجاني وتعليمات مخصصة كاملة بقيمة 10 دولارات جاهزة للنسخ والاستخدام.",
+          "تسعير واضح من INSPIRE: تعليمات مختصرة سريعة وتعليمات مخصصة كاملة بقيمة 10 دولارات جاهزة للنسخ والاستخدام.",
         jsonLd: breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Pricing", path: "/pricing" },
@@ -265,7 +265,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
       path: "/pricing",
       title: "INSPIRE Pricing — $10 Personalized AI Instructions",
       description:
-        "Simple INSPIRE pricing: a free quick assessment and $10 one-time personalized AI instructions with copy-ready starter prompts.",
+        "Simple INSPIRE pricing: short AI instructions and $10 one-time complete personalized AI instructions.",
       jsonLd: breadcrumbJsonLd([
         { name: "Home", path: "/" },
         { name: "Pricing", path: "/pricing" },
@@ -442,9 +442,9 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
   if (pathname === "/assess/mini") {
     return {
       path: "/assess/mini",
-      title: "Free AI Prompt Assessment — INSPIRE Framework",
+      title: "Short AI Instructions — INSPIRE Framework",
       description:
-        "Try a free quick AI working-style assessment and get starter prompts for better ChatGPT, Claude, and Gemini results.",
+        "Answer a few quick questions and get short personalized AI instructions for ChatGPT, Claude, and Gemini.",
     };
   }
 

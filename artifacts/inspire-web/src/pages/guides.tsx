@@ -141,7 +141,7 @@ const guides: Guide[] = [
         title: "Separate context from commands",
         body: [
           "Permanent instructions should include stable preferences. Temporary project details should stay in the current chat.",
-          "INSPIRE helps separate these layers by producing stable personalized AI instructions and project-aware starter prompts.",
+          "INSPIRE helps separate these layers by producing stable personalized AI instructions and project-aware guidance.",
         ],
       },
       {
@@ -779,7 +779,7 @@ function GuideDetail({ guide }: { guide: Guide }) {
           </p>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
             <Link href={href("/assess/mini")} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white hover:border-rose-300/30">
-              {locale === "ar" ? "جرّب التقييم السريع المجاني" : "Try the free quick assessment"}
+              {locale === "ar" ? "احصل على تعليمات مختصرة" : "Get short instructions"}
             </Link>
             <Link href={href("/pricing")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
               {locale === "ar" ? "عرض الأسعار" : "View pricing"}

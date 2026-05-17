@@ -1378,12 +1378,24 @@ export default function Results() {
 
             {Array.isArray(assessment.quickStarters) && assessment.quickStarters.length > 0 ? (
               <div>
-                <h2 className="mb-2 flex items-center gap-2 text-xl font-black text-slate-50">
-                  <MessageSquare className="h-5 w-5 text-rose-200" /> {t("results.mini.quickTitle")}
-                </h2>
-                <p className="mb-5 text-sm leading-6 text-slate-400">
-                  {t("results.mini.quickSubtitle")}
-                </p>
+                <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h2 className="mb-2 flex items-center gap-2 text-xl font-black text-slate-50">
+                      <MessageSquare className="h-5 w-5 text-rose-200" /> {t("results.mini.quickTitle")}
+                    </h2>
+                    <p className="text-sm leading-6 text-slate-400">
+                      {t("results.mini.quickSubtitle")}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => copyText(assessment.quickStarters!.map((qs: string, i: number) => `${i + 1}. ${qs}`).join("\n"), "mini-all")}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-rose-300/20 bg-rose-500/[0.12] px-4 py-2 text-sm font-bold text-rose-100 transition-colors hover:border-rose-200/40 hover:bg-rose-500/[0.18]"
+                  >
+                    {copied === "mini-all" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {copied === "mini-all" ? t("results.mini.copiedAll") : t("results.mini.copyAll")}
+                  </button>
+                </div>
                 <div className="space-y-3">
                   {assessment.quickStarters.map((qs: string, i: number) => (
                     <button

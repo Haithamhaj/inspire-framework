@@ -679,13 +679,6 @@ export function calcAxisScores(
 }
 
 export function buildMiniPrompt(data: PromptData): string {
-  const lang =
-    data.reportLanguage === "en"
-      ? "English"
-      : data.reportLanguage === "both"
-        ? "Arabic and English"
-        : "Arabic";
-
   const scenarioSection = data.scenarioAnswers
     .map((a) => {
       const s = SCENARIOS[a.scenario_index];
@@ -702,7 +695,7 @@ export function buildMiniPrompt(data: PromptData): string {
 - Name: ${data.name}
 - Project: ${data.projectName}
 - Goal: ${data.projectGoal}
-- Report Language: ${lang}
+- Instruction Language: English only
 
 ## AI Interaction Scenarios (5 dimensions)
 ${scenarioSection}
@@ -714,15 +707,34 @@ ${data.openAnswer}
 
 ## Your Task
 
-Based ONLY on the 5 AI interaction dimensions and the personal reflection above, generate 3 highly personalized, ready-to-use AI prompt starters for this person's specific project.
+Based ONLY on the 5 AI interaction dimensions, the project goal, and the personal reflection above, generate a short set of personalized AI instructions.
+
+These are NOT prompt starters.
+These are NOT one-off requests for a specific task.
+These are lightweight custom instructions the person can paste into ChatGPT, Claude, Gemini, or another AI tool so the assistant understands how to work with them.
+
+The output should be useful and concrete, but intentionally shorter and less complete than the paid full INSPIRE instructions.
+
+Write every instruction in English, even if the project, goal, reflection, or interface language is Arabic.
+
+Write instructions that tell AI:
+- how to answer this person
+- how much detail to give
+- how to handle uncertainty
+- whether to challenge or support ideas
+- how to structure options and next steps
+- what to avoid when helping them
 
 Output ONLY this one section:
 
 ===QS_START===
-Write EXACTLY 3 ready-to-use prompt starters tailored to their AI interaction style and project goal. Make each starter immediately usable — as if they typed it into ChatGPT right now.
-1. "[starter 1]"
-2. "[starter 2]"
-3. "[starter 3]"
+Write EXACTLY 6 short, copy-ready personalized AI instructions in English. Each item should be a stable instruction, not a task prompt. Keep each item one sentence.
+1. "[instruction 1]"
+2. "[instruction 2]"
+3. "[instruction 3]"
+4. "[instruction 4]"
+5. "[instruction 5]"
+6. "[instruction 6]"
 ===QS_END===`;
 }
 

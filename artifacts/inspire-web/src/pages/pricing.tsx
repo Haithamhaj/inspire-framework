@@ -7,12 +7,12 @@ const pricingPlans = [
   {
     name: "Quick assessment",
     price: "$0",
-    note: "Free quick version",
-    cta: "Start quick assessment",
+    note: "Short instruction preview",
+    cta: "Get short instructions",
     href: "/assess/mini",
     features: [
-      "Free quick assessment",
-      "Initial AI working-style snapshot",
+      "5-minute quick assessment",
+      "Short personalized AI instructions",
       "No card required",
     ],
     highlighted: false,
@@ -21,8 +21,8 @@ const pricingPlans = [
     name: "Full INSPIRE report",
     price: "$10",
     note: "One-time payment per assessment",
-    cta: "Start full assessment",
-    href: "/assess",
+    cta: "Get your AI instructions",
+    href: "/privacy-consent",
     features: [
       "Full personalized AI instructions",
       "Copy-ready AI instructions",
@@ -42,18 +42,18 @@ export default function Pricing() {
         {
           name: "التقييم السريع",
           price: "$0",
-          note: "نسخة مجانية وسريعة",
-          cta: "ابدأ التقييم السريع",
+          note: "معاينة تعليمات مختصرة",
+          cta: "احصل على تعليمات مختصرة",
           href: "/assess/mini",
-          features: ["تقييم سريع مجاني", "لمحة أولية عن أسلوبك مع الذكاء الاصطناعي", "بدون بطاقة دفع"],
+          features: ["تقييم سريع خلال 5 دقائق", "تعليمات ذكاء اصطناعي مختصرة", "بدون بطاقة دفع"],
           highlighted: false,
         },
         {
           name: "تقرير INSPIRE الكامل",
           price: "$10",
           note: "دفعة واحدة لكل تقييم",
-          cta: "ابدأ التقييم الكامل",
-          href: "/assess",
+          cta: "احصل على تعليماتك",
+          href: "/privacy-consent",
           features: ["تعليمات مخصصة كاملة للذكاء الاصطناعي", "تعليمات جاهزة للنسخ", "نسخة قابلة للحفظ كـ PDF ورابط مشاركة", "بدون اشتراك"],
           highlighted: true,
         },
@@ -64,7 +64,7 @@ export default function Pricing() {
         eyebrow: "الأسعار",
         title: "تسعير واضح لتعليمات ذكاء اصطناعي مخصصة",
         intro:
-          "INSPIRE يقدّم تجربة رقمية كاملة: تقييم منظم، تعليمات مخصصة للذكاء الاصطناعي، وطلبات بداية جاهزة للاستخدام مع أدوات مثل ChatGPT وClaude وGemini.",
+          "INSPIRE يقدّم تجربة رقمية كاملة: تقييم منظم، تعليمات مخصصة للذكاء الاصطناعي، وتوجيهات عملية جاهزة للاستخدام مع أدوات مثل ChatGPT وClaude وGemini.",
         full: "التقرير الكامل",
         perAssessment: "/ تقييم",
         cards: [
@@ -74,7 +74,7 @@ export default function Pricing() {
           },
           {
             title: "دفع آمن",
-            body: "سيتم تفعيل الدفع بالبطاقة عبر Lemon Squeezy بعد اكتمال الموافقة.",
+            body: "يتم الدفع بالبطاقة بشكل آمن عبر Lemon Squeezy.",
           },
           {
             title: "مخرج إنتاجي عملي",
@@ -93,7 +93,7 @@ export default function Pricing() {
         eyebrow: "Pricing",
         title: "Simple pricing for personalized AI instructions",
         intro:
-          "INSPIRE delivers a complete digital experience: a structured assessment, personalized AI instructions, and starter prompts for tools such as ChatGPT, Claude, and Gemini.",
+          "INSPIRE delivers a complete digital experience: a structured assessment, personalized AI instructions, and practical guidance for tools such as ChatGPT, Claude, and Gemini.",
         full: "Full report",
         perAssessment: "/ assessment",
         cards: [
@@ -103,7 +103,7 @@ export default function Pricing() {
           },
           {
             title: "Secure checkout",
-            body: "Card checkout will be activated through Lemon Squeezy after approval is complete.",
+            body: "Card checkout is handled securely through Lemon Squeezy.",
           },
           {
             title: "Practical productivity output",

@@ -27,15 +27,15 @@ export default function About() {
         solveTitle: "ماذا يضيف INSPIRE؟",
         solveBody: [
           "عندما يعرف الذكاء الاصطناعي سياقك وطريقة تفكيرك، تصبح إجاباته أقرب لما تحتاجه: أوضح، أكثر ارتباطاً بهدفك، وأسهل في التطبيق.",
-          "INSPIRE يجمع هذا السياق من خلال تقييم موجه، ثم يحوله إلى تعليمات جاهزة للنسخ، مطالبات بداية، وتقرير رقمي واضح.",
+          "INSPIRE يجمع هذا السياق من خلال تقييم موجه، ثم يحوله إلى تعليمات جاهزة للنسخ وتقرير رقمي واضح.",
         ],
         researchTitle: "أساس بحثي ومنتج عملي",
         researchBody:
           "يرتبط INSPIRE بعمل INSPIRE & CRAFTS من إعداد هيثم حمادنة، وهو إطار عملي لتخصيص تفاعل الأفراد مع الذكاء الاصطناعي.",
         ssrn: "عرض الورقة على SSRN",
         ctaTitle: "احصل على تعليماتك المخصصة للذكاء الاصطناعي",
-        ctaBody: "ابدأ بالتقييم السريع المجاني أو راجع صفحة الأسعار للتعليمات الكاملة.",
-        quick: "جرّب التقييم السريع المجاني",
+        ctaBody: "ابدأ بتعليمات مختصرة أو راجع صفحة الأسعار للتعليمات الكاملة.",
+        quick: "احصل على تعليمات مختصرة",
         pricing: "عرض الأسعار",
       }
     : {
@@ -47,15 +47,15 @@ export default function About() {
         solveTitle: "What INSPIRE helps you unlock",
         solveBody: [
           "When AI understands your context and working style, its responses become clearer, more relevant, and easier to use.",
-          "INSPIRE collects that context through a guided assessment and converts it into copy-ready instructions, starter prompts, and a readable digital report.",
+          "INSPIRE collects that context through a guided assessment and converts it into copy-ready instructions and a readable digital report.",
         ],
         researchTitle: "Research-backed product method",
         researchBody:
           "INSPIRE is connected to the INSPIRE & CRAFTS work by Haitham Hamadneh, a practical framework for individual-level AI interaction customization.",
         ssrn: "View the SSRN paper",
         ctaTitle: "Get your personalized AI instructions",
-        ctaBody: "Start with the free quick assessment or review the pricing page for the complete instructions.",
-        quick: "Try the free quick assessment",
+        ctaBody: "Start with short instructions or review the pricing page for the complete instructions.",
+        quick: "Get short instructions",
         pricing: "View pricing",
       };
 

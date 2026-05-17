@@ -76,6 +76,43 @@ export default function Landing() {
       {/* ─── HERO ─────────────────────────────────────────── */}
       <LandingHero primaryHref={href("/privacy-consent")} secondaryAnchorId="reply-difference" />
 
+      {/* ─── PRICE PATH SNAPSHOT ──────────────────────────── */}
+      <section className="border-y border-slate-400/10 bg-slate-950/45 px-6 py-6 backdrop-blur-[1px]">
+        <div className="container mx-auto flex max-w-6xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-[13px] font-bold uppercase tracking-[0.18em] text-rose-200">
+              {locale === "ar" ? "اختر المسار المناسب" : "Choose your path"}
+            </p>
+            <h2 className="mt-2 text-2xl font-display font-black text-white md:text-3xl">
+              {locale === "ar"
+                ? "احصل على تعليمات مختصرة أو التعليمات الكاملة بـ $10"
+                : "Get short instructions or the complete version for $10"}
+            </h2>
+            <p className="mt-2 max-w-2xl text-[15px] leading-7 text-slate-400">
+              {locale === "ar"
+                ? "النسخة السريعة تعطيك تعليمات إنجليزية مختصرة. النسخة الكاملة تعطيك تعليمات أعمق، ملخصًا عمليًا، ونسخة قابلة للحفظ."
+                : "The quick version gives you short English instructions. The complete version gives you deeper instructions, a practical summary, and a saveable version."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row md:shrink-0">
+            <Link
+              href={href("/assess/mini")}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-900/70 px-5 py-3 text-sm font-black text-white transition-colors hover:border-rose-300/30"
+            >
+              <Zap className="h-4 w-4" />
+              {locale === "ar" ? "احصل على تعليمات مختصرة" : "Get short instructions"}
+            </Link>
+            <Link
+              href={href("/privacy-consent")}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-rose-400"
+            >
+              <CreditCard className="h-4 w-4" />
+              {locale === "ar" ? "احصل على تعليماتك — $10" : "Get your AI instructions — $10"}
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ─── EXPLAINER DEMO ───────────────────────────────── */}
       <section id="reply-difference" className="py-20 px-6 bg-transparent">
         <div className="container max-w-6xl mx-auto">
@@ -86,10 +123,10 @@ export default function Landing() {
             className="text-center mb-10"
           >
             <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">
-              {locale === "ar" ? "شاهد الفرق في الردود" : "See the difference in replies"}
+              {locale === "ar" ? "مثال حقيقي" : "Real example"}
             </span>
             <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">
-              {locale === "ar" ? "كيف تصبح ردود AI أقرب لهدفك وطريقتك" : "How AI replies become closer to your goal and style"}
+              {locale === "ar" ? "مثال حقيقي على الفرق في الردود" : "A real example of the difference in replies"}
             </h2>
             <p className="text-[15px] leading-7 text-slate-400 max-w-xl mx-auto">
               {locale === "ar"
