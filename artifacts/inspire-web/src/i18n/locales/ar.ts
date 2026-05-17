@@ -77,10 +77,10 @@ export const ar = {
       freeActivate: "أنشئ التقرير مجاناً",
       freeActivateRetry: "أنشئ تقرير إعادة التقييم مجاناً",
       activating: "جارٍ التفعيل...",
-      paypalLoading: "جارٍ تحميل بوابة الدفع...",
+      paypalLoading: "جارٍ تحميل الدفع الآمن...",
       gatewayUnavailableTitle: "الدفع الإلكتروني قيد التجهيز",
       gatewayUnavailableText:
-        "تم حفظ إجاباتك، لكن الدفع بالبطاقة غير متاح مؤقتاً. يمكنك العودة لاحقاً أو التواصل معنا للوصول اليدوي.",
+        "تم حفظ إجاباتك. الدفع الآمن غير متاح مؤقتاً، يمكنك المحاولة بعد قليل أو التواصل معنا للوصول اليدوي.",
       previewTitle: "مثال سريع على النتيجة الكاملة",
       previewSubtitle: "لتعرف بالضبط ماذا ستحصل عليه قبل الدفع",
       previewTagQuestions: "21 سؤالاً",
@@ -102,7 +102,7 @@ export const ar = {
       freeOrderFallback: "حدث خطأ، حاول مجدداً",
       createOrderError: "فشل إنشاء الطلب",
       captureOrderError: "فشل تأكيد الدفع",
-      paypalError: "حدث خطأ في الدفع. يُرجى المحاولة مجدداً.",
+      paypalError: "تعذّر إكمال الدفع. يُرجى المحاولة مجدداً.",
     },
     status: {
       preparingTitle: "جارٍ تجهيز التقييم",

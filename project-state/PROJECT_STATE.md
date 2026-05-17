@@ -4,15 +4,14 @@
 Keep the current Replit-hosted production app stable while planning the next product improvements on a separate work branch.
 
 ## Current Reality
-- GitHub `main` has been fast-forwarded to match `codex/platform-migration` at commit `2251dc7`.
-- Local active work branch: `codex/next-work`, created from the current production-ready baseline for future changes.
-- Replit production is still running from its own workspace snapshot on `codex/platform-migration`; Replit reported local commit `4f073d3 Published your App`, one commit ahead of origin. Do not pull/redeploy there unless intentionally publishing new work.
-- The app currently has a Vite frontend, Express API, PostgreSQL/Drizzle database, and legacy PayPal billing code.
+- GitHub `main` is the source branch for the current Replit production flow.
+- Lemon Squeezy checkout activation is being merged into `main` so Replit can stay on `main`.
+- The app currently has a Vite frontend, Express API, PostgreSQL/Drizzle database, Lemon Squeezy checkout code, and legacy PayPal fallback code.
 - Official production domain: `https://inspire.next-stepai.com`.
 - Latest production read-only smoke after the GitHub merge passed:
   - `/api/healthz` returned `{"status":"ok"}`.
   - `/pricing` returned `200`.
-- Lemon Squeezy approval is not complete yet; the site needs review readiness before payment integration.
+- Lemon Squeezy approval has been received. Payment integration is moving from disabled/manual review mode to Lemon Squeezy checkout/webhook activation.
 - Phase 1 technical audit is documented in `project-state/TECHNICAL_AUDIT.md`.
 - Phase 2 DB v2 foundation has started with schema and migration files for decision snapshots and generation runs.
 - Admin now has an API and first UI panel for assessment evidence detail.
@@ -79,6 +78,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
 - Report generation now has one OpenAI model path: `gpt-5.5` is fixed in code, no custom temperature is sent, and V2 generation failures send admin alert emails with user, payment, retry, provider/model, and latest run error context.
 - V2 PDF generation now reads `reportContent`, includes copy-ready instructions, and embeds Noto Naskh Arabic fonts for Arabic output.
+- Lemon Squeezy checkout activation is implemented locally: `BILLING_PROVIDER=lemon` creates server-side Lemon checkouts, stores Lemon checkout/order identifiers, accepts signed `order_created` webhooks, and starts the paid report generation after payment confirmation.
 
 ## Active Decisions
 - Do not make product changes directly on `main`; use `codex/next-work` or a new feature branch, then merge after verification.
@@ -86,15 +86,16 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Keep Replit untouched until a new change is intentionally ready to publish.
 - Historical data is not critical; a clean Supabase database is acceptable if migration becomes costly.
 - Replit remains the temporary deployment target because it is already paid for and configured.
+- Activate Lemon Squeezy in test mode first (`LEMON_SQUEEZY_TEST_MODE=true`), verify one full checkout and webhook, then switch to live mode.
 
 ## Active Risks
-- Billing copy now mentions Lemon Squeezy, while the current backend billing implementation still uses PayPal.
+- Lemon Squeezy environment variables and webhook settings must be correct before enabling checkout in production.
 - Replit production deploys from the Replit workspace snapshot, not automatic GitHub push deploys.
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
 - Local Node-based production checks may hit Supabase pooler certificate validation (`SELF_SIGNED_CERT_IN_CHAIN`) unless the local CA path is configured; do not confuse this with report-generation failure.
-- Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
-- Replit workspace has one local publish commit ahead of origin (`4f073d3`). This is acceptable while production is healthy, but should be handled carefully before the next Replit redeploy.
+- Customer-facing paid completion now has code support for Lemon Squeezy, but still needs a real test-mode checkout/webhook verification on Replit before live mode.
+- Replit workspace may have local publish commits ahead of origin. Before each production redeploy, reset intentionally to the GitHub branch that should be deployed.
 - Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
 
 ## Protected Areas
@@ -103,7 +104,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Plan the next product ideas on `codex/next-work` without touching Replit. Redeploy Replit only after a new change is built, tested, merged to `main`, and intentionally approved for production.
+Deploy the Lemon Squeezy integration to Replit in test mode, add the Lemon webhook URL, run one full checkout through `/assess`, and confirm the report starts generating after the `order_created` webhook.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

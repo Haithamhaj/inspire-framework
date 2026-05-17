@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import express, { type Express, type Request } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
@@ -30,7 +30,12 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
 
 // Accept application/json AND text/plain (some proxies change content-type)
-app.use(express.json({ type: ["application/json", "text/plain", "application/x-www-form-urlencoded"] }));
+app.use(express.json({
+  type: ["application/json", "text/plain", "application/x-www-form-urlencoded"],
+  verify: (req, _res, buf) => {
+    (req as Request & { rawBody?: Buffer }).rawBody = Buffer.from(buf);
+  },
+}));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);

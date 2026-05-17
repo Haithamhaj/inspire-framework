@@ -6,7 +6,7 @@ import {
   usersTable,
   paymentsTable,
 } from "@workspace/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, and, isNull, or } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import {
   AssessmentStartSchema,
@@ -497,7 +497,7 @@ router.post(
               eq(paymentsTable.id, payment_id),
               eq(paymentsTable.userId, user.id),
               eq(paymentsTable.status, "completed"),
-              isNull(paymentsTable.assessmentId)
+              or(isNull(paymentsTable.assessmentId), eq(paymentsTable.assessmentId, id as string))!
             )
           );
 

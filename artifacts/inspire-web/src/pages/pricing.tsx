@@ -74,7 +74,7 @@ export default function Pricing() {
           },
           {
             title: "دفع آمن",
-            body: "يتم الدفع بالبطاقة بشكل آمن عبر Lemon Squeezy.",
+            body: "الدفع الآمن متاح عبر Lemon Squeezy لطلب التقرير الكامل بعد إكمال التقييم.",
           },
           {
             title: "مخرج إنتاجي عملي",
@@ -103,7 +103,7 @@ export default function Pricing() {
           },
           {
             title: "Secure checkout",
-            body: "Card checkout is handled securely through Lemon Squeezy.",
+            body: "Secure checkout is available through Lemon Squeezy for the full report after completing the assessment.",
           },
           {
             title: "Practical productivity output",

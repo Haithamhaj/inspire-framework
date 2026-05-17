@@ -42,6 +42,14 @@ API service:
 For Lemon review/staging before checkout approval:
 - `BILLING_PROVIDER=disabled`
 
+For Lemon Squeezy checkout after approval:
+- `BILLING_PROVIDER=lemon`
+- `LEMON_SQUEEZY_API_KEY`
+- `LEMON_SQUEEZY_STORE_ID`
+- `LEMON_SQUEEZY_VARIANT_ID`
+- `LEMON_SQUEEZY_WEBHOOK_SECRET`
+- `LEMON_SQUEEZY_TEST_MODE=true` for first verification; switch to `false` only after test checkout/webhook passes.
+
 For legacy PayPal testing only:
 - `BILLING_PROVIDER=paypal`
 - `PAYPAL_ENV`
@@ -87,6 +95,7 @@ Existing migrations:
 - `lib/db/migrations/0007_add_discount_code_start_date.sql`
 - `lib/db/migrations/0008_add_feedback_context.sql`
 - `lib/db/migrations/0009_add_password_reset_fields.sql`
+- `lib/db/migrations/0010_add_lemon_squeezy_payment_fields.sql`
 
 Important:
 - Supabase staging currently has MCP migrations applied:
@@ -143,6 +152,8 @@ After Supabase is connected:
 - [ ] Confirm a fresh production shared result page after enabling sharing for a completed production assessment.
 - [x] Apply `0009_add_password_reset_fields.sql` before deploying password reset.
 - [ ] Verify forgot-password and reset-password against the deployed Supabase database.
+- [x] Apply `0010_add_lemon_squeezy_payment_fields.sql` before enabling `BILLING_PROVIDER=lemon`.
+- [ ] Verify Lemon Squeezy test checkout creates a pending payment, receives `order_created`, marks the payment completed, and starts report generation.
 
 ## Local Supabase Connection Notes
 
@@ -212,6 +223,10 @@ Expected limitation:
 
 ## Latest Supabase Schema Update
 
+Verified on May 17, 2026:
+- Applied `0010_add_lemon_squeezy_payment_fields.sql`.
+- Confirmed Supabase accepted the new `payments.provider`, `payments.lemon_checkout_id`, and `payments.lemon_order_id` fields plus unique indexes for Lemon checkout/order identifiers.
+
 Verified on May 14, 2026:
 - Applied migration `add_password_reset_fields`.
 - Confirmed `public.users.password_reset_token` exists as nullable `text`.
@@ -239,10 +254,15 @@ Before Lemon approval:
 - Use a demo/admin-generated report for the video if needed.
 
 After Lemon approval:
-- Add Lemon checkout.
-- Add Lemon webhook.
-- Generalize `payments` away from PayPal-specific fields.
-- Store processor events and refund state.
+- Use `BILLING_PROVIDER=lemon`.
+- Add the Lemon webhook endpoint in Lemon Squeezy:
+  - `https://inspire.next-stepai.com/api/billing/lemon-webhook`
+  - event: `order_created`
+  - signing secret must match `LEMON_SQUEEZY_WEBHOOK_SECRET`.
+- Keep `LEMON_SQUEEZY_TEST_MODE=true` for first verification.
+- Confirm the payment record receives `lemon_checkout_id` and `lemon_order_id`.
+- Confirm report generation starts automatically after webhook confirmation.
+- Store deeper processor events and refund state in a later hardening pass.
 
 ## Open Deployment Decision
 
