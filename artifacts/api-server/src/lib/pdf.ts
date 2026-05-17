@@ -1,4 +1,4 @@
-import ReactPDF, { renderToBuffer } from "@react-pdf/renderer";
+import ReactPDF, { Font, renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
 import path from "path";
 import fs from "fs";
@@ -6,7 +6,28 @@ import { db } from "@workspace/db";
 import { assessmentsTable } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { logger } from "./logger";
-import { type InspireAxisScore } from "../inspire-types";
+import {
+  OperatingPatternReportContentV1Schema,
+  type InspireAxisScore,
+  type OperatingPatternReportContentV1,
+} from "../inspire-types";
+
+let fontsRegistered = false;
+
+function ensurePdfFontsRegistered(): void {
+  if (fontsRegistered) return;
+
+  const fontDir = path.join(process.cwd(), "public", "fonts");
+  Font.register({
+    family: "NotoNaskhArabic",
+    src: path.join(fontDir, "NotoNaskhArabic-Regular.ttf"),
+  });
+  Font.register({
+    family: "NotoNaskhArabicBold",
+    src: path.join(fontDir, "NotoNaskhArabic-Bold.ttf"),
+  });
+  fontsRegistered = true;
+}
 
 export interface AssessmentForPDF {
   projectName: string;
@@ -19,12 +40,13 @@ export interface AssessmentForPDF {
   recommendations?: string[] | null;
   systemInstruction?: string | null;
   quickStarters?: string[] | null;
+  reportContent?: unknown;
   createdAt?: Date | string | null;
 }
 
 // ─── PDF Document ──────────────────────────────────────────
 
-function buildPDFDocument(data: {
+export function buildPDFDocument(data: {
   name: string;
   projectName: string;
   projectGoal: string;
@@ -36,20 +58,22 @@ function buildPDFDocument(data: {
   recommendations: string[];
   systemInstruction: string;
   quickStarters: string[];
+  reportContent: OperatingPatternReportContentV1 | null;
   createdAt: string;
 }) {
+  ensurePdfFontsRegistered();
   const { Document, Page, Text, View, StyleSheet, Image } = ReactPDF;
 
   const styles = StyleSheet.create({
-    page: { padding: 50, fontFamily: "Helvetica", fontSize: 10, direction: "rtl" as "ltr" | "rtl" },
+    page: { padding: 50, fontFamily: "NotoNaskhArabic", fontSize: 10, direction: "rtl" as "ltr" | "rtl" },
     header: { marginBottom: 30, alignItems: "center" as "flex-start" | "flex-end" | "center" | "stretch" | "baseline" },
     logoImage: { width: 150, marginBottom: 12 },
-    brand: { fontSize: 24, fontFamily: "Helvetica-Bold", color: "#1a1a2e", marginBottom: 4 },
+    brand: { fontSize: 24, fontFamily: "NotoNaskhArabicBold", color: "#1a1a2e", marginBottom: 4 },
     subtitle: { fontSize: 10, color: "#6b7280" },
-    title: { fontSize: 18, fontFamily: "Helvetica-Bold", color: "#1a1a2e", marginBottom: 4, marginTop: 24 },
+    title: { fontSize: 18, fontFamily: "NotoNaskhArabicBold", color: "#1a1a2e", marginBottom: 4, marginTop: 24 },
     label: { fontSize: 9, color: "#6b7280", marginBottom: 2 },
     value: { fontSize: 10, color: "#111827", marginBottom: 12 },
-    sectionTitle: { fontSize: 13, fontFamily: "Helvetica-Bold", color: "#1a1a2e", marginBottom: 10, marginTop: 20, borderBottom: "1px solid #e5e7eb", paddingBottom: 4 },
+    sectionTitle: { fontSize: 13, fontFamily: "NotoNaskhArabicBold", color: "#1a1a2e", marginBottom: 10, marginTop: 20, borderBottom: "1px solid #e5e7eb", paddingBottom: 4 },
     paragraph: { fontSize: 10, color: "#374151", lineHeight: 1.7, marginBottom: 8 },
     bulletRow: { flexDirection: "row", marginBottom: 5, gap: 6 },
     bullet: { color: "#e94560", fontSize: 12, lineHeight: 1 },
@@ -57,18 +81,77 @@ function buildPDFDocument(data: {
     tableRow: { flexDirection: "row", borderBottom: "1px solid #f3f4f6", paddingVertical: 6, gap: 8 },
     tableHeader: { flexDirection: "row", borderBottom: "2px solid #1a1a2e", paddingBottom: 6, marginBottom: 2, gap: 8 },
     tableAxis: { flex: 2, fontSize: 9, color: "#374151" },
-    tableAxisHeader: { flex: 2, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#1a1a2e" },
-    tablePct: { flex: 1, fontSize: 9, color: "#e94560", fontFamily: "Helvetica-Bold" },
-    tablePctHeader: { flex: 1, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#1a1a2e" },
+    tableAxisHeader: { flex: 2, fontSize: 9, fontFamily: "NotoNaskhArabicBold", color: "#1a1a2e" },
+    tablePct: { flex: 1, fontSize: 9, color: "#e94560", fontFamily: "NotoNaskhArabicBold" },
+    tablePctHeader: { flex: 1, fontSize: 9, fontFamily: "NotoNaskhArabicBold", color: "#1a1a2e" },
     tableNote: { flex: 3, fontSize: 8, color: "#6b7280" },
-    tableNoteHeader: { flex: 3, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#1a1a2e" },
+    tableNoteHeader: { flex: 3, fontSize: 9, fontFamily: "NotoNaskhArabicBold", color: "#1a1a2e" },
     instructionBox: { backgroundColor: "#1a1a2e", padding: 16, borderRadius: 8, marginTop: 8 },
     instructionText: { fontSize: 9, color: "#e5e7eb", lineHeight: 1.7 },
     qsItem: { flexDirection: "row", gap: 6, marginBottom: 6 },
-    qsNum: { fontSize: 9, color: "#e94560", fontFamily: "Helvetica-Bold", width: 14 },
+    qsNum: { fontSize: 9, color: "#e94560", fontFamily: "NotoNaskhArabicBold", width: 14 },
     qsText: { fontSize: 9, color: "#374151", flex: 1, lineHeight: 1.5 },
     footer: { position: "absolute", bottom: 30, left: 50, right: 50, textAlign: "center", fontSize: 8, color: "#9ca3af" },
   });
+
+  const header = React.createElement(View, { style: styles.header },
+    React.createElement(Image, { style: styles.logoImage, src: path.join(process.cwd(), "public/images/imperfect-success-logo.jpg") }),
+    React.createElement(Text, { style: styles.brand }, "INSPIRE"),
+    React.createElement(Text, { style: styles.subtitle }, "Operating Pattern Report & AI Instructions"),
+  );
+  const metadata = [
+    React.createElement(Text, { key: "name-label", style: styles.label }, "Name"),
+    React.createElement(Text, { key: "name-value", style: styles.value }, data.name),
+    React.createElement(Text, { key: "project-label", style: styles.label }, "Project"),
+    React.createElement(Text, { key: "project-value", style: styles.value }, data.projectName),
+    React.createElement(Text, { key: "goal-label", style: styles.label }, "Goal"),
+    React.createElement(Text, { key: "goal-value", style: styles.value }, data.projectGoal),
+    React.createElement(Text, { key: "generated-label", style: styles.label }, "Generated"),
+    React.createElement(Text, { key: "generated-value", style: styles.value }, data.createdAt),
+  ];
+  const bulletList = (items: string[], keyPrefix = "bullet") =>
+    items.map((item, i) =>
+      React.createElement(View, { key: `${keyPrefix}-${i}`, style: styles.bulletRow },
+        React.createElement(Text, { style: styles.bullet }, "•"),
+        React.createElement(Text, { style: styles.bulletText }, item),
+      )
+    );
+
+  if (data.reportContent) {
+    const sections = data.reportContent.sections;
+    return React.createElement(
+      Document,
+      { title: `INSPIRE Report — ${data.name}`, author: "INSPIRE Framework" },
+      React.createElement(
+        Page,
+        { size: "A4", style: styles.page },
+        header,
+        ...metadata,
+        React.createElement(Text, { style: styles.sectionTitle }, "Operating Snapshot"),
+        ...bulletList(sections.operatingSnapshot.bullets, "operating-snapshot"),
+        React.createElement(Text, { style: styles.sectionTitle }, "Personalized Recommendations"),
+        ...bulletList(sections.personalizedRecommendations.bullets, "personalized-recommendations"),
+        React.createElement(Text, { style: styles.sectionTitle }, "Custom AI Usage Tips"),
+        ...bulletList(sections.customAiUsageTips.bullets, "custom-ai-usage-tips"),
+        ...(sections.instructionExplanation.include
+          ? [
+              React.createElement(Text, { key: "instruction-explanation-title", style: styles.sectionTitle }, "Instruction Explanation"),
+              ...bulletList(sections.instructionExplanation.bullets, "instruction-explanation"),
+            ]
+          : []),
+        React.createElement(Text, { style: styles.footer }, `INSPIRE Framework • ${data.name} • Page 1`),
+      ),
+      React.createElement(
+        Page,
+        { size: "A4", style: styles.page },
+        React.createElement(Text, { style: { ...styles.brand, fontSize: 16 } }, "INSPIRE — Copy-Ready AI Instructions"),
+        React.createElement(View, { style: styles.instructionBox },
+          React.createElement(Text, { style: styles.instructionText }, data.systemInstruction || "—"),
+        ),
+        React.createElement(Text, { style: styles.footer }, `INSPIRE Framework • ${data.name} • Page 2`),
+      )
+    );
+  }
 
   return React.createElement(
     Document,
@@ -77,11 +160,7 @@ function buildPDFDocument(data: {
       Page,
       { size: "A4", style: styles.page },
       // Header
-      React.createElement(View, { style: styles.header },
-        React.createElement(Image, { style: styles.logoImage, src: path.join(process.cwd(), "public/images/imperfect-success-logo.jpg") }),
-        React.createElement(Text, { style: styles.brand }, "INSPIRE"),
-        React.createElement(Text, { style: styles.subtitle }, "Personal Behavioral Profile & AI System Instruction"),
-      ),
+      header,
       // Meta
       React.createElement(Text, { style: styles.label }, "Name"),
       React.createElement(Text, { style: styles.value }, data.name),
@@ -162,6 +241,9 @@ export async function generateAndSavePDF(
   assessment: AssessmentForPDF
 ): Promise<string | null> {
   try {
+    const parsedReportContent = OperatingPatternReportContentV1Schema.safeParse(
+      assessment.reportContent
+    );
     const doc = buildPDFDocument({
       name: userData.name,
       projectName: assessment.projectName,
@@ -174,8 +256,9 @@ export async function generateAndSavePDF(
       recommendations: (assessment.recommendations as string[]) ?? [],
       systemInstruction: assessment.systemInstruction ?? "",
       quickStarters: (assessment.quickStarters as string[]) ?? [],
+      reportContent: parsedReportContent.success ? parsedReportContent.data : null,
       createdAt: assessment.createdAt
-        ? new Date(assessment.createdAt).toLocaleDateString("ar-SA")
+        ? new Date(assessment.createdAt).toISOString().slice(0, 10)
         : "",
     });
 

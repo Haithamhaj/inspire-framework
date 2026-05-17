@@ -1010,7 +1010,7 @@ export default function Admin() {
                 <h3 className="mb-3 text-sm font-bold text-foreground">التوليد والتقييم</h3>
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div>{selectedDetail.aiProvider ?? "لا يوجد مزود"} {selectedDetail.aiModel ? `/${selectedDetail.aiModel}` : ""}</div>
-                  <div>محاولات: {selectedDetail.retryCount}</div>
+                  <div>{selectedDetail.retryCount > 0 ? `إعادة محاولات: ${selectedDetail.retryCount}` : "أول توليد"}</div>
                   <div>Generation runs: {selectedDetail.generationRuns.length}</div>
                   <div>Feedback: {selectedDetail.feedback?.rating ? `${selectedDetail.feedback.rating}/5` : "لا يوجد"}</div>
                   <div>{selectedDetail.feedback?.copiedInstructions ? "نسخ التعليمات قبل التقييم" : "لم ينسخ التعليمات قبل التقييم"}</div>
@@ -1126,7 +1126,7 @@ export default function Admin() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="space-y-1 text-xs text-muted-foreground">
-                          <div>محاولات: {a.retryCount}</div>
+                          <div>{a.retryCount > 0 ? `إعادة محاولات: ${a.retryCount}` : "أول توليد"}</div>
                           <div>{a.hasReportContent ? "reportContent موجود" : "لا يوجد reportContent"}</div>
                           <div>{a.emailSent ? "الإيميل أُرسل" : "الإيميل لم يُرسل"}</div>
                           <div>{a.shareEnabled ? "المشاركة مفعلة" : "المشاركة معطلة"}</div>

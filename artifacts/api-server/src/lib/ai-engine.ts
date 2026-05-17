@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import Anthropic from "@anthropic-ai/sdk";
 import { db } from "@workspace/db";
 import {
   assessmentGenerationRunsTable,
@@ -23,9 +22,16 @@ import { buildOperatingPatternReportContentV1 } from "../inspire-types";
 import { sendResultsEmail, sendFailureEmail, sendAdminAlertEmail } from "./email";
 import { logger } from "./logger";
 
-const OPENAI_MODEL_DEFAULT = "gpt-5.4";
-const CLAUDE_MODEL_DEFAULT = "claude-sonnet-4-6";
+const OPENAI_MODEL = "gpt-5.5";
 const V2_PROMPT_VERSION = "inspire-v2-instruction+report@1";
+
+type AiTextResult = {
+  success: boolean;
+  text?: string;
+  provider?: string;
+  model?: string;
+  errorMessage?: string;
+};
 
 type V2Answer = { questionId: string; optionId: string };
 
@@ -39,20 +45,12 @@ function isV2Answers(value: unknown): value is V2Answer[] {
 }
 
 let _openai: OpenAI | null = null;
-let _anthropic: Anthropic | null = null;
 
 function getOpenAI(): OpenAI {
   if (!_openai) {
     _openai = new OpenAI({ apiKey: process.env["OPENAI_API_KEY"]! });
   }
   return _openai;
-}
-
-function getAnthropic(): Anthropic {
-  if (!_anthropic) {
-    _anthropic = new Anthropic({ apiKey: process.env["ANTHROPIC_API_KEY"]! });
-  }
-  return _anthropic;
 }
 
 const RETRY_INTERVALS_MS = [
@@ -69,31 +67,16 @@ export async function generateReport(
   promptData: PromptData
 ): Promise<void> {
   const prompt = buildPrompt(promptData);
-
   const openaiResult = await tryOpenAI(prompt);
   if (openaiResult.success) {
     await finish(
       assessmentId,
       openaiResult.text!,
       "openai",
-      process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT,
+      OPENAI_MODEL,
       "v1"
     );
     return;
-  }
-
-  if (process.env["ANTHROPIC_API_KEY"]) {
-    const claudeResult = await tryClaude(prompt);
-    if (claudeResult.success) {
-      await finish(
-        assessmentId,
-        claudeResult.text!,
-        "anthropic",
-        process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT,
-        "v1"
-      );
-      return;
-    }
   }
 
   await db
@@ -105,7 +88,14 @@ export async function generateReport(
     })
     .where(eq(assessmentsTable.id, assessmentId));
 
-  logger.warn({ assessmentId }, "Both AI providers failed — queued for retry");
+  logger.warn({ assessmentId }, "OpenAI report generation failed — queued for retry");
+  sendAdminAlertEmail({
+    subject: "INSPIRE alert — report queued for retry",
+    assessmentId,
+    reason: `A report generation attempt failed and was queued for retry. openai/${openaiResult.model ?? OPENAI_MODEL}: ${openaiResult.errorMessage ?? "OpenAI generation failed."}`,
+  }).catch((err) =>
+    logger.error({ assessmentId, err }, "sendAdminAlertEmail threw")
+  );
 }
 
 // ─── V2 ENTRY (full assessment, section-routing) ──────────────────────────────
@@ -128,6 +118,7 @@ export async function generateReportV2(
     return;
   }
 
+  let failureReason = "No provider returned valid V2 report and instruction output.";
   try {
     const generationResult = await runV2GenerationWithEvidence({
       assessmentId,
@@ -147,7 +138,11 @@ export async function generateReportV2(
       );
       return;
     }
+    if (generationResult.errorMessage) {
+      failureReason = generationResult.errorMessage;
+    }
   } catch (err) {
+    failureReason = err instanceof Error ? err.message : String(err);
     logger.error({ assessmentId, err }, "V2 generation or validation failed before completion");
   }
 
@@ -160,11 +155,11 @@ export async function generateReportV2(
     })
     .where(eq(assessmentsTable.id, assessmentId));
 
-  logger.warn({ assessmentId }, "Both AI providers failed (v2) — queued for retry");
+  logger.warn({ assessmentId }, "OpenAI V2 generation failed — queued for retry");
   sendAdminAlertEmail({
     subject: "INSPIRE alert — report queued for retry",
     assessmentId,
-    reason: "A v2 report generation attempt failed or did not validate, so it was queued for retry.",
+    reason: `A v2 report generation attempt failed or did not validate, so it was queued for retry. ${failureReason}`,
   }).catch((err) =>
     logger.error({ assessmentId, err }, "sendAdminAlertEmail threw")
   );
@@ -256,6 +251,10 @@ export async function processRetryQueue(): Promise<void> {
           { assessmentId: assessment.id, err },
           "V2 retry generation or validation failed before completion"
         );
+        generationResult = {
+          success: false,
+          errorMessage: err instanceof Error ? err.message : String(err),
+        };
       }
 
       const nextCount = count + 1;
@@ -288,6 +287,13 @@ export async function processRetryQueue(): Promise<void> {
             ),
           })
           .where(eq(assessmentsTable.id, assessment.id));
+        sendAdminAlertEmail({
+          subject: "INSPIRE alert — report retry failed",
+          assessmentId: assessment.id,
+          reason: `A v2 retry attempt failed and another retry was scheduled. Attempt ${nextCount}/10. ${generationResult.errorMessage ?? "No provider returned valid output."}`,
+        }).catch((err) =>
+          logger.error({ assessmentId: assessment.id, err }, "sendAdminAlertEmail threw")
+        );
       }
       continue;
     } else {
@@ -306,16 +312,8 @@ export async function processRetryQueue(): Promise<void> {
 
     const openaiResult = await tryOpenAI(prompt);
     if (openaiResult.success) {
-      await finish(assessment.id, openaiResult.text!, "openai", process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT, "v1");
+      await finish(assessment.id, openaiResult.text!, "openai", OPENAI_MODEL, "v1");
       continue;
-    }
-
-    if (process.env["ANTHROPIC_API_KEY"]) {
-      const claudeResult = await tryClaude(prompt);
-      if (claudeResult.success) {
-        await finish(assessment.id, claudeResult.text!, "anthropic", process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT, "v1");
-        continue;
-      }
     }
 
     const nextCount = count + 1;
@@ -341,6 +339,13 @@ export async function processRetryQueue(): Promise<void> {
           ),
         })
         .where(eq(assessmentsTable.id, assessment.id));
+      sendAdminAlertEmail({
+        subject: "INSPIRE alert — report retry failed",
+        assessmentId: assessment.id,
+        reason: `A report retry attempt failed and another retry was scheduled. Attempt ${nextCount}/10. openai/${openaiResult.model ?? OPENAI_MODEL}: ${openaiResult.errorMessage ?? "OpenAI generation failed."}`,
+      }).catch((err) =>
+        logger.error({ assessmentId: assessment.id, err }, "sendAdminAlertEmail threw")
+      );
     }
   }
 }
@@ -349,78 +354,50 @@ export async function processRetryQueue(): Promise<void> {
 
 async function tryOpenAI(
   prompt: string
-): Promise<{ success: boolean; text?: string }> {
-  if (!process.env["OPENAI_API_KEY"]) return { success: false };
-  const model = process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT;
-  const supportsCustomTemperature = !model.startsWith("gpt-5.5");
+): Promise<AiTextResult> {
+  if (!process.env["OPENAI_API_KEY"]) {
+    return { success: false, errorMessage: "OPENAI_API_KEY is not configured." };
+  }
+  const model = OPENAI_MODEL;
+  let lastError = "";
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const res = await getOpenAI().chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
         max_completion_tokens: 3500,
-        ...(supportsCustomTemperature ? { temperature: 0.7 } : {}),
       });
       const text = res.choices[0]?.message?.content ?? "";
       if (!text) throw new Error("Empty response");
       return { success: true, text };
     } catch (err) {
-      logger.error({ attempt, model }, `[OpenAI] attempt ${attempt} failed: ${err}`);
+      lastError = err instanceof Error ? err.message : String(err);
+      logger.error({ attempt, model, err }, "[OpenAI] attempt failed");
       if (attempt < 3) await sleep(2000 * attempt);
     }
   }
-  return { success: false };
+  return {
+    success: false,
+    provider: "openai",
+    model,
+    errorMessage: lastError || "OpenAI generation failed.",
+  };
 }
 
-async function tryClaude(
-  prompt: string
-): Promise<{ success: boolean; text?: string }> {
-  if (!process.env["ANTHROPIC_API_KEY"]) return { success: false };
-  const model = process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT;
-  try {
-    const res = await getAnthropic().messages.create({
-      model,
-      max_tokens: 3500,
-      messages: [{ role: "user", content: prompt }],
-    });
-    const text = res.content
-      .filter((b) => b.type === "text")
-      .map((b) => (b as { type: "text"; text: string }).text)
-      .join("");
-    if (!text) throw new Error("Empty response");
-    return { success: true, text };
-  } catch (err) {
-    logger.error({ model }, `[Claude] failed: ${err}`);
-    return { success: false };
-  }
-}
-
-async function tryGenerateAiText(
-  prompt: string
-): Promise<{ success: boolean; text?: string; provider?: string; model?: string }> {
+async function tryGenerateAiText(prompt: string): Promise<AiTextResult> {
   const openaiResult = await tryOpenAI(prompt);
   if (openaiResult.success) {
     return {
       success: true,
       text: openaiResult.text,
       provider: "openai",
-      model: process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT,
+      model: OPENAI_MODEL,
     };
   }
-
-  if (process.env["ANTHROPIC_API_KEY"]) {
-    const claudeResult = await tryClaude(prompt);
-    if (claudeResult.success) {
-      return {
-        success: true,
-        text: claudeResult.text,
-        provider: "anthropic",
-        model: process.env["ANTHROPIC_MODEL"] ?? CLAUDE_MODEL_DEFAULT,
-      };
-    }
-  }
-
-  return { success: false };
+  return {
+    success: false,
+    errorMessage: `openai/${openaiResult.model ?? OPENAI_MODEL}: ${openaiResult.errorMessage ?? "OpenAI generation failed."}`,
+  };
 }
 
 async function tryGenerateV2InstructionAndReport(
@@ -431,15 +408,26 @@ async function tryGenerateV2InstructionAndReport(
   reportText?: string;
   provider?: string;
   model?: string;
+  errorMessage?: string;
 }> {
   const instructionPrompt = buildInspireInstructionPromptV2(promptData);
   const reportPrompt = buildReportWriterPromptV2(promptData);
 
   const instructionResult = await tryGenerateAiText(instructionPrompt);
-  if (!instructionResult.success || !instructionResult.text) return { success: false };
+  if (!instructionResult.success || !instructionResult.text) {
+    return {
+      success: false,
+      errorMessage: `Instruction generation failed: ${instructionResult.errorMessage ?? "No provider returned output."}`,
+    };
+  }
 
   const reportResult = await tryGenerateAiText(reportPrompt);
-  if (!reportResult.success || !reportResult.text) return { success: false };
+  if (!reportResult.success || !reportResult.text) {
+    return {
+      success: false,
+      errorMessage: `Report generation failed: ${reportResult.errorMessage ?? "No provider returned output."}`,
+    };
+  }
 
   const sameProvider = instructionResult.provider === reportResult.provider;
   const sameModel = instructionResult.model === reportResult.model;
@@ -467,6 +455,7 @@ async function runV2GenerationWithEvidence(params: {
   reportText?: string;
   provider?: string;
   model?: string;
+  errorMessage?: string;
 }> {
   const [run] = await db
     .insert(assessmentGenerationRunsTable)
@@ -508,7 +497,9 @@ async function runV2GenerationWithEvidence(params: {
       .set({
         status: "failed",
         completedAt: new Date(),
-        errorMessage: "No provider returned valid V2 report and instruction output.",
+        errorMessage:
+          result.errorMessage ??
+          "No provider returned valid V2 report and instruction output.",
       })
       .where(eq(assessmentGenerationRunsTable.id, run!.id));
 

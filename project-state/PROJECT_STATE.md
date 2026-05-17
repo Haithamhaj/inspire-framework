@@ -77,6 +77,8 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Review-facing product copy now explicitly states that INSPIRE is a premade self-serve digital assessment/report product, not consultation or custom-service sales.
 - A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
+- Report generation now has one OpenAI model path: `gpt-5.5` is fixed in code, no custom temperature is sent, and V2 generation failures send admin alert emails with user, payment, retry, provider/model, and latest run error context.
+- V2 PDF generation now reads `reportContent`, includes copy-ready instructions, and embeds Noto Naskh Arabic fonts for Arabic output.
 
 ## Active Decisions
 - Do not make product changes directly on `main`; use `codex/next-work` or a new feature branch, then merge after verification.
@@ -90,6 +92,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Replit production deploys from the Replit workspace snapshot, not automatic GitHub push deploys.
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
+- Local Node-based production checks may hit Supabase pooler certificate validation (`SELF_SIGNED_CERT_IN_CHAIN`) unless the local CA path is configured; do not confuse this with report-generation failure.
 - Customer-facing paid completion still needs Lemon Squeezy or a dedicated test-payment path after approval.
 - Replit workspace has one local publish commit ahead of origin (`4f073d3`). This is acceptable while production is healthy, but should be handled carefully before the next Replit redeploy.
 - Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
