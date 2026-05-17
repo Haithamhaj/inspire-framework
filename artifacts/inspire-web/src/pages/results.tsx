@@ -1203,7 +1203,16 @@ export default function Results() {
         const res = await fetch(apiUrl(`/results/${id}`));
         const d = await res.json();
         if (cancelled) return;
+        if (!d.success && d.error === "payment_required") {
+          navigate(`/assess?resume=${id}`);
+          return;
+        }
         if (!d.success) throw new Error(d.error || "Not found");
+
+        if (d.assessment.status === "pending_payment") {
+          navigate(`/assess?resume=${id}`);
+          return;
+        }
 
         if (d.assessment.status === "processing" || d.assessment.status === "draft") {
           setProcessing(true);

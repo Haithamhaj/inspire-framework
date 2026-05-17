@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import {
   assessmentGenerationRunsTable,
   assessmentsTable,
+  paymentsTable,
   usersTable,
 } from "@workspace/db/schema";
 import { eq, lte, lt, and } from "drizzle-orm";
@@ -60,6 +61,32 @@ const RETRY_INTERVALS_MS = [
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+async function hasCompletedPayment(assessmentId: string, paymentId: string | null): Promise<boolean> {
+  if (!paymentId) return false;
+  const [payment] = await db
+    .select({ id: paymentsTable.id })
+    .from(paymentsTable)
+    .where(
+      and(
+        eq(paymentsTable.id, paymentId),
+        eq(paymentsTable.assessmentId, assessmentId),
+        eq(paymentsTable.status, "completed")
+      )
+    );
+  return Boolean(payment);
+}
+
+async function returnFullAssessmentToPayment(assessmentId: string) {
+  await db
+    .update(assessmentsTable)
+    .set({
+      status: "pending_payment",
+      retryCount: 0,
+      nextRetryAt: null,
+    })
+    .where(eq(assessmentsTable.id, assessmentId));
+}
+
 // ─── MAIN ENTRY (v1 / mini path) ──────────────────────────────────────────────
 
 export async function generateReport(
@@ -109,6 +136,7 @@ export async function generateReportV2(
       id: assessmentsTable.id,
       userId: assessmentsTable.userId,
       assessmentType: assessmentsTable.assessmentType,
+      paymentId: assessmentsTable.paymentId,
     })
     .from(assessmentsTable)
     .where(eq(assessmentsTable.id, assessmentId));
@@ -116,6 +144,15 @@ export async function generateReportV2(
   if (!assessment) {
     logger.error({ assessmentId }, "Cannot generate V2 report for missing assessment");
     return;
+  }
+
+  if ((assessment.assessmentType ?? "full") === "full") {
+    const paid = await hasCompletedPayment(assessmentId, assessment.paymentId);
+    if (!paid) {
+      await returnFullAssessmentToPayment(assessmentId);
+      logger.warn({ assessmentId }, "Blocked full report generation without completed payment");
+      return;
+    }
   }
 
   let failureReason = "No provider returned valid V2 report and instruction output.";
@@ -212,6 +249,13 @@ export async function processRetryQueue(): Promise<void> {
       };
       prompt = buildPrompt(promptData);
     } else if (isV2Full) {
+      const paid = await hasCompletedPayment(assessment.id, assessment.paymentId);
+      if (!paid) {
+        await returnFullAssessmentToPayment(assessment.id);
+        logger.warn({ assessmentId: assessment.id }, "Blocked full report retry without completed payment");
+        continue;
+      }
+
       const promptDataV2: PromptDataV2 = {
         name: user.name,
         jobTitle: user.jobTitle ?? undefined,

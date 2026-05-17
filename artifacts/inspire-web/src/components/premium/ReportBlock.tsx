@@ -25,12 +25,16 @@ export function ReportBlock({
 }: ReportBlockProps) {
   const Tag = as;
   const dir = lang === "ar" ? "rtl" : "ltr";
+  const directionClassName =
+    lang === "ar"
+      ? "text-right [unicode-bidi:plaintext]"
+      : "text-left [unicode-bidi:plaintext]";
   return (
     <Tag
       lang={lang}
       dir={dir}
       data-report-lang={lang}
-      className={className}
+      className={[directionClassName, className].filter(Boolean).join(" ")}
     >
       {children}
     </Tag>

@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db } from "@workspace/db";
-import { assessmentFeedbackTable, assessmentsTable, usersTable } from "@workspace/db/schema";
+import { assessmentFeedbackTable, assessmentsTable, paymentsTable, usersTable } from "@workspace/db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import { generateAndSavePDF, type AssessmentForPDF } from "../lib/pdf";
@@ -32,6 +32,31 @@ async function requireUser(req: Request, _res: Response) {
   return user ?? null;
 }
 
+async function hasCompletedPayment(assessmentId: string, paymentId: string | null, userId: string): Promise<boolean> {
+  if (!paymentId) return false;
+  const [payment] = await db
+    .select({ id: paymentsTable.id })
+    .from(paymentsTable)
+    .where(
+      and(
+        eq(paymentsTable.id, paymentId),
+        eq(paymentsTable.assessmentId, assessmentId),
+        eq(paymentsTable.userId, userId),
+        eq(paymentsTable.status, "completed")
+      )
+    );
+  return Boolean(payment);
+}
+
+function sendPaymentRequired(res: Response, assessmentId: string, status: string) {
+  res.status(402).json({
+    success: false,
+    error: "payment_required",
+    status,
+    assessmentId,
+  });
+}
+
 // ─── GET /api/results/:id ─────────────────────────────────
 
 router.get(
@@ -58,6 +83,14 @@ router.get(
     if (!assessment) {
       res.status(404).json({ success: false, error: "Not found" });
       return;
+    }
+
+    if ((assessment.assessmentType ?? "full") === "full") {
+      const paid = await hasCompletedPayment(assessment.id, assessment.paymentId, user.id);
+      if (!paid) {
+        sendPaymentRequired(res, assessment.id, assessment.status);
+        return;
+      }
     }
 
     const [feedback] = await db

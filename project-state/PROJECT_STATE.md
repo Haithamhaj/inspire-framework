@@ -79,6 +79,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Report generation now has one OpenAI model path: `gpt-5.5` is fixed in code, no custom temperature is sent, and V2 generation failures send admin alert emails with user, payment, retry, provider/model, and latest run error context.
 - V2 PDF generation now reads `reportContent`, includes copy-ready instructions, and embeds Noto Naskh Arabic fonts for Arabic output.
 - Lemon Squeezy checkout activation is implemented locally: `BILLING_PROVIDER=lemon` creates server-side Lemon checkouts, stores Lemon checkout/order identifiers, accepts signed `order_created` webhooks, and starts the paid report generation after payment confirmation.
+- Full assessment report generation and `/results/:id` access now require a linked completed payment; unpaid full assessments are returned to `pending_payment` and redirected back to payment.
 
 ## Active Decisions
 - Do not make product changes directly on `main`; use `codex/next-work` or a new feature branch, then merge after verification.
