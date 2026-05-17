@@ -14,17 +14,28 @@ import {
 
 let fontsRegistered = false;
 
+function resolvePublicAsset(relativePath: string): string {
+  const candidates = [
+    path.join(process.cwd(), "public", relativePath),
+    path.join(process.cwd(), "artifacts", "api-server", "public", relativePath),
+    path.join(__dirname, "..", "public", relativePath),
+    path.join(__dirname, "..", "..", "public", relativePath),
+  ];
+  const found = candidates.find((candidate) => fs.existsSync(candidate));
+  if (!found) throw new Error(`PDF asset not found: ${relativePath}`);
+  return found;
+}
+
 function ensurePdfFontsRegistered(): void {
   if (fontsRegistered) return;
 
-  const fontDir = path.join(process.cwd(), "public", "fonts");
   Font.register({
     family: "NotoNaskhArabic",
-    src: path.join(fontDir, "NotoNaskhArabic-Regular.ttf"),
+    src: resolvePublicAsset("fonts/NotoNaskhArabic-Regular.ttf"),
   });
   Font.register({
     family: "NotoNaskhArabicBold",
-    src: path.join(fontDir, "NotoNaskhArabic-Bold.ttf"),
+    src: resolvePublicAsset("fonts/NotoNaskhArabic-Bold.ttf"),
   });
   fontsRegistered = true;
 }
@@ -95,7 +106,7 @@ export function buildPDFDocument(data: {
   });
 
   const header = React.createElement(View, { style: styles.header },
-    React.createElement(Image, { style: styles.logoImage, src: path.join(process.cwd(), "public/images/imperfect-success-logo.jpg") }),
+    React.createElement(Image, { style: styles.logoImage, src: resolvePublicAsset("images/imperfect-success-logo.jpg") }),
     React.createElement(Text, { style: styles.brand }, "INSPIRE"),
     React.createElement(Text, { style: styles.subtitle }, "Operating Pattern Report & AI Instructions"),
   );
