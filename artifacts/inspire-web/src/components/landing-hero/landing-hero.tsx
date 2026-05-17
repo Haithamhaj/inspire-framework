@@ -795,26 +795,6 @@ export default function LandingHero({
         </div>
       </section>
 
-      {/* BEFORE / WITH */}
-      <section className="relative mx-auto w-full max-w-7xl px-5 pb-16 md:px-8 md:pb-20">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <div className="mb-1 inline-flex items-center gap-2 text-[13px] font-medium text-white/68">
-              <Sparkles className="h-3.5 w-3.5 text-violet-300" />
-              {t("landing.hero.compare.eyebrow")}
-            </div>
-            <h2 className="text-[22px] font-bold md:text-[26px]">
-              {t("landing.hero.compare.title")}
-            </h2>
-          </div>
-          <div className="hidden text-[13px] font-medium text-white/58 md:block">
-            {t("landing.hero.compare.goalExampleLabel")}{" "}
-            {t(goalKey(goal.key, "label"))}
-          </div>
-        </div>
-
-        <BeforeAfter goal={goal} reduced={reduced} />
-      </section>
     </div>
   );
 }

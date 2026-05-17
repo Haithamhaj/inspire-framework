@@ -123,10 +123,10 @@ export default function Landing() {
             className="text-center mb-10"
           >
             <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">
-              {locale === "ar" ? "مثال حقيقي" : "Real example"}
+              {locale === "ar" ? "لمحة سريعة على الفرق" : "A quick preview of the difference"}
             </span>
             <h2 className="text-4xl font-display font-bold text-slate-50 mb-4">
-              {locale === "ar" ? "مثال حقيقي على الفرق في الردود" : "A real example of the difference in replies"}
+              {locale === "ar" ? "شاهد الفرق بسرعة" : "See the difference quickly"}
             </h2>
             <p className="text-[15px] leading-7 text-slate-400 max-w-xl mx-auto">
               {locale === "ar"
@@ -142,6 +142,93 @@ export default function Landing() {
           >
             <InspireExplainerSection />
           </motion.div>
+        </div>
+      </section>
+
+      {/* ─── REAL TEXT EXAMPLE ────────────────────────────── */}
+      <section className="px-6 pb-24">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-8"
+          >
+            <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">
+              {locale === "ar" ? "مثال حقيقي" : "Real example"}
+            </span>
+            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-50">
+                  {locale === "ar" ? "مثال حقيقي على الفرق في الردود" : "A real example of the difference in replies"}
+                </h2>
+                <p className="mt-3 max-w-2xl text-[15px] leading-7 text-slate-400">
+                  {locale === "ar"
+                    ? "نفس السؤال، لكن الرد يتغير عندما يعرف AI هدفك وطريقة العمل التي تناسبك."
+                    : "The same question changes when AI understands your goal and preferred working style."}
+                </p>
+              </div>
+              <div className="text-[13px] font-bold text-slate-500">
+                {copy.hero.compare.goalExampleLabel} {locale === "ar" ? "إدارة مشروع" : "Project planning"}
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="rounded-2xl border border-slate-400/10 bg-slate-950/55 p-5 mb-5">
+            <div className="mb-2 text-[12.5px] font-semibold uppercase tracking-widest text-slate-500">
+              {copy.hero.compare.promptLabel}
+            </div>
+            <p className="text-[15px] leading-7 text-slate-200">
+              {copy.hero.compare.promptText}
+            </p>
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="rounded-2xl border border-rose-300/25 bg-rose-500/[0.08] p-5 shadow-2xl shadow-rose-950/15"
+            >
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="inline-flex items-center gap-2 text-[13px] font-bold text-rose-100">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  {copy.hero.compare.withLabel}
+                </div>
+                <span className="rounded-full border border-rose-200/20 bg-rose-500/[0.14] px-2 py-0.5 text-[11.5px] font-bold text-rose-100">
+                  {copy.hero.compare.withTag}
+                </span>
+              </div>
+              <div className="whitespace-pre-line rounded-xl border border-white/10 bg-black/30 p-4 text-[14px] leading-relaxed text-slate-100">
+                {copy.hero.compare.withExample}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.08 }}
+              className="rounded-2xl border border-slate-400/10 bg-slate-950/55 p-5"
+            >
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="inline-flex items-center gap-2 text-[13px] font-bold text-slate-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
+                  {copy.hero.compare.withoutLabel}
+                </div>
+                <span className="rounded-full border border-slate-400/10 bg-black/30 px-2 py-0.5 text-[11.5px] font-bold text-slate-500">
+                  {copy.hero.compare.withoutTag}
+                </span>
+              </div>
+              <div className="whitespace-pre-line rounded-xl border border-white/[0.06] bg-black/20 p-4 text-[14px] leading-relaxed text-slate-300">
+                {copy.hero.compare.withoutExample}
+              </div>
+              <div className="mt-3 flex items-center gap-2 text-[12.5px] font-bold text-slate-500">
+                <span className="h-1 w-1 rounded-full bg-slate-500" />
+                {copy.hero.compare.withoutNote}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
