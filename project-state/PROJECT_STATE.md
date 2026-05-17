@@ -35,7 +35,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Durable Supabase CA setup is now included for Replit production via `certs/supabase-ca-chain.pem` and `NODE_EXTRA_CA_CERTS`.
 - Replit deployment handoff now includes both an audit-only prompt and an execution-preparation prompt.
 - Replit production is republished from `codex/platform-migration`.
-- Replit `APP_URL` is set to `https://inspire.next-stepai.com`.
+- Replit injects `APP_URL` with the `.replit.dev` runtime URL, so production links should use `INSPIRE_APP_URL=https://inspire.next-stepai.com` as the app-owned canonical URL.
 - Replit `DATABASE_URL` is set manually as a secret and verified to point to Supabase Session Pooler with `sslmode=verify-full`.
 - Replit Supabase connectivity was verified from the Replit shell with the checked-in CA chain.
 - Replit production smoke verification passed:

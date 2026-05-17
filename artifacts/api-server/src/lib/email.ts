@@ -22,7 +22,7 @@ function getFrom(): string {
 }
 
 function getAppUrl(): string {
-  return (process.env["APP_URL"] ?? "https://inspire.imperfect-success.com").replace(/\/$/, "");
+  return (process.env["INSPIRE_APP_URL"] ?? process.env["APP_URL"] ?? "https://inspire.next-stepai.com").replace(/\/$/, "");
 }
 
 export async function sendResultsEmail(assessmentId: string): Promise<void> {

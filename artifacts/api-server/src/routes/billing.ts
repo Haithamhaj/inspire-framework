@@ -64,7 +64,7 @@ async function getPayPalAccessToken(): Promise<string> {
 }
 
 function getAppUrl() {
-  return (process.env["APP_URL"] ?? "http://localhost:5173").replace(/\/$/, "");
+  return (process.env["INSPIRE_APP_URL"] ?? process.env["APP_URL"] ?? "http://localhost:5173").replace(/\/$/, "");
 }
 
 function getLemonConfig() {
