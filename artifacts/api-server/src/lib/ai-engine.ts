@@ -23,7 +23,7 @@ import { buildOperatingPatternReportContentV1 } from "../inspire-types";
 import { sendResultsEmail, sendFailureEmail, sendAdminAlertEmail } from "./email";
 import { logger } from "./logger";
 
-const OPENAI_MODEL_DEFAULT = "gpt-5.5";
+const OPENAI_MODEL_DEFAULT = "gpt-5.4";
 const CLAUDE_MODEL_DEFAULT = "claude-sonnet-4-6";
 const V2_PROMPT_VERSION = "inspire-v2-instruction+report@1";
 
@@ -352,13 +352,14 @@ async function tryOpenAI(
 ): Promise<{ success: boolean; text?: string }> {
   if (!process.env["OPENAI_API_KEY"]) return { success: false };
   const model = process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT;
+  const supportsCustomTemperature = !model.startsWith("gpt-5.5");
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const res = await getOpenAI().chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
         max_completion_tokens: 3500,
-        temperature: 0.7,
+        ...(supportsCustomTemperature ? { temperature: 0.7 } : {}),
       });
       const text = res.choices[0]?.message?.content ?? "";
       if (!text) throw new Error("Empty response");
