@@ -125,12 +125,29 @@ export default function Landing() {
                 {locale === "ar" ? "هدية مجانية" : "Free tool"}
               </span>
               <h2 className="mt-4 text-3xl md:text-4xl font-display font-black text-white">
-                {locale === "ar" ? "عدّل أي prompt قبل ما ترسله للذكاء الاصطناعي" : "Improve any prompt before you send it to AI"}
+                {locale === "ar" ? "حسّن أي prompt مجانًا" : "Improve any prompt for free"}
               </h2>
               <p className="mt-4 text-[15px] leading-8 text-slate-300">
                 {locale === "ar"
-                  ? "استخدم Smart Prompt Engineer مجانًا لترتيب أي سؤال أو طلب عندك. اكتب فكرتك، وهو يصيغها لك بشكل أوضح حتى تنسخها وتستخدمها مع ChatGPT أو Claude أو Gemini."
-                  : "Use Smart Prompt Engineer for free to clean up any question or request. Write your rough idea, get a clearer prompt, then copy it into ChatGPT, Claude, or Gemini."}
+                  ? "اكتب سؤالك أو طلبك كما هو، وسيحوّله Smart Prompt Engineer إلى prompt أوضح وأقوى يمكنك نسخه واستخدامه مع ChatGPT أو Claude أو Gemini."
+                  : "Write your question or request as it is, and Smart Prompt Engineer will turn it into a clearer, stronger prompt you can copy into ChatGPT, Claude, or Gemini."}
+              </p>
+              <div className="mt-5 grid gap-2 sm:grid-cols-3">
+                {[
+                  locale === "ar" ? "اكتب طلبك" : "Write your request",
+                  locale === "ar" ? "راجعه مع الأداة" : "Refine it with the tool",
+                  locale === "ar" ? "انسخ prompt المحسّن" : "Copy the improved prompt",
+                ].map((step, index) => (
+                  <div key={step} className="rounded-xl border border-emerald-300/10 bg-slate-950/45 p-3">
+                    <div className="mb-1 text-[12px] font-black text-emerald-200">{index + 1}</div>
+                    <div className="text-sm font-bold leading-6 text-slate-100">{step}</div>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-[13.5px] leading-6 text-slate-500">
+                {locale === "ar"
+                  ? "هذه أداة مجانية لتحسين prompt واحد. أما INSPIRE فيبني تعليمات مخصصة لطريقة عملك مع AI."
+                  : "This free tool improves one prompt. INSPIRE builds personalized instructions for how AI should work with you."}
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <a
@@ -139,7 +156,7 @@ export default function Landing() {
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-black text-slate-950 transition-colors hover:bg-emerald-400"
                 >
-                  {locale === "ar" ? "افتح الأداة المجانية" : "Open the free tool"}
+                  {locale === "ar" ? "افتح Smart Prompt Engineer مجانًا" : "Open Smart Prompt Engineer for free"}
                   <ExternalLink className="h-4 w-4" />
                 </a>
                 <Link
