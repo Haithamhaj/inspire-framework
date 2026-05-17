@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowLeft, ArrowRight, Brain, FileText, Zap, CheckCircle2, ChevronDown, ChevronUp, CreditCard, Copy, Sparkles, Target, Layers, MessageSquare, Eye, BarChart3, RefreshCw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Brain, FileText, Zap, CheckCircle2, ChevronDown, ChevronUp, CreditCard, Copy, Sparkles, Target, Layers, MessageSquare, Eye, BarChart3, RefreshCw, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import LandingHero from "@/components/landing-hero/landing-hero";
@@ -29,6 +29,8 @@ const STEP_COLORS = [
   "from-emerald-500 to-teal-600",
 ] as const;
 const STEP_ICONS = [FileText, Brain, Sparkles] as const;
+const SMART_PROMPT_COACH_URL =
+  "https://chatgpt.com/g/g-67fe5939b39c8191a7ad597fd6fb0192-smart-prompt-engineer-mhnds-lmtlbt-ldhky";
 
 // ─── SAMPLE INSTRUCTION (always English code block) ───────────────────
 const SAMPLE = `## Personalized AI instructions
@@ -109,6 +111,69 @@ export default function Landing() {
               <CreditCard className="h-4 w-4" />
               {locale === "ar" ? "احصل على تعليماتك — $10" : "Get your AI instructions — $10"}
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FREE PROMPT COACH ────────────────────────────── */}
+      <section className="px-6 py-16 bg-transparent">
+        <div className="container max-w-6xl mx-auto">
+          <div className="grid gap-8 rounded-3xl border border-emerald-300/15 bg-emerald-500/[0.06] p-6 shadow-2xl shadow-emerald-950/10 md:grid-cols-[1fr_1.05fr] md:items-center md:p-8">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-500/[0.12] px-3 py-1 text-[13px] font-black uppercase tracking-[0.16em] text-emerald-100">
+                <Sparkles className="h-3.5 w-3.5" />
+                {locale === "ar" ? "هدية مجانية" : "Free tool"}
+              </span>
+              <h2 className="mt-4 text-3xl md:text-4xl font-display font-black text-white">
+                {locale === "ar" ? "عدّل أي prompt قبل ما ترسله للذكاء الاصطناعي" : "Improve any prompt before you send it to AI"}
+              </h2>
+              <p className="mt-4 text-[15px] leading-8 text-slate-300">
+                {locale === "ar"
+                  ? "استخدم Smart Prompt Engineer مجانًا لترتيب أي سؤال أو طلب عندك. اكتب فكرتك، وهو يصيغها لك بشكل أوضح حتى تنسخها وتستخدمها مع ChatGPT أو Claude أو Gemini."
+                  : "Use Smart Prompt Engineer for free to clean up any question or request. Write your rough idea, get a clearer prompt, then copy it into ChatGPT, Claude, or Gemini."}
+              </p>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <a
+                  href={SMART_PROMPT_COACH_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-black text-slate-950 transition-colors hover:bg-emerald-400"
+                >
+                  {locale === "ar" ? "افتح الأداة المجانية" : "Open the free tool"}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+                <Link
+                  href={href("/guides")}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400/15 bg-slate-950/65 px-5 py-3 text-sm font-black text-white transition-colors hover:border-emerald-300/30"
+                >
+                  {locale === "ar" ? "اقرأ أدلة البرومبت" : "Read prompt guides"}
+                  <ForwardArrow className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid gap-3">
+              {[
+                {
+                  label: locale === "ar" ? "قبل" : "Before",
+                  text: locale === "ar" ? "اكتب لي خطة تسويق للعطر" : "Write me a marketing plan for perfume",
+                  tone: "border-red-300/10 bg-red-500/[0.06] text-red-100",
+                },
+                {
+                  label: locale === "ar" ? "بعد" : "After",
+                  text:
+                    locale === "ar"
+                      ? "تصرف كمسوّق عملي، واسألني عن الجمهور والسعر والقناة قبل كتابة خطة تسويق مختصرة لعطر يباع أونلاين."
+                      : "Act as a practical marketer, ask me about audience, price, and channel, then write a concise marketing plan for an online perfume product.",
+                  tone: "border-emerald-300/15 bg-slate-950/55 text-emerald-50",
+                },
+              ].map((item) => (
+                <div key={item.label} className={`rounded-2xl border p-5 ${item.tone}`}>
+                  <div className="mb-2 text-[12px] font-black uppercase tracking-[0.16em] opacity-70">{item.label}</div>
+                  <p className="text-sm leading-7">{item.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -649,46 +714,6 @@ export default function Landing() {
                 </AnimatePresence>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SEO CONTENT HUB ──────────────────────────────── */}
-      <section className="px-6 py-20 bg-slate-950/20 backdrop-blur-[1px]">
-        <div className="container max-w-5xl mx-auto">
-          <div className="grid gap-8 md:grid-cols-[1fr_1.2fr] md:items-center">
-            <div>
-              <span className="text-[13px] font-bold tracking-widest text-accent uppercase mb-3 block">
-                {locale === "ar" ? "دليل عملي" : "Practical guides"}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-slate-50 mb-4">
-                {locale === "ar" ? "تعلم كيف تكتب تعليمات أفضل للذكاء الاصطناعي" : "Learn how to write better AI prompts and instructions"}
-              </h2>
-              <p className="text-[15px] leading-7 text-slate-400">
-                {locale === "ar"
-                  ? "قبل أن تبدأ، اقرأ أدلة قصيرة تساعدك تشرح هدفك وتطلب من AI بطريقة أوضح وتستخدمه في شغلك اليومي."
-                  : "Before you start, read short guides that help you explain your goal, ask AI more clearly, and use it in your daily work."}
-              </p>
-              <Link
-                href={href("/guides")}
-                className="mt-6 inline-flex items-center gap-2 rounded-xl border border-slate-400/15 bg-slate-900/70 px-5 py-3 text-sm font-black text-white transition-colors hover:border-rose-300/30"
-              >
-                {locale === "ar" ? "للمزيد" : "Read the guides"}
-                <ForwardArrow className="h-4 w-4" />
-              </Link>
-            </div>
-
-            <div className="grid gap-3">
-              {[
-                locale === "ar" ? "كيف أكتب برومبت أفضل؟" : "How do I write better prompts?",
-                locale === "ar" ? "ماذا أضع في تعليمات ChatGPT؟" : "What should I put in ChatGPT custom instructions?",
-                locale === "ar" ? "كيف أجعل AI يفهم هدفي وطريقتي؟" : "How do I make AI understand my goal and style?",
-              ].map((item) => (
-                <div key={item} className="rounded-2xl border border-slate-400/10 bg-slate-950/55 p-4 text-sm font-bold text-slate-200">
-                  {item}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
