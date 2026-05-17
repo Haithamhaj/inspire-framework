@@ -72,13 +72,11 @@ function getLemonConfig() {
   const storeId = process.env["LEMON_SQUEEZY_STORE_ID"];
   const variantId = process.env["LEMON_SQUEEZY_VARIANT_ID"];
   if (!apiKey || !storeId || !variantId) return null;
-  const appUrl = getAppUrl();
-  const isProductionDomain = appUrl === "https://inspire.next-stepai.com";
   return {
     apiKey,
     storeId,
     variantId,
-    testMode: isProductionDomain ? false : process.env["LEMON_SQUEEZY_TEST_MODE"] === "true",
+    testMode: false,
   };
 }
 
