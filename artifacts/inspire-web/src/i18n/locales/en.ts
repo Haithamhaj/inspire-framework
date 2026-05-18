@@ -236,6 +236,8 @@ export const en: Dictionary = {
       upgradeDescription:
         "The full assessment turns your answers into complete personalized instructions, a PDF version, and shareable results.",
       upgradeCta: "Start the full assessment",
+      copyAll: "Copy all starter prompts",
+      copiedAll: "Copied all starter prompts",
     },
     sections: {
       identity: "Assistant identity",
