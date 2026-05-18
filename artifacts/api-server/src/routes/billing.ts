@@ -315,7 +315,7 @@ router.get(
   "/billing/paypal-config",
   async (req: Request, res: Response): Promise<void> => {
     req.url = "/billing/checkout-config";
-    router.handle(req, res);
+    (router as any).handle(req, res);
   }
 );
 
