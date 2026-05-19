@@ -239,9 +239,9 @@ const guideSeoAr: Record<string, SeoConfig> = {
 
 export const defaultSeo: SeoConfig = {
   path: "/",
-  title: "INSPIRE Framework — Personalized AI Instructions for Your Work",
+  title: "Personalized AI Instructions for ChatGPT | INSPIRE",
   description:
-    "Create personalized, ready-to-use AI instructions based on your goal and working style. Paste them into ChatGPT, Claude, or Gemini to get replies that fit you better from the start.",
+    "Answer 21 short questions and get personalized, ready-to-use AI instructions for ChatGPT, Claude, or Gemini based on your goal, working style, and preferred response format.",
 };
 
 export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfig {
