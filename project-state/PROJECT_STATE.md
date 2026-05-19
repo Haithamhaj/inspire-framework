@@ -55,7 +55,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
   - confirmed completed report, final instruction, report content, and completed generation run in Supabase
 - The old test share token is not available on the current production database; this is expected for non-migrated test data. The latest generated production report has sharing disabled by default.
 - Admin dashboard now has operator actions for regenerate report, retry failed/pending generation, resend results email, enable/disable share links, and CSV/JSON exports with status/language/domain/provider/model/completed/failed filters.
-- Admin dashboard now has a direct account-management panel backed by `/api/admin/users`: recent accounts show assessment/payment counts and can be verified, password-reset, or deleted from the dashboard.
+- Admin dashboard account operations are attached to the assessment table rows, so operators can reset a customer's password or delete the customer account while reviewing the same row's assessment, payment, generation, and report status.
 - Customer password reset has been added in code with forgot-password request, one-hour reset token, reset email, new-password form, token clearing after use, and refresh-token revocation after reset.
 - Supabase migration `add_password_reset_fields` was applied on May 14, 2026 and verified to add `password_reset_token` and `password_reset_expires` to `public.users`.
 - Production QA found `/pricing` rendered the SPA 404; a dedicated `/pricing` route has been added with product, price, digital delivery, no-subscription, Lemon Squeezy processor, and legal-link copy for review readiness.

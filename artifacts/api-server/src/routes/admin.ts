@@ -1098,68 +1098,7 @@ router.get(
       .orderBy(desc(usersTable.createdAt))
       .limit(100);
 
-    const userIds = users.map((user) => user.id);
-    const [assessments, payments] =
-      userIds.length > 0
-        ? await Promise.all([
-            db
-              .select({
-                userId: assessmentsTable.userId,
-                status: assessmentsTable.status,
-                createdAt: assessmentsTable.createdAt,
-              })
-              .from(assessmentsTable)
-              .where(or(...userIds.map((id) => eq(assessmentsTable.userId, id)))),
-            db
-              .select({
-                userId: paymentsTable.userId,
-                status: paymentsTable.status,
-              })
-              .from(paymentsTable)
-              .where(or(...userIds.map((id) => eq(paymentsTable.userId, id)))),
-          ])
-        : [[], []];
-
-    const assessmentStats = new Map<
-      string,
-      { total: number; completed: number; latestAt: Date | null }
-    >();
-    for (const assessment of assessments) {
-      const current = assessmentStats.get(assessment.userId) ?? {
-        total: 0,
-        completed: 0,
-        latestAt: null,
-      };
-      current.total += 1;
-      if (assessment.status === "completed") current.completed += 1;
-      if (!current.latestAt || assessment.createdAt > current.latestAt) {
-        current.latestAt = assessment.createdAt;
-      }
-      assessmentStats.set(assessment.userId, current);
-    }
-
-    const paymentStats = new Map<string, { total: number; completed: number }>();
-    for (const payment of payments) {
-      const current = paymentStats.get(payment.userId) ?? { total: 0, completed: 0 };
-      current.total += 1;
-      if (payment.status === "completed") current.completed += 1;
-      paymentStats.set(payment.userId, current);
-    }
-
-    const enriched = users.map((user) => {
-      const userAssessments = assessmentStats.get(user.id);
-      const userPayments = paymentStats.get(user.id);
-      return {
-        ...user,
-        assessmentCount: userAssessments?.total ?? 0,
-        completedAssessmentCount: userAssessments?.completed ?? 0,
-        latestAssessmentAt: userAssessments?.latestAt ?? null,
-        paymentCount: userPayments?.total ?? 0,
-        completedPaymentCount: userPayments?.completed ?? 0,
-      };
-    });
-
-    res.json({ success: true, users: enriched });
+    res.json({ success: true, users });
   }
 );
 

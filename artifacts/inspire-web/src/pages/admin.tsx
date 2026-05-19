@@ -95,19 +95,6 @@ interface DiscountCode {
   createdAt: string;
 }
 
-interface AdminUser {
-  id: string;
-  name: string;
-  email: string;
-  emailVerified: boolean;
-  createdAt: string;
-  assessmentCount: number;
-  completedAssessmentCount: number;
-  latestAssessmentAt: string | null;
-  paymentCount: number;
-  completedPaymentCount: number;
-}
-
 interface AdminAssessmentDetail {
   id: string;
   projectName: string;
@@ -229,9 +216,7 @@ export default function Admin() {
   const [detailLoadingId, setDetailLoadingId] = useState<string | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<AdminAssessmentDetail | null>(null);
   const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const [accountActionId, setAccountActionId] = useState<string | null>(null);
+  const [accountActionEmail, setAccountActionEmail] = useState<string | null>(null);
 
   const PAGE_SIZE = 20;
 
@@ -279,7 +264,6 @@ export default function Admin() {
       setStats(data.stats);
       setAuthed(true);
       loadAssessments(1, "", password);
-      loadAdminUsers(password);
     } catch {
       setAuthError("خطأ في الاتصال بالخادم");
     } finally {
@@ -340,30 +324,10 @@ export default function Admin() {
     }
   }, []);
 
-  const loadAdminUsers = useCallback(async (pw: string) => {
-    setUsersLoading(true);
-    try {
-      const res = await fetch(apiUrl("/admin/users"), {
-        headers: { "x-admin-password": pw },
-      });
-      const data = await res.json() as { success: boolean; users?: AdminUser[] };
-      if (data.success) setAdminUsers(data.users ?? []);
-      return data.success;
-    } catch {
-      return false;
-    } finally {
-      setUsersLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (authed && password) loadDiscountCodes(password);
   }, [authed, password, loadDiscountCodes]);
-
-  useEffect(() => {
-    if (authed && password) loadAdminUsers(password);
-  }, [authed, password, loadAdminUsers]);
 
   async function handleCreateCode() {
     const code = newCode.trim().toUpperCase();
@@ -457,7 +421,6 @@ export default function Admin() {
         setDeleteMsg({ ok: true, text: `تم حذف حساب ${email} بنجاح` });
         setDeleteEmail("");
         await Promise.all([
-          loadAdminUsers(password),
           loadAssessments(page, status, password),
           loadStats(),
         ]);
@@ -486,7 +449,6 @@ export default function Admin() {
       if (d.success) {
         setResetMsg({ ok: true, text: `تم تغيير كلمة مرور ${email} بنجاح` });
         setResetEmail(""); setResetPass("");
-        await loadAdminUsers(password);
       } else {
         setResetMsg({ ok: false, text: d.error ?? "فشل التغيير" });
       }
@@ -512,7 +474,6 @@ export default function Admin() {
       if (d.success) {
         setVerifyMsg({ ok: true, text: `تم تفعيل ${email} بنجاح` });
         setVerifyEmail("");
-        await loadAdminUsers(password);
       } else {
         setVerifyMsg({ ok: false, text: d.error ?? "فشل التفعيل" });
       }
@@ -523,83 +484,58 @@ export default function Admin() {
     }
   }
 
-  async function handleVerifyAdminUser(user: AdminUser) {
-    setAccountActionId(user.id);
-    setActionMsg(null);
-    try {
-      const res = await fetch(apiUrl("/admin/verify-user"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-password": password },
-        body: JSON.stringify({ email: user.email }),
-      });
-      const data = await res.json() as { success: boolean; error?: string };
-      if (!data.success) {
-        setActionMsg({ ok: false, text: data.error ?? "فشل التفعيل" });
-        return;
-      }
-      setActionMsg({ ok: true, text: `تم تفعيل حساب ${user.email}` });
-      await loadAdminUsers(password);
-    } catch {
-      setActionMsg({ ok: false, text: "فشل الاتصال" });
-    } finally {
-      setAccountActionId(null);
-    }
-  }
-
-  async function handleResetAdminUserPassword(user: AdminUser) {
-    const newPassword = window.prompt(`كلمة المرور الجديدة لحساب ${user.email}`);
+  async function handleResetAssessmentUserPassword(assessment: Assessment) {
+    const newPassword = window.prompt(`كلمة المرور الجديدة لحساب ${assessment.userEmail}`);
     if (!newPassword) return;
     if (newPassword.length < 6) {
       setActionMsg({ ok: false, text: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
       return;
     }
-    setAccountActionId(user.id);
+    setAccountActionEmail(assessment.userEmail);
     setActionMsg(null);
     try {
       const res = await fetch(apiUrl("/admin/reset-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-admin-password": password },
-        body: JSON.stringify({ email: user.email, newPassword }),
+        body: JSON.stringify({ email: assessment.userEmail, newPassword }),
       });
       const data = await res.json() as { success: boolean; error?: string };
       if (!data.success) {
         setActionMsg({ ok: false, text: data.error ?? "فشل تغيير كلمة المرور" });
         return;
       }
-      setActionMsg({ ok: true, text: `تم تغيير كلمة مرور ${user.email}` });
-      await loadAdminUsers(password);
+      setActionMsg({ ok: true, text: `تم تغيير كلمة مرور ${assessment.userEmail}` });
     } catch {
       setActionMsg({ ok: false, text: "فشل الاتصال" });
     } finally {
-      setAccountActionId(null);
+      setAccountActionEmail(null);
     }
   }
 
-  async function handleDeleteAdminUser(user: AdminUser) {
-    if (!confirm(`حذف حساب ${user.email} نهائياً؟ سيحذف التقييمات والبيانات المرتبطة حسب قواعد قاعدة البيانات.`)) return;
-    setAccountActionId(user.id);
+  async function handleDeleteAssessmentUser(assessment: Assessment) {
+    if (!confirm(`حذف حساب ${assessment.userEmail} نهائياً؟ سيحذف التقييمات والبيانات المرتبطة حسب قواعد قاعدة البيانات.`)) return;
+    setAccountActionEmail(assessment.userEmail);
     setActionMsg(null);
     try {
       const res = await fetch(apiUrl("/admin/users"), {
         method: "DELETE",
         headers: { "Content-Type": "application/json", "x-admin-password": password },
-        body: JSON.stringify({ email: user.email }),
+        body: JSON.stringify({ email: assessment.userEmail }),
       });
       const data = await res.json() as { success: boolean; error?: string };
       if (!data.success) {
         setActionMsg({ ok: false, text: data.error ?? "فشل حذف الحساب" });
         return;
       }
-      setActionMsg({ ok: true, text: `تم حذف حساب ${user.email}` });
+      setActionMsg({ ok: true, text: `تم حذف حساب ${assessment.userEmail}` });
       await Promise.all([
-        loadAdminUsers(password),
         loadAssessments(page, status, password),
         loadStats(),
       ]);
     } catch {
       setActionMsg({ ok: false, text: "فشل الاتصال" });
     } finally {
-      setAccountActionId(null);
+      setAccountActionEmail(null);
     }
   }
 
@@ -971,116 +907,6 @@ export default function Admin() {
           ))}
         </div>
 
-        <section className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-foreground">إدارة الحسابات</h2>
-              <p className="text-sm text-muted-foreground">
-                آخر 100 حساب من قاعدة البيانات مع إجراءات مباشرة للحذف، التفعيل، وتغيير كلمة المرور.
-              </p>
-            </div>
-            <button
-              onClick={() => loadAdminUsers(password)}
-              disabled={usersLoading}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-bold transition-colors hover:border-primary/30 disabled:opacity-60"
-            >
-              <RefreshCw className={`h-4 w-4 ${usersLoading ? "animate-spin" : ""}`} />
-              تحديث الحسابات
-            </button>
-          </div>
-
-          {usersLoading ? (
-            <div className="flex items-center justify-center py-10">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-            </div>
-          ) : adminUsers.length === 0 ? (
-            <div className="rounded-xl border border-border bg-background/60 py-10 text-center text-sm text-muted-foreground">
-              لا توجد حسابات للعرض
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-secondary/40">
-                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">الحساب</th>
-                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">الحالة</th>
-                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">التقييمات</th>
-                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">المدفوعات</th>
-                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">إجراءات الحساب</th>
-                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">تاريخ الإنشاء</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {adminUsers.map((user, index) => (
-                    <tr
-                      key={user.id}
-                      className={`border-b border-border/50 transition-colors hover:bg-secondary/20 ${index % 2 === 0 ? "" : "bg-secondary/5"}`}
-                    >
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-primary">{user.name}</div>
-                        <div className="text-xs text-muted-foreground" dir="ltr">{user.email}</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`rounded-full border px-2 py-1 text-xs font-bold ${
-                          user.emailVerified
-                            ? "border-green-500/20 bg-green-500/10 text-green-600"
-                            : "border-amber-500/20 bg-amber-500/10 text-amber-600"
-                        }`}>
-                          {user.emailVerified ? "مفعّل" : "غير مفعّل"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground">
-                        <div>{user.assessmentCount.toLocaleString("ar")} إجمالي</div>
-                        <div>{user.completedAssessmentCount.toLocaleString("ar")} مكتمل</div>
-                        {user.latestAssessmentAt && (
-                          <div dir="ltr">{new Date(user.latestAssessmentAt).toLocaleDateString("ar-SA")}</div>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground">
-                        <div>{user.paymentCount.toLocaleString("ar")} إجمالي</div>
-                        <div>{user.completedPaymentCount.toLocaleString("ar")} مكتمل</div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-2">
-                          {!user.emailVerified && (
-                            <button
-                              onClick={() => handleVerifyAdminUser(user)}
-                              disabled={accountActionId === user.id}
-                              className="inline-flex items-center justify-center gap-1 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs font-bold text-green-700 transition-colors hover:bg-green-500/20 disabled:opacity-60"
-                            >
-                              {accountActionId === user.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                              تفعيل
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleResetAdminUserPassword(user)}
-                            disabled={accountActionId === user.id}
-                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
-                          >
-                            {accountActionId === user.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Shield className="h-3.5 w-3.5" />}
-                            تغيير كلمة المرور
-                          </button>
-                          <button
-                            onClick={() => handleDeleteAdminUser(user)}
-                            disabled={accountActionId === user.id}
-                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-60"
-                          >
-                            {accountActionId === user.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                            حذف
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-muted-foreground" dir="ltr">
-                        {new Date(user.createdAt).toLocaleDateString("ar-SA")}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-5">
           <div className="relative flex-1">
@@ -1301,6 +1127,24 @@ export default function Admin() {
                       <td className="px-4 py-3">
                         <div className="font-medium text-primary">{a.userName}</div>
                         <div className="text-xs text-muted-foreground" dir="ltr">{a.userEmail}</div>
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          <button
+                            onClick={() => handleResetAssessmentUserPassword(a)}
+                            disabled={accountActionEmail === a.userEmail}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border px-2.5 py-1 text-[11px] font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
+                          >
+                            {accountActionEmail === a.userEmail ? <Loader2 className="h-3 w-3 animate-spin" /> : <Shield className="h-3 w-3" />}
+                            كلمة المرور
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAssessmentUser(a)}
+                            disabled={accountActionEmail === a.userEmail}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-2.5 py-1 text-[11px] font-bold text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-60"
+                          >
+                            {accountActionEmail === a.userEmail ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                            حذف الحساب
+                          </button>
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground max-w-[220px]">
                         <div className="truncate">{a.projectName}</div>
