@@ -50,7 +50,7 @@ function Router() {
   }, [location, locale, setLocale]);
 
   useEffect(() => {
-    applySeo(getSeoForPath(location, locale));
+    applySeo(getSeoForPath(location, locale), locale);
   }, [location, locale]);
 
   const normalizedLocation = stripLocalePrefix(location).split("?")[0] || "/";

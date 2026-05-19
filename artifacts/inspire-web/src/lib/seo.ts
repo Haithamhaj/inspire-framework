@@ -4,6 +4,7 @@ export type SeoConfig = {
   title: string;
   description: string;
   path: string;
+  locale?: Locale;
   robots?: string;
   jsonLd?: Record<string, unknown>;
 };
@@ -239,13 +240,26 @@ const guideSeoAr: Record<string, SeoConfig> = {
 
 export const defaultSeo: SeoConfig = {
   path: "/",
+  locale: "en",
   title: "Personalized AI Instructions for ChatGPT | INSPIRE",
   description:
     "Answer 21 short questions and get personalized, ready-to-use AI instructions for ChatGPT, Claude, or Gemini based on your goal, working style, and preferred response format.",
 };
 
+export const defaultSeoAr: SeoConfig = {
+  path: "/",
+  locale: "ar",
+  title: "تعليمات AI مخصصة لـ ChatGPT | INSPIRE",
+  description:
+    "أجب عن 21 سؤالًا قصيرًا واحصل على تعليمات AI جاهزة للاستخدام في ChatGPT أو Claude أو Gemini، مبنية على هدفك وطريقة عملك وشكل الرد الذي تفضله.",
+};
+
 export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfig {
   pathname = stripLocalePrefix(pathname).split("?")[0] || "/";
+
+  if (pathname === "/") {
+    return locale === "ar" ? defaultSeoAr : defaultSeo;
+  }
 
   if (pathname === "/pricing") {
     if (locale === "ar") {
@@ -589,7 +603,7 @@ function setCanonical(url: string) {
 }
 
 function setAlternateLinks(path: string) {
-  document.head.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][data-locale-link="true"]').forEach((link) => {
+  document.head.querySelectorAll<HTMLLinkElement>('link[rel="alternate"][hreflang]').forEach((link) => {
     link.remove();
   });
 
@@ -628,8 +642,8 @@ function setJsonLd(data?: Record<string, unknown>) {
   script.textContent = JSON.stringify(data);
 }
 
-export function applySeo(config: SeoConfig) {
-  const activeLocale = document.documentElement.lang === "ar" ? "ar" : "en";
+export function applySeo(config: SeoConfig, locale?: Locale) {
+  const activeLocale = locale ?? config.locale ?? (document.documentElement.lang === "ar" ? "ar" : "en");
   const canonicalPath = localizePath(config.path, activeLocale);
   const canonicalUrl = `${siteUrl}${canonicalPath}`;
   document.title = config.title;

@@ -8,8 +8,6 @@ https://inspire.next-stepai.com/research
 https://inspire.next-stepai.com/ar/research
 https://inspire.next-stepai.com/contact
 https://inspire.next-stepai.com/ar/contact
-https://inspire.next-stepai.com/assess/mini
-https://inspire.next-stepai.com/ar/assess/mini
 https://inspire.next-stepai.com/guides
 https://inspire.next-stepai.com/ar/guides
 https://inspire.next-stepai.com/guides/how-to-write-better-prompts

@@ -91,24 +91,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://inspire.next-stepai.com/assess/mini</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/assess/mini" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/assess/mini" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/assess/mini" />
-    <lastmod>2026-05-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://inspire.next-stepai.com/ar/assess/mini</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/assess/mini" />
-    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/assess/mini" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/assess/mini" />
-    <lastmod>2026-05-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://inspire.next-stepai.com/guides</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides" />
