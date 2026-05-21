@@ -1,5 +1,5 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,29 +13,36 @@ import { getPathLocale, stripLocalePrefix } from "@/lib/locale-paths";
 
 // Pages
 import Landing from "@/pages/landing";
-import PrivacyConsent from "@/pages/privacy-consent";
-import { PrivacyPage, RefundPolicyPage, TermsPage } from "@/pages/legal";
-import Register from "@/pages/register";
-import Login from "@/pages/login";
-import ForgotPassword from "@/pages/forgot-password";
-import ResetPassword from "@/pages/reset-password";
-import Pricing from "@/pages/pricing";
-import About from "@/pages/about";
-import Contact from "@/pages/contact";
-import Research from "@/pages/research";
-import Guides from "@/pages/guides";
-import Assess from "@/pages/assess";
-import AssessMini from "@/pages/assess-mini";
-import Results from "@/pages/results";
-import MyAssessments from "@/pages/my-assessments";
-import Profile from "@/pages/profile";
-import Share from "@/pages/share";
-import ReviewDemo from "@/pages/review-demo";
-import Admin from "@/pages/admin";
-import BillingSuccess from "@/pages/billing-success";
 import NotFound from "@/pages/not-found";
 
+const PrivacyConsent = lazy(() => import("@/pages/privacy-consent"));
+const TermsPage = lazy(() => import("@/pages/legal").then((module) => ({ default: module.TermsPage })));
+const PrivacyPage = lazy(() => import("@/pages/legal").then((module) => ({ default: module.PrivacyPage })));
+const RefundPolicyPage = lazy(() => import("@/pages/legal").then((module) => ({ default: module.RefundPolicyPage })));
+const Register = lazy(() => import("@/pages/register"));
+const Login = lazy(() => import("@/pages/login"));
+const ForgotPassword = lazy(() => import("@/pages/forgot-password"));
+const ResetPassword = lazy(() => import("@/pages/reset-password"));
+const Pricing = lazy(() => import("@/pages/pricing"));
+const About = lazy(() => import("@/pages/about"));
+const Contact = lazy(() => import("@/pages/contact"));
+const Research = lazy(() => import("@/pages/research"));
+const Guides = lazy(() => import("@/pages/guides"));
+const Assess = lazy(() => import("@/pages/assess"));
+const AssessMini = lazy(() => import("@/pages/assess-mini"));
+const Results = lazy(() => import("@/pages/results"));
+const MyAssessments = lazy(() => import("@/pages/my-assessments"));
+const Profile = lazy(() => import("@/pages/profile"));
+const Share = lazy(() => import("@/pages/share"));
+const ReviewDemo = lazy(() => import("@/pages/review-demo"));
+const Admin = lazy(() => import("@/pages/admin"));
+const BillingSuccess = lazy(() => import("@/pages/billing-success"));
+
 const queryClient = new QueryClient();
+
+function RouteLoadingFallback() {
+  return <div className="flex min-h-[40vh] items-center justify-center bg-background text-muted-foreground" aria-busy="true" />;
+}
 
 function Router() {
   const [location] = useLocation();
@@ -81,7 +88,8 @@ function Router() {
     <div className="flex flex-col min-h-screen">
       {!isReviewDemo && <Navbar variant={isPremium ? "premium" : "default"} />}
       <main className="flex-1">
-        <Switch>
+        <Suspense fallback={<RouteLoadingFallback />}>
+          <Switch>
           <Route path="/" component={Landing} />
           <Route path="/ar" component={Landing} />
           <Route path="/privacy-consent" component={PrivacyConsent} />
@@ -129,8 +137,9 @@ function Router() {
           <Route path="/billing/success" component={BillingSuccess} />
           <Route path="/ar/billing/success" component={BillingSuccess} />
           <Route path="/admin" component={Admin} />
-          <Route component={NotFound} />
-        </Switch>
+            <Route component={NotFound} />
+          </Switch>
+        </Suspense>
       </main>
       {!isReviewDemo && <LegalFooter />}
     </div>
