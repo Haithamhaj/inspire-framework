@@ -1,14 +1,19 @@
 import { Link } from "wouter";
 import { ArrowLeft, ArrowRight, Brain, FileText, Zap, CheckCircle2, ChevronDown, ChevronUp, CreditCard, Copy, Sparkles, Target, Layers, MessageSquare, Eye, BarChart3, RefreshCw, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import LandingHero from "@/components/landing-hero/landing-hero";
 import { LandingAtmosphere } from "@/components/landing/LandingAtmosphere";
-import { InspireExplainerSection } from "@/components/inspire-explainer/InspireExplainerSection";
 import { useI18n } from "@/i18n";
 import { ar } from "@/i18n/locales/ar";
 import { en } from "@/i18n/locales/en";
 import { localizePath } from "@/lib/locale-paths";
+
+const InspireExplainerSection = lazy(() =>
+  import("@/components/inspire-explainer/InspireExplainerSection").then((m) => ({
+    default: m.InspireExplainerSection,
+  })),
+);
 
 // ─── INSPIRE AXES (visual config; copy comes from i18n) ───────────────
 const AXES = [
@@ -58,9 +63,44 @@ export default function Landing() {
   const isRtl = dir === "rtl";
   const ForwardArrow = isRtl ? ArrowLeft : ArrowRight;
   const href = (path: string) => localizePath(path, locale);
+  const explainerRef = useRef<HTMLDivElement | null>(null);
 
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const [shouldLoadExplainer, setShouldLoadExplainer] = useState(false);
+
+  useEffect(() => {
+    if (shouldLoadExplainer) return;
+
+    const node = explainerRef.current;
+    if (!node || typeof window === "undefined") return;
+
+    if (!("IntersectionObserver" in window)) {
+      const win = window as Window & {
+        requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+        cancelIdleCallback?: (handle: number) => void;
+      };
+      const idleHandle = win.requestIdleCallback?.(() => setShouldLoadExplainer(true), { timeout: 1800 });
+      const timeoutHandle = setTimeout(() => setShouldLoadExplainer(true), 1800);
+      return () => {
+        if (idleHandle !== undefined) win.cancelIdleCallback?.(idleHandle);
+        clearTimeout(timeoutHandle);
+      };
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShouldLoadExplainer(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [shouldLoadExplainer]);
 
   function copySample() {
     navigator.clipboard.writeText(SAMPLE).then(() => {
@@ -217,12 +257,19 @@ export default function Landing() {
             </p>
           </motion.div>
           <motion.div
+            ref={explainerRef}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.15 }}
           >
-            <InspireExplainerSection />
+            {shouldLoadExplainer ? (
+              <Suspense fallback={<div aria-hidden="true" className="min-h-[220px] sm:min-h-[360px] lg:min-h-[620px]" />}>
+                <InspireExplainerSection />
+              </Suspense>
+            ) : (
+              <div aria-hidden="true" className="min-h-[220px] sm:min-h-[360px] lg:min-h-[620px]" />
+            )}
           </motion.div>
         </div>
       </section>
