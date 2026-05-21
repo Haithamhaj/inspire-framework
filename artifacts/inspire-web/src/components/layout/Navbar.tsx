@@ -144,7 +144,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
                   )}
                 >
                   <span className="hidden sm:inline">{t("common.nav.startAssessment")}</span>
-                  <span className="sm:hidden">{locale === "ar" ? "ابدأ" : "Start"}</span>
+                  <span className="sm:hidden">{locale === "ar" ? "تعليماتك" : "AI instructions"}</span>
                   <ArrowRight className={cn("h-4 w-4", isRtl && "rotate-180")} />
                 </Link>
               </div>
