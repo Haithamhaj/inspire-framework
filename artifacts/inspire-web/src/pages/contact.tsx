@@ -28,7 +28,7 @@ export default function Contact() {
         beforeBody:
           "يمكنك الحصول على تعليمات مختصرة، مراجعة الأسعار، أو الاطلاع على الشروط وسياسة الخصوصية من الروابط أسفل الصفحة.",
         quick: "احصل على تعليمات مختصرة",
-        pricing: "عرض الأسعار",
+        pricing: "صفحة الأسعار",
       }
     : {
         eyebrow: "Contact",
@@ -47,7 +47,7 @@ export default function Contact() {
         beforeBody:
           "You can get short instructions, review pricing, or use the footer links for terms and privacy details.",
         quick: "Get short instructions",
-        pricing: "View pricing",
+        pricing: "Pricing page",
       };
 
   return (

@@ -609,7 +609,7 @@ function GuideCard({ guide, locale }: { guide: Guide; locale: Locale }) {
       <h2 className="text-xl font-black text-white group-hover:text-rose-100">{guide.title}</h2>
       <p className="mt-3 text-sm leading-6 text-slate-400">{guide.description}</p>
       <div className="mt-4 flex items-center gap-2 text-sm font-bold text-rose-200">
-        {locale === "ar" ? "للمزيد" : "Read guide"}
+        {locale === "ar" ? "اقرأ الدليل" : "Read guide"}
         <ArrowRight className="h-4 w-4" />
       </div>
     </Link>
@@ -782,7 +782,7 @@ function GuideDetail({ guide }: { guide: Guide }) {
               {locale === "ar" ? "احصل على تعليمات مختصرة" : "Get short instructions"}
             </Link>
             <Link href={href("/pricing")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-rose-500 px-5 py-3 text-sm font-black text-white hover:bg-rose-400">
-              {locale === "ar" ? "عرض الأسعار" : "View pricing"}
+              {locale === "ar" ? "صفحة الأسعار" : "Pricing page"}
               <CheckCircle2 className="h-4 w-4" />
             </Link>
           </div>

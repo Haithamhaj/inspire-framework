@@ -36,7 +36,7 @@ export default function About() {
         ctaTitle: "احصل على تعليماتك المخصصة للذكاء الاصطناعي",
         ctaBody: "ابدأ بتعليمات مختصرة أو راجع صفحة الأسعار للتعليمات الكاملة.",
         quick: "احصل على تعليمات مختصرة",
-        pricing: "عرض الأسعار",
+        pricing: "صفحة الأسعار",
       }
     : {
         eyebrow: "About INSPIRE",
@@ -52,11 +52,11 @@ export default function About() {
         researchTitle: "Research-backed product method",
         researchBody:
           "INSPIRE is connected to the INSPIRE & CRAFTS work by Haitham Hamadneh, a practical framework for individual-level AI interaction customization.",
-        ssrn: "View the SSRN paper",
+        ssrn: "INSPIRE paper on SSRN",
         ctaTitle: "Get your personalized AI instructions",
         ctaBody: "Start with short instructions or review the pricing page for the complete instructions.",
         quick: "Get short instructions",
-        pricing: "View pricing",
+        pricing: "Pricing page",
       };
 
   return (

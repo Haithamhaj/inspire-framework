@@ -1243,7 +1243,7 @@ export default function Admin() {
                             rel="noopener noreferrer"
                             className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30"
                           >
-                            فتح
+                            فتح التقرير
                           </a>
                           {a.status !== "completed" && a.assessmentType !== "mini" && (
                             <button

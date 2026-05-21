@@ -134,6 +134,8 @@ export function Navbar({ variant = "default" }: NavbarProps) {
                 </Link>
                 <Link
                   href={href("/privacy-consent")}
+                  aria-label={locale === "ar" ? "ابدأ تقييم INSPIRE" : "Start INSPIRE assessment"}
+                  title={locale === "ar" ? "ابدأ تقييم INSPIRE" : "Start INSPIRE assessment"}
                   className={cn(
                     "inline-flex h-8 items-center gap-1.5 rounded-xl px-3 text-sm font-black transition-all hover:-translate-y-0.5 active:translate-y-0 sm:h-9 sm:gap-2 sm:px-4",
                     isPremium

@@ -29,8 +29,8 @@ export default function Research() {
           "CRAFTS ينظم السياق والنية في بنية مطالبة عملية.",
           "معاً، يدعمان تعاوناً أوضح وأكثر تخصيصاً مع الذكاء الاصطناعي.",
         ],
-        ssrn: "فتح صفحة SSRN",
-        doi: "فتح DOI",
+        ssrn: "ورقة INSPIRE على SSRN",
+        doi: "DOI ورقة INSPIRE",
         ctaTitle: "من البحث إلى تعليمات قابلة للاستخدام",
         ctaBody:
           "الهدف العملي هو أن يخرج المستخدم بتعليمات جاهزة للنسخ يمكن استخدامها في العمل، الدراسة، التخطيط، الكتابة، والتفكير الأوضح.",
@@ -48,8 +48,8 @@ export default function Research() {
           "INSPIRE turns this idea into a product: it asks structured questions, identifies useful signals, and produces reusable personalized AI instructions.",
         ],
         points: researchPoints,
-        ssrn: "Open SSRN page",
-        doi: "Open DOI",
+        ssrn: "INSPIRE paper on SSRN",
+        doi: "INSPIRE paper DOI",
         ctaTitle: "From research to usable instructions",
         ctaBody:
           "The product goal is practical: help users leave with copy-ready AI instructions they can use in real work, study, planning, writing, and clearer thinking workflows.",
