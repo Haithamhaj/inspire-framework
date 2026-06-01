@@ -78,6 +78,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
 - Lemon Squeezy checkout activation is implemented locally: `BILLING_PROVIDER=lemon` creates server-side Lemon checkouts, stores Lemon checkout/order identifiers, accepts signed `order_created` webhooks, and starts the paid report generation after payment confirmation.
+- Discount-code redemption tracking is implemented locally with `discount_code_redemptions`: shared public discount codes can have a total `maxUses` while each user/account can redeem the same code only once. Migration `0011_add_discount_code_redemptions.sql` also backfills completed historical discounted payments.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -93,6 +94,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
 - Customer-facing paid completion now has code support for Lemon Squeezy, but still needs a real test-mode checkout/webhook verification on Replit before live mode.
+- Supabase must receive migration `0011_add_discount_code_redemptions.sql` before deploying the new discount-code API behavior; otherwise discount validation will query a missing table.
 - The Replit workspace is currently on a feature branch. Later, decide whether to merge `codex/platform-migration` into `main` or keep Replit intentionally pinned to this branch until review is complete.
 - Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
 
@@ -102,7 +104,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Deploy the Lemon Squeezy integration to Replit in test mode, add the Lemon webhook URL, run one full checkout through `/assess`, and confirm the report starts generating after the `order_created` webhook.
+Apply Supabase migration `0011_add_discount_code_redemptions.sql`, then deploy the Lemon Squeezy/discount-code integration to Replit in test mode and verify one shared `100%` code with `maxUses=20` cannot be reused by the same account.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`

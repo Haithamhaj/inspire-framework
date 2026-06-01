@@ -1414,7 +1414,7 @@ export default function Admin() {
               <div>
                 <h3 className="font-semibold text-sm text-foreground">إنشاء كود جديد</h3>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  كود 100% يفعّل التقرير مجاناً بدون PayPal، ومناسب لاختبار Lemon Squeezy أو مراجعة الموقع.
+                  كود 100% يفعّل التقرير مجاناً. الأكواد العامة تعمل بحد استخدام إجمالي، وكل حساب يستطيع استخدام نفس الكود مرة واحدة فقط.
                 </p>
               </div>
               <button
@@ -1476,6 +1476,7 @@ export default function Admin() {
                   className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
                   dir="ltr"
                 />
+                <p className="mt-1 text-[11px] text-muted-foreground">مثال: 20 يعني عشرين حساباً كحد أقصى، وليس عشرين مرة لنفس الحساب.</p>
               </div>
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">يبدأ من (اختياري)</label>

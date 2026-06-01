@@ -4,9 +4,10 @@ import {
   usersTable,
   paymentsTable,
   discountCodesTable,
+  discountCodeRedemptionsTable,
   assessmentsTable,
 } from "@workspace/db/schema";
-import { eq, and, count, isNull } from "drizzle-orm";
+import { eq, and, count, isNull, or, sql } from "drizzle-orm";
 import { getAuthUser } from "../lib/auth";
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { generateReportV2 } from "../lib/ai-engine";
@@ -117,6 +118,20 @@ function isDiscountUsableForUser(discount: DiscountCodeRecord, userId: string): 
   return true;
 }
 
+async function hasUserRedeemedDiscount(discountCodeId: string, userId: string): Promise<boolean> {
+  const [redemption] = await db
+    .select({ id: discountCodeRedemptionsTable.id })
+    .from(discountCodeRedemptionsTable)
+    .where(
+      and(
+        eq(discountCodeRedemptionsTable.discountCodeId, discountCodeId),
+        eq(discountCodeRedemptionsTable.userId, userId)
+      )
+    )
+    .limit(1);
+  return Boolean(redemption);
+}
+
 function discountPrice(discountPercent: number) {
   const originalPrice = getAssessmentPrice();
   const discountAmount = (originalPrice * discountPercent) / 100;
@@ -181,18 +196,81 @@ async function findUsableDiscountForUser(code: string, userId: string) {
     .from(discountCodesTable)
     .where(eq(discountCodesTable.code, code.toUpperCase().trim()));
   if (!discount || !isDiscountUsableForUser(discount, userId)) return null;
+  if (await hasUserRedeemedDiscount(discount.id, userId)) return null;
   return discount;
 }
 
-async function incrementDiscountUse(code: string) {
-  const [row] = await db
-    .select({ usedCount: discountCodesTable.usedCount })
+async function recordDiscountRedemption(
+  discount: DiscountCodeRecord,
+  userId: string,
+  paymentId: string | null,
+  requireNew = true
+): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const inserted = await tx
+      .insert(discountCodeRedemptionsTable)
+      .values({
+        discountCodeId: discount.id,
+        userId,
+        paymentId,
+      })
+      .onConflictDoNothing({
+        target: [
+          discountCodeRedemptionsTable.discountCodeId,
+          discountCodeRedemptionsTable.userId,
+        ],
+      })
+      .returning({ id: discountCodeRedemptionsTable.id });
+
+    if (inserted.length === 0) {
+      if (requireNew) throw new Error("discount_already_redeemed");
+      return false;
+    }
+
+    const [updated] = await tx
+      .update(discountCodesTable)
+      .set({ usedCount: sql`${discountCodesTable.usedCount} + 1` })
+      .where(
+        and(
+          eq(discountCodesTable.id, discount.id),
+          or(
+            isNull(discountCodesTable.maxUses),
+            sql`${discountCodesTable.usedCount} < ${discountCodesTable.maxUses}`
+          )
+        )
+      )
+      .returning({ id: discountCodesTable.id });
+
+    if (!updated) throw new Error("discount_usage_limit_reached");
+    return true;
+  });
+}
+
+async function recordCompletedPaymentDiscountUse(
+  discountCode: string,
+  userId: string,
+  paymentId: string,
+  req: Request
+) {
+  const [discount] = await db
+    .select()
     .from(discountCodesTable)
-    .where(eq(discountCodesTable.code, code));
-  await db
-    .update(discountCodesTable)
-    .set({ usedCount: (row?.usedCount ?? 0) + 1 })
-    .where(eq(discountCodesTable.code, code));
+    .where(eq(discountCodesTable.code, discountCode));
+
+  if (!discount) {
+    req.log.warn({ discountCode, paymentId }, "Completed payment references missing discount code");
+    return;
+  }
+
+  try {
+    await recordDiscountRedemption(discount, userId, paymentId, false);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    req.log.warn(
+      { discountCode, userId, paymentId, message },
+      "Could not record completed payment discount redemption"
+    );
+  }
 }
 
 async function completeAssessmentAfterPayment(paymentId: string, req: Request) {
@@ -315,7 +393,7 @@ router.get(
   "/billing/paypal-config",
   async (req: Request, res: Response): Promise<void> => {
     req.url = "/billing/checkout-config";
-    router.handle(req, res);
+    (router as any).handle(req, res);
   }
 );
 
@@ -365,6 +443,11 @@ router.get(
       return;
     }
 
+    if (await hasUserRedeemedDiscount(discount.id, user.id)) {
+      res.json({ success: true, valid: false, reason: "استخدمت هذا الكود من قبل" });
+      return;
+    }
+
     const { originalPrice, finalPrice } = discountPrice(discount.discountPercent);
 
     res.json({
@@ -402,11 +485,13 @@ router.post(
 
     if (discountCode) {
       const found = await findUsableDiscountForUser(discountCode, user.id);
-      if (found) {
-        codeRecord = found;
-        discountPercent = found.discountPercent;
-        finalPrice = discountPrice(discountPercent).finalPrice;
+      if (!found) {
+        res.status(400).json({ success: false, error: "كود الخصم غير صالح أو تم استخدامه من قبل" });
+        return;
       }
+      codeRecord = found;
+      discountPercent = found.discountPercent;
+      finalPrice = discountPrice(discountPercent).finalPrice;
     }
 
     if (isLemonEnabled()) {
@@ -695,7 +780,7 @@ router.post(
       .where(eq(paymentsTable.id, payment.id));
 
     if (payment.discountCode) {
-      await incrementDiscountUse(payment.discountCode);
+      await recordCompletedPaymentDiscountUse(payment.discountCode, user.id, payment.id, req);
     }
 
     req.log.info({ userId: user.id, orderId, paymentId: payment.id }, "Payment captured");
@@ -742,33 +827,79 @@ router.post(
       return;
     }
 
-    // Create a completed payment record for $0
-    const [payment] = await db
-      .insert(paymentsTable)
-      .values({
-        userId: user.id,
-        provider: "manual",
-        paypalOrderId: null,
-        amount: "0.00",
-        originalAmount: originalPrice.toFixed(2),
-        discountCode: found.code,
-        discountPercent: found.discountPercent,
-        status: "completed",
-      })
-      .returning();
+    let paymentId: string | undefined;
+    try {
+      const payment = await db.transaction(async (tx) => {
+        const [createdPayment] = await tx
+          .insert(paymentsTable)
+          .values({
+            userId: user.id,
+            provider: "manual",
+            paypalOrderId: null,
+            amount: "0.00",
+            originalAmount: originalPrice.toFixed(2),
+            discountCode: found.code,
+            discountPercent: found.discountPercent,
+            status: "completed",
+          })
+          .returning();
 
-    // Increment discount code usage
-    await db
-      .update(discountCodesTable)
-      .set({ usedCount: found.usedCount + 1 })
-      .where(eq(discountCodesTable.code, found.code));
+        if (!createdPayment) throw new Error("payment_create_failed");
+
+        const inserted = await tx
+          .insert(discountCodeRedemptionsTable)
+          .values({
+            discountCodeId: found.id,
+            userId: user.id,
+            paymentId: createdPayment.id,
+          })
+          .onConflictDoNothing({
+            target: [
+              discountCodeRedemptionsTable.discountCodeId,
+              discountCodeRedemptionsTable.userId,
+            ],
+          })
+          .returning({ id: discountCodeRedemptionsTable.id });
+
+        if (inserted.length === 0) throw new Error("discount_already_redeemed");
+
+        const [updatedCode] = await tx
+          .update(discountCodesTable)
+          .set({ usedCount: sql`${discountCodesTable.usedCount} + 1` })
+          .where(
+            and(
+              eq(discountCodesTable.id, found.id),
+              or(
+                isNull(discountCodesTable.maxUses),
+                sql`${discountCodesTable.usedCount} < ${discountCodesTable.maxUses}`
+              )
+            )
+          )
+          .returning({ id: discountCodesTable.id });
+
+        if (!updatedCode) throw new Error("discount_usage_limit_reached");
+        return createdPayment;
+      });
+      paymentId = payment.id;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message === "discount_already_redeemed") {
+        res.status(400).json({ success: false, error: "استخدمت هذا الكود من قبل" });
+        return;
+      }
+      if (message === "discount_usage_limit_reached") {
+        res.status(400).json({ success: false, error: "الكود استُنفد" });
+        return;
+      }
+      throw err;
+    }
 
     req.log.info(
-      { userId: user.id, code: found.code, paymentId: payment?.id },
+      { userId: user.id, code: found.code, paymentId },
       "Free order created via 100% discount"
     );
 
-    res.json({ success: true, paymentId: payment?.id });
+    res.json({ success: true, paymentId });
   }
 );
 
@@ -888,7 +1019,7 @@ router.post(
         .where(eq(paymentsTable.id, payment.id));
 
       if (payment.discountCode) {
-        await incrementDiscountUse(payment.discountCode);
+        await recordCompletedPaymentDiscountUse(payment.discountCode, payment.userId, payment.id, req);
       }
     }
 
