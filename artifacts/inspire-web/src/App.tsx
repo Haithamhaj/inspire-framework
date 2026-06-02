@@ -71,7 +71,10 @@ function Router() {
     "/review-demo",
     "/billing/success",
   ]);
-  const isPremium = premiumNavPaths.has(normalizedLocation) || /^\/results\/[^/]+/.test(normalizedLocation);
+  const isPremium =
+    premiumNavPaths.has(normalizedLocation) ||
+    /^\/results\/[^/]+/.test(normalizedLocation) ||
+    /^\/admin\/report-preview\/[^/]+/.test(normalizedLocation);
   const isReviewDemo = normalizedLocation === "/review-demo";
 
   return (
@@ -115,6 +118,7 @@ function Router() {
           <Route path="/ar/assess/mini" component={AssessMini} />
           <Route path="/results/:id" component={Results} />
           <Route path="/ar/results/:id" component={Results} />
+          <Route path="/admin/report-preview/:id" component={Results} />
           <Route path="/my-assessments" component={MyAssessments} />
           <Route path="/ar/my-assessments" component={MyAssessments} />
           <Route path="/profile" component={Profile} />

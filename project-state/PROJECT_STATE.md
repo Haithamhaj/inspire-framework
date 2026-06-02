@@ -79,6 +79,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
 - Lemon Squeezy checkout activation is implemented locally: `BILLING_PROVIDER=lemon` creates server-side Lemon checkouts, stores Lemon checkout/order identifiers, accepts signed `order_created` webhooks, and starts the paid report generation after payment confirmation.
 - Discount-code redemption tracking is implemented locally with `discount_code_redemptions`: shared public discount codes can have a total `maxUses` while each user/account can redeem the same code only once. Migration `0011_add_discount_code_redemptions.sql` also backfills completed historical discounted payments.
+- Admin report opening now uses a short-lived signed preview token instead of the customer-only `/results/:id` page or the public `/share/:token` subset, so admins can review the full completed report including the private system instruction without using the customer's login.
 
 ## Active Decisions
 - Do not make large migration or platform changes directly on `main`.
@@ -97,6 +98,7 @@ Stabilize the Replit-hosted `codex/platform-migration` deployment on Supabase, t
 - Supabase must receive migration `0011_add_discount_code_redemptions.sql` before deploying the new discount-code API behavior; otherwise discount validation will query a missing table.
 - The Replit workspace is currently on a feature branch. Later, decide whether to merge `codex/platform-migration` into `main` or keep Replit intentionally pinned to this branch until review is complete.
 - Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
+- Admin preview links are bearer-style URLs signed with `ADMIN_PASSWORD` and valid for 10 minutes; only generate them from the protected admin panel and avoid sharing them externally.
 
 ## Protected Areas
 - Do not expose secrets from `.env.local`.

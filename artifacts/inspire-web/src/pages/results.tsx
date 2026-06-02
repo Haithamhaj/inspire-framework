@@ -1178,9 +1178,10 @@ function OperatingPatternReportSections({
 export default function Results() {
   const { id } = useParams<{ id: string }>();
   const { user, isLoading: authLoading } = useAuth();
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const t = useT();
   const { locale } = useI18n();
+  const isAdminPreview = location.startsWith("/admin/report-preview/");
 
   const [assessment, setAssessment] = useState<AssessmentDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1193,14 +1194,19 @@ export default function Results() {
   const [shareMsg, setShareMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id || authLoading || !user) return;
+    if (!id) return;
+    if (!isAdminPreview && (authLoading || !user)) return;
 
     let cancelled = false;
     let pollTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function fetchResult() {
       try {
-        const res = await fetch(apiUrl(`/results/${id}`));
+        const res = await fetch(
+          isAdminPreview
+            ? apiUrl(`/admin/report-preview/${id}`)
+            : apiUrl(`/results/${id}`)
+        );
         const d = await res.json();
         if (cancelled) return;
         if (!d.success) throw new Error(d.error || "Not found");
@@ -1228,7 +1234,7 @@ export default function Results() {
       cancelled = true;
       if (pollTimer) clearTimeout(pollTimer);
     };
-  }, [id, user, authLoading]);
+  }, [id, user, authLoading, isAdminPreview]);
 
   async function copyText(text: string, key: string) {
     await navigator.clipboard.writeText(text);
@@ -1310,14 +1316,14 @@ export default function Results() {
     [locale, reportLang]
   );
 
-  if (authLoading) {
+  if (!isAdminPreview && authLoading) {
     return (
       <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-[#0b0d1f]">
         <Loader2 className="h-10 w-10 animate-spin text-rose-300" />
       </div>
     );
   }
-  if (!user) return <Redirect to="/login" />;
+  if (!isAdminPreview && !user) return <Redirect to="/login" />;
 
   if (loading) {
     return (
@@ -1337,7 +1343,7 @@ export default function Results() {
     return (
       <ResultsErrorState
         message={error || t("results.status.errorMissing")}
-        onBack={() => navigate("/my-assessments")}
+        onBack={() => navigate(isAdminPreview ? "/admin" : "/my-assessments")}
       />
     );
   }
@@ -1760,11 +1766,11 @@ export default function Results() {
           {/* Secondary actions: my reports / pdf / share */}
           <div className="private-report-screen-only grid grid-cols-1 gap-2 text-sm sm:flex sm:flex-wrap sm:items-center sm:justify-center">
             <button
-              onClick={() => navigate("/my-assessments")}
+              onClick={() => navigate(isAdminPreview ? "/admin" : "/my-assessments")}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               <ChevronRight className="h-4 w-4" />
-              {t("results.header.myAssessments")}
+              {isAdminPreview ? "لوحة الإدارة" : t("results.header.myAssessments")}
             </button>
             {operatingReport ? (
               <button
@@ -1784,7 +1790,7 @@ export default function Results() {
               >
                 <Download className="h-4 w-4" /> {t("results.header.downloadPdf")}
               </a>
-            ) : (
+            ) : !isAdminPreview ? (
               <button
                 onClick={handleGeneratePdf}
                 disabled={generatingPdf}
@@ -1799,38 +1805,42 @@ export default function Results() {
                   ? t("results.header.generatingPdf")
                   : t("results.header.generatePdf")}
               </button>
-            )}
-            {!operatingReport && assessment.shareEnabled ? (
-              <button
-                onClick={handleRevokeShare}
-                disabled={sharingLoading}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-rose-400/20 hover:text-white disabled:opacity-60"
-              >
-                {sharingLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Trash2 className="h-4 w-4" />
-                )}
-                {sharingLoading
-                  ? t("results.header.revoking")
-                  : t("results.header.revokeShare")}
-              </button>
-            ) : !operatingReport ? (
-              <button
-                onClick={handleShare}
-                disabled={sharingLoading}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-60"
-              >
-                {sharingLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Share2 className="h-4 w-4" />
-                )}
-                {sharingLoading
-                  ? t("results.header.sharing")
-                  : t("results.header.share")}
-              </button>
             ) : null}
+            {!isAdminPreview && (
+              <>
+                {!operatingReport && assessment.shareEnabled ? (
+                  <button
+                    onClick={handleRevokeShare}
+                    disabled={sharingLoading}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-rose-400/20 hover:text-white disabled:opacity-60"
+                  >
+                    {sharingLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                    {sharingLoading
+                      ? t("results.header.revoking")
+                      : t("results.header.revokeShare")}
+                  </button>
+                ) : !operatingReport ? (
+                  <button
+                    onClick={handleShare}
+                    disabled={sharingLoading}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-60"
+                  >
+                    {sharingLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Share2 className="h-4 w-4" />
+                    )}
+                    {sharingLoading
+                      ? t("results.header.sharing")
+                      : t("results.header.share")}
+                  </button>
+                ) : null}
+              </>
+            )}
           </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-white/45">
@@ -2341,12 +2351,14 @@ export default function Results() {
 		          </>
 		        )}
 
-        <ReportFeedbackPanel
-          assessmentId={assessment.id}
-          initialFeedback={assessment.feedback}
-          displayLanguage={operatingDisplayLanguage}
-          copiedInstructions={copiedInstructionsForFeedback || Boolean(assessment.feedback?.copiedInstructions)}
-        />
+        {!isAdminPreview && (
+          <ReportFeedbackPanel
+            assessmentId={assessment.id}
+            initialFeedback={assessment.feedback}
+            displayLanguage={operatingDisplayLanguage}
+            copiedInstructions={copiedInstructionsForFeedback || Boolean(assessment.feedback?.copiedInstructions)}
+          />
+        )}
 
 	        {/* ── CTA ─────────────────────────────────────────────────────── */}
         {operatingReport ? (

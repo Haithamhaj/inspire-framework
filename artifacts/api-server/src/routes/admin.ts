@@ -10,12 +10,13 @@ import {
   paymentsTable,
 } from "@workspace/db/schema";
 import { eq, and, gte, lte, or, desc, count, avg, type SQL } from "drizzle-orm";
-import { randomBytes } from "crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { logger } from "../lib/logger";
 import { sendResultsEmail, sendRecoveryEmail } from "../lib/email";
 import { generateReportV2 } from "../lib/ai-engine";
 
 const router: IRouter = Router();
+const ADMIN_PREVIEW_TOKEN_TTL_MS = 10 * 60 * 1000;
 
 function requireAdmin(req: Request, res: Response): boolean {
   const password = req.headers["x-admin-password"] as string | undefined;
@@ -30,6 +31,52 @@ function requireAdmin(req: Request, res: Response): boolean {
     return false;
   }
   return true;
+}
+
+function signAdminPreviewPayload(payload: string) {
+  const secret = process.env["ADMIN_PASSWORD"];
+  if (!secret) return null;
+  return createHmac("sha256", secret).update(payload).digest("base64url");
+}
+
+function createAdminPreviewToken(assessmentId: string) {
+  const payload = Buffer.from(
+    JSON.stringify({
+      assessmentId,
+      exp: Date.now() + ADMIN_PREVIEW_TOKEN_TTL_MS,
+      nonce: randomBytes(12).toString("base64url"),
+    })
+  ).toString("base64url");
+  const signature = signAdminPreviewPayload(payload);
+  return signature ? `${payload}.${signature}` : null;
+}
+
+function verifyAdminPreviewToken(token: string) {
+  const [payload, signature] = token.split(".");
+  if (!payload || !signature) return null;
+  const expected = signAdminPreviewPayload(payload);
+  if (!expected) return null;
+
+  const signatureBuffer = Buffer.from(signature);
+  const expectedBuffer = Buffer.from(expected);
+  if (
+    signatureBuffer.length !== expectedBuffer.length ||
+    !timingSafeEqual(signatureBuffer, expectedBuffer)
+  ) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as {
+      assessmentId?: unknown;
+      exp?: unknown;
+    };
+    if (typeof parsed.assessmentId !== "string" || typeof parsed.exp !== "number") return null;
+    if (Date.now() > parsed.exp) return null;
+    return parsed.assessmentId;
+  } catch {
+    return null;
+  }
 }
 
 function isV2Answers(value: unknown): value is Array<{ questionId: string; optionId: string }> {
@@ -376,6 +423,106 @@ router.get(
         payments,
         decisionSnapshot: decisionSnapshot ?? null,
         generationRuns,
+      },
+    });
+  }
+);
+
+// ─── POST /api/admin/assessments/:id/preview-link ─────────────────────────
+
+router.post(
+  "/admin/assessments/:id/preview-link",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select({
+        id: assessmentsTable.id,
+        status: assessmentsTable.status,
+      })
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Assessment not found" });
+      return;
+    }
+
+    if (assessment.status !== "completed") {
+      res.status(400).json({ success: false, error: "Only completed assessments can be previewed" });
+      return;
+    }
+
+    const token = createAdminPreviewToken(assessment.id);
+    if (!token) {
+      res.status(503).json({ success: false, error: "Admin preview is not configured" });
+      return;
+    }
+
+    res.json({ success: true, token, expiresInSeconds: Math.floor(ADMIN_PREVIEW_TOKEN_TTL_MS / 1000) });
+  }
+);
+
+// ─── GET /api/admin/report-preview/:token ────────────────────────────────
+
+router.get(
+  "/admin/report-preview/:token",
+  async (req: Request, res: Response): Promise<void> => {
+    const { token } = req.params;
+    const assessmentId = verifyAdminPreviewToken(token as string);
+    if (!assessmentId) {
+      res.status(401).json({ success: false, error: "Preview link expired or invalid" });
+      return;
+    }
+
+    const [assessment] = await db
+      .select()
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, assessmentId));
+
+    if (!assessment || assessment.status !== "completed") {
+      res.status(404).json({ success: false, error: "Completed assessment not found" });
+      return;
+    }
+
+    let previousInspireTable: unknown = null;
+    if (assessment.previousAssessmentId) {
+      const [prev] = await db
+        .select({ inspireTable: assessmentsTable.inspireTable })
+        .from(assessmentsTable)
+        .where(eq(assessmentsTable.id, assessment.previousAssessmentId));
+      previousInspireTable = prev?.inspireTable ?? null;
+    }
+
+    res.json({
+      success: true,
+      assessment: {
+        id: assessment.id,
+        status: assessment.status,
+        projectName: assessment.projectName,
+        projectGoal: assessment.projectGoal,
+        reportLanguage: assessment.reportLanguage,
+        assessmentType: assessment.assessmentType,
+        aiProvider: assessment.aiProvider,
+        aiModel: assessment.aiModel,
+        createdAt: assessment.createdAt,
+        completionTimeSeconds: assessment.completionTimeSeconds,
+        pdfUrl: assessment.pdfUrl,
+        reportContent: assessment.reportContent,
+        inspireTable: assessment.inspireTable,
+        roleAnalysis: assessment.roleAnalysis,
+        redLines: assessment.redLines,
+        strengths: assessment.strengths,
+        developmentAreas: assessment.developmentAreas,
+        recommendations: assessment.recommendations,
+        systemInstruction: assessment.systemInstruction,
+        quickStarters: assessment.quickStarters,
+        shareToken: assessment.shareToken,
+        shareEnabled: assessment.shareEnabled,
+        previousAssessmentId: assessment.previousAssessmentId ?? null,
+        previousInspireTable,
+        feedback: null,
       },
     });
   }

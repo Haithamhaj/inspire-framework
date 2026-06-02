@@ -670,44 +670,21 @@ export default function Admin() {
       reportWindow.opener = null;
     }
     try {
-      let shareToken = assessment.shareEnabled ? assessment.shareToken : null;
-      if (!shareToken) {
-        const res = await fetch(apiUrl(`/admin/assessments/${assessment.id}/share`), {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", "x-admin-password": password },
-          body: JSON.stringify({ enabled: true }),
-        });
-        const d = await res.json() as {
-          success: boolean;
-          error?: string;
-          assessment?: { shareToken: string | null; shareEnabled: boolean };
-        };
-        if (!d.success || !d.assessment?.shareToken) {
-          reportWindow?.close();
-          setActionMsg({ ok: false, text: d.error ?? "فشل فتح التقرير" });
-          return;
-        }
-        shareToken = d.assessment.shareToken;
-        setAssessments((prev) =>
-          prev.map((item) =>
-            item.id === assessment.id
-              ? { ...item, shareToken: d.assessment!.shareToken, shareEnabled: d.assessment!.shareEnabled }
-              : item
-          )
-        );
-        if (selectedDetail?.id === assessment.id) {
-          setSelectedDetail({
-            ...selectedDetail,
-            shareToken: d.assessment.shareToken,
-            shareEnabled: d.assessment.shareEnabled,
-          });
-        }
+      const res = await fetch(apiUrl(`/admin/assessments/${assessment.id}/preview-link`), {
+        method: "POST",
+        headers: { "x-admin-password": password },
+      });
+      const d = await res.json() as { success: boolean; error?: string; token?: string };
+      if (!d.success || !d.token) {
+        reportWindow?.close();
+        setActionMsg({ ok: false, text: d.error ?? "فشل فتح التقرير" });
+        return;
       }
 
       if (reportWindow) {
-        reportWindow.location.href = `/share/${shareToken}`;
+        reportWindow.location.href = `/admin/report-preview/${d.token}`;
       } else {
-        window.location.href = `/share/${shareToken}`;
+        window.location.href = `/admin/report-preview/${d.token}`;
       }
     } catch {
       reportWindow?.close();
