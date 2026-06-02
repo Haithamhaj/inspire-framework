@@ -19,6 +19,11 @@ const FeedbackSchema = z.object({
   missing: z.string().trim().max(1000).optional().nullable(),
   copied_instructions: z.boolean().optional(),
   feedback_source: z.enum(["after_report", "after_copy"]).optional(),
+  feedback_category: z
+    .enum(["very_useful", "partly_useful", "unclear", "instructions_issue", "language_issue", "technical_issue", "other"])
+    .optional()
+    .nullable(),
+  used_instructions: z.boolean().optional().nullable(),
 });
 
 async function requireUser(req: Request, _res: Response) {
@@ -69,6 +74,8 @@ router.get(
         missing: assessmentFeedbackTable.missing,
         copiedInstructions: assessmentFeedbackTable.copiedInstructions,
         feedbackSource: assessmentFeedbackTable.feedbackSource,
+        feedbackCategory: assessmentFeedbackTable.feedbackCategory,
+        usedInstructions: assessmentFeedbackTable.usedInstructions,
         createdAt: assessmentFeedbackTable.createdAt,
         updatedAt: assessmentFeedbackTable.updatedAt,
       })
@@ -186,6 +193,8 @@ router.post(
         missing: clean(parsed.data.missing),
         copiedInstructions: Boolean(parsed.data.copied_instructions),
         feedbackSource: parsed.data.feedback_source ?? "after_report",
+        feedbackCategory: parsed.data.feedback_category ?? null,
+        usedInstructions: parsed.data.used_instructions ?? null,
       })
       .onConflictDoUpdate({
         target: [
@@ -199,6 +208,8 @@ router.post(
           missing: clean(parsed.data.missing),
           copiedInstructions: Boolean(parsed.data.copied_instructions),
           feedbackSource: parsed.data.feedback_source ?? "after_report",
+          feedbackCategory: parsed.data.feedback_category ?? null,
+          usedInstructions: parsed.data.used_instructions ?? null,
           updatedAt: new Date(),
         },
       })
@@ -210,6 +221,8 @@ router.post(
         missing: assessmentFeedbackTable.missing,
         copiedInstructions: assessmentFeedbackTable.copiedInstructions,
         feedbackSource: assessmentFeedbackTable.feedbackSource,
+        feedbackCategory: assessmentFeedbackTable.feedbackCategory,
+        usedInstructions: assessmentFeedbackTable.usedInstructions,
         createdAt: assessmentFeedbackTable.createdAt,
         updatedAt: assessmentFeedbackTable.updatedAt,
       });

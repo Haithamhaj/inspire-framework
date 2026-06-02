@@ -20,6 +20,8 @@ import {
   Eye,
   Mail,
   Share2,
+  MessageSquare,
+  Star,
 } from "lucide-react";
 
 function apiUrl(path: string) {
@@ -37,6 +39,8 @@ interface Stats {
   assessmentsThisWeek: number;
   failedAssessments: number;
   lowRatingAssessments: number;
+  feedbackCount: number;
+  avgFeedbackRating: number;
 }
 
 interface Assessment {
@@ -64,6 +68,8 @@ interface Assessment {
   feedbackMissing: string | null;
   feedbackCopiedInstructions: boolean | null;
   feedbackSource: string | null;
+  feedbackCategory: string | null;
+  feedbackUsedInstructions: boolean | null;
   feedbackUpdatedAt: string | null;
   paymentId: string | null;
   paymentStatus: string | null;
@@ -140,6 +146,8 @@ interface AdminAssessmentDetail {
     missing: string | null;
     copiedInstructions: boolean;
     feedbackSource: string | null;
+    feedbackCategory: string | null;
+    usedInstructions: boolean | null;
   } | null;
   decisionSnapshot: {
     decisionEngineVersion: string;
@@ -764,6 +772,19 @@ export default function Admin() {
     );
   };
 
+  const feedbackCategoryLabel = (category: string | null) => {
+    const labels: Record<string, string> = {
+      very_useful: "مفيد جداً",
+      partly_useful: "مفيد جزئياً",
+      unclear: "غير واضح",
+      instructions_issue: "مشكلة في التعليمات",
+      language_issue: "مشكلة في اللغة",
+      technical_issue: "مشكلة تقنية",
+      other: "أخرى",
+    };
+    return category ? labels[category] ?? category : "غير محدد";
+  };
+
   // ─── Auth gate ───────────────────────────────────────────
 
   if (!authed) {
@@ -818,6 +839,8 @@ export default function Admin() {
         { label: "قيد المعالجة", value: stats.processingAssessments, icon: Loader2, color: "text-yellow-500" },
         { label: "إعادة محاولة", value: stats.pendingRetryAssessments, icon: RefreshCw, color: "text-amber-500" },
         { label: "فشلت", value: stats.failedAssessments, icon: AlertCircle, color: "text-red-500" },
+        { label: "تقييمات العملاء", value: stats.feedbackCount, icon: MessageSquare, color: "text-teal-500" },
+        { label: "متوسط التقييم", value: stats.avgFeedbackRating ? `${stats.avgFeedbackRating}/5` : "لا يوجد", icon: Star, color: "text-amber-500" },
         { label: "تقييم منخفض", value: stats.lowRatingAssessments, icon: AlertCircle, color: "text-orange-500" },
         { label: "هذا الأسبوع", value: stats.assessmentsThisWeek, icon: Clock, color: "text-accent" },
       ]
@@ -1049,9 +1072,23 @@ export default function Admin() {
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div>{selectedDetail.aiProvider ?? "لا يوجد مزود"} {selectedDetail.aiModel ? `/${selectedDetail.aiModel}` : ""}</div>
                   <div>محاولات: {selectedDetail.retryCount}</div>
-                  <div>Generation runs: {selectedDetail.generationRuns.length}</div>
-                  <div>Feedback: {selectedDetail.feedback?.rating ? `${selectedDetail.feedback.rating}/5` : "لا يوجد"}</div>
-                  <div>{selectedDetail.feedback?.copiedInstructions ? "نسخ التعليمات قبل التقييم" : "لم ينسخ التعليمات قبل التقييم"}</div>
+                  <div>محاولات التوليد: {selectedDetail.generationRuns.length}</div>
+                  <div>التقييم: {selectedDetail.feedback?.rating ? `${selectedDetail.feedback.rating}/5` : "لا يوجد"}</div>
+                  {selectedDetail.feedback && (
+                    <>
+                      <div>الانطباع: {feedbackCategoryLabel(selectedDetail.feedback.feedbackCategory)}</div>
+                      <div>
+                        استخدام التعليمات: {
+                          selectedDetail.feedback.usedInstructions === true
+                            ? "استخدمها"
+                            : selectedDetail.feedback.usedInstructions === false
+                              ? "لم يستخدمها بعد"
+                              : "غير محدد"
+                        }
+                      </div>
+                      <div>{selectedDetail.feedback.copiedInstructions ? "نسخ التعليمات قبل التقييم" : "لم ينسخ التعليمات قبل التقييم"}</div>
+                    </>
+                  )}
                   <div>{selectedDetail.shareEnabled ? "Share enabled" : "Share disabled"}</div>
                   {selectedDetail.shareToken && <div className="truncate" dir="ltr">/share/{selectedDetail.shareToken}</div>}
                 </div>
@@ -1063,6 +1100,7 @@ export default function Admin() {
               <DetailBlock title="Decision / Matrix Snapshot" value={selectedDetail.decisionSnapshot} />
               <DetailBlock title="التقرير النهائي reportContent" value={selectedDetail.reportContent} />
               <DetailBlock title="التعليمات النهائية systemInstruction" value={selectedDetail.systemInstruction} />
+              <DetailBlock title="تقييم المستخدم" value={selectedDetail.feedback} />
               <DetailBlock title="Generation Runs" value={selectedDetail.generationRuns} />
               <DetailBlock title="Open Answer / Project Context" value={{
                 openAnswer: selectedDetail.openAnswer,
@@ -1136,14 +1174,29 @@ export default function Admin() {
                       </td>
                       <td className="px-4 py-3">
                         {a.feedbackRating ? (
-                          <div className="max-w-[220px] text-xs">
-                            <div className={`mb-1 inline-flex rounded-full border px-2 py-1 font-bold ${
-                              a.feedbackRating <= 2
-                                ? "border-orange-500/20 bg-orange-500/10 text-orange-600"
-                                : "border-green-500/20 bg-green-500/10 text-green-600"
-                            }`}>
-                              {a.feedbackRating}/5
+                          <div className="max-w-[260px] space-y-1 text-xs">
+                            <div className="flex flex-wrap items-center gap-1">
+                              <span className={`inline-flex rounded-full border px-2 py-1 font-bold ${
+                                a.feedbackRating <= 2
+                                  ? "border-orange-500/20 bg-orange-500/10 text-orange-600"
+                                  : "border-green-500/20 bg-green-500/10 text-green-600"
+                              }`}>
+                                {a.feedbackRating}/5
+                              </span>
+                              <span className="rounded-full border border-border bg-secondary px-2 py-1 text-muted-foreground">
+                                {feedbackCategoryLabel(a.feedbackCategory)}
+                              </span>
                             </div>
+                            {a.feedbackUsedInstructions !== null && (
+                              <div className="text-muted-foreground">
+                                {a.feedbackUsedInstructions ? "استخدم التعليمات" : "لم يستخدم التعليمات بعد"}
+                              </div>
+                            )}
+                            {a.feedbackUsefulAnswer && (
+                              <div className="truncate text-muted-foreground">
+                                ملاحظة: {a.feedbackUsefulAnswer}
+                              </div>
+                            )}
                             {a.feedbackMostUseful && (
                               <div className="truncate text-muted-foreground">
                                 مفيد: {a.feedbackMostUseful}

@@ -31,6 +31,8 @@ export const assessmentFeedbackTable = pgTable(
     missing: text("missing"),
     copiedInstructions: boolean("copied_instructions").default(false).notNull(),
     feedbackSource: text("feedback_source"),
+    feedbackCategory: text("feedback_category"),
+    usedInstructions: boolean("used_instructions"),
   },
   (table) => ({
     assessmentUserUnique: uniqueIndex("assessment_feedback_assessment_user_idx").on(

@@ -122,7 +122,7 @@ router.get(
     const startOfWeek = new Date(startOfToday);
     startOfWeek.setDate(startOfToday.getDate() - startOfToday.getDay());
 
-    const [[totalRow], [usersRow], [completedRow], [processingRow], [pendingRetryRow], [failedRow], [lowRatingRow], [todayRow], [weekRow], [avgTimeRow]] =
+    const [[totalRow], [usersRow], [completedRow], [processingRow], [pendingRetryRow], [failedRow], [feedbackRow], [lowRatingRow], [avgRatingRow], [todayRow], [weekRow], [avgTimeRow]] =
       await Promise.all([
         db.select({ total: count() }).from(assessmentsTable),
         db.select({ total: count() }).from(usersTable),
@@ -130,7 +130,9 @@ router.get(
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "processing")),
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "pending_retry")),
         db.select({ total: count() }).from(assessmentsTable).where(eq(assessmentsTable.status, "failed")),
+        db.select({ total: count() }).from(assessmentFeedbackTable),
         db.select({ total: count() }).from(assessmentFeedbackTable).where(lte(assessmentFeedbackTable.rating, 2)),
+        db.select({ avg: avg(assessmentFeedbackTable.rating) }).from(assessmentFeedbackTable),
         db.select({ total: count() }).from(assessmentsTable).where(gte(assessmentsTable.createdAt, startOfToday)),
         db.select({ total: count() }).from(assessmentsTable).where(gte(assessmentsTable.createdAt, startOfWeek)),
         db.select({ avg: avg(assessmentsTable.completionTimeSeconds) }).from(assessmentsTable).where(eq(assessmentsTable.status, "completed")),
@@ -140,6 +142,7 @@ router.get(
     const completed = Number(completedRow?.total ?? 0);
     const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
     const avgTimeSeconds = avgTimeRow?.avg ? Math.round(Number(avgTimeRow.avg)) : 0;
+    const avgFeedbackRating = avgRatingRow?.avg ? Math.round(Number(avgRatingRow.avg) * 10) / 10 : 0;
 
     res.json({
       success: true,
@@ -150,7 +153,9 @@ router.get(
         processingAssessments: Number(processingRow?.total ?? 0),
         pendingRetryAssessments: Number(pendingRetryRow?.total ?? 0),
         failedAssessments: Number(failedRow?.total ?? 0),
+        feedbackCount: Number(feedbackRow?.total ?? 0),
         lowRatingAssessments: Number(lowRatingRow?.total ?? 0),
+        avgFeedbackRating,
         assessmentsToday: Number(todayRow?.total ?? 0),
         assessmentsThisWeek: Number(weekRow?.total ?? 0),
         completionRate,
@@ -261,6 +266,8 @@ router.get(
             missing: assessmentFeedbackTable.missing,
             copiedInstructions: assessmentFeedbackTable.copiedInstructions,
             feedbackSource: assessmentFeedbackTable.feedbackSource,
+            feedbackCategory: assessmentFeedbackTable.feedbackCategory,
+            usedInstructions: assessmentFeedbackTable.usedInstructions,
             updatedAt: assessmentFeedbackTable.updatedAt,
           })
           .from(assessmentFeedbackTable)
@@ -334,6 +341,8 @@ router.get(
       feedbackMissing: a.feedback?.missing ?? null,
       feedbackCopiedInstructions: a.feedback?.copiedInstructions ?? null,
       feedbackSource: a.feedback?.feedbackSource ?? null,
+      feedbackCategory: a.feedback?.feedbackCategory ?? null,
+      feedbackUsedInstructions: a.feedback?.usedInstructions ?? null,
       feedbackUpdatedAt: a.feedback?.updatedAt ?? null,
       paymentId: a.payment?.id ?? a.paymentId,
       paymentStatus: a.payment?.status ?? null,
@@ -869,6 +878,25 @@ router.get(
       : [];
 
     const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
+    const assessmentIds = assessments.map((a) => a.id);
+    const feedbacks = assessmentIds.length > 0
+      ? await db
+          .select({
+            assessmentId: assessmentFeedbackTable.assessmentId,
+            rating: assessmentFeedbackTable.rating,
+            usefulAnswer: assessmentFeedbackTable.usefulAnswer,
+            mostUseful: assessmentFeedbackTable.mostUseful,
+            missing: assessmentFeedbackTable.missing,
+            copiedInstructions: assessmentFeedbackTable.copiedInstructions,
+            feedbackSource: assessmentFeedbackTable.feedbackSource,
+            feedbackCategory: assessmentFeedbackTable.feedbackCategory,
+            usedInstructions: assessmentFeedbackTable.usedInstructions,
+            updatedAt: assessmentFeedbackTable.updatedAt,
+          })
+          .from(assessmentFeedbackTable)
+          .where(or(...assessmentIds.map((id) => eq(assessmentFeedbackTable.assessmentId, id))))
+      : [];
+    const feedbackByAssessmentId = Object.fromEntries(feedbacks.map((f) => [f.assessmentId, f]));
 
     if (format === "json") {
       res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -879,6 +907,7 @@ router.get(
         assessments: assessments.map((a) => ({
           ...a,
           user: userMap[a.userId] ?? null,
+          feedback: feedbackByAssessmentId[a.id] ?? null,
         })),
       });
       return;
@@ -886,6 +915,7 @@ router.get(
 
     const rows = assessments.map((a) => {
       const u = userMap[a.userId];
+      const feedback = feedbackByAssessmentId[a.id];
       return [
         a.id,
         u?.name ?? "",
@@ -898,13 +928,20 @@ router.get(
         a.aiProvider ?? "",
         a.aiModel ?? "",
         a.completionTimeSeconds != null ? Math.round(a.completionTimeSeconds / 60) + " دقيقة" : "",
+        feedback?.rating ?? "",
+        feedback?.feedbackCategory ?? "",
+        feedback?.usedInstructions === true ? "نعم" : feedback?.usedInstructions === false ? "لا" : "",
+        feedback?.usefulAnswer ?? "",
+        feedback?.mostUseful ?? "",
+        feedback?.missing ?? "",
+        feedback?.copiedInstructions ? "نعم" : "لا",
         a.emailSent ? "نعم" : "لا",
         a.shareEnabled ? "نعم" : "لا",
         a.createdAt ? new Date(a.createdAt).toISOString() : "",
       ];
     });
 
-    const header = ["ID", "الاسم", "البريد", "المشروع", "المجال", "النوع", "اللغة", "الحالة", "المزود", "النموذج", "المدة", "بريد أُرسل", "المشاركة", "التاريخ"];
+    const header = ["ID", "الاسم", "البريد", "المشروع", "المجال", "النوع", "اللغة", "الحالة", "المزود", "النموذج", "المدة", "التقييم", "تصنيف التقييم", "استخدم التعليمات", "ملاحظة التقييم", "الأكثر فائدة", "الناقص", "نسخ التعليمات قبل التقييم", "بريد أُرسل", "المشاركة", "التاريخ"];
     const csv = [header, ...rows]
       .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
       .join("\n");

@@ -113,6 +113,8 @@ interface AssessmentFeedbackDto {
   missing: string | null;
   copiedInstructions: boolean;
   feedbackSource: string | null;
+  feedbackCategory: string | null;
+  usedInstructions: boolean | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -454,6 +456,8 @@ function ReportFeedbackPanel({
   copiedInstructions: boolean;
 }) {
   const [rating, setRating] = useState(initialFeedback?.rating ?? 0);
+  const [feedbackCategory, setFeedbackCategory] = useState(initialFeedback?.feedbackCategory ?? "");
+  const [usedInstructions, setUsedInstructions] = useState<boolean | null>(initialFeedback?.usedInstructions ?? null);
   const [usefulAnswer, setUsefulAnswer] = useState(initialFeedback?.usefulAnswer ?? "");
   const [mostUseful, setMostUseful] = useState(initialFeedback?.mostUseful ?? "");
   const [missing, setMissing] = useState(initialFeedback?.missing ?? "");
@@ -463,17 +467,52 @@ function ReportFeedbackPanel({
 
   const copy = {
     title: localizedOperatingReportText(displayLanguage, "Rate this report", "قيّم هذا التقرير"),
-    useful: localizedOperatingReportText(displayLanguage, "Was the report useful?", "هل التقرير مفيد؟"),
-    usefulPlaceholder: localizedOperatingReportText(displayLanguage, "Yes, partly, or no - add a short note.", "نعم، جزئياً، أو لا - أضف ملاحظة قصيرة."),
+    useful: localizedOperatingReportText(displayLanguage, "How useful was the report?", "ما مدى فائدة التقرير؟"),
+    category: localizedOperatingReportText(displayLanguage, "Quick impression", "الانطباع السريع"),
+    usedInstructions: localizedOperatingReportText(displayLanguage, "Did you use the AI instructions?", "هل استخدمت تعليمات الذكاء الاصطناعي؟"),
+    usedYes: localizedOperatingReportText(displayLanguage, "Yes", "نعم"),
+    usedNo: localizedOperatingReportText(displayLanguage, "Not yet", "ليس بعد"),
+    usefulNote: localizedOperatingReportText(displayLanguage, "Short note", "ملاحظة قصيرة"),
+    usefulPlaceholder: localizedOperatingReportText(displayLanguage, "Tell us what worked or what felt unclear.", "اكتب ما الذي نجح أو ما الذي كان غير واضح."),
     mostUseful: localizedOperatingReportText(displayLanguage, "What was most useful?", "ما أكثر شيء كان مفيداً؟"),
     missing: localizedOperatingReportText(displayLanguage, "What was missing?", "ما الذي كان ناقصاً؟"),
     optional: localizedOperatingReportText(displayLanguage, "Optional", "اختياري"),
-    submit: localizedOperatingReportText(displayLanguage, "Send feedback", "إرسال feedback"),
+    submit: localizedOperatingReportText(displayLanguage, "Send feedback", "إرسال التقييم"),
     saved: localizedOperatingReportText(displayLanguage, "Feedback saved. Thank you.", "تم حفظ التقييم. شكراً لك."),
     choose: localizedOperatingReportText(displayLanguage, "Choose a rating first.", "اختر التقييم أولاً."),
     afterCopy: localizedOperatingReportText(displayLanguage, "Instructions copied before feedback", "تم نسخ التعليمات قبل التقييم"),
     beforeCopy: localizedOperatingReportText(displayLanguage, "Feedback before copying instructions", "التقييم قبل نسخ التعليمات"),
   };
+  const categoryOptions = [
+    {
+      value: "very_useful",
+      label: localizedOperatingReportText(displayLanguage, "Very useful", "مفيد جداً"),
+    },
+    {
+      value: "partly_useful",
+      label: localizedOperatingReportText(displayLanguage, "Partly useful", "مفيد جزئياً"),
+    },
+    {
+      value: "unclear",
+      label: localizedOperatingReportText(displayLanguage, "Unclear", "غير واضح"),
+    },
+    {
+      value: "instructions_issue",
+      label: localizedOperatingReportText(displayLanguage, "Instructions issue", "مشكلة في التعليمات"),
+    },
+    {
+      value: "language_issue",
+      label: localizedOperatingReportText(displayLanguage, "Language issue", "مشكلة في اللغة"),
+    },
+    {
+      value: "technical_issue",
+      label: localizedOperatingReportText(displayLanguage, "Technical issue", "مشكلة تقنية"),
+    },
+    {
+      value: "other",
+      label: localizedOperatingReportText(displayLanguage, "Other", "أخرى"),
+    },
+  ];
 
   async function submitFeedback() {
     if (rating < 1 || rating > 5) {
@@ -493,6 +532,8 @@ function ReportFeedbackPanel({
           missing,
           copied_instructions: copiedInstructions,
           feedback_source: copiedInstructions ? "after_copy" : "after_report",
+          feedback_category: feedbackCategory || null,
+          used_instructions: usedInstructions,
         }),
       });
       const data = await res.json();
@@ -536,9 +577,58 @@ function ReportFeedbackPanel({
         </div>
       </div>
 
+      <div className="mb-4 grid gap-3 md:grid-cols-[1.4fr_1fr]">
+        <div className="space-y-2">
+          <span className="text-xs font-bold text-white/60">{copy.category}</span>
+          <div className="flex flex-wrap gap-2">
+            {categoryOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setFeedbackCategory(option.value)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${
+                  feedbackCategory === option.value
+                    ? "border-rose-300/45 bg-rose-400/15 text-rose-100"
+                    : "border-white/10 bg-white/[0.035] text-white/65 hover:bg-white/10"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-2">
+          <span className="text-xs font-bold text-white/60">{copy.usedInstructions}</span>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setUsedInstructions(true)}
+              className={`rounded-xl border px-3 py-2 text-xs font-bold transition-colors ${
+                usedInstructions === true
+                  ? "border-teal-300/40 bg-teal-400/15 text-teal-100"
+                  : "border-white/10 bg-white/[0.035] text-white/65 hover:bg-white/10"
+              }`}
+            >
+              {copy.usedYes}
+            </button>
+            <button
+              type="button"
+              onClick={() => setUsedInstructions(false)}
+              className={`rounded-xl border px-3 py-2 text-xs font-bold transition-colors ${
+                usedInstructions === false
+                  ? "border-amber-300/40 bg-amber-400/15 text-amber-100"
+                  : "border-white/10 bg-white/[0.035] text-white/65 hover:bg-white/10"
+              }`}
+            >
+              {copy.usedNo}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="grid gap-3 md:grid-cols-3">
         <label className="space-y-2">
-          <span className="text-xs font-bold text-white/60">{copy.useful}</span>
+          <span className="text-xs font-bold text-white/60">{copy.usefulNote} ({copy.optional})</span>
           <textarea
             value={usefulAnswer}
             onChange={(e) => setUsefulAnswer(e.target.value)}
