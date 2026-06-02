@@ -349,26 +349,29 @@ export async function processRetryQueue(): Promise<void> {
 
 async function tryOpenAI(
   prompt: string
-): Promise<{ success: boolean; text?: string }> {
-  if (!process.env["OPENAI_API_KEY"]) return { success: false };
+): Promise<{ success: boolean; text?: string; errorMessage?: string }> {
+  if (!process.env["OPENAI_API_KEY"]) {
+    return { success: false, errorMessage: "OPENAI_API_KEY is not configured." };
+  }
   const model = process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT;
+  let lastError = "";
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const res = await getOpenAI().chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
         max_completion_tokens: 3500,
-        temperature: 0.7,
       });
       const text = res.choices[0]?.message?.content ?? "";
       if (!text) throw new Error("Empty response");
       return { success: true, text };
     } catch (err) {
-      logger.error({ attempt, model }, `[OpenAI] attempt ${attempt} failed: ${err}`);
+      lastError = err instanceof Error ? err.message : String(err);
+      logger.error({ attempt, model, err }, "[OpenAI] attempt failed");
       if (attempt < 3) await sleep(2000 * attempt);
     }
   }
-  return { success: false };
+  return { success: false, errorMessage: lastError || "OpenAI generation failed." };
 }
 
 async function tryClaude(
@@ -396,7 +399,7 @@ async function tryClaude(
 
 async function tryGenerateAiText(
   prompt: string
-): Promise<{ success: boolean; text?: string; provider?: string; model?: string }> {
+): Promise<{ success: boolean; text?: string; provider?: string; model?: string; errorMessage?: string }> {
   const openaiResult = await tryOpenAI(prompt);
   if (openaiResult.success) {
     return {
@@ -419,7 +422,10 @@ async function tryGenerateAiText(
     }
   }
 
-  return { success: false };
+  return {
+    success: false,
+    errorMessage: `openai/${process.env["OPENAI_MODEL"] ?? OPENAI_MODEL_DEFAULT}: ${openaiResult.errorMessage ?? "OpenAI generation failed."}`,
+  };
 }
 
 async function tryGenerateV2InstructionAndReport(
@@ -430,15 +436,26 @@ async function tryGenerateV2InstructionAndReport(
   reportText?: string;
   provider?: string;
   model?: string;
+  errorMessage?: string;
 }> {
   const instructionPrompt = buildInspireInstructionPromptV2(promptData);
   const reportPrompt = buildReportWriterPromptV2(promptData);
 
   const instructionResult = await tryGenerateAiText(instructionPrompt);
-  if (!instructionResult.success || !instructionResult.text) return { success: false };
+  if (!instructionResult.success || !instructionResult.text) {
+    return {
+      success: false,
+      errorMessage: `Instruction generation failed: ${instructionResult.errorMessage ?? "No provider returned output."}`,
+    };
+  }
 
   const reportResult = await tryGenerateAiText(reportPrompt);
-  if (!reportResult.success || !reportResult.text) return { success: false };
+  if (!reportResult.success || !reportResult.text) {
+    return {
+      success: false,
+      errorMessage: `Report generation failed: ${reportResult.errorMessage ?? "No provider returned output."}`,
+    };
+  }
 
   const sameProvider = instructionResult.provider === reportResult.provider;
   const sameModel = instructionResult.model === reportResult.model;
@@ -466,6 +483,7 @@ async function runV2GenerationWithEvidence(params: {
   reportText?: string;
   provider?: string;
   model?: string;
+  errorMessage?: string;
 }> {
   const [run] = await db
     .insert(assessmentGenerationRunsTable)
@@ -507,7 +525,9 @@ async function runV2GenerationWithEvidence(params: {
       .set({
         status: "failed",
         completedAt: new Date(),
-        errorMessage: "No provider returned valid V2 report and instruction output.",
+        errorMessage:
+          result.errorMessage ??
+          "No provider returned valid V2 report and instruction output.",
       })
       .where(eq(assessmentGenerationRunsTable.id, run!.id));
 
