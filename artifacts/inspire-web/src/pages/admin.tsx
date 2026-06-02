@@ -213,6 +213,7 @@ export default function Admin() {
   const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
   const [resendingId, setResendingId] = useState<string | null>(null);
   const [sharingId, setSharingId] = useState<string | null>(null);
+  const [openingReportId, setOpeningReportId] = useState<string | null>(null);
   const [detailLoadingId, setDetailLoadingId] = useState<string | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<AdminAssessmentDetail | null>(null);
   const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -653,6 +654,66 @@ export default function Admin() {
       setActionMsg({ ok: false, text: "فشل الاتصال" });
     } finally {
       setSharingId(null);
+    }
+  }
+
+  async function handleOpenReport(assessment: Assessment) {
+    if (assessment.status !== "completed") {
+      setActionMsg({ ok: false, text: "لا يمكن فتح التقرير قبل اكتمال التوليد" });
+      return;
+    }
+
+    setOpeningReportId(assessment.id);
+    setActionMsg(null);
+    const reportWindow = window.open("about:blank", "_blank");
+    if (reportWindow) {
+      reportWindow.opener = null;
+    }
+    try {
+      let shareToken = assessment.shareEnabled ? assessment.shareToken : null;
+      if (!shareToken) {
+        const res = await fetch(apiUrl(`/admin/assessments/${assessment.id}/share`), {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "x-admin-password": password },
+          body: JSON.stringify({ enabled: true }),
+        });
+        const d = await res.json() as {
+          success: boolean;
+          error?: string;
+          assessment?: { shareToken: string | null; shareEnabled: boolean };
+        };
+        if (!d.success || !d.assessment?.shareToken) {
+          reportWindow?.close();
+          setActionMsg({ ok: false, text: d.error ?? "فشل فتح التقرير" });
+          return;
+        }
+        shareToken = d.assessment.shareToken;
+        setAssessments((prev) =>
+          prev.map((item) =>
+            item.id === assessment.id
+              ? { ...item, shareToken: d.assessment!.shareToken, shareEnabled: d.assessment!.shareEnabled }
+              : item
+          )
+        );
+        if (selectedDetail?.id === assessment.id) {
+          setSelectedDetail({
+            ...selectedDetail,
+            shareToken: d.assessment.shareToken,
+            shareEnabled: d.assessment.shareEnabled,
+          });
+        }
+      }
+
+      if (reportWindow) {
+        reportWindow.location.href = `/share/${shareToken}`;
+      } else {
+        window.location.href = `/share/${shareToken}`;
+      }
+    } catch {
+      reportWindow?.close();
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setOpeningReportId(null);
     }
   }
 
@@ -1159,14 +1220,14 @@ export default function Admin() {
                             )}
                             تفاصيل
                           </button>
-                          <a
-                            href={`/results/${a.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30"
+                          <button
+                            onClick={() => handleOpenReport(a)}
+                            disabled={openingReportId === a.id || a.status !== "completed"}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
                           >
+                            {openingReportId === a.id && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                             فتح
-                          </a>
+                          </button>
                           {a.status !== "completed" && a.assessmentType !== "mini" && (
                             <button
                               onClick={() => handleRetryGeneration(a.id)}
