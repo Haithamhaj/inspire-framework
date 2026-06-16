@@ -1181,6 +1181,7 @@ export default function Results() {
   const [, navigate] = useLocation();
   const t = useT();
   const { locale } = useI18n();
+  const isAdminPreview = window.location.pathname.startsWith("/admin/results/");
 
   const [assessment, setAssessment] = useState<AssessmentDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -1193,23 +1194,28 @@ export default function Results() {
   const [shareMsg, setShareMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id || authLoading || !user) return;
+    if (!id) return;
+    if (!isAdminPreview && (authLoading || !user)) return;
 
     let cancelled = false;
     let pollTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function fetchResult() {
       try {
-        const res = await fetch(apiUrl(`/results/${id}`));
+        const adminPassword = window.localStorage.getItem("inspire_admin_password") ?? "";
+        const res = await fetch(
+          apiUrl(isAdminPreview ? `/admin/results/${id}` : `/results/${id}`),
+          isAdminPreview ? { headers: { "x-admin-password": adminPassword } } : undefined
+        );
         const d = await res.json();
         if (cancelled) return;
-        if (!d.success && d.error === "payment_required") {
+        if (!isAdminPreview && !d.success && d.error === "payment_required") {
           navigate(`/assess?resume=${id}`);
           return;
         }
         if (!d.success) throw new Error(d.error || "Not found");
 
-        if (d.assessment.status === "pending_payment") {
+        if (!isAdminPreview && d.assessment.status === "pending_payment") {
           navigate(`/assess?resume=${id}`);
           return;
         }
@@ -1237,7 +1243,7 @@ export default function Results() {
       cancelled = true;
       if (pollTimer) clearTimeout(pollTimer);
     };
-  }, [id, user, authLoading]);
+  }, [id, user, authLoading, isAdminPreview, navigate]);
 
   async function copyText(text: string, key: string) {
     await navigator.clipboard.writeText(text);
@@ -1319,14 +1325,14 @@ export default function Results() {
     [locale, reportLang]
   );
 
-  if (authLoading) {
+  if (!isAdminPreview && authLoading) {
     return (
       <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-[#0b0d1f]">
         <Loader2 className="h-10 w-10 animate-spin text-rose-300" />
       </div>
     );
   }
-  if (!user) return <Redirect to="/login" />;
+  if (!isAdminPreview && !user) return <Redirect to="/login" />;
 
   if (loading) {
     return (
@@ -1378,10 +1384,10 @@ export default function Results() {
                 </div>
               </div>
               <button
-                onClick={() => navigate("/my-assessments")}
+                onClick={() => navigate(isAdminPreview ? "/admin" : "/my-assessments")}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-400/15 bg-slate-900/70 px-4 py-2 text-sm font-bold text-slate-100 transition-colors hover:border-rose-300/30 hover:bg-slate-800/75"
               >
-                <ChevronRight className="h-4 w-4" /> {t("results.header.myAssessments")}
+                <ChevronRight className="h-4 w-4" /> {isAdminPreview ? "لوحة الأدمن" : t("results.header.myAssessments")}
               </button>
             </div>
 
@@ -1781,11 +1787,11 @@ export default function Results() {
           {/* Secondary actions: my reports / pdf / share */}
           <div className="private-report-screen-only grid grid-cols-1 gap-2 text-sm sm:flex sm:flex-wrap sm:items-center sm:justify-center">
             <button
-              onClick={() => navigate("/my-assessments")}
+              onClick={() => navigate(isAdminPreview ? "/admin" : "/my-assessments")}
               className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:bg-white/10 hover:text-white"
             >
               <ChevronRight className="h-4 w-4" />
-              {t("results.header.myAssessments")}
+              {isAdminPreview ? "لوحة الأدمن" : t("results.header.myAssessments")}
             </button>
             {operatingReport ? (
               <button
@@ -1805,7 +1811,7 @@ export default function Results() {
               >
                 <Download className="h-4 w-4" /> {t("results.header.downloadPdf")}
               </a>
-            ) : (
+            ) : !isAdminPreview ? (
               <button
                 onClick={handleGeneratePdf}
                 disabled={generatingPdf}
@@ -1820,8 +1826,8 @@ export default function Results() {
                   ? t("results.header.generatingPdf")
                   : t("results.header.generatePdf")}
               </button>
-            )}
-            {!operatingReport && assessment.shareEnabled ? (
+            ) : null}
+            {!isAdminPreview && !operatingReport && assessment.shareEnabled ? (
               <button
                 onClick={handleRevokeShare}
                 disabled={sharingLoading}
@@ -1836,7 +1842,7 @@ export default function Results() {
                   ? t("results.header.revoking")
                   : t("results.header.revokeShare")}
               </button>
-            ) : !operatingReport ? (
+            ) : !isAdminPreview && !operatingReport ? (
               <button
                 onClick={handleShare}
                 disabled={sharingLoading}
@@ -2362,12 +2368,14 @@ export default function Results() {
 		          </>
 		        )}
 
-        <ReportFeedbackPanel
-          assessmentId={assessment.id}
-          initialFeedback={assessment.feedback}
-          displayLanguage={operatingDisplayLanguage}
-          copiedInstructions={copiedInstructionsForFeedback || Boolean(assessment.feedback?.copiedInstructions)}
-        />
+        {!isAdminPreview && (
+          <ReportFeedbackPanel
+            assessmentId={assessment.id}
+            initialFeedback={assessment.feedback}
+            displayLanguage={operatingDisplayLanguage}
+            copiedInstructions={copiedInstructionsForFeedback || Boolean(assessment.feedback?.copiedInstructions)}
+          />
+        )}
 
 	        {/* ── CTA ─────────────────────────────────────────────────────── */}
         {operatingReport ? (

@@ -601,6 +601,11 @@ export default function Admin() {
     }
   }
 
+  function handleOpenAdminReport(assessmentId: string) {
+    window.localStorage.setItem("inspire_admin_password", password);
+    window.open(`/admin/results/${assessmentId}`, "_blank");
+  }
+
   async function handleGenerateReport(assessmentId: string) {
     if (!confirm("توليد التقرير لهذا التقييم بدون دفع؟")) return;
     setGeneratingId(assessmentId);
@@ -1238,11 +1243,11 @@ export default function Admin() {
                             تفاصيل
                           </button>
                           <button
-                            onClick={() => handleOpenDetail(a.id)}
+                            onClick={() => handleOpenAdminReport(a.id)}
                             disabled={detailLoadingId === a.id}
                             className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
                           >
-                            عرض داخل الأدمن
+                            فتح التقرير
                           </button>
                           {a.status !== "completed" && a.assessmentType !== "mini" && (
                             <button

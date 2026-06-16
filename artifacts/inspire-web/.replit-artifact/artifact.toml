@@ -123,6 +123,10 @@ from = "/admin"
 to = "/index.html"
 
 [[services.production.rewrites]]
+from = "/admin/results/*"
+to = "/index.html"
+
+[[services.production.rewrites]]
 from = "/ar/admin"
 to = "/index.html"
 

@@ -39,6 +39,93 @@ async function requireUser(req: Request, _res: Response) {
   return user ?? null;
 }
 
+function requireAdmin(req: Request, res: Response): boolean {
+  const password = req.headers["x-admin-password"] as string | undefined;
+  const expected = process.env["ADMIN_PASSWORD"];
+  if (!expected) {
+    res.status(503).json({ success: false, error: "Admin not configured" });
+    return false;
+  }
+  if (!password || password !== expected) {
+    res.status(401).json({ success: false, error: "Unauthorized" });
+    return false;
+  }
+  return true;
+}
+
+function toResultAssessment(
+  assessment: typeof assessmentsTable.$inferSelect,
+  feedback: unknown,
+  previousInspireTable: unknown,
+) {
+  return {
+    id: assessment.id,
+    status: assessment.status,
+    projectName: assessment.projectName,
+    projectGoal: assessment.projectGoal,
+    reportLanguage: assessment.reportLanguage,
+    assessmentType: assessment.assessmentType,
+    aiProvider: assessment.aiProvider,
+    aiModel: assessment.aiModel,
+    createdAt: assessment.createdAt,
+    completionTimeSeconds: assessment.completionTimeSeconds,
+    pdfUrl: assessment.pdfUrl,
+    reportContent: assessment.reportContent,
+    inspireTable: assessment.inspireTable,
+    roleAnalysis: assessment.roleAnalysis,
+    redLines: assessment.redLines,
+    strengths: assessment.strengths,
+    developmentAreas: assessment.developmentAreas,
+    recommendations: assessment.recommendations,
+    systemInstruction: assessment.systemInstruction,
+    quickStarters: assessment.quickStarters,
+    shareToken: assessment.shareToken,
+    shareEnabled: assessment.shareEnabled,
+    previousAssessmentId: assessment.previousAssessmentId ?? null,
+    previousInspireTable,
+    feedback,
+  };
+}
+
+// ─── GET /api/admin/results/:id ───────────────────────────
+
+router.get(
+  "/admin/results/:id",
+  async (req: Request, res: Response): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const { id } = req.params;
+    const [assessment] = await db
+      .select()
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, id as string));
+
+    if (!assessment) {
+      res.status(404).json({ success: false, error: "Not found" });
+      return;
+    }
+
+    const [feedback] = await db
+      .select()
+      .from(assessmentFeedbackTable)
+      .where(eq(assessmentFeedbackTable.assessmentId, assessment.id));
+
+    let previousInspireTable: unknown = null;
+    if (assessment.previousAssessmentId) {
+      const [prev] = await db
+        .select({ inspireTable: assessmentsTable.inspireTable })
+        .from(assessmentsTable)
+        .where(eq(assessmentsTable.id, assessment.previousAssessmentId));
+      previousInspireTable = prev?.inspireTable ?? null;
+    }
+
+    res.json({
+      success: true,
+      assessment: toResultAssessment(assessment, feedback ?? null, previousInspireTable),
+    });
+  }
+);
+
 // ─── GET /api/results/:id ─────────────────────────────────
 
 router.get(
@@ -105,33 +192,7 @@ router.get(
 
     res.json({
       success: true,
-      assessment: {
-        id: assessment.id,
-        status: assessment.status,
-        projectName: assessment.projectName,
-        projectGoal: assessment.projectGoal,
-        reportLanguage: assessment.reportLanguage,
-        assessmentType: assessment.assessmentType,
-        aiProvider: assessment.aiProvider,
-        aiModel: assessment.aiModel,
-        createdAt: assessment.createdAt,
-        completionTimeSeconds: assessment.completionTimeSeconds,
-        pdfUrl: assessment.pdfUrl,
-        reportContent: assessment.reportContent,
-        inspireTable: assessment.inspireTable,
-        roleAnalysis: assessment.roleAnalysis,
-        redLines: assessment.redLines,
-        strengths: assessment.strengths,
-        developmentAreas: assessment.developmentAreas,
-        recommendations: assessment.recommendations,
-        systemInstruction: assessment.systemInstruction,
-        quickStarters: assessment.quickStarters,
-        shareToken: assessment.shareToken,
-        shareEnabled: assessment.shareEnabled,
-        previousAssessmentId: assessment.previousAssessmentId ?? null,
-        previousInspireTable,
-        feedback: feedback ?? null,
-      },
+      assessment: toResultAssessment(assessment, feedback ?? null, previousInspireTable),
     });
   }
 );
