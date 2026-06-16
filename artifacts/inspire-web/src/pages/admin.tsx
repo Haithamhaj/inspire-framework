@@ -1242,7 +1242,7 @@ export default function Admin() {
                             disabled={detailLoadingId === a.id}
                             className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
                           >
-                            فتح التقرير
+                            عرض داخل الأدمن
                           </button>
                           {a.status !== "completed" && a.assessmentType !== "mini" && (
                             <button
