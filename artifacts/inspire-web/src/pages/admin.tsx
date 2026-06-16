@@ -1237,14 +1237,13 @@ export default function Admin() {
                             )}
                             تفاصيل
                           </button>
-                          <a
-                            href={`/results/${a.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30"
+                          <button
+                            onClick={() => handleOpenDetail(a.id)}
+                            disabled={detailLoadingId === a.id}
+                            className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
                           >
                             فتح التقرير
-                          </a>
+                          </button>
                           {a.status !== "completed" && a.assessmentType !== "mini" && (
                             <button
                               onClick={() => handleRetryGeneration(a.id)}
