@@ -8,6 +8,7 @@ import { UserPlus, Mail, Lock, User, Briefcase, Loader2, Eye, EyeOff } from "luc
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
 import {
   JourneyPanel,
   JourneyPrimaryButton,
@@ -34,7 +35,8 @@ function textPaddingClass(dir: "rtl" | "ltr") {
 export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { dir, t } = useI18n();
+  const { dir, locale, t } = useI18n();
+  const href = (path: string) => localizePath(path, locale);
   const { mutateAsync: registerUser, isPending } = useRegister();
   const [success, setSuccess] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -89,7 +91,7 @@ export default function Register() {
           title: t("register.successToastTitle"),
           description: t("register.successToastDescription"),
         });
-        setTimeout(() => setLocation("/login"), 2500);
+        setTimeout(() => setLocation(href("/login")), 2500);
       }
     } catch (err: unknown) {
       let message = t("register.errorFallback");
@@ -226,7 +228,7 @@ export default function Register() {
             {isDuplicateEmail && !errors.email && (
               <p className="mt-1.5 text-sm font-medium text-rose-300">
                 {t("register.duplicateEmailInline")}{" "}
-                <Link href="/login" className="font-bold underline transition-colors hover:text-rose-200">
+                <Link href={href("/login")} className="font-bold underline transition-colors hover:text-rose-200">
                   {t("register.duplicateEmailLoginCta")}
                 </Link>
               </p>
@@ -310,7 +312,7 @@ export default function Register() {
 
         <p className="mt-8 text-center font-medium text-slate-400">
           {t("register.haveAccount")}{" "}
-          <Link href="/login" className="font-bold text-rose-200 transition-colors hover:text-rose-100 hover:underline">
+          <Link href={href("/login")} className="font-bold text-rose-200 transition-colors hover:text-rose-100 hover:underline">
             {t("register.loginLink")}
           </Link>
         </p>

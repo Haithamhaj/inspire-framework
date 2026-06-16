@@ -1,0 +1,129 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - generic [ref=e5]:
+        - link "INSPIRE Personal AI Instructions" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img [ref=e8]
+          - generic [ref=e11]:
+            - generic [ref=e12]: INSPIRE
+            - generic [ref=e13]: Personal AI Instructions
+        - button "Language" [ref=e15]:
+          - img [ref=e16]
+          - text: ع
+    - main [ref=e21]:
+      - article [ref=e22]:
+        - generic [ref=e23]:
+          - link "All guides" [ref=e24] [cursor=pointer]:
+            - /url: /guides
+            - img [ref=e25]
+            - text: All guides
+          - generic [ref=e27]:
+            - paragraph [ref=e28]:
+              - img [ref=e29]
+              - text: INSPIRE guide
+            - 'heading "ChatGPT Custom Instructions: What to Include" [level=1] [ref=e32]'
+            - paragraph [ref=e33]: Learn what to put in ChatGPT custom instructions so AI tools understand your goals, style, and expectations.
+          - generic [ref=e34]:
+            - generic [ref=e35]: ChatGPT custom instructions
+            - generic [ref=e36]: تعليمات ChatGPT
+            - generic [ref=e37]: AI assistant instructions
+          - generic [ref=e38]:
+            - generic [ref=e39]:
+              - heading "Custom instructions should describe how you work" [level=2] [ref=e40]
+              - generic [ref=e41]:
+                - paragraph [ref=e42]: The best custom instructions are not a biography. They explain your goals, preferred style, decision habits, and what kind of output helps you move forward.
+                - paragraph [ref=e43]: "For example: whether you prefer direct answers, options, trade-offs, examples, checklists, or step-by-step reasoning."
+            - generic [ref=e44]:
+              - heading "Separate context from commands" [level=2] [ref=e45]
+              - generic [ref=e46]:
+                - paragraph [ref=e47]: Permanent instructions should include stable preferences. Temporary project details should stay in the current chat.
+                - paragraph [ref=e48]: INSPIRE helps separate these layers by producing a stable AI operating profile and project-aware starter prompts.
+            - generic [ref=e49]:
+              - heading "Use instructions as a quality system" [level=2] [ref=e50]
+              - generic [ref=e51]:
+                - paragraph [ref=e52]: A good instruction set tells the assistant how to handle uncertainty, when to ask questions, and how to structure answers.
+                - paragraph [ref=e53]: This improves consistency across ChatGPT, Claude, Gemini, and similar tools.
+            - generic [ref=e54]:
+              - heading "Keep stable preferences separate" [level=2] [ref=e55]
+              - generic [ref=e56]:
+                - paragraph [ref=e57]: "Stable preferences belong in custom instructions: answer length, tone, formatting, risk tolerance, and preferred decision style."
+                - paragraph [ref=e58]: Temporary project facts should stay in the chat so your permanent instructions do not become cluttered or outdated.
+          - generic [ref=e59]:
+            - heading "Example prompt upgrade" [level=2] [ref=e60]
+            - paragraph [ref=e61]: "Each upgrade shows the same pattern INSPIRE uses when turning a vague request into a usable instruction: clarify the role, task, context, constraints, output format, and quality rules."
+            - generic [ref=e62]:
+              - generic [ref=e63]:
+                - heading "Weak prompt" [level=3] [ref=e64]
+                - paragraph [ref=e65]: Be helpful and concise.
+              - generic [ref=e66]:
+                - heading "Stronger prompt" [level=3] [ref=e67]
+                - paragraph [ref=e68]: Give direct answers first, then explain trade-offs. Ask a clarifying question only when the missing detail changes the recommendation. Avoid generic advice and tie suggestions to my current goal.
+          - generic [ref=e69]:
+            - heading "Apply CRAFTS to your prompt" [level=2] [ref=e70]
+            - paragraph [ref=e71]: Use Smart Prompt Coach to organize context, role, audience, format, tone, and goal into a clear prompt you can test with ChatGPT, Claude, Gemini, or another AI model.
+            - link "Open Smart Prompt Coach" [ref=e72] [cursor=pointer]:
+              - /url: https://chatgpt.com/g/g-67fe5939b39c8191a7ad597fd6fb0192-smart-prompt-engineer-mhnds-lmtlbt-ldhky
+              - text: Open Smart Prompt Coach
+              - img [ref=e73]
+          - generic [ref=e77]:
+            - heading "Method and references" [level=2] [ref=e78]
+            - paragraph [ref=e79]: This guide combines INSPIRE's product method with the INSPIRE & CRAFTS research background and official prompt-design guidance from AI platform providers.
+            - generic [ref=e80]:
+              - link "INSPIRE & CRAFTS research paper" [ref=e81] [cursor=pointer]:
+                - /url: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5358595
+                - text: INSPIRE & CRAFTS research paper
+                - img [ref=e82]
+              - link "OpenAI prompt engineering guide" [ref=e86] [cursor=pointer]:
+                - /url: https://platform.openai.com/docs/guides/prompt-engineering/strategy
+                - text: OpenAI prompt engineering guide
+                - img [ref=e87]
+              - link "Anthropic Claude prompt engineering docs" [ref=e91] [cursor=pointer]:
+                - /url: https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering
+                - text: Anthropic Claude prompt engineering docs
+                - img [ref=e92]
+              - link "Google Vertex AI prompt design strategies" [ref=e96] [cursor=pointer]:
+                - /url: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/prompts/prompt-design-strategies
+                - text: Google Vertex AI prompt design strategies
+                - img [ref=e97]
+          - generic [ref=e101]:
+            - heading "FAQ" [level=2] [ref=e102]
+            - generic [ref=e103]:
+              - generic [ref=e104]:
+                - heading "What should I put in ChatGPT custom instructions?" [level=3] [ref=e105]
+                - paragraph [ref=e106]: Include your goals, preferred answer style, formatting preferences, quality rules, and things the assistant should avoid.
+              - generic [ref=e107]:
+                - heading "Should custom instructions include personal details?" [level=3] [ref=e108]
+                - paragraph [ref=e109]: Only include details that improve the work. Avoid sensitive information that the assistant does not need to answer well.
+          - generic [ref=e110]:
+            - heading "Turn this into your own AI instructions" [level=2] [ref=e111]
+            - paragraph [ref=e112]: INSPIRE converts your goals, work style, preferences, and red lines into a reusable AI operating profile.
+            - generic [ref=e113]:
+              - link "Try the free quick assessment" [ref=e114] [cursor=pointer]:
+                - /url: /assess/mini
+              - link "View pricing" [ref=e115] [cursor=pointer]:
+                - /url: /pricing
+                - text: View pricing
+                - img [ref=e116]
+    - contentinfo [ref=e119]:
+      - generic [ref=e120]:
+        - paragraph [ref=e121]: © 2026 INSPIRE Framework
+        - navigation "Legal links" [ref=e122]:
+          - link "Pricing" [ref=e123] [cursor=pointer]:
+            - /url: /pricing
+          - link "Guides" [ref=e124] [cursor=pointer]:
+            - /url: /guides
+          - link "About" [ref=e125] [cursor=pointer]:
+            - /url: /about
+          - link "Research" [ref=e126] [cursor=pointer]:
+            - /url: /research
+          - link "Contact" [ref=e127] [cursor=pointer]:
+            - /url: /contact
+          - link "Terms" [ref=e128] [cursor=pointer]:
+            - /url: /terms
+          - link "Privacy" [ref=e129] [cursor=pointer]:
+            - /url: /privacy
+          - link "Refund Policy" [ref=e130] [cursor=pointer]:
+            - /url: /refund-policy
+  - region "Notifications (F8)":
+    - list

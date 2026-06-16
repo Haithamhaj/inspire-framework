@@ -12,6 +12,13 @@ import { z } from "zod";
 
 const router: IRouter = Router();
 
+function resolvePdfFilePath(pdfUrl: string | null | undefined) {
+  if (!pdfUrl) return null;
+  const filename = path.basename(pdfUrl);
+  if (!filename.endsWith(".pdf") || filename.includes("..")) return null;
+  return path.join(process.cwd(), "public", "pdfs", filename);
+}
+
 const FeedbackSchema = z.object({
   rating: z.number().int().min(1).max(5),
   useful_answer: z.string().trim().max(1000).optional().nullable(),
@@ -483,7 +490,8 @@ router.post(
       return;
     }
 
-    if (assessment.pdfUrl) {
+    const existingPdfPath = resolvePdfFilePath(assessment.pdfUrl);
+    if (assessment.pdfUrl && existingPdfPath && fs.existsSync(existingPdfPath)) {
       res.json({ success: true, pdfUrl: assessment.pdfUrl });
       return;
     }

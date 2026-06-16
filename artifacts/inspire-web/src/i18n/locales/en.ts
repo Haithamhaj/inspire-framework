@@ -194,7 +194,7 @@ export const en: Dictionary = {
     improvementTitle: "Service improvement:",
     improvementText: "We may use aggregated, non-identifying data to improve our assessment algorithms.",
     agreeTitle: "I agree to the use of my data",
-    agreeSubtitle: "أوافق على الشروط واستخدام بياناتي",
+    agreeSubtitle: "I agree to the terms and data use",
     continueButton: "Continue to registration",
   },
   miniAssessment: {

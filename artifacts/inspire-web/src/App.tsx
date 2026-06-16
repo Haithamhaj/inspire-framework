@@ -31,8 +31,6 @@ import MyAssessments from "@/pages/my-assessments";
 import Profile from "@/pages/profile";
 import Share from "@/pages/share";
 import ReviewDemo from "@/pages/review-demo";
-import GuideCharacterDemo from "@/pages/guide-character-demo";
-import GuideCharacterMotionLab from "@/pages/guide-character-motion-lab";
 import Admin from "@/pages/admin";
 import BillingSuccess from "@/pages/billing-success";
 import NotFound from "@/pages/not-found";
@@ -45,11 +43,14 @@ function Router() {
 
   useEffect(() => {
     const pathLocale = getPathLocale(location);
-    if (pathLocale && pathLocale !== locale) setLocale(pathLocale);
+    const [, search = ""] = location.split("?");
+    const queryLocale = new URLSearchParams(search).get("lang");
+    const nextLocale = pathLocale ?? (queryLocale === "ar" || queryLocale === "en" ? queryLocale : "en");
+    if (nextLocale !== locale) setLocale(nextLocale);
   }, [location, locale, setLocale]);
 
   useEffect(() => {
-    applySeo(getSeoForPath(location, locale));
+    applySeo(getSeoForPath(location, locale), locale);
   }, [location, locale]);
 
   const normalizedLocation = stripLocalePrefix(location).split("?")[0] || "/";
@@ -71,16 +72,15 @@ function Router() {
     "/assess",
     "/assess/mini",
     "/review-demo",
-    "/guide-character-demo",
-    "/guide-character-motion-lab",
     "/billing/success",
   ]);
   const isPremium = premiumNavPaths.has(normalizedLocation) || /^\/results\/[^/]+/.test(normalizedLocation);
   const isReviewDemo = normalizedLocation === "/review-demo";
+  const isAdmin = normalizedLocation === "/admin";
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isReviewDemo && <Navbar variant={isPremium ? "premium" : "default"} />}
+      {!isReviewDemo && !isAdmin && <Navbar variant={isPremium ? "premium" : "default"} />}
       <main className="flex-1">
         <Switch>
           <Route path="/" component={Landing} />
@@ -127,17 +127,14 @@ function Router() {
           <Route path="/ar/share/:token" component={Share} />
           <Route path="/review-demo" component={ReviewDemo} />
           <Route path="/ar/review-demo" component={ReviewDemo} />
-          <Route path="/guide-character-demo" component={GuideCharacterDemo} />
-          <Route path="/ar/guide-character-demo" component={GuideCharacterDemo} />
-          <Route path="/guide-character-motion-lab" component={GuideCharacterMotionLab} />
-          <Route path="/ar/guide-character-motion-lab" component={GuideCharacterMotionLab} />
           <Route path="/billing/success" component={BillingSuccess} />
           <Route path="/ar/billing/success" component={BillingSuccess} />
           <Route path="/admin" component={Admin} />
+          <Route path="/ar/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
       </main>
-      {!isReviewDemo && <LegalFooter />}
+      {!isReviewDemo && !isAdmin && <LegalFooter />}
     </div>
   );
 }

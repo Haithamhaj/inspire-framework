@@ -1,7 +1,11 @@
 import { Resend } from "resend";
 import { db } from "@workspace/db";
-import { assessmentsTable, usersTable } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import {
+  assessmentGenerationRunsTable,
+  assessmentsTable,
+  usersTable,
+} from "@workspace/db/schema";
+import { desc, eq } from "drizzle-orm";
 import { logger } from "./logger";
 
 let _resend: Resend | null = null;
@@ -141,19 +145,25 @@ export async function sendAdminAlertEmail({
     return;
   }
 
-  const [assessment] = await db
-    .select()
-    .from(assessmentsTable)
-    .where(eq(assessmentsTable.id, assessmentId));
+  const [[assessment], [latestRun]] = await Promise.all([
+    db
+      .select()
+      .from(assessmentsTable)
+      .where(eq(assessmentsTable.id, assessmentId)),
+    db
+      .select()
+      .from(assessmentGenerationRunsTable)
+      .where(eq(assessmentGenerationRunsTable.assessmentId, assessmentId))
+      .orderBy(desc(assessmentGenerationRunsTable.createdAt))
+      .limit(1),
+  ]);
 
-  const user = assessment
-    ? (
-        await db
-          .select()
-          .from(usersTable)
-          .where(eq(usersTable.id, assessment.userId))
-      )[0]
-    : null;
+  const [user] = assessment
+    ? await db
+        .select()
+        .from(usersTable)
+        .where(eq(usersTable.id, assessment.userId))
+    : [null];
 
   const appUrl = getAppUrl();
   const resultsUrl = `${appUrl}/results/${assessmentId}`;
@@ -174,6 +184,12 @@ export async function sendAdminAlertEmail({
         retryCount: assessment?.retryCount ?? 0,
         nextRetryAt: assessment?.nextRetryAt?.toISOString() ?? null,
         paymentId: assessment?.paymentId ?? null,
+        latestRunStatus: latestRun?.status ?? null,
+        latestRunAttempt: latestRun?.attemptNumber ?? null,
+        latestRunProvider: latestRun?.provider ?? null,
+        latestRunModel: latestRun?.model ?? null,
+        latestRunError: latestRun?.errorMessage ?? null,
+        latestRunAt: latestRun?.createdAt?.toISOString() ?? null,
       }),
     });
     logger.info({ assessmentId, to }, "Admin alert email sent");
@@ -359,6 +375,12 @@ function buildAdminAlertEmailHtml({
   retryCount,
   nextRetryAt,
   paymentId,
+  latestRunStatus,
+  latestRunAttempt,
+  latestRunProvider,
+  latestRunModel,
+  latestRunError,
+  latestRunAt,
 }: {
   assessmentId: string;
   reason: string;
@@ -370,6 +392,12 @@ function buildAdminAlertEmailHtml({
   retryCount: number;
   nextRetryAt: string | null;
   paymentId: string | null;
+  latestRunStatus: string | null;
+  latestRunAttempt: number | null;
+  latestRunProvider: string | null;
+  latestRunModel: string | null;
+  latestRunError: string | null;
+  latestRunAt: string | null;
 }) {
   return `<!DOCTYPE html>
 <html dir="rtl" lang="ar">
@@ -383,8 +411,11 @@ function buildAdminAlertEmailHtml({
       <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Project</td><td style="padding:8px;border-bottom:1px solid #e5e7eb;">${projectName}</td></tr>
       <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">User</td><td style="padding:8px;border-bottom:1px solid #e5e7eb;">${userName} — <span dir="ltr">${userEmail}</span></td></tr>
       <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Status</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${status}</td></tr>
-      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Retry</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${retryCount}${nextRetryAt ? ` — next: ${nextRetryAt}` : ""}</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Retry</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${retryCount > 0 ? retryCount : "first generation"}${nextRetryAt ? ` — next: ${nextRetryAt}` : ""}</td></tr>
       <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Payment ID</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${paymentId ?? "None"}</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Latest run</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${latestRunStatus ?? "None"}${latestRunAttempt ? ` — ${latestRunAttempt === 1 ? "first generation" : `retry attempt ${latestRunAttempt}`}` : ""}${latestRunAt ? ` — ${latestRunAt}` : ""}</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Provider / Model</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;">${latestRunProvider ?? "None"}${latestRunModel ? ` / ${latestRunModel}` : ""}</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;font-weight:700;">Error</td><td dir="ltr" style="padding:8px;border-bottom:1px solid #e5e7eb;white-space:pre-wrap;">${latestRunError ?? "None"}</td></tr>
     </table>
     <div style="margin-top:22px;text-align:center;">
       <a href="${resultsUrl}" style="display:inline-block;background:#e94560;color:#fff;text-decoration:none;padding:12px 24px;border-radius:10px;font-weight:700;">فتح صفحة النتيجة</a>

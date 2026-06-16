@@ -23,7 +23,107 @@ publicDir = "artifacts/inspire-web/dist/public"
 serve = "static"
 
 [[services.production.rewrites]]
-from = "/*"
+from = "/assess"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/assess"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/privacy-consent"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/privacy-consent"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/login"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/login"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/register"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/register"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/forgot-password"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/forgot-password"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/reset-password"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/reset-password"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/results/*"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/results/*"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/share/*"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/share/*"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/my-assessments"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/my-assessments"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/profile"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/profile"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/review-demo"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/review-demo"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/billing/*"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/billing/*"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/admin"
+to = "/index.html"
+
+[[services.production.rewrites]]
+from = "/ar/admin"
 to = "/index.html"
 
 [services.env]

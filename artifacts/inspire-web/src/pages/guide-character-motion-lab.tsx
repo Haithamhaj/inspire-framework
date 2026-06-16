@@ -202,6 +202,119 @@ const FULL_BODY_BY_POSE: Record<InspireGuidePose, string> = {
   walk: fullWalkLeft,
 };
 
+type AutoMotionPhase = {
+  key: string;
+  image: string;
+  x: number;
+  y: number;
+  scale: number;
+  duration: number;
+  label: { ar: string; en: string };
+  line: { ar: string; en: string };
+  motion: "walk" | "idle" | "think" | "wait" | "happy" | "listen";
+};
+
+const AUTO_MOTION_PHASES: AutoMotionPhase[] = [
+  {
+    key: "walk-in",
+    image: fullWalkRight,
+    x: -280,
+    y: 12,
+    scale: 0.72,
+    duration: 4200,
+    motion: "walk",
+    label: { ar: "مشي هادئ", en: "Calm walk" },
+    line: {
+      ar: "أتحرك معك داخل التجربة، بدون ما أقطع تركيزك.",
+      en: "I move with the experience without interrupting your focus.",
+    },
+  },
+  {
+    key: "welcome-stop",
+    image: fullWelcome,
+    x: -120,
+    y: 8,
+    scale: 0.9,
+    duration: 2600,
+    motion: "listen",
+    label: { ar: "ترحيب", en: "Welcome" },
+    line: {
+      ar: "ابدأ بهدوء. المطلوب تختار الأقرب لك، مش الإجابة المثالية.",
+      en: "Start calmly. Choose what is closest to you, not the perfect answer.",
+    },
+  },
+  {
+    key: "walk-cross",
+    image: fullWalkLeft,
+    x: 250,
+    y: 16,
+    scale: 0.68,
+    duration: 5000,
+    motion: "walk",
+    label: { ar: "تنقل داخل البار", en: "Moving through the bar" },
+    line: {
+      ar: "لما تنتقل بين الأسئلة، الحركة تظل ناعمة ومستمرة.",
+      en: "Between questions, the motion stays soft and continuous.",
+    },
+  },
+  {
+    key: "thinking-stop",
+    image: fullThinking,
+    x: 92,
+    y: 6,
+    scale: 0.88,
+    duration: 3100,
+    motion: "think",
+    label: { ar: "تفكير", en: "Thinking" },
+    line: {
+      ar: "لو السؤال يحتاج تفكير، هذا طبيعي. خذ لحظة قصيرة.",
+      en: "If the question needs thought, that is normal. Take a short moment.",
+    },
+  },
+  {
+    key: "waiting",
+    image: fullSeatedWaiting,
+    x: -14,
+    y: 18,
+    scale: 0.86,
+    duration: 3600,
+    motion: "wait",
+    label: { ar: "انتظار", en: "Waiting" },
+    line: {
+      ar: "أنا موجود هنا كمساعد خفيف، مش كنافذة مزعجة.",
+      en: "I stay here as a light guide, not a noisy popup.",
+    },
+  },
+  {
+    key: "progress",
+    image: fullTablet,
+    x: 160,
+    y: 6,
+    scale: 0.88,
+    duration: 3000,
+    motion: "idle",
+    label: { ar: "قراءة التقدم", en: "Reading progress" },
+    line: {
+      ar: "كل إجابة تضيف إشارة أوضح لطريقة عملك وتفكيرك.",
+      en: "Every answer adds a clearer signal about your work style.",
+    },
+  },
+  {
+    key: "celebrate",
+    image: fullJumpCelebrate,
+    x: 18,
+    y: -2,
+    scale: 0.86,
+    duration: 2500,
+    motion: "happy",
+    label: { ar: "تشجيع", en: "Encouragement" },
+    line: {
+      ar: "ممتاز. التقدم واضح، والنتيجة النهائية صارت أقرب لك.",
+      en: "Good. Progress is clear, and the final result is closer to you.",
+    },
+  },
+];
+
 function isArabicPath() {
   return window.location.pathname.startsWith("/ar");
 }
@@ -404,6 +517,135 @@ function InspireGuideCharacter({ pose }: { pose: InspireGuidePose }) {
   );
 }
 
+function SvgCompanion({
+  motionState,
+  locale,
+}: {
+  motionState: AutoMotionPhase["motion"];
+  locale: Locale;
+}) {
+  const reduced = useReducedMotion() ?? false;
+  const isAr = locale === "ar";
+  const isThinking = motionState === "think";
+  const isWaiting = motionState === "wait";
+  const isHappy = motionState === "happy";
+  const isWalk = motionState === "walk";
+
+  return (
+    <motion.svg
+      viewBox="0 0 120 120"
+      className="h-[76px] w-[76px] overflow-visible drop-shadow-[0_14px_16px_rgba(0,0,0,0.35)]"
+      role="img"
+      aria-label={isAr ? "مساعد SVG تابع لشخصية INSPIRE" : "INSPIRE SVG companion"}
+      animate={
+        reduced
+          ? undefined
+          : {
+              y: isWaiting ? [0, 4, 0] : isHappy ? [0, -8, 0] : [0, -4, 0],
+              rotate: isThinking ? [-4, 4, -4] : isHappy ? [-8, 8, -8] : [-2, 2, -2],
+            }
+      }
+      transition={{ duration: isHappy ? 1.1 : 2.4, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <defs>
+        <linearGradient id="companionShell" x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#fff7ed" />
+          <stop offset="0.58" stopColor="#dbeafe" />
+          <stop offset="1" stopColor="#99f6e4" />
+        </linearGradient>
+        <linearGradient id="companionCore" x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#22d3ee" />
+          <stop offset="1" stopColor="#fb7185" />
+        </linearGradient>
+        <filter id="companionGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="4.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <motion.ellipse
+        cx="60"
+        cy="104"
+        rx="24"
+        ry="6"
+        fill="#020617"
+        opacity="0.28"
+        animate={reduced ? undefined : { scaleX: isHappy ? [1, 0.75, 1] : [1, 0.88, 1] }}
+        transition={{ duration: isHappy ? 1.1 : 2.4, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      <motion.g
+        animate={reduced ? undefined : { scale: isHappy ? [1, 1.08, 1] : [1, 1.025, 1] }}
+        transition={{ duration: isHappy ? 1.1 : 2.4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <circle cx="60" cy="56" r="40" fill="url(#companionShell)" />
+        <circle cx="60" cy="56" r="31" fill="#0f172a" opacity="0.94" />
+        <motion.circle
+          cx="60"
+          cy="56"
+          r="44"
+          stroke="#22d3ee"
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="none"
+          strokeDasharray="52 28"
+          animate={reduced ? undefined : { rotate: [0, 360], opacity: [0.32, 0.72, 0.32] }}
+          transition={{ duration: isHappy ? 2.6 : 4.8, repeat: Infinity, ease: "linear" }}
+          style={{ originX: "60px", originY: "56px" }}
+        />
+        <motion.circle
+          cx="60"
+          cy="56"
+          r="37"
+          stroke="#fb923c"
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="none"
+          strokeDasharray="18 42"
+          animate={reduced ? undefined : { rotate: [360, 0], opacity: [0.24, 0.58, 0.24] }}
+          transition={{ duration: 5.4, repeat: Infinity, ease: "linear" }}
+          style={{ originX: "60px", originY: "56px" }}
+        />
+        <motion.circle
+          cx="48"
+          cy={isWaiting ? 58 : 54}
+          r="5"
+          fill="#67e8f9"
+          filter="url(#companionGlow)"
+          animate={reduced ? undefined : { x: isWalk ? [-3, 3, -3] : isThinking ? [0, 4, 0] : 0 }}
+          transition={{ duration: isWalk ? 0.9 : 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.circle
+          cx="72"
+          cy={isWaiting ? 58 : 54}
+          r="5"
+          fill="#67e8f9"
+          filter="url(#companionGlow)"
+          animate={reduced ? undefined : { x: isWalk ? [-3, 3, -3] : isThinking ? [-4, 0, -4] : 0 }}
+          transition={{ duration: isWalk ? 0.9 : 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.path
+          d={
+            isWaiting
+              ? "M51 67 C56 64, 64 64, 69 67"
+              : isHappy
+                ? "M49 65 C54 73, 66 73, 71 65"
+                : "M50 67 C56 71, 64 71, 70 67"
+          }
+          stroke="#a7f3d0"
+          strokeWidth="4"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <circle cx="60" cy="17" r="4" fill="url(#companionCore)" filter="url(#companionGlow)" />
+      </motion.g>
+    </motion.svg>
+  );
+}
+
 function MotionBar({
   title,
   scenario,
@@ -455,6 +697,273 @@ function MotionBar({
   );
 }
 
+function HybridCompanionStage({ locale }: { locale: Locale }) {
+  const reduced = useReducedMotion() ?? false;
+  const isAr = locale === "ar";
+  const [phaseIndex, setPhaseIndex] = useState(0);
+  const phase = AUTO_MOTION_PHASES[phaseIndex];
+
+  useEffect(() => {
+    if (reduced) return;
+    const id = window.setTimeout(() => {
+      setPhaseIndex((current) => (current + 1) % AUTO_MOTION_PHASES.length);
+    }, phase.duration);
+    return () => window.clearTimeout(id);
+  }, [phase.duration, reduced]);
+
+  const mainX = isAr ? -phase.x * 0.82 : phase.x * 0.82;
+  const companionDrift = isAr ? -1 : 1;
+  const companionX = companionDrift * (phaseIndex % 2 === 0 ? -180 : phase.motion === "happy" ? 205 : 150);
+  const companionY = phase.motion === "wait" ? -112 : phase.motion === "happy" ? -132 : -124;
+
+  return (
+    <section className="rounded-[28px] border border-fuchsia-200/16 bg-fuchsia-400/[0.045] p-4 shadow-2xl shadow-black/20">
+      <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-white">
+            {isAr ? "الخيار 5: الشخصية الأساسية مع مساعد SVG تابع" : "Option 5: main character with SVG companion"}
+          </h2>
+          <p className="mt-1 text-sm leading-6 text-white/58">
+            {isAr
+              ? "PNG تبقى شخصية INSPIRE الرسمية، والـ SVG مساعد صغير يعطي حركة مستمرة حولها بدون أن يصبح شخصية ثانية مستقلة."
+              : "The PNG stays the official INSPIRE character, while a small SVG companion adds continuous motion without becoming a second main character."}
+          </p>
+        </div>
+        <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-semibold text-white/60">
+          {phase.label[locale]}
+        </span>
+      </div>
+
+      <div className="relative min-h-[360px] overflow-hidden rounded-[26px] border border-white/10 bg-[#0b0f1f] p-3 md:min-h-[276px]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_48%_28%,rgba(217,70,239,0.13),transparent_36%),radial-gradient(circle_at_58%_42%,rgba(45,212,191,0.12),transparent_34%)]" />
+        <div className="absolute bottom-6 left-10 right-10 h-px bg-white/10" />
+
+        <motion.div
+          className="absolute left-1/2 top-20 z-10"
+          animate={
+            reduced
+              ? undefined
+              : {
+                  x: [companionX, companionX + companionDrift * 34, companionX - companionDrift * 22, companionX],
+                  y: [companionY, companionY - 16, companionY + 8, companionY],
+                  scale: phase.motion === "happy" ? [0.88, 1, 0.88] : [0.82, 0.9, 0.82],
+                }
+          }
+          transition={{
+            duration: phase.motion === "happy" ? 3.2 : phase.motion === "walk" ? 4.8 : 5.6,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <SvgCompanion motionState={phase.motion} locale={locale} />
+        </motion.div>
+
+        <motion.div
+          className="absolute bottom-8 left-1/2 z-20 flex h-[240px] w-[210px] -translate-x-1/2 items-end justify-center md:h-[260px]"
+          animate={reduced ? undefined : { x: mainX, y: phase.y, scale: phase.scale }}
+          transition={{
+            duration: phase.motion === "walk" ? phase.duration / 1000 : 1.05,
+            ease: phase.motion === "walk" ? "linear" : [0.22, 1, 0.36, 1],
+          }}
+        >
+          <motion.div
+            className="absolute bottom-0 h-3 w-32 rounded-full bg-black/42 blur-md"
+            animate={reduced ? undefined : { scaleX: phase.motion === "happy" ? [1, 0.74, 1] : [1, 0.9, 1] }}
+            transition={{ duration: phase.motion === "happy" ? 1.15 : 2.2, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <AnimatePresence initial={false}>
+            <motion.img
+              key={`hybrid-${phase.key}`}
+              src={phase.image}
+              alt=""
+              draggable={false}
+              className="absolute bottom-0 max-h-[222px] object-contain drop-shadow-[0_24px_24px_rgba(0,0,0,0.36)] md:max-h-[244px]"
+              initial={{ opacity: 0, y: 10, scale: 0.98, filter: "blur(3px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -8, scale: 1.02, filter: "blur(3px)" }}
+              transition={{ duration: 0.78, ease: "easeInOut" }}
+            />
+          </AnimatePresence>
+        </motion.div>
+
+        <motion.div
+          className={`absolute bottom-4 z-30 max-w-[min(540px,calc(100%-32px))] rounded-[22px] border border-white/10 bg-white/[0.075] px-4 py-3 backdrop-blur ${
+            isAr ? "right-4 md:right-8" : "left-4 md:left-8"
+          }`}
+          animate={reduced ? undefined : { y: [0, -2, 0] }}
+          transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="mb-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-fuchsia-100/75">
+            <Sparkles className="h-3.5 w-3.5" />
+            {isAr ? "ثنائي مساعد" : "Companion pair"}
+          </div>
+          <p className="text-[13.5px] leading-6 text-white/78">{phase.line[locale]}</p>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function MinimalPresence({
+  motionState,
+  locale,
+}: {
+  motionState: AutoMotionPhase["motion"];
+  locale: Locale;
+}) {
+  const reduced = useReducedMotion() ?? false;
+  const isAr = locale === "ar";
+  const isThinking = motionState === "think";
+  const isWaiting = motionState === "wait";
+  const isHappy = motionState === "happy";
+  const isWalk = motionState === "walk";
+
+  const eyeShift = isThinking ? 6 : isWalk ? 8 : isWaiting ? -5 : 0;
+  const eyeY = isWaiting ? 2 : isHappy ? -2 : 0;
+  const mouthPath = isWaiting
+    ? "M77 120 C94 112 118 112 135 120"
+    : isThinking
+      ? "M81 120 C97 126 115 126 131 120"
+      : isHappy
+        ? "M76 116 C92 137 120 137 136 116"
+        : "M78 120 C94 132 118 132 134 120";
+
+  return (
+    <motion.svg
+      viewBox="0 0 212 164"
+      className="h-[132px] w-[210px] overflow-visible"
+      role="img"
+      aria-label={isAr ? "واجهة INSPIRE ذكية بسيطة" : "Minimal INSPIRE smart presence"}
+      animate={reduced ? undefined : { y: [0, -4, 0] }}
+      transition={{ duration: isHappy ? 1.8 : 3.2, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <defs>
+        <radialGradient id="presenceIris" cx="44%" cy="38%" r="62%">
+          <stop stopColor="#bff8ff" />
+          <stop offset="0.45" stopColor="#22d3ee" />
+          <stop offset="1" stopColor="#0f766e" />
+        </radialGradient>
+        <filter id="presenceGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <motion.ellipse
+        cx="106"
+        cy="88"
+        rx="88"
+        ry="58"
+        fill="#22d3ee"
+        opacity="0.08"
+        animate={reduced ? undefined : { scale: isHappy ? [1, 1.08, 1] : [1, 1.03, 1] }}
+        transition={{ duration: isHappy ? 1.8 : 3.4, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      <motion.g
+        animate={reduced ? undefined : { x: [0, eyeShift, eyeShift, 0], y: [0, eyeY, 0] }}
+        transition={{ duration: isWalk ? 1.6 : isThinking ? 2.4 : 3.6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <motion.g
+          animate={reduced ? undefined : { scaleY: [1, 0.1, 1] }}
+          transition={{ duration: isWaiting ? 3.2 : 5.2, repeat: Infinity, ease: "easeInOut", times: [0, 0.94, 1] }}
+          style={{ originX: "70px", originY: "68px" }}
+        >
+          <ellipse cx="70" cy="68" rx="34" ry="25" fill="#f8fafc" opacity="0.96" />
+          <circle cx="72" cy="68" r="17" fill="url(#presenceIris)" filter="url(#presenceGlow)" />
+          <circle cx="76" cy="70" r="9.5" fill="#020617" />
+          <circle cx="66" cy="59" r="5.2" fill="#ffffff" opacity="0.95" />
+          <circle cx="81" cy="63" r="2.2" fill="#ffffff" opacity="0.75" />
+        </motion.g>
+        <motion.g
+          animate={reduced ? undefined : { scaleY: [1, 0.1, 1] }}
+          transition={{ duration: isWaiting ? 3.2 : 5.2, repeat: Infinity, ease: "easeInOut", times: [0, 0.94, 1], delay: 0.05 }}
+          style={{ originX: "142px", originY: "68px" }}
+        >
+          <ellipse cx="142" cy="68" rx="34" ry="25" fill="#f8fafc" opacity="0.96" />
+          <circle cx="140" cy="68" r="17" fill="url(#presenceIris)" filter="url(#presenceGlow)" />
+          <circle cx="136" cy="70" r="9.5" fill="#020617" />
+          <circle cx="132" cy="59" r="5.2" fill="#ffffff" opacity="0.95" />
+          <circle cx="147" cy="63" r="2.2" fill="#ffffff" opacity="0.75" />
+        </motion.g>
+      </motion.g>
+
+      <motion.path
+        d={mouthPath}
+        stroke={isHappy ? "#fb923c" : "#a7f3d0"}
+        strokeWidth="7"
+        strokeLinecap="round"
+        fill="none"
+        filter="url(#presenceGlow)"
+        animate={
+          reduced
+            ? undefined
+            : motionState === "idle"
+              ? { pathLength: [0.7, 1, 0.7] }
+              : { opacity: [0.72, 1, 0.72] }
+        }
+        transition={{ duration: isHappy ? 1.4 : 2.2, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </motion.svg>
+  );
+}
+
+function MinimalPresenceStage({ locale }: { locale: Locale }) {
+  const reduced = useReducedMotion() ?? false;
+  const isAr = locale === "ar";
+  const [phaseIndex, setPhaseIndex] = useState(0);
+  const phase = AUTO_MOTION_PHASES[phaseIndex];
+
+  useEffect(() => {
+    if (reduced) return;
+    const id = window.setTimeout(() => {
+      setPhaseIndex((current) => (current + 1) % AUTO_MOTION_PHASES.length);
+    }, Math.max(2600, phase.duration * 0.75));
+    return () => window.clearTimeout(id);
+  }, [phase.duration, reduced]);
+
+  return (
+    <section className="rounded-[28px] border border-cyan-200/16 bg-cyan-400/[0.045] p-4 shadow-2xl shadow-black/20">
+      <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-white">
+            {isAr ? "الخيار 6: شاشة ذكية بسيطة" : "Option 6: minimal smart screen"}
+          </h2>
+          <p className="mt-1 text-sm leading-6 text-white/58">
+            {isAr
+              ? "بدون شخصية كرتونية: حضور ذكي خفيف من عيون وفم فقط، مناسب أكثر لموقع رسمي وهادئ."
+              : "No cartoon character: a light smart presence made only of eyes and mouth, better suited for a calm product interface."}
+          </p>
+        </div>
+        <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-semibold text-white/60">
+          {phase.label[locale]}
+        </span>
+      </div>
+
+      <div className="grid min-h-[260px] grid-cols-1 items-center gap-4 rounded-[26px] border border-white/10 bg-[#0b0f1f] p-4 md:grid-cols-[minmax(260px,0.9fr)_minmax(0,1.4fr)]">
+        <div className="relative flex min-h-[190px] items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,rgba(34,211,238,0.16),transparent_42%)]" />
+          <MinimalPresence motionState={phase.motion} locale={locale} />
+        </div>
+        <motion.div
+          className="rounded-[24px] border border-white/10 bg-white/[0.06] px-5 py-4 backdrop-blur"
+          animate={reduced ? undefined : { y: [0, -3, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-cyan-100/75">
+            <Sparkles className="h-3.5 w-3.5" />
+            {isAr ? "حضور ذكي" : "Smart presence"}
+          </div>
+          <p className="text-[16px] leading-8 text-white/78">{phase.line[locale]}</p>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 function DepthMotionStage({
   scenario,
   locale,
@@ -464,42 +973,57 @@ function DepthMotionStage({
 }) {
   const reduced = useReducedMotion() ?? false;
   const isAr = locale === "ar";
-  const closeKeys = new Set(["landing", "answer", "complete"]);
-  const farKeys = new Set(["question", "bored"]);
-  const isClose = closeKeys.has(scenario.key);
-  const isFar = farKeys.has(scenario.key);
-  const image = isClose
-    ? HALF_BODY_POSES[scenario.inspirePose]
-    : scenario.key === "question"
-      ? fullWalkRight
-      : FULL_BODY_BY_POSE[scenario.inspirePose];
+  const [phaseIndex, setPhaseIndex] = useState(0);
+  const phase = AUTO_MOTION_PHASES[phaseIndex];
+  const closeKeys = new Set(["welcome-stop"]);
+  const farKeys = new Set(["walk-in", "walk-cross"]);
+  const isClose = closeKeys.has(phase.key);
+  const isFar = farKeys.has(phase.key);
+  const signedX = isAr ? -phase.x : phase.x;
   const direction = isAr ? -1 : 1;
-  const depthX = isClose ? 0 : isFar ? direction * 250 : direction * -110;
-  const depthScale = isClose ? 1.22 : isFar ? 0.68 : 0.88;
-  const depthY = isClose ? 0 : isFar ? 22 : 12;
-  const bubbleVisible = isClose || scenario.key === "idle";
-  const characterHeightClass = isClose ? "h-[180px] md:h-[194px]" : "h-[210px] md:h-[230px]";
-  const characterMaxHeightClass = isClose ? "max-h-[168px] md:max-h-[180px]" : "max-h-[190px] md:max-h-[210px]";
+  const bubbleVisible = phase.motion !== "walk" || phaseIndex % 2 === 0;
+  const characterHeightClass = isClose ? "h-[190px] md:h-[208px]" : "h-[230px] md:h-[252px]";
+  const characterMaxHeightClass = isClose ? "max-h-[178px] md:max-h-[196px]" : "max-h-[212px] md:max-h-[236px]";
+
+  useEffect(() => {
+    if (reduced) return;
+    const id = window.setTimeout(() => {
+      setPhaseIndex((current) => (current + 1) % AUTO_MOTION_PHASES.length);
+    }, phase.duration);
+    return () => window.clearTimeout(id);
+  }, [phase.duration, reduced]);
+
+  const microMotion = reduced
+    ? undefined
+    : phase.motion === "walk"
+      ? { y: [0, -5, 0], rotate: [-0.8, 0.8, -0.8] }
+      : phase.motion === "happy"
+        ? { y: [0, -12, 0], rotate: [0, -2, 2, 0], scale: [1, 1.035, 1] }
+        : phase.motion === "think"
+          ? { y: [0, -2, 0], rotate: [-1.2, 1.2, -1.2] }
+          : phase.motion === "wait"
+            ? { y: [0, 3, 0], rotate: [0, -0.8, 0.8, 0] }
+            : { y: [0, -3, 0] };
 
   return (
     <section className="rounded-[28px] border border-teal-200/18 bg-teal-300/[0.045] p-4 shadow-2xl shadow-black/20">
       <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 className="text-lg font-bold text-white">
-            {isAr ? "الخيار 4: بار عميق يجمع نصف الجسم والجسم الكامل" : "Option 4: depth bar with close and full-body states"}
+            {isAr ? "الخيار 4: نسخة React بحركة مستمرة قدر الإمكان" : "Option 4: React motion prototype with continuous movement"}
           </h2>
           <p className="mt-1 text-sm leading-6 text-white/58">
             {isAr
-              ? "عندما تقترب الشخصية تظهر نصف جسم وتتحدث. وعندما تبتعد داخل المساحة تظهر كاملة وتقدر تمشي أو تجلس أو تنتظر."
-              : "When the character comes close, it becomes an upper-body guide. When it moves back, the full body can walk, sit, or wait."}
+              ? "هذه أفضل تجربة ممكنة بالصور الحالية: حركة تلقائية داخل المساحة، توقفات ذات معنى، وتنفس بصري خفيف. ما زالت ليست Rig حقيقي مثل Rive."
+              : "This is the best practical version with current images: automatic motion, meaningful pauses, and subtle life. It is still not a true Rive rig."}
           </p>
         </div>
         <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-semibold text-white/60">
-          {scenario.title[locale]}
+          {phase.label[locale]}
         </span>
       </div>
 
-      <div className="relative min-h-[330px] overflow-hidden rounded-[26px] border border-white/10 bg-[#0c1021] p-3 md:min-h-[252px]">
+      <div className="relative min-h-[380px] overflow-hidden rounded-[26px] border border-white/10 bg-[#0c1021] p-3 md:min-h-[292px]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(45,212,191,0.14),transparent_34%),linear-gradient(90deg,rgba(255,255,255,0.03),transparent_28%,transparent_72%,rgba(255,255,255,0.03))]" />
         <div className="absolute bottom-10 left-8 right-8 h-px bg-cyan-100/10" />
         <div className="absolute bottom-20 left-16 right-16 h-px bg-cyan-100/7" />
@@ -517,43 +1041,42 @@ function DepthMotionStage({
             reduced
               ? undefined
               : {
-                  x: depthX,
-                  y: depthY,
-                  scale: depthScale,
+                  x: signedX,
+                  y: phase.y,
+                  scale: phase.scale,
                 }
           }
-          transition={{ type: "spring", stiffness: 48, damping: 19, mass: 0.9 }}
+          transition={{
+            duration: phase.motion === "walk" ? phase.duration / 1000 : 1.05,
+            ease: phase.motion === "walk" ? "linear" : [0.22, 1, 0.36, 1],
+          }}
         >
-          <div className="absolute bottom-0 h-3 w-28 rounded-full bg-black/38 blur-md" />
+          <motion.div
+            className="absolute bottom-0 h-3 w-28 rounded-full bg-black/38 blur-md"
+            animate={reduced ? undefined : { scaleX: phase.motion === "happy" ? [1, 0.72, 1] : [1, 0.9, 1] }}
+            transition={{ duration: phase.motion === "happy" ? 1.25 : 2.2, repeat: Infinity, ease: "easeInOut" }}
+          />
           <motion.div
             className="relative z-10 flex h-full w-full items-end justify-center"
-            animate={
-              reduced
-                ? undefined
-                : scenario.key === "question"
-                  ? { x: [-10, 10, -10], y: [0, -3, 0] }
-                  : scenario.key === "complete"
-                    ? { y: [0, -10, 0], rotate: [0, -1.5, 1.5, 0] }
-                    : { y: [0, -3, 0] }
-            }
+            animate={microMotion}
             transition={{
-              duration: scenario.key === "question" ? 1.7 : scenario.key === "complete" ? 1.25 : 2.9,
+              duration: phase.motion === "walk" ? 0.72 : phase.motion === "happy" ? 1.15 : phase.motion === "wait" ? 2.9 : 2.2,
               repeat: Infinity,
               ease: "easeInOut",
             }}
           >
-            <AnimatePresence initial={false} mode="popLayout">
+            <AnimatePresence initial={false}>
               <motion.img
-                key={`${scenario.key}-${isClose ? "near" : "far"}`}
-                src={image}
+                key={phase.key}
+                src={phase.image}
                 alt=""
                 draggable={false}
                 className={`absolute bottom-0 object-contain drop-shadow-[0_22px_22px_rgba(0,0,0,0.34)] ${characterMaxHeightClass}`}
                 initial={{
                   opacity: 0,
-                  scale: isClose ? 0.9 : 1.06,
-                  y: isClose ? 18 : -8,
-                  filter: "blur(5px)",
+                  scale: 0.98,
+                  y: phase.motion === "walk" ? 4 : 12,
+                  filter: "blur(3px)",
                 }}
                 animate={{
                   opacity: 1,
@@ -563,18 +1086,25 @@ function DepthMotionStage({
                 }}
                 exit={{
                   opacity: 0,
-                  scale: isClose ? 1.08 : 0.94,
-                  y: isClose ? -12 : 14,
-                  filter: "blur(4px)",
+                  scale: 1.02,
+                  y: phase.motion === "walk" ? -4 : -10,
+                  filter: "blur(3px)",
                 }}
                 transition={{
-                  opacity: { duration: 0.55, ease: "easeInOut" },
-                  scale: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-                  y: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-                  filter: { duration: 0.45, ease: "easeOut" },
+                  opacity: { duration: 0.82, ease: "easeInOut" },
+                  scale: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+                  y: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+                  filter: { duration: 0.62, ease: "easeOut" },
                 }}
               />
             </AnimatePresence>
+            {!reduced && phase.motion === "walk" ? (
+              <motion.div
+                className="absolute bottom-3 h-1.5 w-10 rounded-full bg-cyan-200/24 blur-sm"
+                animate={{ x: [direction * 28, direction * -30, direction * 28], opacity: [0.15, 0.42, 0.15] }}
+                transition={{ duration: 0.72, repeat: Infinity, ease: "easeInOut" }}
+              />
+            ) : null}
           </motion.div>
         </motion.div>
 
@@ -597,17 +1127,7 @@ function DepthMotionStage({
             {isAr ? "حالة العمق" : "Depth state"}
           </div>
           <p className="text-[13.5px] leading-6 text-white/78">
-            {isClose
-              ? isAr
-                ? "الشخصية قريبة الآن: نصف جسم أوضح للكلام والتوجيه."
-                : "Close state: upper body is clearer for speech and guidance."
-              : isFar
-                ? isAr
-                  ? "الشخصية بعيدة الآن: جسم كامل مناسب للمشي والانتظار والحركة."
-                  : "Far state: full body works for walking, waiting, and motion."
-                : isAr
-                  ? "حالة وسط: انتقال ناعم بين الكلام والحركة."
-                  : "Mid state: a soft transition between speaking and movement."}
+            {phase.line[locale]}
           </p>
         </motion.div>
       </div>
@@ -761,6 +1281,10 @@ export default function GuideCharacterMotionLab() {
           </MotionBar>
 
           <DepthMotionStage scenario={scenario} locale={locale} />
+
+          <HybridCompanionStage locale={locale} />
+
+          <MinimalPresenceStage locale={locale} />
 
           <FullBodyPoseGallery locale={locale} />
 

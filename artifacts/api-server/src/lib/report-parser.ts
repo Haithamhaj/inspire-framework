@@ -268,8 +268,41 @@ type InspireInstructionRenderOptions =
 
 const cleanAiJson = (text: string): string => {
   const trimmed = text.trim();
-  const fenced = trimmed.match(/^```(?:json)?\s*\n([\s\S]*?)\n```$/i);
-  return (fenced ? fenced[1] : trimmed).trim();
+  const fencedWhole = trimmed.match(/^```(?:json)?\s*\n([\s\S]*?)\n```$/i);
+  if (fencedWhole) return fencedWhole[1].trim();
+
+  const fencedAnywhere = trimmed.match(/```(?:json)?\s*\n([\s\S]*?)\n```/i);
+  if (fencedAnywhere) return fencedAnywhere[1].trim();
+
+  const start = trimmed.indexOf("{");
+  if (start < 0) return trimmed;
+
+  let depth = 0;
+  let inString = false;
+  let escapeNext = false;
+  for (let i = start; i < trimmed.length; i += 1) {
+    const ch = trimmed[i]!;
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+    if (ch === "\\\\") {
+      if (inString) escapeNext = true;
+      continue;
+    }
+    if (ch === "\"") {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+    if (ch === "{") depth += 1;
+    if (ch === "}") depth -= 1;
+    if (depth === 0) {
+      return trimmed.slice(start, i + 1).trim();
+    }
+  }
+
+  return trimmed.slice(start).trim();
 };
 
 export function parseReportWriterJsonV2(

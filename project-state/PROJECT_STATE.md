@@ -55,6 +55,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
   - confirmed completed report, final instruction, report content, and completed generation run in Supabase
 - The old test share token is not available on the current production database; this is expected for non-migrated test data. The latest generated production report has sharing disabled by default.
 - Admin dashboard now has operator actions for regenerate report, retry failed/pending generation, resend results email, enable/disable share links, and CSV/JSON exports with status/language/domain/provider/model/completed/failed filters.
+- Admin dashboard now has a direct account-management panel backed by `/api/admin/users`: recent accounts show assessment/payment counts and can be verified, password-reset, or deleted from the dashboard.
 - Customer password reset has been added in code with forgot-password request, one-hour reset token, reset email, new-password form, token clearing after use, and refresh-token revocation after reset.
 - Supabase migration `add_password_reset_fields` was applied on May 14, 2026 and verified to add `password_reset_token` and `password_reset_expires` to `public.users`.
 - Production QA found `/pricing` rendered the SPA 404; a dedicated `/pricing` route has been added with product, price, digital delivery, no-subscription, Lemon Squeezy processor, and legal-link copy for review readiness.
@@ -74,10 +75,16 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - The contact page and organization structured data now include the LinkedIn profile alongside the support email.
 - Google Search Console domain ownership is verified, but the initial `sitemap.xml` submission returned `Couldn't fetch` while Replit rendered the XML as visible plain text in Chrome. A `sitemap.txt` fallback has been added for Search Console submission.
 - Google Search Console now accepts `sitemap.xml` and reports 30 discovered pages.
+- Public SEO rendering has been converted locally from client-only SPA metadata to build-time prerendered HTML for 30 sitemap URLs. Each public route now writes a route-specific `index.html` with title, meta description, canonical, H1/body content, hreflang, and JSON-LD before JavaScript runs. Replit static rewrites were narrowed so public prerendered files can be served directly instead of the old universal `/* -> /index.html` fallback. Verification notes are in `project-state/SEO_RENDERING_REPORT.md`.
 - Review-facing product copy now explicitly states that INSPIRE is a premade self-serve digital assessment/report product, not consultation or custom-service sales.
 - A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
 - Lemon Squeezy checkout activation is implemented locally: `BILLING_PROVIDER=lemon` creates server-side Lemon checkouts, stores Lemon checkout/order identifiers, accepts signed `order_created` webhooks, and starts the paid report generation after payment confirmation.
+- Discount-code redemption tracking is implemented locally with `discount_code_redemptions`: shared public discount codes can have a total `maxUses` while each user/account can redeem the same code only once. Migration `0011_add_discount_code_redemptions.sql` also backfills completed historical discounted payments.
+- A production report incident for Mishari Khalid Al-Buhairi was resolved on May 17, 2026: the paid/manual-discount assessment had complete answers and payment, but V2 generation retries failed because `gpt-5.5` does not accept custom `temperature: 0.7`. The report was generated successfully with `openai/gpt-5.5` after omitting custom temperature, `reportContent` and system instruction were persisted, and the customer result email was sent.
+- Report-generation failure handling now preserves provider/model error details and sends admin alert emails with assessment, user, project, retry, payment, and latest generation-run context.
+- Report generation now has one OpenAI model path: `gpt-5.5` is fixed in code, no custom temperature is sent, `OPENAI_MODEL`/Anthropic fallback settings were removed from the example environment, and the admin UI labels zero retries as first generation instead of a retry attempt.
+- V2 PDF generation now reads `reportContent`, includes copy-ready instructions, embeds Noto Naskh Arabic fonts for Arabic output, and was locally render-tested against Mishari's completed report.
 - A separate prototype branch `codex/guide-character-demo` is testing the INSPIRE guide character as an automatic sticky bar under the navbar on `/ar/guide-character-demo` and the landing page; it is not on `main` and does not change assessment, matrix, report, billing, or API logic.
 - A newer prototype branch `codex/guide-character-motion-lab` adds `/ar/guide-character-motion-lab` to compare the current sprite character, an SVG motion-rig concept, and the new INSPIRE guide character direction using supplied JPG reference/motion sheets. It now uses selected cleaned WebP half-body and full-body pose assets for a more realistic visual review, but it remains a prototype because production animation still needs either clean layered exports, a `.riv` file, or a deliberate static-pose implementation decision.
 
@@ -95,9 +102,12 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Replit production deploys from the Replit workspace snapshot, not automatic GitHub push deploys.
 - Supabase Data API/RLS posture still needs a production decision before launch.
 - Node/Postgres requires Supabase CA handling for the pooler. Replit shell verification works with the durable checked-in CA path.
+- Local Node-based production checks may hit Supabase pooler certificate validation (`SELF_SIGNED_CERT_IN_CHAIN`) unless the local CA path is configured; do not confuse this with report-generation failure.
 - Customer-facing paid completion now has code support for Lemon Squeezy, but still needs a real test-mode checkout/webhook verification on Replit before live mode.
+- Supabase must receive migration `0011_add_discount_code_redemptions.sql` before deploying the new discount-code API behavior; otherwise discount validation will query a missing table.
 - Replit workspace history previously had local-only commits; it was backed up/reset before the latest deploy preparation. Continue using explicit GitHub commit checks before each Replit deploy.
 - Replit/Neon production database may still be connected as an unused resource. It is no longer receiving writes, but should be removed later to eliminate hidden environment injection and cost/confusion.
+- Replit must be live-verified after deploying the SEO prerender change because static-file precedence over configured rewrites is host behavior; local route-first static verification passed for all 30 sitemap URLs.
 
 ## Protected Areas
 - Do not expose secrets from `.env.local`.
@@ -105,7 +115,7 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - Do not remove legacy data paths until replacements are verified.
 
 ## Next Recommended Action
-Deploy the Lemon Squeezy integration to Replit in test mode, add the Lemon webhook URL, run one full checkout through `/assess`, and confirm the report starts generating after the `order_created` webhook.
+Apply Supabase migration `0011_add_discount_code_redemptions.sql`, then deploy the Lemon Squeezy/discount-code integration to Replit in test mode and verify one shared `100%` code with `maxUses=20` cannot be reused by the same account.
 
 ## Critical References
 - Frontend app: `artifacts/inspire-web`
@@ -120,4 +130,5 @@ Deploy the Lemon Squeezy integration to Replit in test mode, add the Lemon webho
 - SEO strategy: `project-state/SEO_STRATEGY.md`
 - SEO execution plan: `project-state/SEO_EXECUTION_PLAN.md`
 - SEO measurement setup: `project-state/SEO_MEASUREMENT_SETUP.md`
+- SEO rendering report: `project-state/SEO_RENDERING_REPORT.md`
 - Product ideas backlog: `project-state/PRODUCT_IDEAS.md`

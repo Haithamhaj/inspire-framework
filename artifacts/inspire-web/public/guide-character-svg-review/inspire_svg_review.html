@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>INSPIRE SVG Review</title>
+  <style>
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Arial, sans-serif; background:#eef0f3; color:#1b1d24; }
+    .wrap { max-width: 1400px; margin: 0 auto; padding: 32px 24px 48px; }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    p.lead { margin: 0 0 28px; color:#505564; }
+    .grid { display:grid; grid-template-columns: repeat(3, minmax(280px, 1fr)); gap:24px; }
+    .card { background:#fff; border-radius:20px; padding:18px; box-shadow:0 8px 24px rgba(27,29,36,.08); border:1px solid #e5e8ee; }
+    .card h2 { margin: 0 0 12px; font-size: 18px; }
+    .frame { background:#f5f6f8; border-radius:16px; overflow:hidden; border:1px solid #eceef3; }
+    object { width:100%; aspect-ratio:1/1; display:block; background:#f5f6f8; }
+    .meta { margin-top: 12px; font-size: 13px; color:#5d6473; line-height:1.6; }
+    .links { margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; }
+    a { color:#2f5fbf; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>مراجعة خيارات SVG لشخصية INSPIRE</h1>
+    <p class="lead">هذه ملفات SVG فعلية وليست صور PNG. كل خيار أدناه معروض داخل HTML للمراجعة السريعة.</p>
+    <div class="grid">
+      <section class="card">
+        <h2>الخيار 1 — Face Only</h2>
+        <div class="frame"><object data="inspire_option_1_face_only.svg" type="image/svg+xml"></object></div>
+        <div class="meta">أبسط خيار: وجه فقط داخل رأس ناعم، بدون أذن جانبية.</div>
+        <div class="links"><a href="inspire_option_1_face_only.svg">فتح ملف SVG</a></div>
+      </section>
+      <section class="card">
+        <h2>الخيار 2 — Head Only</h2>
+        <div class="frame"><object data="inspire_option_2_head_only.svg" type="image/svg+xml"></object></div>
+        <div class="meta">رأس كامل مع الأذن الجانبية، بدون جسم.</div>
+        <div class="links"><a href="inspire_option_2_head_only.svg">فتح ملف SVG</a></div>
+      </section>
+      <section class="card">
+        <h2>الخيار 3 — Full Body Simplified</h2>
+        <div class="frame"><object data="inspire_option_3_full_body.svg" type="image/svg+xml"></object></div>
+        <div class="meta">جسم كامل مبسّط ومستوحى من الشكل الثالث الذي أعجبك، لكن مناسب أكثر للـ SVG.</div>
+        <div class="links"><a href="inspire_option_3_full_body.svg">فتح ملف SVG</a></div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>

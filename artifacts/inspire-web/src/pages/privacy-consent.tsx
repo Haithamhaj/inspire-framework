@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Check, Shield, FileText, LockKeyhole, BarChart3, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useI18n } from "@/i18n";
+import { localizePath } from "@/lib/locale-paths";
 import {
   JourneyPanel,
   JourneyPrimaryButton,
@@ -13,12 +14,13 @@ import {
 export default function PrivacyConsent() {
   const [, setLocation] = useLocation();
   const [agreed, setAgreed] = useState(false);
-  const { dir, t } = useI18n();
+  const { dir, locale, t } = useI18n();
+  const href = (path: string) => localizePath(path, locale);
 
   const handleContinue = () => {
     if (agreed) {
       // In a real app we might store consent in local storage or context before passing to register
-      setLocation("/register");
+      setLocation(href("/register"));
     }
   };
 

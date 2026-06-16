@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F6F6F7"/>
+      <stop offset="100%" stop-color="#F0F0F2"/>
+    </linearGradient>
+    <linearGradient id="shell2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E7E8EC"/>
+    </linearGradient>
+    <linearGradient id="screen2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7A92B3"/>
+      <stop offset="100%" stop-color="#304A74"/>
+    </linearGradient>
+    <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg2)"/>
+  <ellipse cx="256" cy="374" rx="102" ry="22" fill="#D8DBE2" opacity="0.45"/>
+  <g id="head-only">
+    <rect x="132" y="110" width="248" height="214" rx="72" fill="url(#shell2)"/>
+    <rect x="96" y="158" width="54" height="118" rx="24" fill="url(#shell2)"/>
+    <rect x="362" y="158" width="54" height="118" rx="24" fill="url(#shell2)"/>
+    <rect x="161" y="140" width="190" height="154" rx="48" fill="#F8F8F9"/>
+    <rect x="176" y="155" width="160" height="124" rx="38" fill="url(#screen2)"/>
+    <rect x="210" y="191" width="28" height="50" rx="12" fill="#FFFFFF" filter="url(#glow2)"/>
+    <rect x="274" y="191" width="28" height="50" rx="12" fill="#FFFFFF" filter="url(#glow2)"/>
+    <path d="M231 253 C241 264, 271 264, 281 253" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none" filter="url(#glow2)"/>
+  </g>
+</svg>

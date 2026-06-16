@@ -4,6 +4,7 @@ export * from "./assessments";
 export * from "./admin-sessions";
 export * from "./payments";
 export * from "./discount-codes";
+export * from "./discount-code-redemptions";
 export * from "./assessment-feedback";
 export * from "./assessment-decision-snapshots";
 export * from "./assessment-generation-runs";

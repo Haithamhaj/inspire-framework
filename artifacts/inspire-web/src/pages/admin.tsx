@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -95,6 +95,19 @@ interface DiscountCode {
   createdAt: string;
 }
 
+interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  createdAt: string;
+  assessmentCount: number;
+  completedAssessmentCount: number;
+  latestAssessmentAt: string | null;
+  paymentCount: number;
+  completedPaymentCount: number;
+}
+
 interface AdminAssessmentDetail {
   id: string;
   projectName: string;
@@ -167,8 +180,13 @@ interface AdminAssessmentDetail {
 }
 
 function formatJson(value: unknown): string {
-  if (value === null || value === undefined) return "Not available";
+  if (value === null || value === undefined) return "غير متاح";
   return JSON.stringify(value, null, 2);
+}
+
+function confirmAdminAction(message: string, requiredText = "تأكيد") {
+  const answer = window.prompt(`${message}\n\nاكتب "${requiredText}" للمتابعة.`);
+  return answer === requiredText;
 }
 
 function DetailBlock({ title, value }: { title: string; value: unknown }) {
@@ -179,7 +197,7 @@ function DetailBlock({ title, value }: { title: string; value: unknown }) {
         className="max-h-80 overflow-auto rounded-lg border border-border bg-secondary/50 p-3 text-xs leading-5 text-muted-foreground"
         dir="ltr"
       >
-        {typeof value === "string" ? value || "Not available" : formatJson(value)}
+        {typeof value === "string" ? value || "غير متاح" : formatJson(value)}
       </pre>
     </section>
   );
@@ -205,6 +223,7 @@ export default function Admin() {
   const [recovery, setRecovery] = useState("");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
   const [retryingId, setRetryingId] = useState<string | null>(null);
@@ -216,6 +235,9 @@ export default function Admin() {
   const [detailLoadingId, setDetailLoadingId] = useState<string | null>(null);
   const [selectedDetail, setSelectedDetail] = useState<AdminAssessmentDetail | null>(null);
   const [actionMsg, setActionMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [accountActionId, setAccountActionId] = useState<string | null>(null);
 
   const PAGE_SIZE = 20;
 
@@ -263,6 +285,7 @@ export default function Admin() {
       setStats(data.stats);
       setAuthed(true);
       loadAssessments(1, "", password);
+      loadAdminUsers(password);
     } catch {
       setAuthError("خطأ في الاتصال بالخادم");
     } finally {
@@ -293,8 +316,10 @@ export default function Admin() {
         setTotal(data.total);
         setTotalPages(data.totalPages);
         setPage(p);
+        return true;
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : "خطأ غير متوقع");
+        return false;
       } finally {
         setLoading(false);
       }
@@ -302,12 +327,19 @@ export default function Admin() {
     [domain, language, model, outcome, provider, recovery, search]
   );
 
-  async function loadStats() {
-    const res = await fetch(apiUrl("/admin/stats"), {
-      headers: { "x-admin-password": password },
-    });
-    const data = await res.json();
-    if (data.success) setStats(data.stats);
+  async function loadStats(pw = password) {
+    try {
+      const res = await fetch(apiUrl("/admin/stats"), {
+        headers: { "x-admin-password": pw },
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error ?? "فشل تحميل الإحصائيات");
+      setStats(data.stats);
+      return true;
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "فشل تحميل الإحصائيات");
+      return false;
+    }
   }
 
   const loadDiscountCodes = useCallback(async (pw: string) => {
@@ -318,15 +350,56 @@ export default function Admin() {
       });
       const d = await res.json() as { success: boolean; codes?: DiscountCode[] };
       if (d.success) setDiscountCodes(d.codes ?? []);
+      return d.success;
+    } catch {
+      return false;
     } finally {
       setCodesLoading(false);
     }
   }, []);
 
+  const loadAdminUsers = useCallback(async (pw: string) => {
+    setUsersLoading(true);
+    try {
+      const res = await fetch(apiUrl("/admin/users"), {
+        headers: { "x-admin-password": pw },
+      });
+      const d = await res.json() as { success: boolean; users?: AdminUser[] };
+      if (d.success) setAdminUsers(d.users ?? []);
+      return d.success;
+    } catch {
+      return false;
+    } finally {
+      setUsersLoading(false);
+    }
+  }, []);
+
+  async function handleRefresh() {
+    if (!password || refreshing) return;
+    setRefreshing(true);
+    setActionMsg(null);
+    const [statsOk, assessmentsOk, codesOk, usersOk] = await Promise.all([
+      loadStats(password),
+      loadAssessments(page, status, password),
+      loadDiscountCodes(password),
+      loadAdminUsers(password),
+    ]);
+    setRefreshing(false);
+    if (statsOk && assessmentsOk && codesOk && usersOk) {
+      setActionMsg({ ok: true, text: "تم تحديث بيانات لوحة الإدارة" });
+    } else {
+      setActionMsg({ ok: false, text: "لم يكتمل التحديث. تحقق من الاتصال أو كلمة مرور الأدمن." });
+    }
+  }
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (authed && password) loadDiscountCodes(password);
   }, [authed, password, loadDiscountCodes]);
+
+  useEffect(() => {
+    if (authed && password) loadAdminUsers(password);
+  }, [authed, password, loadAdminUsers]);
 
   async function handleCreateCode() {
     const code = newCode.trim().toUpperCase();
@@ -394,7 +467,7 @@ export default function Admin() {
   }
 
   async function handleDeleteCode(id: string) {
-    if (!confirm("حذف كود الخصم؟")) return;
+    if (!confirmAdminAction("حذف كود الخصم؟", "حذف")) return;
     const res = await fetch(apiUrl(`/admin/discount-codes/${id}`), {
       method: "DELETE",
       headers: { "x-admin-password": password },
@@ -406,7 +479,7 @@ export default function Admin() {
   async function handleDeleteUser() {
     const email = deleteEmail.trim();
     if (!email) return;
-    if (!confirm(`⚠️ حذف حساب ${email} نهائياً؟ لا يمكن التراجع.`)) return;
+    if (!confirmAdminAction(`حذف حساب ${email} نهائياً؟ لا يمكن التراجع.`, "حذف")) return;
     setDeleting(true);
     setDeleteMsg(null);
     try {
@@ -417,8 +490,13 @@ export default function Admin() {
       });
       const d = await res.json() as { success: boolean; error?: string };
       if (d.success) {
-        setDeleteMsg({ ok: true, text: `✅ تم حذف حساب ${email} بنجاح` });
+        setDeleteMsg({ ok: true, text: `تم حذف حساب ${email} بنجاح` });
         setDeleteEmail("");
+        await Promise.all([
+          loadAdminUsers(password),
+          loadAssessments(page, status, password),
+          loadStats(password),
+        ]);
       } else {
         setDeleteMsg({ ok: false, text: d.error ?? "فشل الحذف" });
       }
@@ -442,8 +520,9 @@ export default function Admin() {
       });
       const d = await res.json() as { success: boolean; error?: string };
       if (d.success) {
-        setResetMsg({ ok: true, text: `✅ تم تغيير كلمة مرور ${email} بنجاح` });
+        setResetMsg({ ok: true, text: `تم تغيير كلمة مرور ${email} بنجاح` });
         setResetEmail(""); setResetPass("");
+        await loadAdminUsers(password);
       } else {
         setResetMsg({ ok: false, text: d.error ?? "فشل التغيير" });
       }
@@ -467,8 +546,9 @@ export default function Admin() {
       });
       const d = await res.json() as { success: boolean; error?: string };
       if (d.success) {
-        setVerifyMsg({ ok: true, text: `✅ تم تفعيل ${email} بنجاح` });
+        setVerifyMsg({ ok: true, text: `تم تفعيل ${email} بنجاح` });
         setVerifyEmail("");
+        await loadAdminUsers(password);
       } else {
         setVerifyMsg({ ok: false, text: d.error ?? "فشل التفعيل" });
       }
@@ -476,6 +556,87 @@ export default function Admin() {
       setVerifyMsg({ ok: false, text: "فشل الاتصال" });
     } finally {
       setVerifying(false);
+    }
+  }
+
+  async function handleVerifyAdminUser(user: AdminUser) {
+    setAccountActionId(user.id);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl("/admin/verify-user"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ email: user.email }),
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (!d.success) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل التفعيل" });
+        return;
+      }
+      setActionMsg({ ok: true, text: `تم تفعيل حساب ${user.email}` });
+      await loadAdminUsers(password);
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setAccountActionId(null);
+    }
+  }
+
+  async function handleResetAdminUserPassword(user: AdminUser) {
+    const newPassword = window.prompt(`كلمة المرور الجديدة لحساب ${user.email}`);
+    if (!newPassword) return;
+    if (newPassword.length < 6) {
+      setActionMsg({ ok: false, text: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
+      return;
+    }
+    if (!confirmAdminAction(`تغيير كلمة مرور ${user.email}؟`)) return;
+    setAccountActionId(user.id);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl("/admin/reset-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ email: user.email, newPassword }),
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (!d.success) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل تغيير كلمة المرور" });
+        return;
+      }
+      setActionMsg({ ok: true, text: `تم تغيير كلمة مرور ${user.email}` });
+      await loadAdminUsers(password);
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setAccountActionId(null);
+    }
+  }
+
+  async function handleDeleteAdminUser(user: AdminUser) {
+    if (!confirmAdminAction(`حذف حساب ${user.email} نهائياً؟ سيحذف التقييمات والمدفوعات المرتبطة حسب قواعد قاعدة البيانات.`, "حذف")) return;
+    setAccountActionId(user.id);
+    setActionMsg(null);
+    try {
+      const res = await fetch(apiUrl("/admin/users"), {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ email: user.email }),
+      });
+      const d = await res.json() as { success: boolean; error?: string };
+      if (!d.success) {
+        setActionMsg({ ok: false, text: d.error ?? "فشل حذف الحساب" });
+        return;
+      }
+      setActionMsg({ ok: true, text: `تم حذف حساب ${user.email}` });
+      await Promise.all([
+        loadAdminUsers(password),
+        loadAssessments(page, status, password),
+        loadStats(password),
+      ]);
+    } catch {
+      setActionMsg({ ok: false, text: "فشل الاتصال" });
+    } finally {
+      setAccountActionId(null);
     }
   }
 
@@ -542,7 +703,7 @@ export default function Admin() {
   }
 
   async function handleGenerateReport(assessmentId: string) {
-    if (!confirm("توليد التقرير لهذا التقييم بدون دفع؟")) return;
+    if (!confirmAdminAction("توليد التقرير لهذا التقييم بدون دفع؟")) return;
     setGeneratingId(assessmentId);
     setActionMsg(null);
     try {
@@ -565,7 +726,7 @@ export default function Admin() {
   }
 
   async function handleRegenerateReport(assessmentId: string) {
-    if (!confirm("إعادة توليد التقرير المكتمل؟ سيستبدل المحتوى الحالي بعد انتهاء التوليد.")) return;
+    if (!confirmAdminAction("إعادة توليد التقرير المكتمل؟ سيستبدل المحتوى الحالي بعد انتهاء التوليد.")) return;
     setRegeneratingId(assessmentId);
     setActionMsg(null);
     try {
@@ -589,7 +750,7 @@ export default function Admin() {
   }
 
   async function handleResendResultsEmail(assessmentId: string, userEmail: string) {
-    if (!confirm(`إعادة إرسال تقرير النتائج إلى ${userEmail}؟`)) return;
+    if (!confirmAdminAction(`إعادة إرسال تقرير النتائج إلى ${userEmail}؟`)) return;
     setResendingId(assessmentId);
     setActionMsg(null);
     try {
@@ -657,7 +818,7 @@ export default function Admin() {
   }
 
   async function handleSendRecoveryEmail(assessmentId: string, userEmail: string) {
-    if (!confirm(`إنشاء كود خصم 100% وإرساله إلى ${userEmail}؟`)) return;
+    if (!confirmAdminAction(`إنشاء كود خصم 100% وإرساله إلى ${userEmail}؟`)) return;
     setSendingRecoveryId(assessmentId);
     setActionMsg(null);
     try {
@@ -679,7 +840,7 @@ export default function Admin() {
   }
 
   async function handleRetryGeneration(assessmentId: string) {
-    if (!confirm("إعادة توليد هذا التقرير بدون دفع جديد؟")) return;
+    if (!confirmAdminAction("إعادة توليد هذا التقرير بدون دفع جديد؟")) return;
     setRetryingId(assessmentId);
     setActionMsg(null);
     try {
@@ -726,11 +887,49 @@ export default function Admin() {
     );
   };
 
+  const paymentLabel = (paymentStatus: string | null) => {
+    const map: Record<string, string> = {
+      completed: "مدفوع",
+      pending: "قيد الدفع",
+      failed: "فشل الدفع",
+      refunded: "مسترد",
+    };
+    return paymentStatus ? map[paymentStatus] ?? paymentStatus : "بدون دفع";
+  };
+
+  const hasOperationalIssue = (assessment: Assessment) =>
+    assessment.status === "failed" ||
+    assessment.status === "pending_retry" ||
+    (assessment.paymentStatus === "completed" && !assessment.hasReportContent) ||
+    (assessment.status === "completed" && (!assessment.pdfGenerated || !assessment.emailSent)) ||
+    (assessment.feedbackRating != null && assessment.feedbackRating <= 2);
+
+  const issueLabels = (assessment: Assessment) => {
+    const labels: string[] = [];
+    if (assessment.status === "failed") labels.push("فشل التوليد");
+    if (assessment.status === "pending_retry") labels.push("بانتظار إعادة محاولة");
+    if (assessment.paymentStatus === "completed" && !assessment.hasReportContent) labels.push("مدفوع بلا تقرير");
+    if (assessment.status === "completed" && !assessment.pdfGenerated) labels.push("ملف PDF غير جاهز");
+    if (assessment.status === "completed" && !assessment.emailSent) labels.push("الإيميل لم يرسل");
+    if (assessment.feedbackRating != null && assessment.feedbackRating <= 2) labels.push("تقييم منخفض");
+    return labels;
+  };
+
+  const needsAttention = useMemo(
+    () => assessments.filter(hasOperationalIssue).slice(0, 6),
+    [assessments]
+  );
+
+  function handleApplyFilters() {
+    setSelectedDetail(null);
+    void loadAssessments(1, status, password);
+  }
+
   // ─── Auth gate ───────────────────────────────────────────
 
   if (!authed) {
     return (
-      <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center px-4">
+      <div className="flex min-h-screen items-center justify-center bg-background px-4" dir="rtl" lang="ar">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -741,13 +940,13 @@ export default function Admin() {
               <Shield className="h-7 w-7 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-primary">لوحة الإدارة</h1>
-            <p className="text-sm text-muted-foreground mt-1">أدخل كلمة المرور للمتابعة</p>
+            <p className="text-sm text-muted-foreground mt-1">أدخل كلمة مرور الأدمن للمتابعة</p>
           </div>
           <input
             type="password"
             dir="ltr"
             className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-accent/50"
-            placeholder="Admin password"
+            placeholder="كلمة مرور الأدمن"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleLogin()}
@@ -785,31 +984,23 @@ export default function Admin() {
       ]
     : [];
 
-  const filtered = search
-    ? assessments.filter(
-        (a) =>
-          a.userName?.toLowerCase().includes(search.toLowerCase()) ||
-          a.userEmail?.toLowerCase().includes(search.toLowerCase()) ||
-          a.projectName?.toLowerCase().includes(search.toLowerCase())
-      )
-    : assessments;
-
   return (
-    <div className="min-h-[calc(100vh-5rem)] py-10 px-4">
+    <div className="min-h-screen bg-background py-8 px-4" dir="rtl" lang="ar">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-primary">لوحة الإدارة</h1>
-            <p className="text-sm text-muted-foreground">إحصائيات وبيانات INSPIRE</p>
+            <p className="text-sm text-muted-foreground">مراقبة التقارير، الدفع، التعافي، وأكواد الخصم</p>
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => { loadStats(); loadAssessments(page, status, password); }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border hover:border-primary/30 text-sm transition-all"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border hover:border-primary/30 text-sm transition-all disabled:opacity-60"
             >
-              <RefreshCw className="h-4 w-4" />
-              تحديث
+              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+              {refreshing ? "جارٍ التحديث" : "تحديث"}
             </button>
             <button
               onClick={() => handleExport("csv")}
@@ -825,7 +1016,7 @@ export default function Admin() {
               className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border text-sm font-medium transition-all hover:border-primary/30 disabled:opacity-60"
             >
               {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileJson className="h-4 w-4" />}
-              JSON
+              تصدير JSON
             </button>
           </div>
         </div>
@@ -847,8 +1038,195 @@ export default function Admin() {
           ))}
         </div>
 
+        {needsAttention.length > 0 && (
+          <section className="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-5">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-foreground">تحتاج متابعة</h2>
+                <p className="text-sm text-muted-foreground">
+                  تقارير أو مدفوعات فيها مؤشر يحتاج مراجعة قبل التواصل مع العميل.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setRecovery("needs_attention");
+                  void loadAssessments(1, status, password, "needs_attention");
+                }}
+                className="rounded-xl border border-amber-500/40 px-4 py-2 text-sm font-bold text-amber-700 transition-colors hover:bg-amber-500/10"
+              >
+                عرض كل الحالات
+              </button>
+            </div>
+            <div className="grid gap-3 lg:grid-cols-2">
+              {needsAttention.map((assessment) => (
+                <div key={assessment.id} className="rounded-xl border border-border bg-card p-4">
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {issueLabels(assessment).map((label) => (
+                      <span key={label} className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-xs font-bold text-amber-700">
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="font-bold text-primary">{assessment.userName}</div>
+                  <div className="text-xs text-muted-foreground" dir="ltr">{assessment.userEmail}</div>
+                  <div className="mt-2 truncate text-sm text-muted-foreground">{assessment.projectName}</div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleOpenDetail(assessment.id)}
+                      className="rounded-lg border border-border px-3 py-1.5 text-xs font-bold transition-colors hover:border-primary/30"
+                    >
+                      فتح التفاصيل
+                    </button>
+                    {assessment.status !== "completed" && assessment.assessmentType !== "mini" && (
+                      <button
+                        onClick={() => handleRetryGeneration(assessment.id)}
+                        disabled={retryingId === assessment.id}
+                        className="rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                      >
+                        إعادة محاولة التوليد
+                      </button>
+                    )}
+                    {assessment.status === "completed" && !assessment.emailSent && (
+                      <button
+                        onClick={() => handleResendResultsEmail(assessment.id, assessment.userEmail)}
+                        disabled={resendingId === assessment.id}
+                        className="rounded-lg border border-border px-3 py-1.5 text-xs font-bold transition-colors hover:border-primary/30 disabled:opacity-60"
+                      >
+                        إعادة إرسال الإيميل
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-foreground">إدارة الحسابات</h2>
+              <p className="text-sm text-muted-foreground">
+                آخر 100 حساب من قاعدة البيانات مع إجراءات مباشرة للحذف، التفعيل، وتغيير كلمة المرور.
+              </p>
+            </div>
+            <button
+              onClick={() => loadAdminUsers(password)}
+              disabled={usersLoading}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-bold transition-colors hover:border-primary/30 disabled:opacity-60"
+            >
+              <RefreshCw className={`h-4 w-4 ${usersLoading ? "animate-spin" : ""}`} />
+              تحديث الحسابات
+            </button>
+          </div>
+
+          {usersLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : adminUsers.length === 0 ? (
+            <div className="rounded-xl border border-border bg-background/60 py-10 text-center text-sm text-muted-foreground">
+              لا توجد حسابات للعرض
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-secondary/40">
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">الحساب</th>
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">الحالة</th>
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">التقييمات</th>
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">المدفوعات</th>
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">إجراءات الحساب</th>
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">تاريخ الإنشاء</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {adminUsers.map((user, i) => (
+                    <tr
+                      key={user.id}
+                      className={`border-b border-border/50 transition-colors hover:bg-secondary/20 ${i % 2 === 0 ? "" : "bg-secondary/5"}`}
+                    >
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-primary">{user.name}</div>
+                        <div className="text-xs text-muted-foreground" dir="ltr">{user.email}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full border px-2 py-1 text-xs font-bold ${
+                          user.emailVerified
+                            ? "border-green-500/20 bg-green-500/10 text-green-600"
+                            : "border-amber-500/20 bg-amber-500/10 text-amber-600"
+                        }`}>
+                          {user.emailVerified ? "مفعّل" : "غير مفعّل"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">
+                        <div>{user.assessmentCount.toLocaleString("ar")} إجمالي</div>
+                        <div>{user.completedAssessmentCount.toLocaleString("ar")} مكتمل</div>
+                        {user.latestAssessmentAt && (
+                          <div dir="ltr">{new Date(user.latestAssessmentAt).toLocaleDateString("ar-SA")}</div>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">
+                        <div>{user.paymentCount.toLocaleString("ar")} إجمالي</div>
+                        <div>{user.completedPaymentCount.toLocaleString("ar")} مكتمل</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-2">
+                          {!user.emailVerified && (
+                            <button
+                              onClick={() => handleVerifyAdminUser(user)}
+                              disabled={accountActionId === user.id}
+                              className="inline-flex items-center justify-center gap-1 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-1.5 text-xs font-bold text-green-700 transition-colors hover:bg-green-500/20 disabled:opacity-60"
+                            >
+                              {accountActionId === user.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                              تفعيل
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleResetAdminUserPassword(user)}
+                            disabled={accountActionId === user.id}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
+                          >
+                            {accountActionId === user.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Shield className="h-3.5 w-3.5" />}
+                            تغيير كلمة المرور
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAdminUser(user)}
+                            disabled={accountActionId === user.id}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-500/20 disabled:opacity-60"
+                          >
+                            {accountActionId === user.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                            حذف
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground" dir="ltr">
+                        {new Date(user.createdAt).toLocaleDateString("ar-SA")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-5">
+        <div className="mb-5 rounded-2xl border border-border bg-card p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-bold text-foreground">الفلاتر</h2>
+              <p className="text-xs text-muted-foreground">غيّر القيم ثم اضغط تطبيق حتى تكون النتائج والصفحات متطابقة.</p>
+            </div>
+            <button
+              onClick={handleApplyFilters}
+              className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              تطبيق
+            </button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           <div className="relative flex-1">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -856,16 +1234,13 @@ export default function Admin() {
               placeholder="بحث بالاسم أو البريد أو المشروع..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && loadAssessments(1, status, password)}
+              onKeyDown={(e) => e.key === "Enter" && handleApplyFilters()}
             />
           </div>
           <select
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
             value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
-              loadAssessments(1, e.target.value, password);
-            }}
+            onChange={(e) => setStatus(e.target.value)}
           >
             <option value="">الكل</option>
             <option value="completed">مكتمل</option>
@@ -878,10 +1253,7 @@ export default function Admin() {
           <select
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
             value={language}
-            onChange={(e) => {
-              setLanguage(e.target.value);
-              window.setTimeout(() => loadAssessments(1, status, password), 0);
-            }}
+            onChange={(e) => setLanguage(e.target.value)}
           >
             <option value="">كل اللغات</option>
             <option value="ar">عربي</option>
@@ -890,59 +1262,48 @@ export default function Admin() {
           </select>
           <input
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
-            placeholder="Domain"
+            placeholder="المجال"
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && loadAssessments(1, status, password)}
+            onKeyDown={(e) => e.key === "Enter" && handleApplyFilters()}
             dir="ltr"
           />
           <input
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
-            placeholder="Provider"
+            placeholder="مزود الذكاء"
             value={provider}
             onChange={(e) => setProvider(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && loadAssessments(1, status, password)}
+            onKeyDown={(e) => e.key === "Enter" && handleApplyFilters()}
             dir="ltr"
           />
           <input
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
-            placeholder="Model"
+            placeholder="الموديل"
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && loadAssessments(1, status, password)}
+            onKeyDown={(e) => e.key === "Enter" && handleApplyFilters()}
             dir="ltr"
           />
           <select
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
             value={outcome}
-            onChange={(e) => {
-              setOutcome(e.target.value);
-              window.setTimeout(() => loadAssessments(1, status, password), 0);
-            }}
+            onChange={(e) => setOutcome(e.target.value)}
           >
             <option value="">كل النتائج</option>
-            <option value="completed">Completed</option>
-            <option value="failed">Failed</option>
+            <option value="completed">ناجحة</option>
+            <option value="failed">فاشلة</option>
           </select>
           <select
             className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
             value={recovery}
-            onChange={(e) => {
-              setRecovery(e.target.value);
-              loadAssessments(1, status, password, e.target.value);
-            }}
+            onChange={(e) => setRecovery(e.target.value)}
           >
             <option value="">كل الحالات</option>
             <option value="needs_attention">تحتاج متابعة</option>
             <option value="paid_no_report">مدفوع بلا تقرير</option>
             <option value="low_rating">تقييم منخفض</option>
           </select>
-          <button
-            onClick={() => loadAssessments(1, status, password)}
-            className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            تطبيق
-          </button>
+          </div>
         </div>
 
         {/* Table */}
@@ -1010,11 +1371,11 @@ export default function Admin() {
                 <h3 className="mb-3 text-sm font-bold text-foreground">التوليد والتقييم</h3>
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <div>{selectedDetail.aiProvider ?? "لا يوجد مزود"} {selectedDetail.aiModel ? `/${selectedDetail.aiModel}` : ""}</div>
-                  <div>محاولات: {selectedDetail.retryCount}</div>
-                  <div>Generation runs: {selectedDetail.generationRuns.length}</div>
-                  <div>Feedback: {selectedDetail.feedback?.rating ? `${selectedDetail.feedback.rating}/5` : "لا يوجد"}</div>
+                  <div>{selectedDetail.retryCount > 0 ? `إعادة محاولات: ${selectedDetail.retryCount}` : "أول توليد"}</div>
+                  <div>محاولات التوليد: {selectedDetail.generationRuns.length}</div>
+                  <div>التقييم: {selectedDetail.feedback?.rating ? `${selectedDetail.feedback.rating}/5` : "لا يوجد"}</div>
                   <div>{selectedDetail.feedback?.copiedInstructions ? "نسخ التعليمات قبل التقييم" : "لم ينسخ التعليمات قبل التقييم"}</div>
-                  <div>{selectedDetail.shareEnabled ? "Share enabled" : "Share disabled"}</div>
+                  <div>{selectedDetail.shareEnabled ? "المشاركة مفعلة" : "المشاركة معطلة"}</div>
                   {selectedDetail.shareToken && <div className="truncate" dir="ltr">/share/{selectedDetail.shareToken}</div>}
                 </div>
               </div>
@@ -1022,11 +1383,11 @@ export default function Admin() {
 
             <div className="mt-5 grid gap-4 xl:grid-cols-2">
               <DetailBlock title="الإجابات المحفوظة" value={selectedDetail.behavioralAnswers} />
-              <DetailBlock title="Decision / Matrix Snapshot" value={selectedDetail.decisionSnapshot} />
-              <DetailBlock title="التقرير النهائي reportContent" value={selectedDetail.reportContent} />
-              <DetailBlock title="التعليمات النهائية systemInstruction" value={selectedDetail.systemInstruction} />
-              <DetailBlock title="Generation Runs" value={selectedDetail.generationRuns} />
-              <DetailBlock title="Open Answer / Project Context" value={{
+              <DetailBlock title="لقطة القرار والمصفوفة" value={selectedDetail.decisionSnapshot} />
+              <DetailBlock title="محتوى التقرير النهائي" value={selectedDetail.reportContent} />
+              <DetailBlock title="تعليمات النظام النهائية" value={selectedDetail.systemInstruction} />
+              <DetailBlock title="سجل محاولات التوليد" value={selectedDetail.generationRuns} />
+              <DetailBlock title="الإجابة المفتوحة وسياق المشروع" value={{
                 openAnswer: selectedDetail.openAnswer,
                 projectContext: selectedDetail.projectContext,
                 customDomain: selectedDetail.customDomain,
@@ -1040,7 +1401,7 @@ export default function Admin() {
             <div className="flex items-center justify-center py-16">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
-          ) : filtered.length === 0 ? (
+          ) : assessments.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground text-sm">لا توجد تقييمات</div>
           ) : (
             <div className="overflow-x-auto">
@@ -1053,13 +1414,13 @@ export default function Admin() {
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">الحالة</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">الدفع</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">التقييم</th>
-                    <th className="text-right px-4 py-3 font-medium text-muted-foreground">التعافي</th>
+                    <th className="text-right px-4 py-3 font-medium text-muted-foreground">صحة التقرير</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">إجراء</th>
                     <th className="text-right px-4 py-3 font-medium text-muted-foreground">التاريخ</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((a, i) => (
+                  {assessments.map((a, i) => (
                     <tr
                       key={a.id}
                       className={`border-b border-border/50 hover:bg-secondary/20 transition-colors ${i % 2 === 0 ? "" : "bg-secondary/5"}`}
@@ -1087,7 +1448,7 @@ export default function Admin() {
                                 ? "border-amber-500/20 bg-amber-500/10 text-amber-600"
                                 : "border-border bg-secondary text-muted-foreground"
                           }`}>
-                            {a.paymentStatus === "completed" ? "مدفوع" : a.paymentStatus ?? "بدون دفع"}
+                            {paymentLabel(a.paymentStatus)}
                           </span>
                           {a.paymentAmount && (
                             <div className="mt-1 text-muted-foreground" dir="ltr">
@@ -1126,12 +1487,12 @@ export default function Admin() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="space-y-1 text-xs text-muted-foreground">
-                          <div>محاولات: {a.retryCount}</div>
-                          <div>{a.hasReportContent ? "reportContent موجود" : "لا يوجد reportContent"}</div>
+                          <div>{a.retryCount > 0 ? `إعادة محاولات: ${a.retryCount}` : "أول توليد"}</div>
+                          <div>{a.hasReportContent ? "محتوى التقرير موجود" : "محتوى التقرير غير موجود"}</div>
                           <div>{a.emailSent ? "الإيميل أُرسل" : "الإيميل لم يُرسل"}</div>
                           <div>{a.shareEnabled ? "المشاركة مفعلة" : "المشاركة معطلة"}</div>
-                          <div>{a.pdfGenerated ? "PDF موجود" : "PDF غير مولد"}</div>
-                          <div dir="ltr">{a.aiProvider ?? "no provider"}{a.aiModel ? `/${a.aiModel}` : ""}</div>
+                          <div>{a.pdfGenerated ? "ملف PDF موجود" : "ملف PDF غير مولد"}</div>
+                          <div>{a.aiProvider ? <span dir="ltr">{a.aiProvider}{a.aiModel ? `/${a.aiModel}` : ""}</span> : "لا يوجد مزود ذكاء"}</div>
                           <div>
                             وقت التوليد:{" "}
                             {a.completionTimeSeconds != null
@@ -1159,14 +1520,13 @@ export default function Admin() {
                             )}
                             تفاصيل
                           </button>
-                          <a
-                            href={`/results/${a.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30"
+                          <button
+                            onClick={() => handleOpenDetail(a.id)}
+                            disabled={detailLoadingId === a.id}
+                            className="rounded-lg border border-border px-3 py-1.5 text-center text-xs font-medium transition-colors hover:border-primary/30 disabled:opacity-60"
                           >
-                            فتح
-                          </a>
+                            فتح داخل الأدمن
+                          </button>
                           {a.status !== "completed" && a.assessmentType !== "mini" && (
                             <button
                               onClick={() => handleRetryGeneration(a.id)}
@@ -1178,7 +1538,7 @@ export default function Admin() {
                               ) : (
                                 <RefreshCw className="h-3.5 w-3.5" />
                               )}
-                              Retry
+                              إعادة محاولة
                             </button>
                           )}
                           {a.status === "completed" && a.assessmentType !== "mini" && (
@@ -1192,7 +1552,7 @@ export default function Admin() {
                               ) : (
                                 <RefreshCw className="h-3.5 w-3.5" />
                               )}
-                              Regenerate
+                              إعادة توليد
                             </button>
                           )}
                           {(a.status === "draft" || a.status === "pending_payment") && a.hasAnswers && (
@@ -1204,7 +1564,7 @@ export default function Admin() {
                               {generatingId === a.id ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                               ) : (
-                                "⚡"
+                                <RefreshCw className="h-3.5 w-3.5" />
                               )}
                               توليد التقرير
                             </button>
@@ -1221,7 +1581,7 @@ export default function Admin() {
                                 ) : (
                                   <Mail className="h-3.5 w-3.5" />
                                 )}
-                                Resend
+                                إعادة إرسال
                               </button>
                               <button
                                 onClick={() => handleToggleShare(a)}
@@ -1233,7 +1593,7 @@ export default function Admin() {
                                 ) : (
                                   <Share2 className="h-3.5 w-3.5" />
                                 )}
-                                {a.shareEnabled ? "Disable share" : "Enable share"}
+                                {a.shareEnabled ? "تعطيل المشاركة" : "تفعيل المشاركة"}
                               </button>
                             </>
                           )}
@@ -1246,7 +1606,7 @@ export default function Admin() {
                               {sendingRecoveryId === a.id ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                               ) : (
-                                "🎟️"
+                                <Tag className="h-3.5 w-3.5" />
                               )}
                               كود استرداد
                             </button>
@@ -1414,7 +1774,7 @@ export default function Admin() {
               <div>
                 <h3 className="font-semibold text-sm text-foreground">إنشاء كود جديد</h3>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                  كود 100% يفعّل التقرير مجاناً بدون PayPal، ومناسب لاختبار Lemon Squeezy أو مراجعة الموقع.
+                  كود 100% يفعّل التقرير مجاناً. الأكواد العامة تعمل بحد استخدام إجمالي، وكل حساب يستطيع استخدام نفس الكود مرة واحدة فقط.
                 </p>
               </div>
               <button
@@ -1476,6 +1836,7 @@ export default function Admin() {
                   className="w-full bg-secondary border border-border rounded-xl px-3 py-2.5 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30"
                   dir="ltr"
                 />
+                <p className="mt-1 text-[11px] text-muted-foreground">مثال: 20 يعني عشرين حساباً كحد أقصى، وليس عشرين مرة لنفس الحساب.</p>
               </div>
               <div>
                 <label className="block text-xs text-muted-foreground mb-1">يبدأ من (اختياري)</label>
