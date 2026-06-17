@@ -6,6 +6,7 @@ import resultsRouter from "./results";
 import adminRouter from "./admin";
 import billingRouter from "./billing";
 import questionsRouter from "./questions";
+import mcpRouter from "./mcp";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(resultsRouter);
 router.use(adminRouter);
 router.use(billingRouter);
 router.use(questionsRouter);
+router.use(mcpRouter);
 
 export default router;

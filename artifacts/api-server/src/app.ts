@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
+import mcpRouter from "./routes/mcp";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
@@ -38,6 +39,7 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 
+app.use(mcpRouter);
 app.use("/api", router);
 
 export default app;

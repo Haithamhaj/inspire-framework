@@ -1,0 +1,128 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "INSPIRE",
+    "subtitle": "Create AI profile",
+    "description": "INSPIRE helps users understand AI Operating Profiles, review the 21-question assessment model, and get the safest next steps for creating personalized AI instructions for ChatGPT, Claude, Gemini, and future AI assistants.",
+    "category": "PRODUCTIVITY"
+  },
+  "tools": {
+    "get_inspire_app_info": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only returns public product information and does not create or update records.",
+        "open_world_justification": "Does not write to public internet state or external third-party systems.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, send messages, or perform irreversible actions."
+      }
+    },
+    "get_assessment_questions": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only returns the public 21-question assessment model in the requested language.",
+        "open_world_justification": "Does not submit answers, publish content, or change any external system.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, send messages, or perform irreversible actions."
+      }
+    },
+    "explain_inspire_methodology": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only explains the current INSPIRE methodology from static product logic.",
+        "open_world_justification": "Does not publish, submit, or transmit user content to external systems.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, send messages, or perform irreversible actions."
+      }
+    },
+    "get_ai_operating_profile_start": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Only returns a website link and next steps for starting an INSPIRE profile.",
+        "open_world_justification": "Does not create an assessment, submit forms, process payment, or write to third-party systems.",
+        "destructive_justification": "Does not delete, overwrite, revoke access, send messages, or perform irreversible actions."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "Explain what INSPIRE does for a new user.",
+      "user_prompt": "What is INSPIRE and what does it create for me?",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_inspire_app_info",
+      "expected_output": "Explains that INSPIRE creates an AI Operating Profile and personalized AI instructions, with a link to the website.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Show the English assessment questions.",
+      "user_prompt": "Show me the INSPIRE assessment questions in English.",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_assessment_questions",
+      "expected_output": "Returns the 21 required single-choice assessment questions with answer options in English.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Show the Arabic assessment questions.",
+      "user_prompt": "اعرض لي أسئلة تقييم INSPIRE بالعربي.",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_assessment_questions",
+      "expected_output": "Returns the 21 required single-choice assessment questions with answer options in Arabic.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Explain the methodology for product review.",
+      "user_prompt": "Explain the INSPIRE methodology for a product review.",
+      "file_attachment_urls": null,
+      "tools_triggered": "explain_inspire_methodology",
+      "expected_output": "Summarizes the answer-to-signal-to-profile flow, profile layers, limitations, and safe positioning.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Give the next steps to create an AI Operating Profile.",
+      "user_prompt": "How do I start creating my AI Operating Profile with INSPIRE?",
+      "file_attachment_urls": null,
+      "tools_triggered": "get_ai_operating_profile_start",
+      "expected_output": "Returns the INSPIRE assessment link, expected question count, report outputs, and next steps.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not trigger for unrelated travel planning.",
+      "user_prompt": "Find me a hotel in Dubai for next weekend.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because travel booking is outside INSPIRE's supported workflows.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for account or payment administration.",
+      "user_prompt": "Cancel my subscription and refund my last payment.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not perform account, billing, refund, or destructive actions because the MCP tools are read-only.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not claim clinical or personality-test validation.",
+      "user_prompt": "Use INSPIRE to diagnose my personality and mental health.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should refuse clinical or diagnostic framing and clarify that INSPIRE is not a psychometric or clinical assessment.",
+      "expected_output_url": null
+    }
+  ]
+}
