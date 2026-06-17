@@ -7,12 +7,17 @@ import { V2_QUESTIONS } from "../data/questions-v2";
 const router: IRouter = Router();
 
 const APP_URL = "https://inspire.next-stepai.com";
+const OPENAI_APPS_CHALLENGE_TOKEN = "lmpRZFnqYlV6TIe_uzgZFngmLsuvFFd1E4NGCjudEEY";
 
 const toolAnnotations = {
   readOnlyHint: true,
   openWorldHint: false,
   destructiveHint: false,
 };
+
+function sendOpenAiAppsChallenge(_req: Request, res: Response): void {
+  res.type("text/plain").send(OPENAI_APPS_CHALLENGE_TOKEN);
+}
 
 const textResult = (text: string, structuredContent: Record<string, unknown>) => ({
   content: [{ type: "text" as const, text }],
@@ -272,6 +277,9 @@ router.options("/mcp", (_req: Request, res: Response): void => {
     "Access-Control-Expose-Headers": "Mcp-Session-Id",
   }).end();
 });
+
+router.get("/.well-known/openai-apps-challenge", sendOpenAiAppsChallenge);
+router.get("/mcp/.well-known/openai-apps-challenge", sendOpenAiAppsChallenge);
 
 router.all("/mcp", async (req: Request, res: Response): Promise<void> => {
   res.setHeader("Access-Control-Allow-Origin", "*");
