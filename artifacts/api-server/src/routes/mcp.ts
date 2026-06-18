@@ -16,7 +16,10 @@ const toolAnnotations = {
 };
 
 function sendOpenAiAppsChallenge(_req: Request, res: Response): void {
-  res.type("text/plain").send(OPENAI_APPS_CHALLENGE_TOKEN);
+  res.status(200);
+  res.setHeader("Content-Type", "text/plain");
+  res.setHeader("Cache-Control", "no-store");
+  res.send(Buffer.from(OPENAI_APPS_CHALLENGE_TOKEN, "utf8"));
 }
 
 const textResult = (text: string, structuredContent: Record<string, unknown>) => ({
