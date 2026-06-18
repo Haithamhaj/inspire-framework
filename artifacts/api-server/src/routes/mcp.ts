@@ -7,7 +7,7 @@ import { V2_QUESTIONS } from "../data/questions-v2";
 const router: IRouter = Router();
 
 const APP_URL = "https://inspire.next-stepai.com";
-const OPENAI_APPS_CHALLENGE_TOKEN = "lmpRZFnqYlV6TIe_uzgZFngmLsuvFFd1E4NGCjudEEY";
+const OPENAI_APPS_CHALLENGE_TOKEN = "lmpRZFnqYlV6TIe_uzgZFngmLsuvFFdlE4NGCjudEEY";
 
 const toolAnnotations = {
   readOnlyHint: true,
