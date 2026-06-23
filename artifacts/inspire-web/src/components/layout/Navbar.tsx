@@ -53,6 +53,18 @@ export function Navbar({ variant = "default" }: NavbarProps) {
         </Link>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href={href("/guides")}
+            className={cn(
+              "hidden h-9 items-center rounded-2xl px-3 text-sm font-bold transition-colors md:inline-flex",
+              isPremium
+                ? "text-slate-300 hover:bg-slate-900/60 hover:text-rose-100"
+                : "text-foreground hover:text-primary"
+            )}
+          >
+            {locale === "ar" ? "الأدلة" : "Guides"}
+          </Link>
+
           <button
             onClick={switchLanguage}
             className={cn(

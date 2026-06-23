@@ -18,6 +18,7 @@ Core pages:
 - ChatGPT custom instructions: https://inspire.next-stepai.com/guides/chatgpt-custom-instructions
 - Prompt engineering for work: https://inspire.next-stepai.com/guides/prompt-engineering-for-work
 - AI operating profile: https://inspire.next-stepai.com/guides/ai-operating-profile
+- AI operating profile vs ChatGPT custom instructions: https://inspire.next-stepai.com/guides/ai-operating-profile-vs-chatgpt-custom-instructions
 - Arabic AI prompts: https://inspire.next-stepai.com/guides/arabic-ai-prompts
 - Free quick assessment: https://inspire.next-stepai.com/assess/mini
 - Terms: https://inspire.next-stepai.com/terms

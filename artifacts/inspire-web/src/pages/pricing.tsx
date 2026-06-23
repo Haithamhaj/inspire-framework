@@ -200,6 +200,25 @@ export default function Pricing() {
           })}
         </section>
 
+        <section className="mt-8 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-5">
+          <h2 className="text-xl font-black text-white">
+            {isAr ? "قبل الدفع: افهم ماذا يعني AI Operating Profile" : "Before paying: understand the AI Operating Profile"}
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-slate-400">
+            {isAr
+              ? "INSPIRE لا يعطيك برومبت واحد فقط. النتيجة الأساسية هي تعليمات تشغيل قابلة لإعادة الاستخدام تساعد ChatGPT وClaude وGemini على فهم طريقة عملك."
+              : "INSPIRE is not only one prompt. The core output is a reusable operating profile that helps ChatGPT, Claude, and Gemini understand how to work with you."}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-4 text-sm font-bold">
+            <Link href={href("/guides/ai-operating-profile")} className="text-rose-200 transition-colors hover:text-rose-100">
+              {isAr ? "اقرأ عن AI Operating Profile" : "Read about AI Operating Profiles"}
+            </Link>
+            <Link href={href("/guides/chatgpt-custom-instructions")} className="text-slate-400 transition-colors hover:text-rose-100">
+              {isAr ? "قارنها بتعليمات ChatGPT" : "Compare with ChatGPT Custom Instructions"}
+            </Link>
+          </div>
+        </section>
+
         <div className="mt-8 flex flex-wrap gap-4 text-sm font-bold text-slate-400">
           <Link href={href("/terms")} className="transition-colors hover:text-rose-200">{copy.terms}</Link>
           <Link href={href("/privacy")} className="transition-colors hover:text-rose-200">{copy.privacy}</Link>

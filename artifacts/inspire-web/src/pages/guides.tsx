@@ -174,21 +174,21 @@ const guides: Guide[] = [
   },
   {
     slug: "prompt-engineering-for-work",
-    title: "Prompt Engineering for Work in Saudi Arabia and the GCC",
+    title: "Prompt Engineering for Work",
     description:
-      "A workplace-focused guide to using prompt engineering for planning, writing, clearer thinking, and productivity in GCC teams.",
-    keywords: ["prompt engineering for work", "AI productivity GCC", "استخدام الذكاء الاصطناعي في العمل"],
+      "A workplace-focused guide to using prompt engineering for planning, writing, clearer thinking, and productivity with AI tools.",
+    keywords: ["prompt engineering for work", "AI productivity", "ChatGPT for work", "Claude for work", "Gemini for work"],
     example: {
       weak: "Summarize this meeting.",
       stronger:
-        "Summarize this meeting for a Saudi operations team. Separate decisions, open questions, risks, and owner-specific next actions. Keep Arabic names as written and preserve English technical terms.",
+        "Summarize this meeting for a busy operations team. Separate decisions, open questions, cautions, and owner-specific next actions. Preserve technical terms when they should stay in English.",
     },
     sections: [
       {
         title: "Work prompts need business context",
         body: [
           "In the workplace, prompts should include the goal, audience, constraints, decision criteria, and expected format.",
-          "This matters in Saudi and GCC teams where AI is increasingly used for communication, clearer thinking, training, planning, and operational work.",
+          "This matters anywhere AI is used for communication, clearer thinking, training, planning, and operational work.",
         ],
       },
       {
@@ -208,7 +208,7 @@ const guides: Guide[] = [
       {
         title: "Use bilingual instructions deliberately",
         body: [
-          "Many Saudi and GCC workflows move between Arabic and English. Prompt instructions should define when to translate, when to preserve terms, and what audience the output is for.",
+          "Many workflows move between Arabic and English. Prompt instructions should define when to translate, when to preserve terms, and what audience the output is for.",
           "This avoids awkward literal translation and keeps business communication more natural.",
         ],
       },
@@ -228,10 +228,10 @@ const guides: Guide[] = [
   },
   {
     slug: "ai-operating-profile",
-    title: "What Are Personalized AI Instructions?",
+    title: "AI Operating Profile: Instructions for ChatGPT, Claude, and Gemini",
     description:
-      "Personalized AI instructions tell AI tools how to work with your goals, style, boundaries, and preferred response format.",
-    keywords: ["personalized AI instructions", "AI work style assessment", "تعليمات مخصصة للذكاء الاصطناعي"],
+      "An AI Operating Profile tells AI tools how to work with your goals, style, boundaries, preferred response format, and quality rules.",
+    keywords: ["AI Operating Profile", "ChatGPT custom instructions", "Claude instructions", "Gemini instructions", "personalized AI instructions"],
     example: {
       weak: "Answer in my style.",
       stronger:
@@ -239,10 +239,10 @@ const guides: Guide[] = [
     },
     sections: [
       {
-        title: "Personalized instructions are more than one prompt",
+        title: "An AI Operating Profile is more than one prompt",
         body: [
-          "A prompt usually asks for one output. Personalized instructions define how the assistant should think, respond, structure work, and avoid mistakes across many tasks.",
-          "They act like a lightweight guide for your AI assistant.",
+          "A prompt usually asks for one output. An AI Operating Profile defines how the assistant should think, respond, structure work, and avoid mistakes across many tasks.",
+          "It works like a reusable operating layer for ChatGPT, Claude, Gemini, and similar AI tools.",
         ],
       },
       {
@@ -253,30 +253,84 @@ const guides: Guide[] = [
         ],
       },
       {
-        title: "Why it matters",
+        title: "Why it matters for everyday AI users",
         body: [
-          "Most people lose time because every AI conversation starts from zero. Personalized instructions reduce repetition and help the assistant adapt faster.",
-          "For teams, it can also make AI collaboration easier to explain and share.",
+          "Most people lose time because every AI conversation starts from zero. An AI Operating Profile reduces repetition and helps the assistant adapt faster.",
+          "It is useful for anyone who uses AI regularly: work, study, planning, writing, analysis, coding, or personal productivity.",
         ],
       },
       {
         title: "How it differs from a prompt library",
         body: [
-          "A prompt library gives you reusable task templates. Personalized instructions give AI a reusable understanding of how to work with you.",
+          "A prompt library gives you reusable task templates. An AI Operating Profile gives AI a reusable understanding of how to work with you.",
           "The two can work together: instructions set behavior, while task prompts describe the current job.",
         ],
       },
     ],
     faqs: [
       {
-        question: "Are personalized AI instructions the same as a prompt?",
+        question: "Is an AI Operating Profile the same as a prompt?",
         answer:
-          "No. A prompt usually asks for one output. Personalized instructions define repeated behavior across many tasks and conversations.",
+          "No. A prompt usually asks for one output. An AI Operating Profile defines repeated behavior across many tasks and conversations.",
       },
       {
-        question: "Can I use the same instructions across multiple AI tools?",
+        question: "Can I use an AI Operating Profile across multiple AI tools?",
         answer:
           "Yes. Well-written instructions can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
+      },
+    ],
+  },
+  {
+    slug: "ai-operating-profile-vs-chatgpt-custom-instructions",
+    title: "AI Operating Profile vs ChatGPT Custom Instructions",
+    description:
+      "A practical comparison of AI Operating Profiles and ChatGPT Custom Instructions, including when to use each and how INSPIRE connects them.",
+    keywords: ["AI Operating Profile vs ChatGPT Custom Instructions", "ChatGPT custom instructions", "AI profile", "personalized AI instructions"],
+    example: {
+      weak: "Make ChatGPT answer better.",
+      stronger:
+        "First define the operating profile: goal, role, boundaries, answer style, self-check rules, and when to ask questions. Then adapt the strongest parts into ChatGPT Custom Instructions.",
+    },
+    sections: [
+      {
+        title: "The simple difference",
+        body: [
+          "ChatGPT Custom Instructions are a place to store reusable preferences inside ChatGPT. An AI Operating Profile is the broader instruction design that decides what those preferences should be.",
+          "In simple terms: Custom Instructions are the field. The AI Operating Profile is the operating logic you put into it.",
+        ],
+      },
+      {
+        title: "Why an operating profile comes first",
+        body: [
+          "Most people write custom instructions by guessing: be concise, be helpful, avoid long answers. That can help, but it usually stays generic.",
+          "An AI Operating Profile starts by defining the user's goal, working style, useful assistant role, boundaries, output structure, self-check behavior, and adaptation rules.",
+        ],
+      },
+      {
+        title: "Where INSPIRE fits",
+        body: [
+          "INSPIRE turns assessment answers into a structured AI Operating Profile, then converts that profile into copy-ready instructions that can be used in ChatGPT, Claude, Gemini, and similar tools.",
+          "This makes the result more stable than a one-off prompt and more portable than a single platform setting.",
+        ],
+      },
+      {
+        title: "Which one should you use?",
+        body: [
+          "Use ChatGPT Custom Instructions when you only need a short preference layer inside ChatGPT.",
+          "Use an AI Operating Profile when you want a clearer reusable profile that can guide multiple AI tools, projects, and recurring workflows.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Are AI Operating Profiles and ChatGPT Custom Instructions competitors?",
+        answer:
+          "No. They work together. The AI Operating Profile defines the assistant behavior, and ChatGPT Custom Instructions are one place where parts of that behavior can be pasted.",
+      },
+      {
+        question: "Can I use an AI Operating Profile outside ChatGPT?",
+        answer:
+          "Yes. A well-written AI Operating Profile can be adapted for Claude, Gemini, Custom GPTs, project instructions, and other assistant settings.",
       },
     ],
   },
@@ -289,7 +343,7 @@ const guides: Guide[] = [
     example: {
       weak: "اكتب لي برومبت للتسويق.",
       stronger:
-        "تصرف كخبير تسويق عملي. اكتب برومبت يساعدني أجهز حملة لمنتج رقمي في السعودية. اذكر الجمهور، الرسالة، القنوات، المخاطر، وخطوات التنفيذ. استخدم العربية الواضحة وحافظ على المصطلحات التقنية الإنجليزية عند الحاجة.",
+        "تصرف كخبير تسويق عملي. اكتب برومبت يساعدني أجهز حملة لمنتج رقمي. اذكر الجمهور، الرسالة، القنوات، ما يجب الانتباه له، وخطوات التنفيذ. استخدم العربية الواضحة وحافظ على المصطلحات التقنية الإنجليزية عند الحاجة.",
     },
     sections: [
       {
@@ -302,7 +356,7 @@ const guides: Guide[] = [
       {
         title: "Bilingual work benefits from stable instructions",
         body: [
-          "Many GCC users switch between Arabic and English at work. Stable instructions can tell the AI when to preserve English terms and when to explain in Arabic.",
+          "Many users switch between Arabic and English at work. Stable instructions can tell the AI when to preserve English terms and when to explain in Arabic.",
           "This is especially useful for business, technology, education, and operations contexts.",
         ],
       },
@@ -438,20 +492,20 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
     ],
   },
   "prompt-engineering-for-work": {
-    title: "هندسة المطالبات للعمل في السعودية والخليج",
-    description: "دليل عملي لاستخدام هندسة المطالبات في التخطيط والكتابة والتفكير الأوضح والإنتاجية داخل فرق العمل.",
-    keywords: ["هندسة المطالبات للعمل", "الذكاء الاصطناعي في السعودية", "إنتاجية الذكاء الاصطناعي", "استخدام AI في العمل"],
+    title: "هندسة المطالبات للعمل",
+    description: "دليل عملي لاستخدام هندسة المطالبات في التخطيط والكتابة والتفكير الأوضح والإنتاجية مع أدوات الذكاء الاصطناعي.",
+    keywords: ["هندسة المطالبات للعمل", "إنتاجية الذكاء الاصطناعي", "ChatGPT للعمل", "Claude للعمل", "Gemini للعمل"],
     example: {
       weak: "لخّص هذا الاجتماع.",
       stronger:
-        "لخّص هذا الاجتماع لفريق عمليات في السعودية. افصل بين القرارات، الأسئلة المفتوحة، المخاطر، والخطوات التالية حسب المسؤول. حافظ على الأسماء العربية كما هي، وأبقِ المصطلحات التقنية الإنجليزية عند الحاجة.",
+        "لخّص هذا الاجتماع لفريق عمليات مشغول. افصل بين القرارات، الأسئلة المفتوحة، ما يجب الانتباه له، والخطوات التالية حسب المسؤول. حافظ على الأسماء كما هي، وأبقِ المصطلحات التقنية الإنجليزية عند الحاجة.",
     },
     sections: [
       {
         title: "مطالبات العمل تحتاج سياقاً تجارياً",
         body: [
           "في العمل، المطالبة يجب أن تشمل الهدف والجمهور والقيود ومعايير القرار وشكل المخرجات المتوقع.",
-          "هذا مهم في السعودية والخليج حيث يستخدم الذكاء الاصطناعي في التواصل والتفكير الأوضح والتدريب والتخطيط والعمل التشغيلي.",
+          "هذا مهم في أي بيئة يستخدم فيها الذكاء الاصطناعي للتواصل، التفكير الأوضح، التدريب، التخطيط، والعمل التشغيلي.",
         ],
       },
       {
@@ -471,7 +525,7 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
       {
         title: "استخدم التعليمات ثنائية اللغة بوعي",
         body: [
-          "كثير من بيئات العمل في الخليج تتحرك بين العربية والإنجليزية. لذلك يجب تحديد متى نترجم، ومتى نحافظ على المصطلح، ولمن تُكتب المخرجات.",
+          "كثير من بيئات العمل تتحرك بين العربية والإنجليزية. لذلك يجب تحديد متى نترجم، ومتى نحافظ على المصطلح، ولمن تُكتب المخرجات.",
           "هذا يحافظ على طبيعية التواصل ويقلل الترجمة الحرفية الضعيفة.",
         ],
       },
@@ -488,9 +542,9 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
     ],
   },
   "ai-operating-profile": {
-    title: "ما هي تعليمات الذكاء الاصطناعي المخصصة؟",
-    description: "تعليمات الذكاء الاصطناعي المخصصة توضّح للذكاء الاصطناعي كيف يعمل مع أهدافك وأسلوبك وحدودك.",
-    keywords: ["تعليمات مخصصة للذكاء الاصطناعي", "تقييم أسلوب العمل", "personalized AI instructions"],
+    title: "AI Operating Profile: تعليمات قابلة للاستخدام مع ChatGPT وClaude وGemini",
+    description: "AI Operating Profile يوضح للذكاء الاصطناعي كيف يعمل مع أهدافك وأسلوبك وحدودك وقواعد الجودة التي تناسبك.",
+    keywords: ["AI Operating Profile", "تعليمات ChatGPT", "تعليمات Claude", "تعليمات Gemini", "تعليمات مخصصة للذكاء الاصطناعي"],
     example: {
       weak: "أجب بأسلوبي.",
       stronger:
@@ -498,10 +552,10 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
     },
     sections: [
       {
-        title: "التعليمات المخصصة أكثر من مطالبة واحدة",
+        title: "AI Operating Profile أكثر من برومبت واحد",
         body: [
-          "المطالبة تطلب مخرجاً واحداً غالباً. أما التعليمات المخصصة فتحدد كيف يفكر المساعد ويرد ويرتب العمل ويتجنب الأخطاء عبر مهام متعددة.",
-          "هي أشبه بدليل خفيف لمساعدك الذكي.",
+          "البرومبت يطلب مخرجاً واحداً غالباً. أما AI Operating Profile فيحدد كيف يفكر المساعد ويرد ويرتب العمل ويتجنب الأخطاء عبر مهام متعددة.",
+          "هو طبقة تشغيل قابلة لإعادة الاستخدام مع ChatGPT وClaude وGemini وأدوات الذكاء الاصطناعي المشابهة.",
         ],
       },
       {
@@ -512,28 +566,81 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
         ],
       },
       {
-        title: "لماذا يهم؟",
+        title: "لماذا يهم لأي مستخدم AI؟",
         body: [
-          "كثير من الناس يضيعون وقتاً لأن كل محادثة تبدأ من الصفر. التعليمات المخصصة تقلل التكرار وتساعد المساعد على التكيف أسرع.",
-          "وبالنسبة للفرق، يسهل شرح طريقة التعاون مع الذكاء الاصطناعي ومشاركتها.",
+          "كثير من الناس يضيعون وقتاً لأن كل محادثة تبدأ من الصفر. AI Operating Profile يقلل التكرار ويساعد المساعد على التكيف أسرع.",
+          "هو مفيد لأي شخص يستخدم AI بانتظام: العمل، الدراسة، التخطيط، الكتابة، التحليل، البرمجة، أو الإنتاجية الشخصية.",
         ],
       },
       {
         title: "كيف يختلف عن مكتبة المطالبات؟",
         body: [
-          "مكتبة المطالبات تعطيك قوالب للمهام. التعليمات المخصصة تعطي المساعد فهماً متكرراً لطريقة العمل معك.",
+          "مكتبة المطالبات تعطيك قوالب للمهام. أما AI Operating Profile فيعطي المساعد فهماً متكرراً لطريقة العمل معك.",
           "يمكن الجمع بين الاثنين: التعليمات تحدد السلوك، والمطالبة تصف المهمة الحالية.",
         ],
       },
     ],
     faqs: [
       {
-        question: "هل التعليمات المخصصة هي نفسها البرومبت؟",
-        answer: "لا. البرومبت يطلب غالباً نتيجة واحدة، أما التعليمات المخصصة فتحدد سلوكاً متكرراً عبر مهام ومحادثات كثيرة.",
+        question: "هل AI Operating Profile هو نفسه البرومبت؟",
+        answer: "لا. البرومبت يطلب غالباً نتيجة واحدة، أما AI Operating Profile فيحدد سلوكاً متكرراً عبر مهام ومحادثات كثيرة.",
       },
       {
-        question: "هل أستطيع استخدام نفس التعليمات مع أكثر من أداة؟",
+        question: "هل أستطيع استخدام AI Operating Profile مع أكثر من أداة؟",
         answer: "نعم. يمكن تكييف التعليمات الجيدة مع ChatGPT وClaude وGemini، مع مراعاة اختلاف مكان إدخال التعليمات في كل أداة.",
+      },
+    ],
+  },
+  "ai-operating-profile-vs-chatgpt-custom-instructions": {
+    title: "AI Operating Profile vs ChatGPT Custom Instructions",
+    description:
+      "مقارنة عملية بين AI Operating Profile وتعليمات ChatGPT المخصصة، ومتى تستخدم كل واحد وكيف يربط INSPIRE بينهما.",
+    keywords: ["AI Operating Profile", "تعليمات ChatGPT", "ChatGPT Custom Instructions", "تعليمات مخصصة للذكاء الاصطناعي"],
+    example: {
+      weak: "خلّي ChatGPT يجاوبني بشكل أفضل.",
+      stronger:
+        "ابدأ بتحديد AI Operating Profile: الهدف، الدور، الحدود، أسلوب الإجابة، قواعد المراجعة الذاتية، ومتى يجب أن يسأل سؤالاً توضيحياً. بعدها حوّل أهم الأجزاء إلى تعليمات ChatGPT.",
+    },
+    sections: [
+      {
+        title: "الفرق ببساطة",
+        body: [
+          "تعليمات ChatGPT المخصصة هي مكان داخل ChatGPT تضع فيه تفضيلات ثابتة. أما AI Operating Profile فهو التصميم الأوسع الذي يحدد ما الذي يجب أن يوضع في هذه التعليمات.",
+          "بصياغة أبسط: Custom Instructions هي الخانة. AI Operating Profile هو منطق التشغيل الذي تضعه داخلها.",
+        ],
+      },
+      {
+        title: "لماذا يأتي AI Operating Profile أولاً؟",
+        body: [
+          "كثير من الناس يكتبون تعليمات عامة مثل كن مختصراً أو كن مفيداً. هذه قد تساعد، لكنها غالباً تبقى سطحية.",
+          "AI Operating Profile يبدأ بتحديد الهدف، أسلوب العمل، دور المساعد المناسب، الحدود، شكل المخرجات، قواعد الفحص، وطريقة التكيف.",
+        ],
+      },
+      {
+        title: "أين يدخل INSPIRE؟",
+        body: [
+          "INSPIRE يحوّل إجابات التقييم إلى AI Operating Profile منظم، ثم يحوّل هذا الملف إلى تعليمات جاهزة للنسخ يمكن استخدامها في ChatGPT وClaude وGemini وأدوات مشابهة.",
+          "لذلك تكون النتيجة أكثر ثباتاً من برومبت واحد، وأكثر قابلية للنقل من إعداد خاص بمنصة واحدة.",
+        ],
+      },
+      {
+        title: "أي واحد تستخدم؟",
+        body: [
+          "استخدم ChatGPT Custom Instructions عندما تحتاج طبقة تفضيلات قصيرة داخل ChatGPT فقط.",
+          "استخدم AI Operating Profile عندما تريد ملف تشغيل أوضح يمكن أن يوجه أكثر من أداة ومشروع وسير عمل متكرر.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "هل AI Operating Profile ينافس ChatGPT Custom Instructions؟",
+        answer:
+          "لا. هما يعملان معاً. AI Operating Profile يحدد سلوك المساعد، وChatGPT Custom Instructions هي مكان يمكن لصق أجزاء من هذا السلوك فيه.",
+      },
+      {
+        question: "هل يمكن استخدام AI Operating Profile خارج ChatGPT؟",
+        answer:
+          "نعم. يمكن تكييف AI Operating Profile جيد مع Claude وGemini وCustom GPTs وتعليمات المشاريع وإعدادات المساعدين الأخرى.",
       },
     ],
   },
@@ -544,7 +651,7 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
     example: {
       weak: "اكتب لي برومبت للتسويق.",
       stronger:
-        "تصرف كخبير تسويق عملي. اكتب برومبت يساعدني أجهز حملة لمنتج رقمي في السعودية. اذكر الجمهور، الرسالة، القنوات، المخاطر، وخطوات التنفيذ. استخدم العربية الواضحة وحافظ على المصطلحات التقنية الإنجليزية عند الحاجة.",
+        "تصرف كخبير تسويق عملي. اكتب برومبت يساعدني أجهز حملة لمنتج رقمي. اذكر الجمهور، الرسالة، القنوات، ما يجب الانتباه له، وخطوات التنفيذ. استخدم العربية الواضحة وحافظ على المصطلحات التقنية الإنجليزية عند الحاجة.",
     },
     sections: [
       {
@@ -557,7 +664,7 @@ const guideArabic: Record<string, Omit<Guide, "slug">> = {
       {
         title: "العمل ثنائي اللغة يستفيد من تعليمات ثابتة",
         body: [
-          "كثير من مستخدمي الخليج ينتقلون بين العربية والإنجليزية في العمل. التعليمات الثابتة تحدد متى نحافظ على المصطلحات الإنجليزية ومتى نشرح بالعربية.",
+          "كثير من المستخدمين ينتقلون بين العربية والإنجليزية في العمل. التعليمات الثابتة تحدد متى نحافظ على المصطلحات الإنجليزية ومتى نشرح بالعربية.",
           "هذا مفيد في الأعمال والتقنية والتعليم والعمليات.",
         ],
       },
@@ -633,8 +740,8 @@ function GuidesIndex() {
           </h1>
           <p className="mt-5 text-base leading-8 text-slate-300">
             {locale === "ar"
-              ? "تعرّف على طريقة كتابة مطالبات أوضح، واستخدام تعليمات ChatGPT، وبناء تعليمات مخصصة للذكاء الاصطناعي تناسب العمل في السعودية والخليج والسياقات العربية/الإنجليزية."
-              : "Learn how to write better prompts, use ChatGPT custom instructions, and build personalized AI instructions for work in Saudi Arabia, the GCC, and bilingual Arabic/English contexts."}
+              ? "تعرّف على طريقة كتابة مطالبات أوضح، واستخدام تعليمات ChatGPT، وبناء AI Operating Profile وتعليمات مخصصة تعمل مع ChatGPT وClaude وGemini."
+              : "Learn how to write better prompts, use ChatGPT custom instructions, and build an AI Operating Profile that works with ChatGPT, Claude, and Gemini."}
           </p>
         </header>
 
@@ -651,6 +758,18 @@ function GuidesIndex() {
 function GuideDetail({ guide }: { guide: Guide }) {
   const { locale, dir } = useI18n();
   const localizedGuide = getLocalizedGuide(guide, locale);
+  const relatedPriority = [
+    "ai-operating-profile",
+    "ai-operating-profile-vs-chatgpt-custom-instructions",
+    "chatgpt-custom-instructions",
+    "prompt-engineering-for-work",
+  ];
+  const relatedGuides = relatedPriority
+    .filter((slug) => slug !== guide.slug)
+    .map((slug) => guides.find((item) => item.slug === slug))
+    .filter((item): item is Guide => Boolean(item))
+    .slice(0, 3)
+    .map((item) => getLocalizedGuide(item, locale));
   const links = locale === "ar" ? sourceLinksAr : sourceLinks;
   const href = (path: string) => localizePath(path, locale);
 
@@ -766,6 +885,22 @@ function GuideDetail({ guide }: { guide: Guide }) {
                 <h3 className="text-lg font-black text-white">{faq.question}</h3>
                 <p className="mt-2 text-base leading-8 text-slate-300">{faq.answer}</p>
               </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10 rounded-2xl border border-slate-400/10 bg-slate-950/45 p-6">
+          <h2 className="text-2xl font-black text-white">{locale === "ar" ? "أدلة مرتبطة" : "Related guides"}</h2>
+          <div className="mt-5 grid gap-3">
+            {relatedGuides.map((item) => (
+              <Link
+                key={item.slug}
+                href={href(`/guides/${item.slug}`)}
+                className="rounded-xl border border-slate-400/10 bg-slate-950/55 p-4 transition-colors hover:border-rose-300/30"
+              >
+                <h3 className="font-black text-white">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{item.description}</p>
+              </Link>
             ))}
           </div>
         </section>

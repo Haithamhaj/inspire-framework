@@ -75,6 +75,8 @@ Keep the current Replit-hosted production app stable while planning the next pro
 - The contact page and organization structured data now include the LinkedIn profile alongside the support email.
 - Google Search Console domain ownership is verified, but the initial `sitemap.xml` submission returned `Couldn't fetch` while Replit rendered the XML as visible plain text in Chrome. A `sitemap.txt` fallback has been added for Search Console submission.
 - Google Search Console now accepts `sitemap.xml` and reports 30 discovered pages.
+- Google Search Console URL Inspection on June 23, 2026 found 6 indexed sitemap URLs, 1 crawled-but-not-indexed URL, 9 discovered-but-not-indexed URLs, and 14 URLs unknown to Google. The recommended SEO fix is stronger internal linking and clearer AI Operating Profile positioning before publishing more pages.
+- SEO P0 positioning work has started locally: public navigation/footer links now expose guides and the core guide pages, the AI Operating Profile guide is titled around the target category, pricing/home now link contextually into the core SEO guides, and the first comparison page `/guides/ai-operating-profile-vs-chatgpt-custom-instructions` has been added to the app, prerender, sitemap, and `llms.txt`.
 - Review-facing product copy now explicitly states that INSPIRE is a premade self-serve digital assessment/report product, not consultation or custom-service sales.
 - A hidden noindex `/review-demo` route now exists for Lemon Squeezy review video capture. It shows the product path only: assessment setup, answering questions, report generation, and digital report delivery using reviewer-safe sample data.
 - The Lemon review MP4 at `docs/lemon-review/inspire-assessment-review-demo.mp4` has been updated to a clearer 1920x1080 product-flow video: answer selection examples, report generation, and report review through the end.
@@ -118,6 +120,7 @@ Deploy the Lemon Squeezy integration to Replit in test mode, add the Lemon webho
 - Technical audit: `project-state/TECHNICAL_AUDIT.md`
 - Visual system map: `project-state/SYSTEM_MAP.html`
 - Supabase/deployment notes: `project-state/SUPABASE_DEPLOYMENT_NOTES.md`
+- SEO indexing audit: `project-state/SEO_INDEXING_AUDIT_2026-06-23.md`
 - Replit deployment plan: `project-state/REPLIT_SUPABASE_DEPLOYMENT.md`
 - SEO strategy: `project-state/SEO_STRATEGY.md`
 - SEO execution plan: `project-state/SEO_EXECUTION_PLAN.md`

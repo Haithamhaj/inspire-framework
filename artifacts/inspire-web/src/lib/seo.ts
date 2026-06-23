@@ -130,14 +130,14 @@ const guideSeo: Record<string, SeoConfig> = {
   },
   "prompt-engineering-for-work": {
     path: "/guides/prompt-engineering-for-work",
-    title: "Prompt Engineering for Work in Saudi Arabia and the GCC",
+    title: "Prompt Engineering for Work — INSPIRE Guide",
     description:
-      "Use prompt engineering at work for planning, writing, clearer thinking, bilingual communication, and productivity across Saudi Arabia and GCC teams.",
+      "Use prompt engineering at work for planning, writing, clearer thinking, bilingual communication, and productivity with ChatGPT, Claude, and Gemini.",
     jsonLd: guideJsonLd({
       path: "/guides/prompt-engineering-for-work",
-      title: "Prompt Engineering for Work in Saudi Arabia and the GCC",
+      title: "Prompt Engineering for Work",
       description:
-        "Use prompt engineering at work for planning, writing, clearer thinking, bilingual communication, and productivity across Saudi Arabia and GCC teams.",
+        "Use prompt engineering at work for planning, writing, clearer thinking, bilingual communication, and productivity with ChatGPT, Claude, and Gemini.",
       breadcrumbName: "Prompt Engineering for Work",
       faqs: [
         {
@@ -155,25 +155,50 @@ const guideSeo: Record<string, SeoConfig> = {
   },
   "ai-operating-profile": {
     path: "/guides/ai-operating-profile",
-    title: "What Are Personalized AI Instructions? — INSPIRE Framework",
+    title: "AI Operating Profile: Instructions for ChatGPT, Claude, and Gemini",
     description:
-      "Personalized AI instructions help ChatGPT, Claude, and Gemini understand your goal, working style, boundaries, and preferred response format.",
+      "Learn what an AI Operating Profile is and how reusable instructions help ChatGPT, Claude, and Gemini understand your goals, style, boundaries, and quality rules.",
     jsonLd: guideJsonLd({
       path: "/guides/ai-operating-profile",
-      title: "What Are Personalized AI Instructions?",
+      title: "AI Operating Profile: Instructions for ChatGPT, Claude, and Gemini",
       description:
-        "Personalized AI instructions help ChatGPT, Claude, and Gemini understand your goal, working style, boundaries, and preferred response format.",
-      breadcrumbName: "Personalized AI Instructions",
+        "Learn what an AI Operating Profile is and how reusable instructions help ChatGPT, Claude, and Gemini understand your goals, style, boundaries, and quality rules.",
+      breadcrumbName: "AI Operating Profile",
       faqs: [
         {
-          question: "Are personalized AI instructions the same as a prompt?",
+          question: "Is an AI Operating Profile the same as a prompt?",
           answer:
-            "No. A prompt usually asks for one output. Personalized instructions define repeated behavior across many tasks and conversations.",
+            "No. A prompt usually asks for one output. An AI Operating Profile defines reusable behavior, context, boundaries, and quality rules across many tasks and conversations.",
         },
         {
-          question: "Can I use the same instructions across multiple AI tools?",
+          question: "Can I use an AI Operating Profile across multiple AI tools?",
           answer:
-            "Yes. Well-written instructions can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
+            "Yes. A well-written AI Operating Profile can be adapted for ChatGPT, Claude, Gemini, and other assistants, although each tool may have different instruction fields.",
+        },
+      ],
+    }),
+  },
+  "ai-operating-profile-vs-chatgpt-custom-instructions": {
+    path: "/guides/ai-operating-profile-vs-chatgpt-custom-instructions",
+    title: "AI Operating Profile vs ChatGPT Custom Instructions — INSPIRE",
+    description:
+      "Compare AI Operating Profiles with ChatGPT Custom Instructions and learn when to use each for better ChatGPT, Claude, and Gemini results.",
+    jsonLd: guideJsonLd({
+      path: "/guides/ai-operating-profile-vs-chatgpt-custom-instructions",
+      title: "AI Operating Profile vs ChatGPT Custom Instructions",
+      description:
+        "Compare AI Operating Profiles with ChatGPT Custom Instructions and learn when to use each for better ChatGPT, Claude, and Gemini results.",
+      breadcrumbName: "AI Operating Profile vs ChatGPT Custom Instructions",
+      faqs: [
+        {
+          question: "Are AI Operating Profiles and ChatGPT Custom Instructions competitors?",
+          answer:
+            "No. They work together. The AI Operating Profile defines the assistant behavior, and ChatGPT Custom Instructions are one place where parts of that behavior can be pasted.",
+        },
+        {
+          question: "Can I use an AI Operating Profile outside ChatGPT?",
+          answer:
+            "Yes. A well-written AI Operating Profile can be adapted for Claude, Gemini, Custom GPTs, project instructions, and other assistant settings.",
         },
       ],
     }),
@@ -220,15 +245,21 @@ const guideSeoAr: Record<string, SeoConfig> = {
   },
   "prompt-engineering-for-work": {
     path: "/guides/prompt-engineering-for-work",
-    title: "هندسة المطالبات للعمل في السعودية والخليج — INSPIRE",
+    title: "هندسة المطالبات للعمل — INSPIRE",
     description:
-      "استخدم هندسة المطالبات في التخطيط والكتابة والتفكير الأوضح والتواصل ثنائي اللغة داخل فرق العمل في السعودية والخليج.",
+      "استخدم هندسة المطالبات في التخطيط والكتابة والتفكير الأوضح والتواصل ثنائي اللغة مع ChatGPT وClaude وGemini.",
   },
   "ai-operating-profile": {
     path: "/guides/ai-operating-profile",
-    title: "ما هي تعليمات الذكاء الاصطناعي المخصصة؟ — INSPIRE",
+    title: "AI Operating Profile: تعليمات قابلة للاستخدام مع ChatGPT وClaude وGemini",
     description:
-      "تعليمات الذكاء الاصطناعي المخصصة تساعد ChatGPT وClaude وGemini على فهم هدفك، أسلوبك، حدودك، وشكل الرد المناسب لك.",
+      "تعرف على AI Operating Profile وكيف يساعد ChatGPT وClaude وGemini على فهم هدفك، أسلوبك، حدودك، وقواعد الجودة التي تفضلها.",
+  },
+  "ai-operating-profile-vs-chatgpt-custom-instructions": {
+    path: "/guides/ai-operating-profile-vs-chatgpt-custom-instructions",
+    title: "AI Operating Profile vs ChatGPT Custom Instructions — INSPIRE",
+    description:
+      "مقارنة عملية بين AI Operating Profile وتعليمات ChatGPT المخصصة، ومتى تستخدم كل واحد وكيف يربط INSPIRE بينهما.",
   },
   "arabic-ai-prompts": {
     path: "/guides/arabic-ai-prompts",
@@ -241,17 +272,17 @@ const guideSeoAr: Record<string, SeoConfig> = {
 export const defaultSeo: SeoConfig = {
   path: "/",
   locale: "en",
-  title: "Personalized AI Instructions for ChatGPT | INSPIRE",
+  title: "AI Operating Profile for ChatGPT, Claude, and Gemini | INSPIRE",
   description:
-    "Answer 21 short questions and get personalized, ready-to-use AI instructions for ChatGPT, Claude, or Gemini based on your goal, working style, and preferred response format.",
+    "Create an AI Operating Profile with reusable instructions for ChatGPT, Claude, and Gemini based on your goal, working style, boundaries, and preferred response format.",
 };
 
 export const defaultSeoAr: SeoConfig = {
   path: "/",
   locale: "ar",
-  title: "تعليمات AI مخصصة لـ ChatGPT | INSPIRE",
+  title: "AI Operating Profile لـ ChatGPT وClaude وGemini | INSPIRE",
   description:
-    "أجب عن 21 سؤالًا قصيرًا واحصل على تعليمات AI جاهزة للاستخدام في ChatGPT أو Claude أو Gemini، مبنية على هدفك وطريقة عملك وشكل الرد الذي تفضله.",
+    "أنشئ AI Operating Profile وتعليمات قابلة لإعادة الاستخدام مع ChatGPT وClaude وGemini بناءً على هدفك وأسلوب عملك وحدودك وشكل الرد الذي تفضله.",
 };
 
 export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfig {
@@ -478,9 +509,9 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
 
     return {
       path: "/guides",
-      title: "AI Prompt Guides for Work — INSPIRE Framework",
+      title: "AI Prompt Guides and AI Operating Profile Guides — INSPIRE",
       description:
-        "Practical guides for better AI prompts, ChatGPT custom instructions, prompt engineering, Arabic AI prompts, and personalized AI instructions.",
+        "Practical guides for AI Operating Profiles, ChatGPT custom instructions, prompt engineering, Arabic AI prompts, and personalized AI instructions.",
       jsonLd: breadcrumbJsonLd([
         { name: "Home", path: "/" },
         { name: "Guides", path: "/guides" },
@@ -494,7 +525,7 @@ export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfi
       return {
         ...guideSeo[slug],
         ...guideSeoAr[slug],
-        jsonLd: guideSeo[slug]?.jsonLd,
+        jsonLd: undefined,
       };
     }
 

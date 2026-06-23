@@ -5,6 +5,9 @@ import { localizePath } from "@/lib/locale-paths";
 const legalLinks = [
   { href: "/pricing", label: "Pricing", labelAr: "الأسعار" },
   { href: "/guides", label: "Guides", labelAr: "الأدلة" },
+  { href: "/guides/ai-operating-profile", label: "AI Operating Profile", labelAr: "AI Operating Profile" },
+  { href: "/guides/ai-operating-profile-vs-chatgpt-custom-instructions", label: "AI Profile vs ChatGPT", labelAr: "AI Profile vs ChatGPT" },
+  { href: "/guides/chatgpt-custom-instructions", label: "ChatGPT Instructions", labelAr: "تعليمات ChatGPT" },
   { href: "/about", label: "About", labelAr: "عن INSPIRE" },
   { href: "/research", label: "Research", labelAr: "البحث" },
   { href: "/contact", label: "Contact", labelAr: "تواصل معنا" },

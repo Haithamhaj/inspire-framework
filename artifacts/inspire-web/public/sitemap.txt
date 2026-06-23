@@ -20,6 +20,8 @@ https://inspire.next-stepai.com/guides/prompt-engineering-for-work
 https://inspire.next-stepai.com/ar/guides/prompt-engineering-for-work
 https://inspire.next-stepai.com/guides/ai-operating-profile
 https://inspire.next-stepai.com/ar/guides/ai-operating-profile
+https://inspire.next-stepai.com/guides/ai-operating-profile-vs-chatgpt-custom-instructions
+https://inspire.next-stepai.com/ar/guides/ai-operating-profile-vs-chatgpt-custom-instructions
 https://inspire.next-stepai.com/guides/arabic-ai-prompts
 https://inspire.next-stepai.com/ar/guides/arabic-ai-prompts
 https://inspire.next-stepai.com/terms
