@@ -20,6 +20,45 @@ const sourceLinks = [
 
 const guides = [
   {
+    slug: "how-to-write-better-ai-instructions",
+    title: "How to Write Better AI Instructions for ChatGPT, Claude, and Gemini",
+    titleAr: "كيف تكتب تعليمات أفضل للذكاء الاصطناعي مع ChatGPT وClaude وGemini",
+    metaTitle: "How to Write Better AI Instructions for ChatGPT, Claude, and Gemini — INSPIRE",
+    metaTitleAr: "كيف تكتب تعليمات أفضل للذكاء الاصطناعي — INSPIRE",
+    description:
+      "Learn how to write AI instructions using the INSPIRE seven-section structure. These examples are general educational excerpts, not a substitute for a personalized profile based on project context and assessment answers.",
+    descriptionAr:
+      "دليل عملي لكتابة تعليمات موجهة للمساعد نفسه باستخدام أقسام INSPIRE السبعة. هذه أمثلة تعليمية عامة وليست بديلاً عن ملف مخصص حسب سياق المشروع وإجابات الاختبار.",
+    sections: [
+      ["1. Identity & Role", "These examples are general. A real INSPIRE profile changes based on the project, domain, working style, behavioral pattern, and assessment answers. Write this section as instructions to the AI assistant, not as a biography of the user. Example: Act as a consulting strategy assistant for client-facing business work."],
+      ["2. Norms & Boundaries", "Tell the assistant what to do, what to avoid, when to stop, and when to clarify. Example: Do not give generic advice or unsupported claims."],
+      ["3. Style & Tone", "Define how the assistant should sound and how much detail it should use. Example: Be direct, practical, and calm. Start concise, then expand when useful."],
+      ["4. Precision & Self-Check", "Tell the assistant how to handle uncertainty, facts, assumptions, and claims. Example: Separate facts, assumptions, and recommendations when accuracy matters."],
+      ["5. Internal Evaluation", "Define the assistant's final quality check before it answers. Example: Check whether the answer is coherent, useful, aligned with the goal, and missing obvious risks."],
+      ["6. Response Structure", "Tell the assistant how to organize answers. Example: Lead with the recommendation, then cover assumptions, options, trade-offs, and next steps."],
+      ["7. Enhancement & Adaptation", "Tell the assistant how to adapt when corrected, when a task repeats, or when scope starts drifting. Example: Preserve stable rules unless explicitly changed."],
+      ["Six general role examples", "These are educational excerpts, not complete INSPIRE profiles. Founder: Act as a founder's strategic planning assistant for early-stage product decisions. Project manager: Act as a project execution and coordination assistant. Student or researcher: Act as a study and research assistant. Marketing and content: Act as a practical marketing and content strategy assistant. Team lead and operations: Act as an operations and team coordination assistant. HR and people operations: Act as a people operations assistant for workplace communication and process design."],
+    ],
+    sectionsAr: [
+      ["1. Identity & Role", "هذه الأمثلة عامة. ملف INSPIRE الحقيقي يتغير حسب المشروع، المجال، أسلوب العمل، النمط السلوكي، وإجابات الاختبار. اكتب هذا القسم كتعليمات للذكاء الاصطناعي، لا كسيرة ذاتية للمستخدم. مثال: تصرف كمساعد استراتيجي للاستشارات في العمل الموجه للعملاء."],
+      ["2. Norms & Boundaries", "قل للمساعد ماذا يفعل، ماذا يتجنب، متى يتوقف، ومتى يطلب توضيحاً. مثال: لا تقدم نصائح عامة أو ادعاءات غير مدعومة."],
+      ["3. Style & Tone", "حدد كيف يجب أن يتحدث المساعد وكم مستوى التفصيل المطلوب. مثال: كن مباشراً وعملياً وهادئاً. ابدأ باختصار ثم وسّع عند الحاجة."],
+      ["4. Precision & Self-Check", "قل للمساعد كيف يتعامل مع عدم اليقين والحقائق والافتراضات والادعاءات. مثال: افصل بين الحقائق والافتراضات والتوصيات عندما تكون الدقة مهمة."],
+      ["5. Internal Evaluation", "حدد فحص الجودة الداخلي الذي يقوم به المساعد قبل الرد. مثال: تحقق أن الإجابة متماسكة ومفيدة ومرتبطة بالهدف ولا تنقصها مخاطر واضحة."],
+      ["6. Response Structure", "قل للمساعد كيف يرتب الإجابات. مثال: ابدأ بالتوصية، ثم اعرض الافتراضات والخيارات والمفاضلات والخطوات التالية."],
+      ["7. Enhancement & Adaptation", "قل للمساعد كيف يتكيف عند التصحيح أو تكرار المهمة أو توسع النطاق. مثال: احفظ القواعد المستقرة ما لم يتم تغييرها صراحة."],
+      ["ستة أمثلة عامة حسب الدور", "هذه مقتطفات تعليمية وليست ملفات INSPIRE كاملة. المؤسس: تصرف كمساعد تخطيط استراتيجي لمؤسس في قرارات منتج مبكرة. مدير المشروع: تصرف كمساعد تنفيذ وتنسيق للمشاريع. الطالب أو الباحث: تصرف كمساعد دراسة وبحث. التسويق والمحتوى: تصرف كمساعد عملي لاستراتيجية التسويق والمحتوى. قائد الفريق والعمليات: تصرف كمساعد عمليات وتنسيق فريق. الموارد البشرية: تصرف كمساعد عمليات أفراد للتواصل الداخلي وتصميم الإجراءات."],
+    ],
+    faqs: [
+      ["Should AI instructions describe me or instruct the AI?", "They should instruct the AI. You can include user and project context, but the wording should tell the assistant what role to play, how to behave, what to avoid, and how to structure answers."],
+      ["Can I paste these examples directly into ChatGPT or Claude?", "Yes, but treat them as general educational excerpts. They will not fit every person or project because a strong operating profile changes with project context, domain, behavioral pattern, and assessment answers."],
+    ],
+    faqsAr: [
+      ["هل التعليمات تصفني أنا أم توجه الذكاء الاصطناعي؟", "يجب أن توجه الذكاء الاصطناعي. يمكن إدخال سياق المستخدم والمشروع، لكن الصياغة النهائية تخبر المساعد ما دوره، كيف يتصرف، ماذا يتجنب، وكيف يرتب الإجابة."],
+      ["هل أستطيع نسخ هذه الأمثلة مباشرة إلى ChatGPT أو Claude؟", "نعم، لكن تعامل معها كمقتطفات تعليمية عامة. هي لا تناسب كل شخص أو كل مشروع لأن ملف التشغيل القوي يتغير حسب سياق المشروع، المجال، النمط السلوكي، وإجابات الاختبار."],
+    ],
+  },
+  {
     slug: "how-to-write-better-prompts",
     title: "How to Write Better Prompts for AI",
     titleAr: "كيف تكتب مطالبات أفضل للذكاء الاصطناعي",

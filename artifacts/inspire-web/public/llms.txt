@@ -14,6 +14,8 @@ Core pages:
 - Arabic contact: https://inspire.next-stepai.com/ar/contact/
 - Guides: https://inspire.next-stepai.com/guides/
 - Arabic guides: https://inspire.next-stepai.com/ar/guides/
+- How to write better AI instructions: https://inspire.next-stepai.com/guides/how-to-write-better-ai-instructions/
+- Arabic how to write better AI instructions: https://inspire.next-stepai.com/ar/guides/how-to-write-better-ai-instructions/
 - How to write better prompts: https://inspire.next-stepai.com/guides/how-to-write-better-prompts/
 - ChatGPT custom instructions: https://inspire.next-stepai.com/guides/chatgpt-custom-instructions/
 - Prompt engineering for work: https://inspire.next-stepai.com/guides/prompt-engineering-for-work/

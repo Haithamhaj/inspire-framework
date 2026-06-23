@@ -78,6 +78,31 @@ function guideJsonLd(config: {
 }
 
 const guideSeo: Record<string, SeoConfig> = {
+  "how-to-write-better-ai-instructions": {
+    path: "/guides/how-to-write-better-ai-instructions",
+    title: "How to Write Better AI Instructions for ChatGPT, Claude, and Gemini — INSPIRE",
+    description:
+      "Learn how to write AI instructions using the INSPIRE seven-section structure. These examples are general educational excerpts, not a substitute for a personalized profile.",
+    jsonLd: guideJsonLd({
+      path: "/guides/how-to-write-better-ai-instructions",
+      title: "How to Write Better AI Instructions for ChatGPT, Claude, and Gemini",
+      description:
+        "Learn how to write AI instructions using the INSPIRE seven-section structure. These examples are general educational excerpts, not a substitute for a personalized profile.",
+      breadcrumbName: "How to Write Better AI Instructions",
+      faqs: [
+        {
+          question: "Should AI instructions describe me or instruct the AI?",
+          answer:
+            "They should instruct the AI. You can include user and project context, but the wording should tell the assistant what role to play, how to behave, what to avoid, and how to structure answers.",
+        },
+        {
+          question: "Can I paste these examples directly into ChatGPT or Claude?",
+          answer:
+            "Yes, but treat them as general educational excerpts. They will not fit every person or project because a strong operating profile changes with project context, domain, behavioral pattern, and assessment answers.",
+        },
+      ],
+    }),
+  },
   "how-to-write-better-prompts": {
     path: "/guides/how-to-write-better-prompts",
     title: "How to Write Better AI Prompts — INSPIRE Guide",

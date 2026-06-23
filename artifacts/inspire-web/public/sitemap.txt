@@ -12,6 +12,8 @@ https://inspire.next-stepai.com/assess/mini/
 https://inspire.next-stepai.com/ar/assess/mini/
 https://inspire.next-stepai.com/guides/
 https://inspire.next-stepai.com/ar/guides/
+https://inspire.next-stepai.com/guides/how-to-write-better-ai-instructions/
+https://inspire.next-stepai.com/ar/guides/how-to-write-better-ai-instructions/
 https://inspire.next-stepai.com/guides/how-to-write-better-prompts/
 https://inspire.next-stepai.com/ar/guides/how-to-write-better-prompts/
 https://inspire.next-stepai.com/guides/chatgpt-custom-instructions/
