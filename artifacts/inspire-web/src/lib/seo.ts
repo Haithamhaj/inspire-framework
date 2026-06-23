@@ -82,12 +82,12 @@ const guideSeo: Record<string, SeoConfig> = {
     path: "/guides/how-to-write-better-ai-instructions",
     title: "How to Write Better AI Instructions for ChatGPT, Claude, and Gemini — INSPIRE",
     description:
-      "Learn how to write AI instructions using the INSPIRE seven-section structure. These examples are general educational excerpts, not a substitute for a personalized profile.",
+      "Learn how to write AI instructions and use them in ChatGPT Custom Instructions, ChatGPT Projects, Claude Projects, Custom GPTs, and Gemini Gems.",
     jsonLd: guideJsonLd({
       path: "/guides/how-to-write-better-ai-instructions",
       title: "How to Write Better AI Instructions for ChatGPT, Claude, and Gemini",
       description:
-        "Learn how to write AI instructions using the INSPIRE seven-section structure. These examples are general educational excerpts, not a substitute for a personalized profile.",
+        "Learn how to write AI instructions and use them in ChatGPT Custom Instructions, ChatGPT Projects, Claude Projects, Custom GPTs, and Gemini Gems.",
       breadcrumbName: "How to Write Better AI Instructions",
       faqs: [
         {
@@ -99,6 +99,131 @@ const guideSeo: Record<string, SeoConfig> = {
           question: "Can I paste these examples directly into ChatGPT or Claude?",
           answer:
             "Yes, but treat them as general educational excerpts. They will not fit every person or project because a strong operating profile changes with project context, domain, behavioral pattern, and assessment answers.",
+        },
+      ],
+    }),
+  },
+  "ai-operating-profile-examples": {
+    path: "/guides/ai-operating-profile-examples",
+    title: "AI Operating Profile Examples for ChatGPT, Claude, and Gemini — INSPIRE",
+    description:
+      "See general AI Operating Profile examples for founders, consultants, project managers, and researchers, with guidance for ChatGPT, Claude, and Gemini.",
+    jsonLd: guideJsonLd({
+      path: "/guides/ai-operating-profile-examples",
+      title: "AI Operating Profile Examples",
+      description:
+        "See general AI Operating Profile examples for founders, consultants, project managers, and researchers, with guidance for ChatGPT, Claude, and Gemini.",
+      breadcrumbName: "AI Operating Profile Examples",
+      faqs: [
+        {
+          question: "Can I copy these AI Operating Profile examples?",
+          answer:
+            "You can use them as starting excerpts, but they are intentionally general. INSPIRE creates a personalized profile from project context, domain, behavioral pattern, and assessment answers.",
+        },
+        {
+          question: "Where can I use an AI Operating Profile?",
+          answer:
+            "You can adapt it for ChatGPT Custom Instructions, ChatGPT Projects, Custom GPTs, Claude Projects, Gemini Gems, or the first message of a project-specific chat.",
+        },
+      ],
+    }),
+  },
+  "ai-operating-profile-for-founders": {
+    path: "/guides/ai-operating-profile-for-founders",
+    title: "AI Operating Profile for Founders — INSPIRE",
+    description:
+      "A founder-focused AI Operating Profile guide for using ChatGPT, Claude, and Gemini in product decisions, planning, strategy, and execution.",
+    jsonLd: guideJsonLd({
+      path: "/guides/ai-operating-profile-for-founders",
+      title: "AI Operating Profile for Founders",
+      description:
+        "A founder-focused AI Operating Profile guide for using ChatGPT, Claude, and Gemini in product decisions, planning, strategy, and execution.",
+      breadcrumbName: "AI Operating Profile for Founders",
+      faqs: [
+        {
+          question: "Is this a complete founder AI Operating Profile?",
+          answer:
+            "No. It is a general excerpt. A complete INSPIRE profile should adapt to the founder's project, product stage, working style, constraints, and assessment answers.",
+        },
+        {
+          question: "What should founder AI instructions avoid?",
+          answer:
+            "They should avoid generic startup advice, unsupported claims, and long lists of options without a clear recommendation or validation step.",
+        },
+      ],
+    }),
+  },
+  "ai-operating-profile-for-consultants": {
+    path: "/guides/ai-operating-profile-for-consultants",
+    title: "AI Operating Profile for Consultants — INSPIRE",
+    description:
+      "A consultant-focused AI Operating Profile guide for client strategy, recommendations, analysis, and copy-ready advisory work.",
+    jsonLd: guideJsonLd({
+      path: "/guides/ai-operating-profile-for-consultants",
+      title: "AI Operating Profile for Consultants",
+      description:
+        "A consultant-focused AI Operating Profile guide for client strategy, recommendations, analysis, and copy-ready advisory work.",
+      breadcrumbName: "AI Operating Profile for Consultants",
+      faqs: [
+        {
+          question: "Can consultants use one AI Operating Profile for all clients?",
+          answer:
+            "Only for general working behavior. Client-specific context should usually live in project-specific instructions or the current chat.",
+        },
+        {
+          question: "What makes consultant AI instructions stronger?",
+          answer:
+            "They should define decision criteria, client-ready structure, assumption checks, trade-off analysis, and clear next actions.",
+        },
+      ],
+    }),
+  },
+  "ai-operating-profile-for-project-managers": {
+    path: "/guides/ai-operating-profile-for-project-managers",
+    title: "AI Operating Profile for Project Managers — INSPIRE",
+    description:
+      "A project-manager-focused AI Operating Profile guide for scope, risks, owners, timelines, meeting notes, and execution planning.",
+    jsonLd: guideJsonLd({
+      path: "/guides/ai-operating-profile-for-project-managers",
+      title: "AI Operating Profile for Project Managers",
+      description:
+        "A project-manager-focused AI Operating Profile guide for scope, risks, owners, timelines, meeting notes, and execution planning.",
+      breadcrumbName: "AI Operating Profile for Project Managers",
+      faqs: [
+        {
+          question: "Should project manager instructions be general or project-specific?",
+          answer:
+            "The operating style can be general, but scope, deadlines, stakeholders, and files should usually be project-specific.",
+        },
+        {
+          question: "What should project management AI instructions avoid?",
+          answer:
+            "They should avoid overcomplicated process, vague status summaries, and plans without owners, dependencies, risks, or next actions.",
+        },
+      ],
+    }),
+  },
+  "ai-operating-profile-for-researchers": {
+    path: "/guides/ai-operating-profile-for-researchers",
+    title: "AI Operating Profile for Researchers — INSPIRE",
+    description:
+      "A researcher-focused AI Operating Profile guide for study, source comparison, synthesis, evidence checks, and research planning.",
+    jsonLd: guideJsonLd({
+      path: "/guides/ai-operating-profile-for-researchers",
+      title: "AI Operating Profile for Researchers",
+      description:
+        "A researcher-focused AI Operating Profile guide for study, source comparison, synthesis, evidence checks, and research planning.",
+      breadcrumbName: "AI Operating Profile for Researchers",
+      faqs: [
+        {
+          question: "Can AI Operating Profiles prevent fake citations?",
+          answer:
+            "They can reduce the risk by explicitly telling the assistant not to invent citations and to separate verified information from interpretation, but users should still verify sources.",
+        },
+        {
+          question: "Is this only for academic researchers?",
+          answer:
+            "No. The same pattern can help students, analysts, writers, founders, and teams doing source-based work.",
         },
       ],
     }),

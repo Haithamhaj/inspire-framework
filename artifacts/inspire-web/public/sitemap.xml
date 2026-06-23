@@ -145,6 +145,96 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://inspire.next-stepai.com/guides/ai-operating-profile-examples/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-examples/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-examples/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-examples/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/ar/guides/ai-operating-profile-examples/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-examples/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-examples/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-examples/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/ai-operating-profile-for-founders/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-founders/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-founders/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-founders/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-founders/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-founders/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-founders/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-founders/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/ai-operating-profile-for-consultants/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-consultants/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-consultants/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-consultants/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-consultants/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-consultants/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-consultants/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-consultants/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/ai-operating-profile-for-project-managers/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-project-managers/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-project-managers/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-project-managers/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-project-managers/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-project-managers/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-project-managers/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-project-managers/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/guides/ai-operating-profile-for-researchers/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-researchers/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-researchers/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-researchers/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-researchers/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-researchers/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-researchers/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://inspire.next-stepai.com/guides/ai-operating-profile-for-researchers/" />
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://inspire.next-stepai.com/guides/how-to-write-better-prompts/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://inspire.next-stepai.com/guides/how-to-write-better-prompts/" />
     <xhtml:link rel="alternate" hreflang="ar" href="https://inspire.next-stepai.com/ar/guides/how-to-write-better-prompts/" />

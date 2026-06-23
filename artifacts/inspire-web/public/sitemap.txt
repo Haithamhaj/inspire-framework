@@ -14,6 +14,16 @@ https://inspire.next-stepai.com/guides/
 https://inspire.next-stepai.com/ar/guides/
 https://inspire.next-stepai.com/guides/how-to-write-better-ai-instructions/
 https://inspire.next-stepai.com/ar/guides/how-to-write-better-ai-instructions/
+https://inspire.next-stepai.com/guides/ai-operating-profile-examples/
+https://inspire.next-stepai.com/ar/guides/ai-operating-profile-examples/
+https://inspire.next-stepai.com/guides/ai-operating-profile-for-founders/
+https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-founders/
+https://inspire.next-stepai.com/guides/ai-operating-profile-for-consultants/
+https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-consultants/
+https://inspire.next-stepai.com/guides/ai-operating-profile-for-project-managers/
+https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-project-managers/
+https://inspire.next-stepai.com/guides/ai-operating-profile-for-researchers/
+https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-researchers/
 https://inspire.next-stepai.com/guides/how-to-write-better-prompts/
 https://inspire.next-stepai.com/ar/guides/how-to-write-better-prompts/
 https://inspire.next-stepai.com/guides/chatgpt-custom-instructions/

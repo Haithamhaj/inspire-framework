@@ -38,6 +38,7 @@ const guides = [
       ["6. Response Structure", "Tell the assistant how to organize answers. Example: Lead with the recommendation, then cover assumptions, options, trade-offs, and next steps."],
       ["7. Enhancement & Adaptation", "Tell the assistant how to adapt when corrected, when a task repeats, or when scope starts drifting. Example: Preserve stable rules unless explicitly changed."],
       ["Six general role examples", "These are educational excerpts, not complete INSPIRE profiles. Founder: Act as a founder's strategic planning assistant for early-stage product decisions. Project manager: Act as a project execution and coordination assistant. Student or researcher: Act as a study and research assistant. Marketing and content: Act as a practical marketing and content strategy assistant. Team lead and operations: Act as an operations and team coordination assistant. HR and people operations: Act as a people operations assistant for workplace communication and process design."],
+      ["Where to use these instructions in ChatGPT, Claude, and Gemini", "Paste the AI Operating Profile where each tool supports persistent behavior or project instructions. In ChatGPT, use Custom Instructions for general behavior, Projects for project-specific instructions, or Custom GPT instructions for a specialized assistant. In Claude, use Claude Projects and add project instructions plus relevant project knowledge. In Gemini, create a Gem through Gems or Gem manager, paste the instructions, test it, and save it for repeated workflows."],
     ],
     sectionsAr: [
       ["1. Identity & Role", "هذه الأمثلة عامة. ملف INSPIRE الحقيقي يتغير حسب المشروع، المجال، أسلوب العمل، النمط السلوكي، وإجابات الاختبار. اكتب هذا القسم كتعليمات للذكاء الاصطناعي، لا كسيرة ذاتية للمستخدم. مثال: تصرف كمساعد استراتيجي للاستشارات في العمل الموجه للعملاء."],
@@ -48,6 +49,7 @@ const guides = [
       ["6. Response Structure", "قل للمساعد كيف يرتب الإجابات. مثال: ابدأ بالتوصية، ثم اعرض الافتراضات والخيارات والمفاضلات والخطوات التالية."],
       ["7. Enhancement & Adaptation", "قل للمساعد كيف يتكيف عند التصحيح أو تكرار المهمة أو توسع النطاق. مثال: احفظ القواعد المستقرة ما لم يتم تغييرها صراحة."],
       ["ستة أمثلة عامة حسب الدور", "هذه مقتطفات تعليمية وليست ملفات INSPIRE كاملة. المؤسس: تصرف كمساعد تخطيط استراتيجي لمؤسس في قرارات منتج مبكرة. مدير المشروع: تصرف كمساعد تنفيذ وتنسيق للمشاريع. الطالب أو الباحث: تصرف كمساعد دراسة وبحث. التسويق والمحتوى: تصرف كمساعد عملي لاستراتيجية التسويق والمحتوى. قائد الفريق والعمليات: تصرف كمساعد عمليات وتنسيق فريق. الموارد البشرية: تصرف كمساعد عمليات أفراد للتواصل الداخلي وتصميم الإجراءات."],
+      ["أين تستخدم هذه التعليمات في ChatGPT وClaude وGemini", "الصق AI Operating Profile في المكان الذي تدعم فيه الأداة سلوكاً ثابتاً أو تعليمات مشروع. في ChatGPT استخدم Custom Instructions للسلوك العام، أو Projects لتعليمات المشروع، أو Custom GPT instructions لمساعد متخصص. في Claude استخدم Claude Projects مع project instructions وproject knowledge عند الحاجة. في Gemini أنشئ Gem من Gems أو Gem manager، الصق التعليمات، اختبرها، ثم احفظها لسير العمل المتكرر."],
     ],
     faqs: [
       ["Should AI instructions describe me or instruct the AI?", "They should instruct the AI. You can include user and project context, but the wording should tell the assistant what role to play, how to behave, what to avoid, and how to structure answers."],
@@ -56,6 +58,155 @@ const guides = [
     faqsAr: [
       ["هل التعليمات تصفني أنا أم توجه الذكاء الاصطناعي؟", "يجب أن توجه الذكاء الاصطناعي. يمكن إدخال سياق المستخدم والمشروع، لكن الصياغة النهائية تخبر المساعد ما دوره، كيف يتصرف، ماذا يتجنب، وكيف يرتب الإجابة."],
       ["هل أستطيع نسخ هذه الأمثلة مباشرة إلى ChatGPT أو Claude؟", "نعم، لكن تعامل معها كمقتطفات تعليمية عامة. هي لا تناسب كل شخص أو كل مشروع لأن ملف التشغيل القوي يتغير حسب سياق المشروع، المجال، النمط السلوكي، وإجابات الاختبار."],
+    ],
+  },
+  {
+    slug: "ai-operating-profile-examples",
+    title: "AI Operating Profile Examples",
+    titleAr: "أمثلة AI Operating Profile",
+    metaTitle: "AI Operating Profile Examples for ChatGPT, Claude, and Gemini — INSPIRE",
+    metaTitleAr: "أمثلة AI Operating Profile — INSPIRE",
+    description:
+      "See general AI Operating Profile examples for founders, consultants, project managers, and researchers, with guidance for ChatGPT, Claude, and Gemini.",
+    descriptionAr:
+      "أمثلة عملية لمقتطفات AI Operating Profile مع ChatGPT وClaude وGemini، مكتوبة كأمثلة عامة وليست ملفات INSPIRE مخصصة كاملة.",
+    sections: [
+      ["How to read these examples", "These are general excerpts, not complete INSPIRE profiles. A real profile changes based on project, domain, language preference, behavioral pattern, and assessment answers."],
+      ["Founder example", "Act as a founder's strategic planning assistant for early-stage product decisions. Help compare options, expose assumptions, identify the highest-value next action, and turn unclear ideas into practical experiments."],
+      ["Consultant example", "Act as a consulting strategy assistant for client-facing business work. Help turn unclear client goals into practical options, trade-offs, recommendations, and next steps."],
+      ["Project manager example", "Act as a project execution and coordination assistant. Help clarify scope, dependencies, owners, risks, deadlines, and next actions."],
+      ["Researcher example", "Act as a research and synthesis assistant. Help turn broad questions into a clear research path, compare sources, summarize evidence, and separate confirmed information from interpretation."],
+    ],
+    sectionsAr: [
+      ["كيف تقرأ هذه الأمثلة", "هذه مقتطفات عامة وليست ملفات INSPIRE كاملة. الملف الحقيقي يتغير حسب المشروع والمجال وتفضيل اللغة والنمط السلوكي وإجابات الاختبار."],
+      ["مثال للمؤسس", "تصرف كمساعد تخطيط استراتيجي لمؤسس في قرارات منتج مبكرة. ساعد في مقارنة الخيارات وكشف الافتراضات وتحديد أعلى خطوة قيمة وتحويل الأفكار غير الواضحة إلى تجارب عملية."],
+      ["مثال للمستشار", "تصرف كمساعد استراتيجي للاستشارات في العمل الموجه للعملاء. ساعد في تحويل أهداف العميل غير الواضحة إلى خيارات عملية ومفاضلات وتوصيات وخطوات تالية."],
+      ["مثال لمدير المشروع", "تصرف كمساعد تنفيذ وتنسيق للمشاريع. ساعد في توضيح النطاق والاعتماديات والمسؤولين والمخاطر والمواعيد والخطوات التالية."],
+      ["مثال للباحث", "تصرف كمساعد بحث وتلخيص. ساعد في تحويل الأسئلة الواسعة إلى مسار بحث واضح ومقارنة المصادر وتلخيص الأدلة وفصل المعلومات المؤكدة عن التفسير."],
+    ],
+    faqs: [
+      ["Can I copy these AI Operating Profile examples?", "You can use them as starting excerpts, but they are intentionally general. INSPIRE creates a personalized profile from project context, domain, behavioral pattern, and assessment answers."],
+      ["Where can I use an AI Operating Profile?", "You can adapt it for ChatGPT Custom Instructions, ChatGPT Projects, Custom GPTs, Claude Projects, Gemini Gems, or the first message of a project-specific chat."],
+    ],
+    faqsAr: [
+      ["هل أستطيع نسخ أمثلة AI Operating Profile كما هي؟", "يمكن استخدامها كنقطة بداية، لكنها عامة عمداً. INSPIRE ينشئ ملفاً مخصصاً من سياق المشروع والمجال والنمط السلوكي وإجابات الاختبار."],
+      ["أين أستخدم AI Operating Profile؟", "يمكن تكييفه مع ChatGPT Custom Instructions أو ChatGPT Projects أو Custom GPTs أو Claude Projects أو Gemini Gems أو بداية محادثة خاصة بمشروع."],
+    ],
+  },
+  {
+    slug: "ai-operating-profile-for-founders",
+    title: "AI Operating Profile for Founders",
+    titleAr: "AI Operating Profile للمؤسسين",
+    metaTitle: "AI Operating Profile for Founders — INSPIRE",
+    metaTitleAr: "AI Operating Profile للمؤسسين — INSPIRE",
+    description:
+      "A founder-focused AI Operating Profile guide for using ChatGPT, Claude, and Gemini in product decisions, planning, strategy, and execution.",
+    descriptionAr:
+      "دليل AI Operating Profile موجه للمؤسسين لاستخدام ChatGPT وClaude وGemini في قرارات المنتج والتخطيط والاستراتيجية والتنفيذ.",
+    sections: [
+      ["What founders need from AI", "Founders often use AI across product, sales, hiring, strategy, operations, and content. A useful AI Operating Profile keeps the assistant focused on decisions and execution rather than generic startup advice."],
+      ["Founder instruction excerpt", "Act as a founder's strategic planning assistant for early-stage product decisions. Help compare options, expose assumptions, identify risks, and turn unclear ideas into practical experiments."],
+      ["Where to use it", "Use the general behavior layer in ChatGPT Custom Instructions. Use project-specific versions inside ChatGPT Projects, Claude Projects, Custom GPTs, or Gemini Gems."],
+    ],
+    sectionsAr: [
+      ["ماذا يحتاج المؤسسون من AI؟", "يستخدم المؤسسون AI في المنتج والمبيعات والتوظيف والاستراتيجية والعمليات والمحتوى. AI Operating Profile مفيد عندما يبقي المساعد مركزاً على القرار والتنفيذ بدلاً من نصائح عامة."],
+      ["مقتطف تعليمات للمؤسس", "تصرف كمساعد تخطيط استراتيجي لمؤسس في قرارات منتج مبكرة. ساعد في مقارنة الخيارات وكشف الافتراضات وتحديد المخاطر وتحويل الأفكار غير الواضحة إلى تجارب عملية."],
+      ["أين تستخدمه؟", "استخدم طبقة السلوك العامة في ChatGPT Custom Instructions. واستخدم النسخ الخاصة بالمشروع داخل ChatGPT Projects أو Claude Projects أو Custom GPTs أو Gemini Gems."],
+    ],
+    faqs: [
+      ["Is this a complete founder AI Operating Profile?", "No. It is a general excerpt. A complete INSPIRE profile should adapt to the founder's project, product stage, working style, constraints, and assessment answers."],
+      ["What should founder AI instructions avoid?", "They should avoid generic startup advice, unsupported claims, and long lists of options without a clear recommendation or validation step."],
+    ],
+    faqsAr: [
+      ["هل هذا ملف AI Operating Profile كامل للمؤسس؟", "لا. هذا مقتطف عام. ملف INSPIRE الكامل يجب أن يتكيف مع المشروع ومرحلة المنتج وأسلوب العمل والقيود وإجابات الاختبار."],
+      ["ماذا يجب أن تتجنب تعليمات المؤسس؟", "يجب أن تتجنب نصائح الشركات الناشئة العامة والادعاءات غير المدعومة والقوائم الطويلة بدون توصية واضحة أو خطوة تحقق."],
+    ],
+  },
+  {
+    slug: "ai-operating-profile-for-consultants",
+    title: "AI Operating Profile for Consultants",
+    titleAr: "AI Operating Profile للمستشارين",
+    metaTitle: "AI Operating Profile for Consultants — INSPIRE",
+    metaTitleAr: "AI Operating Profile للمستشارين — INSPIRE",
+    description:
+      "A consultant-focused AI Operating Profile guide for client strategy, recommendations, analysis, and copy-ready advisory work.",
+    descriptionAr:
+      "دليل AI Operating Profile للمستشارين في الاستراتيجية، التوصيات، التحليل، والعمل الجاهز للاستخدام مع العملاء.",
+    sections: [
+      ["What consultants need from AI", "Consultants need AI to structure ambiguity, compare options, clarify trade-offs, and produce client-ready language."],
+      ["Consultant instruction excerpt", "Act as a consulting strategy assistant for client-facing business work. Help convert vague client goals into clear options, decision criteria, trade-offs, and next steps."],
+      ["Where to use it", "Use stable consulting behavior in ChatGPT Custom Instructions. Use client-specific or project-specific versions in ChatGPT Projects, Claude Projects, Custom GPTs, or Gemini Gems."],
+    ],
+    sectionsAr: [
+      ["ماذا يحتاج المستشارون من AI؟", "يحتاج المستشارون إلى AI يرتب الغموض ويقارن الخيارات ويوضح المفاضلات وينتج لغة جاهزة للعميل."],
+      ["مقتطف تعليمات للمستشار", "تصرف كمساعد استراتيجي للاستشارات في العمل الموجه للعملاء. ساعد في تحويل أهداف العميل غير الواضحة إلى خيارات ومعايير قرار ومفاضلات وخطوات تالية."],
+      ["أين تستخدمه؟", "استخدم سلوك الاستشارات الثابت في ChatGPT Custom Instructions. واستخدم النسخ الخاصة بالعميل أو المشروع في ChatGPT Projects أو Claude Projects أو Custom GPTs أو Gemini Gems."],
+    ],
+    faqs: [
+      ["Can consultants use one AI Operating Profile for all clients?", "Only for general working behavior. Client-specific context should usually live in project-specific instructions or the current chat."],
+      ["What makes consultant AI instructions stronger?", "They should define decision criteria, client-ready structure, assumption checks, trade-off analysis, and clear next actions."],
+    ],
+    faqsAr: [
+      ["هل يستخدم المستشار ملفاً واحداً لكل العملاء؟", "فقط للسلوك العام. سياق كل عميل يفضل أن يكون في تعليمات مشروع أو محادثة خاصة."],
+      ["ما الذي يقوي تعليمات AI للمستشارين؟", "تحديد معايير القرار، بنية جاهزة للعميل، فحص الافتراضات، تحليل المفاضلات، وخطوات تالية واضحة."],
+    ],
+  },
+  {
+    slug: "ai-operating-profile-for-project-managers",
+    title: "AI Operating Profile for Project Managers",
+    titleAr: "AI Operating Profile لمديري المشاريع",
+    metaTitle: "AI Operating Profile for Project Managers — INSPIRE",
+    metaTitleAr: "AI Operating Profile لمديري المشاريع — INSPIRE",
+    description:
+      "A project-manager-focused AI Operating Profile guide for scope, risks, owners, timelines, meeting notes, and execution planning.",
+    descriptionAr:
+      "دليل AI Operating Profile لمديري المشاريع في النطاق، المخاطر، المسؤولين، الجداول، ملخصات الاجتماعات، وخطط التنفيذ.",
+    sections: [
+      ["What project managers need from AI", "Project managers need AI to reduce ambiguity, organize moving parts, and turn scattered updates into decisions, owners, and next actions."],
+      ["Project manager instruction excerpt", "Act as a project execution and coordination assistant. Convert messy updates into scope, blockers, owners, decisions, risks, deadlines, and next steps."],
+      ["Where to use it", "Use project-specific versions inside ChatGPT Projects or Claude Projects. Use Custom GPTs or Gemini Gems for repeated workflows such as weekly project reviews."],
+    ],
+    sectionsAr: [
+      ["ماذا يحتاج مدير المشروع من AI؟", "يحتاج مدير المشروع إلى AI يقلل الغموض ويرتب الأجزاء المتحركة ويحول التحديثات المتفرقة إلى قرارات ومسؤولين وخطوات تالية."],
+      ["مقتطف تعليمات لمدير المشروع", "تصرف كمساعد تنفيذ وتنسيق للمشاريع. حوّل التحديثات غير المرتبة إلى نطاق وعوائق ومسؤولين وقرارات ومخاطر ومواعيد وخطوات تالية."],
+      ["أين تستخدمه؟", "استخدم النسخ الخاصة بالمشروع داخل ChatGPT Projects أو Claude Projects. واستخدم Custom GPTs أو Gemini Gems لسير عمل متكرر مثل مراجعات المشروع الأسبوعية."],
+    ],
+    faqs: [
+      ["Should project manager instructions be general or project-specific?", "The operating style can be general, but scope, deadlines, stakeholders, and files should usually be project-specific."],
+      ["What should project management AI instructions avoid?", "They should avoid overcomplicated process, vague status summaries, and plans without owners, dependencies, risks, or next actions."],
+    ],
+    faqsAr: [
+      ["هل تكون تعليمات مدير المشروع عامة أم خاصة بالمشروع؟", "أسلوب التشغيل يمكن أن يكون عاماً، لكن النطاق والمواعيد وأصحاب المصلحة والملفات غالباً يجب أن تكون خاصة بالمشروع."],
+      ["ماذا يجب أن تتجنب تعليمات إدارة المشاريع؟", "تجنب الإجراءات المبالغ فيها، ملخصات الحالة الغامضة، والخطط التي لا تحتوي مسؤولين أو اعتماديات أو مخاطر أو خطوات تالية."],
+    ],
+  },
+  {
+    slug: "ai-operating-profile-for-researchers",
+    title: "AI Operating Profile for Researchers",
+    titleAr: "AI Operating Profile للباحثين",
+    metaTitle: "AI Operating Profile for Researchers — INSPIRE",
+    metaTitleAr: "AI Operating Profile للباحثين — INSPIRE",
+    description:
+      "A researcher-focused AI Operating Profile guide for study, source comparison, synthesis, evidence checks, and research planning.",
+    descriptionAr:
+      "دليل AI Operating Profile للباحثين والطلاب في الدراسة، مقارنة المصادر، التلخيص، فحص الأدلة، وتخطيط البحث.",
+    sections: [
+      ["What researchers need from AI", "Researchers need AI to clarify questions, organize evidence, compare viewpoints, and summarize without inventing facts or sources."],
+      ["Researcher instruction excerpt", "Act as a research and synthesis assistant. Help turn broad questions into a clear research path, compare sources, summarize evidence, and separate confirmed information from interpretation."],
+      ["Where to use it", "Use this style in Claude Projects, ChatGPT Projects, or Gemini Gems when you have a research workspace with related files or notes."],
+    ],
+    sectionsAr: [
+      ["ماذا يحتاج الباحثون من AI؟", "يحتاج الباحثون إلى AI يوضح السؤال ويرتب الأدلة ويقارن وجهات النظر ويلخص بدون اختراع حقائق أو مصادر."],
+      ["مقتطف تعليمات للباحث", "تصرف كمساعد بحث وتلخيص. ساعد في تحويل الأسئلة الواسعة إلى مسار بحث واضح ومقارنة المصادر وتلخيص الأدلة وفصل المعلومات المؤكدة عن التفسير."],
+      ["أين تستخدمه؟", "استخدم هذا الأسلوب في Claude Projects أو ChatGPT Projects أو Gemini Gems عندما يكون لديك مساحة بحث مع ملفات أو ملاحظات مرتبطة."],
+    ],
+    faqs: [
+      ["Can AI Operating Profiles prevent fake citations?", "They can reduce the risk by explicitly telling the assistant not to invent citations and to separate verified information from interpretation, but users should still verify sources."],
+      ["Is this only for academic researchers?", "No. The same pattern can help students, analysts, writers, founders, and teams doing source-based work."],
+    ],
+    faqsAr: [
+      ["هل تمنع AI Operating Profiles المراجع الوهمية؟", "تقلل الخطر عندما تطلب صراحة عدم اختراع المراجع وفصل المعلومة المؤكدة عن التفسير، لكن يجب على المستخدم التحقق من المصادر."],
+      ["هل هذا للباحثين الأكاديميين فقط؟", "لا. نفس النمط يفيد الطلاب والمحللين والكتاب والمؤسسين والفرق التي تعمل على محتوى قائم على مصادر."],
     ],
   },
   {

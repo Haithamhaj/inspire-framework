@@ -16,6 +16,16 @@ Core pages:
 - Arabic guides: https://inspire.next-stepai.com/ar/guides/
 - How to write better AI instructions: https://inspire.next-stepai.com/guides/how-to-write-better-ai-instructions/
 - Arabic how to write better AI instructions: https://inspire.next-stepai.com/ar/guides/how-to-write-better-ai-instructions/
+- AI operating profile examples: https://inspire.next-stepai.com/guides/ai-operating-profile-examples/
+- Arabic AI operating profile examples: https://inspire.next-stepai.com/ar/guides/ai-operating-profile-examples/
+- AI operating profile for founders: https://inspire.next-stepai.com/guides/ai-operating-profile-for-founders/
+- Arabic AI operating profile for founders: https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-founders/
+- AI operating profile for consultants: https://inspire.next-stepai.com/guides/ai-operating-profile-for-consultants/
+- Arabic AI operating profile for consultants: https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-consultants/
+- AI operating profile for project managers: https://inspire.next-stepai.com/guides/ai-operating-profile-for-project-managers/
+- Arabic AI operating profile for project managers: https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-project-managers/
+- AI operating profile for researchers: https://inspire.next-stepai.com/guides/ai-operating-profile-for-researchers/
+- Arabic AI operating profile for researchers: https://inspire.next-stepai.com/ar/guides/ai-operating-profile-for-researchers/
 - How to write better prompts: https://inspire.next-stepai.com/guides/how-to-write-better-prompts/
 - ChatGPT custom instructions: https://inspire.next-stepai.com/guides/chatgpt-custom-instructions/
 - Prompt engineering for work: https://inspire.next-stepai.com/guides/prompt-engineering-for-work/
