@@ -204,6 +204,11 @@ function pathFor(basePath, locale) {
   return basePath;
 }
 
+function canonicalPath(routePath) {
+  if (!routePath || routePath === "/") return "/";
+  return `${routePath.replace(/\/+$/, "")}/`;
+}
+
 function breadcrumb(items) {
   return {
     "@context": "https://schema.org",
@@ -356,9 +361,11 @@ function pageSchema(page) {
 }
 
 function headHtml(page) {
-  const canonical = `${siteUrl}${page.path}`;
+  const canonical = `${siteUrl}${canonicalPath(page.path)}`;
   const enPath = pathFor(page.basePath, "en");
   const arPath = pathFor(page.basePath, "ar");
+  const canonicalEnPath = canonicalPath(enPath);
+  const canonicalArPath = canonicalPath(arPath);
   const schemas = [globalSchema(), pageSchema(page)];
 
   return `    <meta charset="UTF-8" />
@@ -368,9 +375,9 @@ function headHtml(page) {
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#070817" />
     <link rel="canonical" href="${canonical}" />
-    <link rel="alternate" hreflang="en" href="${siteUrl}${enPath}" />
-    <link rel="alternate" hreflang="ar" href="${siteUrl}${arPath}" />
-    <link rel="alternate" hreflang="x-default" href="${siteUrl}${enPath}" />
+    <link rel="alternate" hreflang="en" href="${siteUrl}${canonicalEnPath}" />
+    <link rel="alternate" hreflang="ar" href="${siteUrl}${canonicalArPath}" />
+    <link rel="alternate" hreflang="x-default" href="${siteUrl}${canonicalEnPath}" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/images/logo.png" />
     <meta property="og:type" content="website" />

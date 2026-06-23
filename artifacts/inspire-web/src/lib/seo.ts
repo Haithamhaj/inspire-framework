@@ -287,6 +287,9 @@ export const defaultSeoAr: SeoConfig = {
 
 export function getSeoForPath(pathname: string, locale: Locale = "en"): SeoConfig {
   pathname = stripLocalePrefix(pathname).split("?")[0] || "/";
+  if (pathname.length > 1 && pathname.endsWith("/")) {
+    pathname = pathname.replace(/\/+$/, "");
+  }
 
   if (pathname === "/") {
     return locale === "ar" ? defaultSeoAr : defaultSeo;
@@ -639,9 +642,9 @@ function setAlternateLinks(path: string) {
   });
 
   const alternatives = [
-    { hreflang: "en", path: localizePath(path, "en") },
-    { hreflang: "ar", path: localizePath(path, "ar") },
-    { hreflang: "x-default", path: localizePath(path, "en") },
+    { hreflang: "en", path: canonicalizePublicPath(localizePath(path, "en")) },
+    { hreflang: "ar", path: canonicalizePublicPath(localizePath(path, "ar")) },
+    { hreflang: "x-default", path: canonicalizePublicPath(localizePath(path, "en")) },
   ];
 
   for (const item of alternatives) {
@@ -652,6 +655,13 @@ function setAlternateLinks(path: string) {
     link.dataset.localeLink = "true";
     document.head.appendChild(link);
   }
+}
+
+function canonicalizePublicPath(path: string) {
+  const [pathname, search = ""] = path.split("?");
+  const suffix = search ? `?${search}` : "";
+  if (!pathname || pathname === "/") return `/${suffix}`;
+  return `${pathname.replace(/\/+$/, "")}/${suffix}`;
 }
 
 function setJsonLd(data?: Record<string, unknown>) {
@@ -675,7 +685,7 @@ function setJsonLd(data?: Record<string, unknown>) {
 
 export function applySeo(config: SeoConfig, locale?: Locale) {
   const activeLocale = locale ?? config.locale ?? (document.documentElement.lang === "ar" ? "ar" : "en");
-  const canonicalPath = localizePath(config.path, activeLocale);
+  const canonicalPath = canonicalizePublicPath(localizePath(config.path, activeLocale));
   const canonicalUrl = `${siteUrl}${canonicalPath}`;
   document.title = config.title;
   setMeta("name", "description", config.description);
